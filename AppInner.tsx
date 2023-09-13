@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   createNativeStackNavigator,
 } from '@react-navigation/native-stack';
@@ -27,15 +27,13 @@ export type RootStackParamList = {
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export default function AppInner() {
-  const isLoggedIn = false; //로그인되었는지여부;
+  const [isLoggedIn, setLoggedin] = useState(false); //로그인되었는지여부;
+  // useEffect(() => {}, [isLoggedIn]);
   return isLoggedIn ? (
     <Stack.Navigator>
       <Stack.Screen
         name="FeedList"
         component={FeedList}
-      //   children={({navigation})=>
-      //     <FeedList />
-      // }
       />
       <Stack.Screen
         name="FeedDetail"
@@ -59,6 +57,6 @@ export default function AppInner() {
       />
     </Stack.Navigator>
   ) : (
-    <SignIn />
+    <SignIn setState={setLoggedin}/>
   );
 }
