@@ -9,10 +9,15 @@ import SearchFriends from "./src/pages/SearchFriends";
 import Setting from "./src/pages/Setting";
 import Notis from "./src/pages/Notis";
 import SignIn from "./src/pages/SignIn";
-
+type emotionDataType = {
+  heart: string[],
+  smile: string[],
+  sad: string[],
+  surprise: string[],
+}
 export type RootStackParamList = {
   FeedList: undefined;
-  FeedDetail: undefined;
+  FeedDetail: {mine:boolean, emotionData:emotionDataType};
   Profile: undefined;
   SearchFriends: undefined;
   Setting: undefined;
@@ -28,6 +33,9 @@ export default function AppInner() {
       <Stack.Screen
         name="FeedList"
         component={FeedList}
+      //   children={({navigation})=>
+      //     <FeedList />
+      // }
       />
       <Stack.Screen
         name="FeedDetail"

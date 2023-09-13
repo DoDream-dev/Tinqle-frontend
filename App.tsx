@@ -12,3 +12,9 @@ export default function App() {
     </SafeAreaProvider>
   );
 }
+
+{/* <Drawer.Screen 
+  name={`Home`} 
+  children={
+    ({navigation})=>
+      <Home name={name} setName={setName} navigation={navigation}/>}/> */}
