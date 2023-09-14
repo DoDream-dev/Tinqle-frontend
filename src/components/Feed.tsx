@@ -1,10 +1,11 @@
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
-import ContentFeedBotoom from "./ContentFeedBottom";
+import ContentFeedBottom from "./ContentFeedBottom";
 
 type FeedProps = {
   mine:boolean;
   detail:boolean;
+  commentCnt:number;
   heartEmoticonNicknameList:string[];
   smileEmoticonNicknameList:string[];
   sadEmoticonNicknameList:string[];
@@ -12,7 +13,9 @@ type FeedProps = {
 }
 export default function Feed(props:FeedProps){
   const mine = props.mine;
+  // const mine = false;
   const detail = props.detail;
+  const commentCnt = props.commentCnt;
   const heartEmoticonNicknameList = props.heartEmoticonNicknameList;
   const smileEmoticonNicknameList = props.smileEmoticonNicknameList;
   const sadEmoticonNicknameList = props.sadEmoticonNicknameList;
@@ -20,10 +23,11 @@ export default function Feed(props:FeedProps){
 
   return (
     <View style={styles.entrie}>
-      <View><Text>Content</Text></View>
-      <ContentFeedBotoom 
+      <View style={{height: 200}}><Text>Content</Text></View>
+      <ContentFeedBottom 
         mine={mine}
         detail={detail}
+        commentCnt={commentCnt}
         heartEmoticonNicknameList={heartEmoticonNicknameList}
         smileEmoticonNicknameList={smileEmoticonNicknameList}
         sadEmoticonNicknameList={sadEmoticonNicknameList}
@@ -36,7 +40,7 @@ export default function Feed(props:FeedProps){
 
 const styles = StyleSheet.create({
   entrie:{
-    flex:1,
-    backgroundColor:'pink'
+    paddingBottom: 10,
+    width: '100%',
   },
 })

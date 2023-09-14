@@ -14,16 +14,18 @@ export default function FeedList({navigation}:FeedListScreenProps) {
       sad:['다'],
       surprise:['가', '다', '라'],
   }
-  const move = useCallback(()=>{navigation.navigate('FeedDetail', {mine: mine, emotionData:emotionData})}, [navigation]);
+  const commentCnt = 0;
+  const move = useCallback(()=>{navigation.navigate('FeedDetail', {mine: mine, emotionData:emotionData, commentCnt:commentCnt})}, [navigation]);
   return (
     <View style={styles.entire}>
       <Pressable>
         <Text>FeedList</Text>
       </Pressable>
-      <Pressable onPress={move}>
+      <Pressable onPress={move} style={{width: '100%', flex:1}}>
         <Feed
           mine={mine}
           detail={false}
+          commentCnt={commentCnt}
           heartEmoticonNicknameList={emotionData.heart}
           smileEmoticonNicknameList={emotionData.smile}
           sadEmoticonNicknameList={emotionData.sad}
@@ -37,6 +39,8 @@ export default function FeedList({navigation}:FeedListScreenProps) {
 const styles = StyleSheet.create({
   entire: {
     flex: 1,
-    alignItems: 'center'
+    alignItems: 'center',
+    width: '100%',
+    backgroundColor: 'yellow'
   },
 });

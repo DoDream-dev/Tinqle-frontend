@@ -31,7 +31,7 @@ export default function Emoticons(props:EmoticonsProps){
 
 const styles = StyleSheet.create({
   entire:{
-    flex:1,
-    backgroundColor:'yellow'
+    flexDirection: 'row',
+    marginRight: 5,
   },
 })
