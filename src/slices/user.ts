@@ -3,6 +3,7 @@ import { createSlice } from "@reduxjs/toolkit";
 const initialState = {
   name:'',
   accessToken:'',
+  id:'',
   // oauthAccessToken: '',
   // authorizationCode: "",
   // socialType: "",
@@ -15,7 +16,8 @@ const userSlice = createSlice({
   reducers: {
     setUser(state, action) {
       state.name = action.payload.name;
-      state.accessToken = action.payload.id;
+      state.accessToken = action.payload.accessToken;
+      state.id = action.payload.id;
       // state.oauthAccessToken = action.payload.oauthAccessToken;
       // state.authorizationCode = action.payload.authorizationCode;
       // state.socialType = action.payload.socialType;

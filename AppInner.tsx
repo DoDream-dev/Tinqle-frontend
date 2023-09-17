@@ -17,6 +17,7 @@ import EncryptedStorage from "react-native-encrypted-storage";
 import axios, {AxiosError} from "axios";
 import Config from "react-native-config";
 import userSlice from "./src/slices/user";
+
 type emotionDataType = {
   heart: string[],
   smile: string[],
@@ -36,26 +37,27 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export default function AppInner() {
   const dispatch = useAppDispatch();
-  const isLogged = useSelector((state:RootState) => !!state.user.accessToken);
-  const [isLoggedIn, setLoggedin] = useState(false); //로그인되었는지여부;
-  console.log(isLoggedIn)
+  const isLoggedIn = useSelector((state:RootState) => !!state.user.id);
   useEffect(() => {
     const getRefreshTokenAgain = async () => {
       try {
         const token = await EncryptedStorage.getItem('refreshToken');
+        console.log(token)
         if (!token) {
           return;
         }
         const response = await axios.post(`${Config.API_URL}/auth/reissue`, {refreshToken:token},);
-        await EncryptedStorage.setItem('refreshToken', response.data.refreshToken,);
+        console.log(response.data)
+        await EncryptedStorage.setItem('refreshToken', response.data.data.refreshToken,);
         dispatch(
           userSlice.actions.setUser({
             name: "가나다",
-            accessToken: response.data.accessToken,
+            accessToken: response.data.data.accessToken,
           }),
         );
       } catch (error) {
         const errorResponse = (error as AxiosError<{message: string}>).response;
+        console.log(errorResponse.data.statusCode)
         if (errorResponse?.data.statusCode == 1070) {return Alert.alert('알림', '재로그인 하십시오');}
       }
     };
@@ -92,6 +94,6 @@ export default function AppInner() {
       />
     </Stack.Navigator>
   ) : (
-    <SignIn setState={setLoggedin}/>
+    <SignIn/>
   );
 }

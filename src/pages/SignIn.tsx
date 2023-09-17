@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, Pressable, Image, Alert } from 'react-native';
 import * as KakaoLogin from '@react-native-seoul/kakao-login'
 import { useAppDispatch } from '../store';
@@ -6,16 +6,54 @@ import userSlice from '../slices/user';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import Config from 'react-native-config'
 import axios, {AxiosError} from 'axios';
+import { GoogleSignin } from "@react-native-google-signin/google-signin";
+import auth from '@react-native-firebase/auth'
 interface SignInProps {
   setState:React.Dispatch<React.SetStateAction<boolean>>;
 }
-export default function SignIn({setState}:SignInProps) {
+export default function SignIn() {
   const [name, setName] = useState('');
+  const [id, setID] = useState('');
   const dispatch = useAppDispatch();
+  const LoginWithGoogle = async () => {
+    console.log('로그인 시도 중')
+    try {
+      const {idToken, scopes, serverAuthCode, user} = await GoogleSignin.signIn();
+      console.log(idToken)
+      console.log(user)
+      setName(user.name);
+      setID(user.id);
+      console.log(serverAuthCode)
+
+      const response = await fetch('https://oauth2.googleapis.com/token', {
+        method: 'POST',
+        body: JSON.stringify({
+          code: serverAuthCode,
+          client_id: Config.GOOGLE_CLIENT_ID,
+          client_secret: Config.GOOGLE_CLIENT_SECRET,
+          grant_type: 'authorization_code',
+          redirect_uri: 'http://localhost:8080/login'
+        })
+      })
+
+      const googleCredential = auth.GoogleAuthProvider.credential(idToken);
+      return auth().signInWithCredential(googleCredential);
+
+    } catch (error) {
+      const errorResponse = (error as AxiosError<{message: string}>).response;
+      console.error(errorResponse?.data);
+      // if (errorResponse?.data.statusCode == 1030) {
+        // console.log('회원가입 진행')
+        // console.log(errorResponse?.data.data.signToken);
+        // Signup(errorResponse?.data.data.signToken);
+      // }
+    }
+  }
   const LoginWithKaKao = async () => {
     const token = await KakaoLogin.login();
     const profile = await KakaoLogin.getProfile();
     setName(profile.nickname);
+    setID(profile.id);
     try {
       const response = await axios.post(`${Config.API_URL}/auth/login`, {
         oauthAccessToken: token.accessToken,
@@ -24,11 +62,15 @@ export default function SignIn({setState}:SignInProps) {
         fcmToken:"",
       });
       // 성공한 경우 LOGIN call
-      Login(response.data.refreshToken, response.data.accessToken);
+      Login(response.data.data.refreshToken, response.data.data.accessToken);
     } catch (error) {
       const errorResponse = (error as AxiosError<{message: string}>).response;
-      console.error(errorResponse?.data.statusCode);
-      if (errorResponse?.data.statusCode == 1030) {Signup(errorResponse?.data.data.signToken);}
+      // console.error(errorResponse?.data.statusCode);
+      if (errorResponse?.data.statusCode == 1030) {
+        console.log('회원가입 진행')
+        // console.log(errorResponse?.data.data.signToken);
+        Signup(errorResponse?.data.data.signToken);
+      }
     }
   };
 
@@ -42,10 +84,11 @@ export default function SignIn({setState}:SignInProps) {
         marketPolicy: true,
         fcmToken: '',
       });
-      console.log(response.data.accessToken);
-      console.log(response.data.refreshToken);
+      // console.log(response.data.data.accessToken);
+      // console.log(response.data.data.refreshToken);
       // LOGIN call
-      Login(response.data.refreshToken, response.data.accessToken);
+      Login(response.data.data.refreshToken, response.data.data.accessToken);
+      console.log('회원가입 완료');
 
     } catch(error) {
       const errorResponse = (error as AxiosError<{message: string}>).response;
@@ -55,15 +98,28 @@ export default function SignIn({setState}:SignInProps) {
   };
   const Login = async (refreshToken:string, accessToken:string) => {
     try {
-      await EncryptedStorage.setItem('refreshToken', refreshToken,);
       dispatch(
         userSlice.actions.setUser({
           name: name,
           accessToken: accessToken,
-        })
+          id: id,
+        }),
       );
-    } catch (error) {}
+      await EncryptedStorage.setItem('refreshToken', refreshToken,);
+      setName('');
+      setID('');
+      const token = await EncryptedStorage.getItem('refreshToken');
+      await console.log('로그인 완료')
+      await console.log('token', token)
+
+    } catch (error) {
+      const errorResponse = (error as AxiosError<{message: string}>).response;
+      console.log(errorResponse);
+    }
   };
+  useEffect(()=>{
+    GoogleSignin.configure({webClientId: Config.GOOGLE_CLIENT_ID});
+  },[]);
 
   return (
     <View style={styles.entire}>
@@ -72,7 +128,7 @@ export default function SignIn({setState}:SignInProps) {
         <Text style={styles.logoTxtMain}>tinqle</Text>
       </View>
       <View style={styles.loginView}>
-        <Pressable style={styles.loginBtnGoogle} onPress={() => setState(true)}>
+        <Pressable style={styles.loginBtnGoogle} onPress={LoginWithGoogle}>
           <Image style={styles.logoGoogle} source={require('../../assets/image/LogoGoogle.png')}/>
           <Text style={styles.loginBtnTxtGoogle}>Google로 계속하기</Text>
         </Pressable>
@@ -113,6 +169,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginVertical: 30,
+    paddingHorizontal: 16
   },
   loginBtnGoogle:{
     flex:1,
@@ -121,7 +178,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     marginBottom: 10,
     backgroundColor: '#FFFFFF',
-    width: '80%',
+    width: '100%',
     borderRadius: 5,
     elevation: 4,
   },
@@ -131,7 +188,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#FEE500',
-    width: '80%',
+    width: '100%',
     borderRadius: 5,
     elevation: 4,
 
