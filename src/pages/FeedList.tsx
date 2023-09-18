@@ -5,11 +5,8 @@ import { RootStackParamList } from '../../AppInner';
 import Feed from '../components/Feed';
 
 type FeedListScreenProps = NativeStackScreenProps<RootStackParamList, 'FeedList'>;
-interface ImsiProps {
-  setState:React.Dispatch<React.SetStateAction<boolean>>;
-}
 
-export default function FeedList({navigation}:FeedListScreenProps, {setState}:ImsiProps) {
+export default function FeedList({navigation}:FeedListScreenProps) {
   const mine = true;
   const emotionData = {
       heart:['가', '나'],
@@ -21,7 +18,7 @@ export default function FeedList({navigation}:FeedListScreenProps, {setState}:Im
   const move = useCallback(()=>{navigation.navigate('FeedDetail', {mine: mine, emotionData:emotionData, commentCnt:commentCnt})}, [navigation]);
   return (
     <View style={styles.entire}>
-      <Pressable onPress={() => setState(false)}>
+      <Pressable onPress={()=>navigation.navigate('SearchFriends')}>
         <Text>FeedList</Text>
       </Pressable>
       <Pressable onPress={move} style={{width: '100%', flex:1}}>

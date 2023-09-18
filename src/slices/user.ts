@@ -1,13 +1,8 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-  name:'',
   accessToken:'',
   id:'',
-  // oauthAccessToken: '',
-  // authorizationCode: "",
-  // socialType: "",
-  // fcmToken: "",
 };
 
 const userSlice = createSlice({
@@ -15,17 +10,12 @@ const userSlice = createSlice({
   initialState,
   reducers: {
     setUser(state, action) {
-      state.name = action.payload.name;
       state.accessToken = action.payload.accessToken;
       state.id = action.payload.id;
-      // state.oauthAccessToken = action.payload.oauthAccessToken;
-      // state.authorizationCode = action.payload.authorizationCode;
-      // state.socialType = action.payload.socialType;
-      // state.fcmToken = action.payload.fcmToken;
     },
-    setName(state, action) {
-      state.name = action.payload;
-    },
+    setToken(state, action) {
+      state.accessToken = action.payload.accessToken;
+    }
   },
   extraReducers: builder => {},
 });

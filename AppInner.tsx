@@ -37,27 +37,28 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export default function AppInner() {
   const dispatch = useAppDispatch();
-  const isLoggedIn = useSelector((state:RootState) => !!state.user.id);
+  const isLoggedIn = useSelector((state:RootState) => !!state.user.accessToken);
   useEffect(() => {
     const getRefreshTokenAgain = async () => {
       try {
+        // await EncryptedStorage.removeItem('refreshToken')
         const token = await EncryptedStorage.getItem('refreshToken');
         console.log(token)
         if (!token) {
+          console.log('no RefreshToken')
           return;
         }
         const response = await axios.post(`${Config.API_URL}/auth/reissue`, {refreshToken:token},);
         console.log(response.data)
-        await EncryptedStorage.setItem('refreshToken', response.data.data.refreshToken,);
         dispatch(
-          userSlice.actions.setUser({
-            name: "가나다",
+          userSlice.actions.setToken({
             accessToken: response.data.data.accessToken,
           }),
         );
+        await EncryptedStorage.setItem('refreshToken', response.data.data.refreshToken,);
       } catch (error) {
         const errorResponse = (error as AxiosError<{message: string}>).response;
-        console.log(errorResponse.data.statusCode)
+        console.log(errorResponse.data.statusCode);
         if (errorResponse?.data.statusCode == 1070) {return Alert.alert('알림', '재로그인 하십시오');}
       }
     };
@@ -83,6 +84,9 @@ export default function AppInner() {
       <Stack.Screen
         name="SearchFriends"
         component={SearchFriends}
+        options={{
+          title:'친구 추가하기',
+        }}
       />
       <Stack.Screen
         name="Setting"

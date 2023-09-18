@@ -17,9 +17,3 @@ export default function App() {
     </Provider>
   );
 }
-
-{/* <Drawer.Screen 
-  name={`Home`} 
-  children={
-    ({navigation})=>
-      <Home name={name} setName={setName} navigation={navigation}/>}/> */}

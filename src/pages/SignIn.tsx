@@ -8,11 +8,8 @@ import Config from 'react-native-config'
 import axios, {AxiosError} from 'axios';
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
 import auth from '@react-native-firebase/auth'
-interface SignInProps {
-  setState:React.Dispatch<React.SetStateAction<boolean>>;
-}
+
 export default function SignIn() {
-  const [name, setName] = useState('');
   const [id, setID] = useState('');
   const dispatch = useAppDispatch();
   const LoginWithGoogle = async () => {
@@ -21,7 +18,6 @@ export default function SignIn() {
       const {idToken, scopes, serverAuthCode, user} = await GoogleSignin.signIn();
       console.log(idToken)
       console.log(user)
-      setName(user.name);
       setID(user.id);
       console.log(serverAuthCode)
 
@@ -42,17 +38,11 @@ export default function SignIn() {
     } catch (error) {
       const errorResponse = (error as AxiosError<{message: string}>).response;
       console.error(errorResponse?.data);
-      // if (errorResponse?.data.statusCode == 1030) {
-        // console.log('회원가입 진행')
-        // console.log(errorResponse?.data.data.signToken);
-        // Signup(errorResponse?.data.data.signToken);
-      // }
     }
   }
   const LoginWithKaKao = async () => {
     const token = await KakaoLogin.login();
     const profile = await KakaoLogin.getProfile();
-    setName(profile.nickname);
     setID(profile.id);
     try {
       const response = await axios.post(`${Config.API_URL}/auth/login`, {
@@ -65,10 +55,8 @@ export default function SignIn() {
       Login(response.data.data.refreshToken, response.data.data.accessToken);
     } catch (error) {
       const errorResponse = (error as AxiosError<{message: string}>).response;
-      // console.error(errorResponse?.data.statusCode);
       if (errorResponse?.data.statusCode == 1030) {
         console.log('회원가입 진행')
-        // console.log(errorResponse?.data.data.signToken);
         Signup(errorResponse?.data.data.signToken);
       }
     }
@@ -84,8 +72,6 @@ export default function SignIn() {
         marketPolicy: true,
         fcmToken: '',
       });
-      // console.log(response.data.data.accessToken);
-      // console.log(response.data.data.refreshToken);
       // LOGIN call
       Login(response.data.data.refreshToken, response.data.data.accessToken);
       console.log('회원가입 완료');
@@ -100,13 +86,11 @@ export default function SignIn() {
     try {
       dispatch(
         userSlice.actions.setUser({
-          name: name,
           accessToken: accessToken,
           id: id,
         }),
       );
       await EncryptedStorage.setItem('refreshToken', refreshToken,);
-      setName('');
       setID('');
       const token = await EncryptedStorage.getItem('refreshToken');
       await console.log('로그인 완료')
