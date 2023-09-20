@@ -18,9 +18,6 @@ export default function FeedList({navigation}:FeedListScreenProps) {
   const move = useCallback(()=>{navigation.navigate('FeedDetail', {mine: mine, emotionData:emotionData, commentCnt:commentCnt})}, [navigation]);
   return (
     <View style={styles.entire}>
-      <Pressable onPress={()=>navigation.navigate('SearchFriends')}>
-        <Text>FeedList</Text>
-      </Pressable>
       <Pressable onPress={move} style={{width: '100%', flex:1}}>
         <Feed
           mine={mine}

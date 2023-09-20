@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Alert } from 'react-native'
+import { Pressable, View } from 'react-native'
 import {
   createNativeStackNavigator,
 } from '@react-navigation/native-stack';
@@ -17,6 +17,9 @@ import EncryptedStorage from "react-native-encrypted-storage";
 import axios, {AxiosError} from "axios";
 import Config from "react-native-config";
 import userSlice from "./src/slices/user";
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
+import AntDesign from 'react-native-vector-icons/AntDesign' 
+import Feather from 'react-native-vector-icons/Feather' 
 
 type emotionDataType = {
   heart: string[],
@@ -43,13 +46,11 @@ export default function AppInner() {
       try {
         // await EncryptedStorage.removeItem('refreshToken')
         const token = await EncryptedStorage.getItem('refreshToken');
-        console.log(token)
         if (!token) {
           console.log('no RefreshToken')
           return;
         }
         const response = await axios.post(`${Config.API_URL}/auth/reissue`, {refreshToken:token},);
-        console.log(response.data)
         dispatch(
           userSlice.actions.setToken({
             accessToken: response.data.data.accessToken,
@@ -58,8 +59,7 @@ export default function AppInner() {
         await EncryptedStorage.setItem('refreshToken', response.data.data.refreshToken,);
       } catch (error) {
         const errorResponse = (error as AxiosError<{message: string}>).response;
-        console.log(errorResponse.data.statusCode);
-        if (errorResponse?.data.statusCode == 1070) {return Alert.alert('알림', '재로그인 하십시오');}
+        if (errorResponse?.data.statusCode == 1070) {console.log('reLogin');;}
       }
     };
     getRefreshTokenAgain();
@@ -69,6 +69,33 @@ export default function AppInner() {
       <Stack.Screen
         name="FeedList"
         component={FeedList}
+        options={({navigation}) => ({
+          title:'tinqle',
+          headerTitleAlign:'center',
+          headerLeft: () => (
+            <Pressable onPress={()=>navigation.navigate('SearchFriends')}>
+              <MaterialIcons name="person-add-alt" size={24} color={'#848484'} />
+            </Pressable>
+          ),
+          headerRight: () => (
+            <View style={{flexDirection:'row'}}>
+              <Pressable style={{marginRight:12}}>
+                <Feather name="bell" size={24} color={'#848484'} />
+              </Pressable>
+              <Pressable style={{marginRight:3}}>
+              <Feather name="smile" size={24} color={'#848484'} />
+              </Pressable>
+            </View>
+          ),
+          headerStyle:{
+
+          },
+          headerTitleStyle:{
+            color: '#FFB443',
+            fontWeight: 'bold',
+            fontSize:25
+          },
+        })}
       />
       <Stack.Screen
         name="FeedDetail"
@@ -84,9 +111,25 @@ export default function AppInner() {
       <Stack.Screen
         name="SearchFriends"
         component={SearchFriends}
-        options={{
+        options={({navigation}) => ({
           title:'친구 추가하기',
-        }}
+          headerTitleAlign:'center',
+          headerTitleStyle:{
+            color:'#222222',
+            fontSize:15,
+            fontWeight:'600'
+          },
+          headerRight: () => (
+            <Pressable onPress={()=>(console.log('Press Setting'))}>
+              <Feather name="settings" size={24} color={'#848484'} />
+            </Pressable>
+          ),
+          headerLeft: () => (
+            <Pressable onPress={()=>(navigation.goBack())}>
+              <AntDesign name="arrowleft" size={24} color={'#848484'} />
+            </Pressable>
+          ),
+        })}
       />
       <Stack.Screen
         name="Setting"
