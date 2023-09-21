@@ -14,11 +14,11 @@
       },
       "oauth_client": [
         {
-          "client_id": "1036385861525-315ilidm8b0ua0kbl68msqo4gtmu2qf7.apps.googleusercontent.com",
+          "client_id": "1036385861525-l765cpjbk7msu7ofmdrhc3ptrprkq83u.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.tinqle",
-            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+            "certificate_hash": "9c213e29103fdb7501aa3280860538297beaf81e"
           }
         },
         {

@@ -15,29 +15,40 @@ export default function SignIn() {
   const LoginWithGoogle = async () => {
     console.log('로그인 시도 중')
     try {
-      const {idToken, scopes, serverAuthCode, user} = await GoogleSignin.signIn();
-      console.log(idToken)
-      console.log(user)
-      setID(user.id);
-      console.log(serverAuthCode)
+      await GoogleSignin.hasPlayServices();
+      const userInfo = await GoogleSignin.signIn();
 
-      const response = await fetch('https://oauth2.googleapis.com/token', {
-        method: 'POST',
-        body: JSON.stringify({
-          code: serverAuthCode,
-          client_id: Config.GOOGLE_CLIENT_ID,
-          client_secret: Config.GOOGLE_CLIENT_SECRET,
-          grant_type: 'authorization_code',
-          redirect_uri: 'http://localhost:8080/login'
-        })
-      })
+      // const response = await fetch('https://oauth2.googleapis.com/token', {
+      //   method: 'POST',
+      //   body: JSON.stringify({
+      //     code: userInfo.serverAuthCode,
+      //     client_id: Config.GOOGLE_CLIENT_ID,
+      //     client_secret: Config.GOOGLE_CLIENT_SECRET,
+      //     grant_type: 'authorization_code',
+      //     redirect_uri: 'https://tinqle-8706b.firebaseapp.com/__/auth/handler'
+      //   })
+      // })
+      // const data = await response.json();
+      // setID(userInfo.user.id);
 
-      const googleCredential = auth.GoogleAuthProvider.credential(idToken);
-      return auth().signInWithCredential(googleCredential);
+      const googleCredential = auth.GoogleAuthProvider.credential(userInfo.idToken);
+      auth().signInWithCredential(googleCredential);
+      // console.log(userInfo.serverAuthCode);
+      const res = await axios.post(`${Config.API_URL}/auth/login`, {
+        oauthAccessToken: '',
+        authorizationCode: userInfo.serverAuthCode,
+        socialType:"GOOGLE",
+        fcmToken:"",
+      });
+      // console.log(res.data)
+      Login(res.data.data.refreshToken, res.data.data.accessToken);
 
     } catch (error) {
       const errorResponse = (error as AxiosError<{message: string}>).response;
-      console.error(errorResponse?.data);
+      if (errorResponse?.data.statusCode == 1030) {
+        console.log('회원가입 진행')
+        Signup(errorResponse?.data.data.signToken);
+      }
     }
   }
   const LoginWithKaKao = async () => {
@@ -93,8 +104,8 @@ export default function SignIn() {
       await EncryptedStorage.setItem('refreshToken', refreshToken,);
       setID('');
       const token = await EncryptedStorage.getItem('refreshToken');
-      await console.log('로그인 완료')
-      await console.log('token', token)
+      console.log('로그인 완료')
+      // console.log('token', token)
 
     } catch (error) {
       const errorResponse = (error as AxiosError<{message: string}>).response;
@@ -102,7 +113,7 @@ export default function SignIn() {
     }
   };
   useEffect(()=>{
-    GoogleSignin.configure({webClientId: Config.GOOGLE_CLIENT_ID});
+    GoogleSignin.configure({webClientId: Config.GOOGLE_CLIENT_ID, offlineAccess: true});
   },[]);
 
   return (

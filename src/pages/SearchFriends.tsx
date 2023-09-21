@@ -22,6 +22,7 @@ export default function SearchFriends() {
   const [otherUser, setOtherUser] = useState({accountId:-1, nickname:'', isFriend:0})
   const [reset, setReset] = useState(false);
   const [whichPopup, setWhichPopup] = useState('');
+  const [popupName, setPopupName] = useState('');
   const token = useSelector((state:RootState) => state.user.accessToken);
   const refreshOrNot = async () => {
     try {
@@ -93,18 +94,26 @@ export default function SearchFriends() {
   };
   const askFriend = async () => {
     try {
-      const response = await axios.post(`${Config.API_URL}/friendships/request`, {headers:{Authorization: `Bearer ${token}`}, body:{
+      const response = await axios.post(`${Config.API_URL}/friendships/request`, {
         accountTargetId:otherUser.accountId, message:message
-      }},);
+      },
+      {
+        headers:{Authorization: `Bearer ${token}`},
+      });
       console.log(response.data)
       // popup: 이도님께 친구 요청을 보냈어요!
       setWhichPopup('send');
+      setPopupName(otherUser.nickname);
       setOtherUser({accountId:-1, nickname:'', isFriend:0})
     } catch (error) {
       const errorResponse = (error as AxiosError<{message: string}>).response;
       console.log(errorResponse.data);
       if (errorResponse?.data.statusCode == 1000) {
         if (await refreshOrNot()) setReset(!reset);
+      }
+      if (errorResponse?.data.statusCode == 3010) {
+        setWhichPopup('requested');
+        setOtherUser({accountId:-1, nickname:'', isFriend:0});
       }
     }
   };
@@ -176,14 +185,20 @@ export default function SearchFriends() {
       {whichPopup === 'send' && <ToastScreen
         height = {21}
         marginBottom={48}
-        onClose={()=>setWhichPopup('')}
-        message={`${otherUser.nickname}님께 친구 요청을 보냈어요!`}
+        onClose={()=>{setWhichPopup(''); setPopupName('');}}
+        message={`${popupName}님께 친구 요청을 보냈어요!`}
       />}
       {whichPopup === 'Me' && <ToastScreen 
         height={21}
         marginBottom={48}
         onClose={()=>setWhichPopup('')}
         message="나는 나의 영원한 친구입니다!"
+      />}
+      {whichPopup === 'requested' && <ToastScreen 
+        height={21}
+        marginBottom={48}
+        onClose={()=>setWhichPopup('')}
+        message='이미 친구 요청을 보냈어요!'
       />}
     </Pressable>
   );

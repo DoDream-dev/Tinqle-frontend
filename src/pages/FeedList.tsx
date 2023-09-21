@@ -38,6 +38,6 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     width: '100%',
-    backgroundColor: 'yellow'
+    // backgroundColor: 'yellow'
   },
 });

@@ -12,7 +12,6 @@ const ToastScreen = ({message, height, marginBottom, onClose}:ToastScreenProps) 
       setIsToastVisible(true);
       onClose(true);
     }, 2000);
-
     Animated
       .timing(fadeAnim, {
         toValue: isToastVisible ? 1 : 0,
