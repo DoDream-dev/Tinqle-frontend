@@ -105,6 +105,7 @@ export default function SearchFriends() {
       setWhichPopup('send');
       setPopupName(otherUser.nickname);
       setOtherUser({accountId:-1, nickname:'', isFriend:0})
+      setMessage('');
     } catch (error) {
       const errorResponse = (error as AxiosError<{message: string}>).response;
       console.log(errorResponse.data);
@@ -114,6 +115,7 @@ export default function SearchFriends() {
       if (errorResponse?.data.statusCode == 3010) {
         setWhichPopup('requested');
         setOtherUser({accountId:-1, nickname:'', isFriend:0});
+        setMessage('');
       }
     }
   };
@@ -274,7 +276,8 @@ const styles = StyleSheet.create({
   commentInput:{
     backgroundColor: '#F7F7F7',
     height: 56,
-    borderRadius: 10
+    borderRadius: 10,
+    paddingHorizontal: 10
   },
   searchViewName:{
     color: '#222222',

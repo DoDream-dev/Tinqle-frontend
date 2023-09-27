@@ -52,6 +52,7 @@ export default function SignIn() {
     }
   }
   const LoginWithKaKao = async () => {
+    // const token = await KakaoLogin.loginWithKakaoAccount();
     const token = await KakaoLogin.login();
     const profile = await KakaoLogin.getProfile();
     setID(profile.id);

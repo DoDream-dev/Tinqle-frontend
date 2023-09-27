@@ -6,7 +6,9 @@ import {
 import FeedList from "./src/pages/FeedList";
 import FeedDetail from "./src/pages/FeedDetail";
 import Profile from "./src/pages/Profile";
+import MyFriendList from "./src/pages/MyFriendList";
 import SearchFriends from "./src/pages/SearchFriends";
+import NoteBox from "./src/pages/NoteBox";
 import Setting from "./src/pages/Setting";
 import Notis from "./src/pages/Notis";
 import SignIn from "./src/pages/SignIn";
@@ -30,8 +32,10 @@ type emotionDataType = {
 export type RootStackParamList = {
   FeedList: undefined;
   FeedDetail: {mine:boolean, emotionData:emotionDataType, commentCnt:number};
-  Profile: undefined;
+  Profile: {mine:boolean, accountId:number};
+  MyFriendList: undefined;
   SearchFriends: undefined;
+  NoteBox: undefined;
   Setting: undefined;
   Notis: undefined;
 };
@@ -44,7 +48,7 @@ export default function AppInner() {
   useEffect(() => {
     const getRefreshTokenAgain = async () => {
       try {
-        // await EncryptedStorage.removeItem('refreshToken')
+        await EncryptedStorage.removeItem('refreshToken')
         const token = await EncryptedStorage.getItem('refreshToken');
         if (!token) {
           console.log('no RefreshToken')
@@ -82,7 +86,7 @@ export default function AppInner() {
               <Pressable style={{marginRight:12}}>
                 <Feather name="bell" size={24} color={'#848484'} />
               </Pressable>
-              <Pressable style={{marginRight:3}}>
+              <Pressable style={{marginRight:3}} onPress={()=>navigation.navigate('Profile', {mine:true, accountId:undefined})}>
               <Feather name="smile" size={24} color={'#848484'} />
               </Pressable>
             </View>
@@ -107,6 +111,25 @@ export default function AppInner() {
       <Stack.Screen
         name="Profile"
         component={Profile}
+        options={({navigation}) => ({
+          title:'프로필',
+          headerTitleAlign:'center',
+          headerTitleStyle:{
+            color:'#222222',
+            fontSize:15,
+            fontWeight:'600'
+          },
+          headerRight: () => (
+            <Pressable onPress={()=>(navigation.navigate('Setting'))}>
+              <Feather name="settings" size={24} color={'#848484'} />
+            </Pressable>
+          ),
+          headerLeft: () => (
+            <Pressable onPress={()=>(navigation.goBack())}>
+              <AntDesign name="arrowleft" size={24} color={'#848484'} />
+            </Pressable>
+          ),
+        })}
       />
       <Stack.Screen
         name="SearchFriends"
@@ -119,11 +142,42 @@ export default function AppInner() {
             fontSize:15,
             fontWeight:'600'
           },
-          headerRight: () => (
-            <Pressable onPress={()=>(console.log('Press Setting'))}>
-              <Feather name="settings" size={24} color={'#848484'} />
+          headerLeft: () => (
+            <Pressable onPress={()=>(navigation.goBack())}>
+              <AntDesign name="arrowleft" size={24} color={'#848484'} />
             </Pressable>
           ),
+        })}
+      />
+      <Stack.Screen 
+        name="MyFriendList"
+        component={MyFriendList}
+        options={({navigation}) => ({
+          title:'친구 관리',
+          headerTitleAlign:'center',
+          headerTitleStyle:{
+            color:'#222222',
+            fontSize:15,
+            fontWeight:'600'
+          },
+          headerLeft: () => (
+            <Pressable onPress={()=>(navigation.goBack())}>
+              <AntDesign name="arrowleft" size={24} color={'#848484'} />
+            </Pressable>
+          ),
+        })}
+      />
+      <Stack.Screen 
+        name="NoteBox"
+        component={NoteBox}
+        options={({navigation}) => ({
+          title:'익명 쪽지함',
+          headerTitleAlign:'center',
+          headerTitleStyle:{
+            color:'#222222',
+            fontSize:15,
+            fontWeight:'600'
+          },
           headerLeft: () => (
             <Pressable onPress={()=>(navigation.goBack())}>
               <AntDesign name="arrowleft" size={24} color={'#848484'} />
@@ -134,6 +188,20 @@ export default function AppInner() {
       <Stack.Screen
         name="Setting"
         component={Setting}
+        options={({navigation}) => ({
+          title:'설정',
+          headerTitleAlign:'center',
+          headerTitleStyle:{
+            color:'#222222',
+            fontSize:15,
+            fontWeight:'600'
+          },
+          headerLeft: () => (
+            <Pressable onPress={()=>(navigation.goBack())}>
+              <AntDesign name="arrowleft" size={24} color={'#848484'} />
+            </Pressable>
+          ),
+        })}
       />
       <Stack.Screen
         name="Notis"
