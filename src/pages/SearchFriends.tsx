@@ -1,6 +1,6 @@
 import axios, {AxiosError} from 'axios';
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, TextInput, Pressable, Image, Keyboard, Modal, DevSettings } from 'react-native';
+import { View, Text, StyleSheet, TextInput, Pressable, Image, Keyboard, DevSettings } from 'react-native';
 import Config from 'react-native-config';
 import { useSelector } from 'react-redux';
 import { RootState } from '../store/reducer';
@@ -10,7 +10,7 @@ import { useAppDispatch } from '../store';
 import userSlice from '../slices/user';
 import EncryptedStorage from "react-native-encrypted-storage";
 import ToastScreen from '../components/ToastScreen';
-
+import Modal from 'react-native-modal';
 
 export default function SearchFriends() {
   const dispatch = useAppDispatch();
@@ -145,14 +145,17 @@ export default function SearchFriends() {
           <Image style={styles.copyIcon} source={require('../../assets/image/copyIcon.png')}/>
         </Pressable>
       </View>
-      {/* !!otherUser.nickname */}
-      <Modal transparent={true} visible={!!otherUser.nickname} style={{flex: 1, paddingHorizontal: 36}}>
+      <Modal isVisible={!!otherUser.nickname} avoidKeyboard={true} backdropColor='#222222' backdropOpacity={0.5}>
         {otherUser.isFriend == 2 && <Pressable style={styles.modalBGView} onPress={()=>Keyboard.dismiss()}>
           <View style={styles.modalView}>
             <View>
               <Text style={styles.searchViewName}>{otherUser.nickname}</Text>
               <Text style={styles.searchViewExplain}>친구가 나를 알아볼 수 있도록 인사를 건네주세요!</Text>
-              <TextInput style={styles.commentInput} value={message} onChangeText={(text:string) => setMessage(text)}/>
+              <TextInput 
+                style={styles.commentInput}
+                value={message}
+                onChangeText={(text:string) => setMessage(text)}
+              />
             </View>
             <View style={styles.btnView}>
               <Pressable style={styles.searchViewCloseBtn} onPress={()=>setOtherUser({accountId:-1, nickname:'', isFriend:0})}>
@@ -165,18 +168,18 @@ export default function SearchFriends() {
           </View>
         </Pressable>}
         {otherUser.isFriend == 1 && <Pressable style={styles.modalBGView} onPress={()=>Keyboard.dismiss()}>
-          <View style={styles.modalViewFriend}>
-            <View>
-              <Text style={styles.searchViewName}>{otherUser.nickname}</Text>
-              <Text style={styles.searchViewExplain}>이미 나와 친구 사이네요!</Text>
+            <View style={styles.modalView}>
+              <View>
+                <Text style={styles.searchViewName}>{otherUser.nickname}</Text>
+                <Text style={styles.searchViewExplain}>이미 나와 친구 사이네요!</Text>
+              </View>
+              <View style={styles.btnViewFriend}>
+                <Pressable style={styles.searchViewCloseBtnFriend} onPress={()=>setOtherUser({accountId:-1, nickname:'', isFriend:0})}>
+                  <Text style={styles.searchViewAskFriendTxt}>닫기</Text>
+                </Pressable>
+              </View>
             </View>
-            <View style={styles.btnViewFriend}>
-              <Pressable style={styles.searchViewCloseBtnFriend} onPress={()=>setOtherUser({accountId:-1, nickname:'', isFriend:0})}>
-                <Text style={styles.searchViewAskFriendTxt}>닫기</Text>
-              </Pressable>
-            </View>
-          </View>
-        </Pressable>}
+          </Pressable>}
       </Modal>
       {whichPopup === 'noCode' && <ToastScreen
         height={21}
@@ -214,6 +217,14 @@ const styles = StyleSheet.create({
     paddingTop: 20,
     backgroundColor: '#F7F7F7'
   },
+  nonempty:{
+    flex:4,
+    justifyContent:'flex-end',
+    alignItems:'center'
+  },
+  empty:{
+    flex:3
+  },
   searchView:{
     width: '100%',
     flexDirection: 'row',
@@ -249,29 +260,16 @@ const styles = StyleSheet.create({
   },
   modalBGView:{
     width:"100%", 
-    height:'100%', 
-    backgroundColor: 'rgba(34, 34, 34, 0.31)'
+    alignItems:'center',
+    paddingHorizontal:36,
   },
   modalView:{
     backgroundColor: '#FFFFFF',
     borderRadius: 10,
-    height: 225,
-    marginTop: 178,
-    marginHorizontal: 36,
     justifyContent: 'center',
     paddingHorizontal: 16,
     paddingBottom: 24,
-
-  },
-  modalViewFriend:{
-    backgroundColor: '#FFFFFF',
-    borderRadius: 10,
-    height: 161,
-    marginTop: 178,
-    marginHorizontal: 36,
-    justifyContent: 'center',
-    paddingHorizontal: 16,
-    paddingBottom: 24,
+    width:'100%'
   },
   commentInput:{
     backgroundColor: '#F7F7F7',
@@ -342,7 +340,8 @@ const styles = StyleSheet.create({
     borderColor: '#FFB443',
     borderRadius: 10,
     height: 44,
-    width:'40%',
+    // flex:1,
+    width:120,
     justifyContent: 'center'
   },
 });

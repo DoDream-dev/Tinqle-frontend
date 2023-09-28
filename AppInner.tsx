@@ -189,13 +189,14 @@ export default function AppInner() {
         name="Setting"
         component={Setting}
         options={({navigation}) => ({
-          title:'설정',
+          title:'',
           headerTitleAlign:'center',
           headerTitleStyle:{
             color:'#222222',
             fontSize:15,
             fontWeight:'600'
           },
+          headerShadowVisible:false,
           headerLeft: () => (
             <Pressable onPress={()=>(navigation.goBack())}>
               <AntDesign name="arrowleft" size={24} color={'#848484'} />

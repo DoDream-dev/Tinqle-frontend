@@ -1,7 +1,9 @@
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, StyleSheet, Pressable, Modal, TextInput, Keyboard, Image } from 'react-native';
-import MaterialCommunity from 'react-native-vector-icons/MaterialCommunityIcons'
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { View, Text, StyleSheet, Pressable, TextInput, Keyboard, Image } from 'react-native';
+import MaterialCommunity from 'react-native-vector-icons/MaterialCommunityIcons';
+import Modal from'react-native-modal';
+import ToastScreen from '../components/ToastScreen';
 import { RootStackParamList } from '../../AppInner';
 import { useAppDispatch } from '../store';
 import { RootState } from '../store/reducer';
@@ -9,6 +11,7 @@ import { useSelector } from 'react-redux';
 import userSlice from '../slices/user';
 import axios, { AxiosError } from 'axios';
 import Config from 'react-native-config';
+import { useFocusEffect } from '@react-navigation/native';
 
 type ProfileScreenProps = NativeStackScreenProps<RootStackParamList, 'Profile'>;
 
@@ -20,18 +23,21 @@ export default function Profile({navigation, route}:ProfileScreenProps) {
   const refName = useRef();
   const [changeName, setChangeName] = useState(false);
   const [changeStatus, setChangeStatus] = useState(false);
+  const [writeNote, setWriteNote] = useState(false);
   const [nameIN, setNameIN] = useState('');
-
+  const [note, setNote] = useState('');
+  const [popup, setPopup] = useState(false);
   const [status, setStatus] = useState('');
   const [name, setName] = useState('');
+  const [my, setMy] = useState(route.params.mine);
   useEffect(() => {
-    if (mine) {
+    if (my) {
       const getMyProfile = async () => {
         try {
           const response = await axios.get(`${Config.API_URL}/accounts/me`, {headers:{Authorization:`Bearer ${token}`}});
           console.log(response.data)
           setName(response.data.data.nickname);
-          setNameIN(name);
+          setNameIN(response.data.data.nickname);
           setStatus(response.data.data.status.toLowerCase());
         } catch (error) {
           const errorResponse = (error as AxiosError<{message: string}>).response;
@@ -44,17 +50,26 @@ export default function Profile({navigation, route}:ProfileScreenProps) {
       const getProfile = async () => {
         try {
           const response = await axios.get(`${Config.API_URL}/accounts/${accountId}/profile`, {headers:{Authorization:`Bearer ${token}`}});
+          console.log(1)
           console.log(response.data)
           setName(response.data.data.nickname);
+          setNameIN(response.data.data.nickname);
           setStatus(response.data.data.status.toLowerCase());
         } catch (error) {
           const errorResponse = (error as AxiosError<{message: string}>).response;
           console.log(errorResponse);
         }
       };
+      
       getProfile();
     }
-  }, [name]);
+  }, [name, status, my]);
+
+  useFocusEffect(
+    useCallback(()=>{
+      setMy(mine);
+    },[mine])
+  );
 
   const postStatus = async (stat:string) => {
     if (stat == status) {return;}
@@ -70,7 +85,7 @@ export default function Profile({navigation, route}:ProfileScreenProps) {
 
   const rename = async (text:string, accountId:number|undefined) => {
     if (text === name) return;
-    if (mine) {
+    if (my) {
       try {
         const response = await axios.put(`${Config.API_URL}/accounts/me/nickname/${text}`, {nickname:text}, {headers:{Authorization: `Bearer ${token}`}});
         setName(response.data.data.nickname);
@@ -96,11 +111,24 @@ export default function Profile({navigation, route}:ProfileScreenProps) {
       }
     }
   };
+
+  const sendNote = async () => {
+    try {
+      // const response = await axios
+      console.log('send Note');
+      setWriteNote(false);
+      setPopup(true);
+    } catch (error) {
+      const errorResponse = (error as AxiosError<{message: string}>).response;
+      console.log(errorResponse.data);
+    }
+    setNote('');
+  };
   return (
     <View style={styles.entire}>
       <View style={styles.profileView}>
         <View style={styles.status}>
-          <Pressable style={styles.statusBtn} onPress={()=>setChangeStatus(true)} disabled={!mine}>
+          <Pressable style={styles.statusBtn} onPress={()=>setChangeStatus(true)} disabled={!my}>
             {status == 'smile' && <Image style={{height:90, width:90}} source={require('../../assets/image/status01smile.png')} />}
             {status == 'happy' && <Image style={{height:90, width:90}} source={require('../../assets/image/status02happy.png')} />}
             {status == 'sad' && <Image style={{height:90, width:90}} source={require('../../assets/image/status03sad.png')} />}
@@ -122,46 +150,48 @@ export default function Profile({navigation, route}:ProfileScreenProps) {
           </Pressable>
           <View style={styles.nameView}>
             <Text style={styles.nameTxt}>{name}</Text>
-            {mine && <Pressable style={styles.changeNameBtn} onPress={()=>{setChangeName(true);}}>
+            <Pressable style={styles.changeNameBtn} onPress={()=>{setChangeName(true);}}>
               <MaterialCommunity name='pencil-outline' size={14} color={'#848484'} />
-            </Pressable>}
-            {!mine && <Pressable style={styles.changeNameBtn} onPress={()=>setChangeName(true)}>
-              <MaterialCommunity name='pencil-outline' size={14} color={'#848484'} />
-            </Pressable>}
+            </Pressable>
           </View>
         </View>
         <View style={styles.btnView}>
-          {mine && <Pressable style={styles.manageFriendBtn} onPress={()=>navigation.navigate('MyFriendList')}>
+          {my && <Pressable style={styles.manageFriendBtn} onPress={()=>navigation.navigate('MyFriendList')}>
             <Text style={styles.manageFriendBtnTxt}>친구 관리</Text>
           </Pressable>}
-          {mine ? <Pressable style={styles.noteBoxBtn} onPress={()=>navigation.navigate('NoteBox')}>
+          {my ? <Pressable style={styles.noteBoxBtn} onPress={()=>navigation.navigate('NoteBox')}>
             <Text style={styles.noteBoxBtnTxt}>익명 쪽지함</Text>
           </Pressable>
-          : <Pressable style={styles.sendNoteBtn}>
+          : <Pressable style={styles.sendNoteBtn} onPress={()=>setWriteNote(true)}>
             <Text style={styles.noteBoxBtnTxt}>익명 쪽지 보내기</Text>  
           </Pressable>}
         </View>
       </View>
-      <Modal transparent={true} visible={changeName} style={{}}>
-        <Pressable style={styles.modalBG} onPress={()=>Keyboard.dismiss()}>
+      <Modal isVisible={changeName} avoidKeyboard={true} backdropColor='#222222' backdropOpacity={0.5}>
+        <Pressable style={styles.modalBGView} onPress={()=>Keyboard.dismiss()}>
           <View style={styles.modalView}>
-            {mine && <Text style={styles.modalTitleTxt}>내 이름 바꾸기</Text>}
-            {!mine && <Text style={styles.modalTitleTxt}>친구 이름 바꾸기</Text>}
-            <TextInput 
-              style={styles.nameChangeTxtInput}
-              onChangeText={(text:string)=>{setNameIN(text)}}
-              blurOnSubmit={true}
-              maxLength={20}
-              value={nameIN}
-              autoFocus={true}
-              // onSubmitEditing={}
-            />
+            {my && <Text style={styles.modalTitleTxt}>내 이름 바꾸기</Text>}
+            {!my && <Text style={styles.modalTitleTxt}>친구 이름 바꾸기</Text>}
+            <View style={styles.namechange}>
+              <TextInput 
+                style={styles.nameChangeTxtInput}
+                onChangeText={(text:string)=>{setNameIN(text)}}
+                blurOnSubmit={true}
+                maxLength={20}
+                value={nameIN}
+                autoFocus={true}
+                onSubmitEditing={()=>{
+                  if (my) {rename(nameIN, undefined);}
+                  else {rename(nameIN, accountId);}
+                }}
+              />
+            </View>
             <View style={styles.modalBtnView}>
-              <Pressable style={styles.manageFriendBtn} onPress={()=>setChangeName(false)}>
+              <Pressable style={styles.manageFriendBtn} onPress={()=>{setChangeName(false); setNameIN(name);}}>
                 <Text style={styles.manageFriendBtnTxt}>취소</Text>
               </Pressable>
               <Pressable style={styles.noteBoxBtn} onPress={()=>{
-                if (mine) {rename(nameIN, undefined);}
+                if (my) {rename(nameIN, undefined);}
                 else {rename(nameIN, accountId);}
               }}>
                 <Text style={styles.noteBoxBtnTxt}>완료</Text>
@@ -170,8 +200,8 @@ export default function Profile({navigation, route}:ProfileScreenProps) {
           </View>
         </Pressable>
       </Modal>
-      <Modal transparent={true} visible={changeStatus} style={{}}>
-        <Pressable style={styles.modalBG} onPress={()=>setChangeStatus(false)}>
+      <Modal isVisible={changeStatus} avoidKeyboard={true} backdropColor='#222222' backdropOpacity={0.5}>
+        <Pressable style={styles.modalBGView} onPress={()=>setChangeStatus(false)}>
           <View style={styles.modalView2}>
             <Pressable onPress={()=>{setStatus('smile'); setChangeStatus(false); postStatus('smile');}} style={status == 'smile' ? styles.statusSelected : styles.statusSelect}>
               <Image style={styles.statusImg} source={require('../../assets/image/status01smile.png')}/>
@@ -230,6 +260,40 @@ export default function Profile({navigation, route}:ProfileScreenProps) {
           </View>
         </Pressable>
       </Modal>
+      <Modal isVisible={writeNote} avoidKeyboard={true} backdropColor='#222222' backdropOpacity={0.5}>
+        <Pressable style={styles.modalBGView} onPress={()=>Keyboard.dismiss()}>
+          <View style={styles.modalView}>
+            <Text style={styles.modalTitleTxt}>익명 쪽지 보내기</Text>
+            <View style={styles.namechange}>
+              <TextInput 
+                style={styles.noteTxtInput}
+                onChangeText={(text:string)=>{setNote(text)}}
+                blurOnSubmit={true}
+                maxLength={100}
+                value={note}
+                autoFocus={true}
+                onSubmitEditing={()=>{
+                  Keyboard.dismiss();
+                }}
+              />
+            </View>
+            <View style={styles.modalBtnView}>
+              <Pressable style={styles.manageFriendBtn} onPress={()=>{setWriteNote(false);}}>
+                <Text style={styles.manageFriendBtnTxt}>취소</Text>
+              </Pressable>
+              <Pressable style={styles.noteBoxBtn} onPress={()=>{sendNote()}}>
+                <Text style={styles.noteBoxBtnTxt}>완료</Text>
+              </Pressable>
+            </View>
+          </View>
+        </Pressable>
+      </Modal>
+      {popup && <ToastScreen
+        height={21}
+        marginBottom={48}
+        onClose={()=>setPopup(false)}
+        message={name + " 님께 쪽지를 전해드렸어요!"}
+      />}
     </View>
   );
 }
@@ -246,11 +310,11 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
     borderRadius: 10,
     width: '100%',
-    height: 300
   },
   status:{
     paddingTop: 40,
     paddingBottom: 16,
+    alignItems:'center'
   },
   statusBtn:{
     justifyContent: 'center',
@@ -271,12 +335,14 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     fontSize:22,
     marginRight:2,
+    marginLeft:16
   },
   changeNameBtn:{},
   btnView:{
     flexDirection: 'row',
     justifyContent: 'center',
     paddingHorizontal: 48,
+    paddingBottom:40,
   },
   manageFriendBtn:{
     flex:1,
@@ -322,30 +388,26 @@ const styles = StyleSheet.create({
     fontSize:15,
     fontWeight:'600'
   },
-  modalBG:{
+  modalBGView:{
     width:"100%", 
-    height:'100%', 
-    backgroundColor: 'rgba(34, 34, 34, 0.31)',
-    alignItems: 'center'
+    alignItems:'center',
+    paddingHorizontal:36,
   },
   modalView:{
     backgroundColor: '#FFFFFF',
     borderRadius: 10,
-    // height: 225,
-    marginTop: 209,
-    marginHorizontal: 36,
     justifyContent: 'center',
     alignItems:'center',
     paddingTop: 30,
     paddingHorizontal: 16,
     paddingBottom: 24,
+    // width:'100%'
   },
   modalView2:{
     backgroundColor: '#FFFFFF',
     borderRadius: 10,
     width:303,
     height: 580,
-    marginTop: 116,
     marginHorizontal: 36,
     justifyContent: 'space-between',
     alignItems:'center',
@@ -363,19 +425,38 @@ const styles = StyleSheet.create({
     fontWeight:'600',
     marginBottom:20
   },
+  namechange:{
+    width:'100%',
+    flexDirection:'row',
+    // backgroundColor:'yellow',
+  },
   nameChangeTxtInput:{
+    width:'100%',
     fontSize:15,
     fontWeight:'400',
     color:'#222222',
     borderRadius: 5,
     backgroundColor:'#F7F7F7',
-    width:'100%',
     height:40,
-    paddingLeft:10,
+    paddingHorizontal:10,
     marginBottom:20
+  },
+  noteTxtInput:{
+    width:'100%',
+    fontSize:15,
+    fontWeight:'400',
+    color:'#222222',
+    borderRadius: 5,
+    backgroundColor:'#F7F7F7',
+    height:120,
+    paddingHorizontal:10,
+    marginBottom:20,
+    textAlignVertical:'top'
   },
   modalBtnView:{
     flexDirection:'row',
+    width:'100%',
+    // backgroundColor:'pink'
   },
   statusSelect:{
     borderRadius: 30,
