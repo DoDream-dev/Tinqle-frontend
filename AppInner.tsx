@@ -19,9 +19,10 @@ import EncryptedStorage from "react-native-encrypted-storage";
 import axios, {AxiosError} from "axios";
 import Config from "react-native-config";
 import userSlice from "./src/slices/user";
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
-import AntDesign from 'react-native-vector-icons/AntDesign' 
-import Feather from 'react-native-vector-icons/Feather' 
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import AntDesign from 'react-native-vector-icons/AntDesign';
+import Feather from 'react-native-vector-icons/Feather';
+import SplashScreen from "react-native-splash-screen";
 
 type emotionDataType = {
   heart: string[],
@@ -32,7 +33,7 @@ type emotionDataType = {
 export type RootStackParamList = {
   FeedList: undefined;
   FeedDetail: {mine:boolean, emotionData:emotionDataType, commentCnt:number};
-  Profile: {mine:boolean, accountId:number};
+  Profile: {whose:number, accountId:number};
   MyFriendList: undefined;
   SearchFriends: undefined;
   NoteBox: undefined;
@@ -45,6 +46,9 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 export default function AppInner() {
   const dispatch = useAppDispatch();
   const isLoggedIn = useSelector((state:RootState) => !!state.user.accessToken);
+  useEffect(() => {
+    SplashScreen.hide();
+  }, []);
   useEffect(() => {
     const getRefreshTokenAgain = async () => {
       try {
@@ -86,7 +90,7 @@ export default function AppInner() {
               <Pressable style={{marginRight:12}}>
                 <Feather name="bell" size={24} color={'#848484'} />
               </Pressable>
-              <Pressable style={{marginRight:3}} onPress={()=>navigation.navigate('Profile', {mine:true, accountId:undefined})}>
+              <Pressable style={{marginRight:3}} onPress={()=>navigation.navigate('Profile', {whose:0, accountId:-1})}>
               <Feather name="smile" size={24} color={'#848484'} />
               </Pressable>
             </View>

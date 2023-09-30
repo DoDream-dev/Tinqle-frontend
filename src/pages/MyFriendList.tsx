@@ -66,7 +66,7 @@ export default function MyFriendList({navigation}:MyFriendListScreenProps) {
         onEndReachedThreshold={0.4}
         renderItem={({item}) => {
           return (
-            <Pressable style={styles.friendView} onPress={()=>navigation.navigate('Profile', {mine:false, accountId:item.accountId})}>
+            <Pressable style={styles.friendView} onPress={()=>navigation.navigate('Profile', {whose:1, accountId:item.accountId})}>
               <Image style={{height:32, width:32}} source={require('../../assets/image/status01smile.png')}/>
               <View style={styles.friendmiddle}>
                 <Text style={styles.friendName}>{item.friendNickname}</Text>
