@@ -20,4 +20,5 @@ const userSlice = createSlice({
   extraReducers: builder => {},
 });
 
+export const { setToken } = userSlice.actions;
 export default userSlice;

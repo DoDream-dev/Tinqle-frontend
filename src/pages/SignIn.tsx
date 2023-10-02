@@ -10,7 +10,7 @@ import { GoogleSignin } from "@react-native-google-signin/google-signin";
 import auth from '@react-native-firebase/auth'
 
 export default function SignIn() {
-  const [id, setID] = useState('');
+  const [id, setID] = useState('사람');
   const dispatch = useAppDispatch();
   const LoginWithGoogle = async () => {
     console.log('로그인 시도 중')

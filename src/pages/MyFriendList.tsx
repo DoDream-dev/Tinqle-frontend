@@ -18,7 +18,7 @@ export default function MyFriendList({navigation}:MyFriendListScreenProps) {
   useEffect(() => {
     const getFriendship = async () => {
       try {
-        const response = await axios.get(`${Config.API_URL}/friendships/manage`, {headers:{Authorization:`Bearer ${token}`}});
+        const response = await axios.get(`${Config.API_URL}/friendships/manage`,);
         setIsLast(response.data.data.last);
         console.log(response.data.data)
         if (response.data.data.content.length == 0) setNoFriend(true);
@@ -36,7 +36,7 @@ export default function MyFriendList({navigation}:MyFriendListScreenProps) {
     if (!isLast) {
       setLoading(true);
       try {
-        const response = await axios.get(`${Config.API_URL}/friendships/manage`, {headers:{Authorization:`Bearer ${token}`}});
+        const response = await axios.get(`${Config.API_URL}/friendships/manage`,);
         setIsLast(response.data.data.last);
         setFriendData(friendData.concat(response.data.data.content));
         setLoading(false);
@@ -67,7 +67,24 @@ export default function MyFriendList({navigation}:MyFriendListScreenProps) {
         renderItem={({item}) => {
           return (
             <Pressable style={styles.friendView} onPress={()=>navigation.navigate('Profile', {whose:1, accountId:item.accountId})}>
-              <Image style={{height:32, width:32}} source={require('../../assets/image/status01smile.png')}/>
+              {item.status.toLowerCase() == 'smile' && <Image style={{height:32, width:32}} source={require('../../assets/image/status01smile.png')}/>}
+              {item.status.toLowerCase() == 'happy' && <Image style={{height:32, width:32}} source={require('../../assets/image/status02happy.png')}/>}
+              {item.status.toLowerCase() == 'sad' && <Image style={{height:32, width:32}} source={require('../../assets/image/status03sad.png')}/>}
+              {item.status.toLowerCase() == 'mad' && <Image style={{height:32, width:32}} source={require('../../assets/image/status04mad.png')}/>}
+              {item.status.toLowerCase() == 'exhausted' && <Image style={{height:32, width:32}} source={require('../../assets/image/status05exhausted.png')}/>}
+              {item.status.toLowerCase() == 'coffee' && <Image style={{height:32, width:32}} source={require('../../assets/image/status06coffee.png')}/>}
+              {item.status.toLowerCase() == 'meal' && <Image style={{height:32, width:32}} source={require('../../assets/image/status07meal.png')}/>}
+              {item.status.toLowerCase() == 'alcohol' && <Image style={{height:32, width:32}} source={require('../../assets/image/status08alcohol.png')}/>}
+              {item.status.toLowerCase() == 'chicken' && <Image style={{height:32, width:32}} source={require('../../assets/image/status09chicken.png')}/>}
+              {item.status.toLowerCase() == 'sleep' && <Image style={{height:32, width:32}} source={require('../../assets/image/status10sleep.png')}/>}
+              {item.status.toLowerCase() == 'work' && <Image style={{height:32, width:32}} source={require('../../assets/image/status11work.png')}/>}
+              {item.status.toLowerCase() == 'study' && <Image style={{height:32, width:32}} source={require('../../assets/image/status12study.png')}/>}
+              {item.status.toLowerCase() == 'movie' && <Image style={{height:32, width:32}} source={require('../../assets/image/status13movie.png')}/>}
+              {item.status.toLowerCase() == 'move' && <Image style={{height:32, width:32}} source={require('../../assets/image/status14move.png')}/>}
+              {item.status.toLowerCase() == 'dance' && <Image style={{height:32, width:32}} source={require('../../assets/image/status15dance.png')}/>}
+              {item.status.toLowerCase() == 'read' && <Image style={{height:32, width:32}} source={require('../../assets/image/status16read.png')}/>}
+              {item.status.toLowerCase() == 'walk' && <Image style={{height:32, width:32}} source={require('../../assets/image/status17walk.png')}/>}
+              {item.status.toLowerCase() == 'travel' && <Image style={{height:32, width:32}} source={require('../../assets/image/status18travel.png')}/>}
               <View style={styles.friendmiddle}>
                 <Text style={styles.friendName}>{item.friendNickname}</Text>
               </View>

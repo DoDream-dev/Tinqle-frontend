@@ -23,6 +23,7 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import Feather from 'react-native-vector-icons/Feather';
 import SplashScreen from "react-native-splash-screen";
+import useAxiosInterceptor from './src/hooks/useAxiosInterceptor'
 
 type emotionDataType = {
   heart: string[],
@@ -44,6 +45,7 @@ export type RootStackParamList = {
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export default function AppInner() {
+  useAxiosInterceptor();
   const dispatch = useAppDispatch();
   const isLoggedIn = useSelector((state:RootState) => !!state.user.accessToken);
   useEffect(() => {
@@ -52,7 +54,7 @@ export default function AppInner() {
   useEffect(() => {
     const getRefreshTokenAgain = async () => {
       try {
-        await EncryptedStorage.removeItem('refreshToken')
+        // await EncryptedStorage.removeItem('refreshToken')
         const token = await EncryptedStorage.getItem('refreshToken');
         if (!token) {
           console.log('no RefreshToken')

@@ -1,14 +1,12 @@
 import axios, {AxiosError} from 'axios';
-import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, TextInput, Pressable, Image, Keyboard, DevSettings } from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
+import { View, Text, StyleSheet, TextInput, Pressable, Image, Keyboard } from 'react-native';
 import Config from 'react-native-config';
 import { useSelector } from 'react-redux';
 import { RootState } from '../store/reducer';
 import Clipboard from '@react-native-clipboard/clipboard';
 import Icon from 'react-native-vector-icons/FontAwesome6';
 import { useAppDispatch } from '../store';
-import userSlice from '../slices/user';
-import EncryptedStorage from "react-native-encrypted-storage";
 import ToastScreen from '../components/ToastScreen';
 import Modal from 'react-native-modal';
 
@@ -24,49 +22,24 @@ export default function SearchFriends() {
   const [whichPopup, setWhichPopup] = useState('');
   const [popupName, setPopupName] = useState('');
   const token = useSelector((state:RootState) => state.user.accessToken);
-  const refreshOrNot = async () => {
-    try {
-      const refreshToken = await EncryptedStorage.getItem('refreshToken');
-      if (!refreshToken) {DevSettings.reload();}
-      const response = await axios.post(`${Config.API_URL}/auth/reissue`, {refreshToken:refreshToken},);
-      dispatch(
-        userSlice.actions.setToken({
-          accessToken: response.data.data.accessToken,
-        }),
-      );
-      await EncryptedStorage.setItem('refreshToken', response.data.data.refreshToken,);
-      console.log('Token 재발급');
-      return true;
-    } catch (error) {
-      const douleErrorResponseStatusCode = (error as AxiosError<{message: string}>).response?.data.statusCode;
-      if (douleErrorResponseStatusCode == 1070 || douleErrorResponseStatusCode == 1080 || douleErrorResponseStatusCode == 1060) {
-        await EncryptedStorage.removeItem('refreshToken')
-        DevSettings.reload();
-        console.log('reload');
-        return false;
-      }
-    }
-  };
+  const inp = useRef(null);
 
   useEffect(() => {
     const getMyCode = async () => {
       try {
-        const response = await axios.get(`${Config.API_URL}/friendships`, {headers:{Authorization:`Bearer ${token}`}});
+        const response = await axios.get(`${Config.API_URL}/friendships`);
         setMyCode(response.data.data.code);
       } catch (error) {
         const errorResponse = (error as AxiosError<{message: string}>).response;
-        if (errorResponse?.data.statusCode == 1000) {
-          // 로그인 접근 제한, accessToken 재발급
-          if (await refreshOrNot()) setReset(!reset);
-        }
+        console.log(errorResponse.data)
       }
     };
     getMyCode();
-  }, [dispatch, refreshOrNot, reset]);
+  }, []);
 
   const getFriendProfile = async () => {
     try {
-      const response = await axios.get(`${Config.API_URL}/accounts/search/code/${searchCode}`, {headers:{Authorization: `Bearer ${token}`}});
+      const response = await axios.get(`${Config.API_URL}/accounts/search/code/${searchCode}`);
       let friendData;
       if (response.data.data.isFriend === null) {
         setWhichPopup('Me');
@@ -77,6 +50,7 @@ export default function SearchFriends() {
         else {friendData = 2;}
         // console.log(response.data)
         setOtherUser({accountId:response.data.data.accountId, nickname:response.data.data.nickname, isFriend:friendData});
+        // inp.current?.focus();
         // console.log(otherUser)
       }
 
@@ -86,20 +60,13 @@ export default function SearchFriends() {
         // popup: 존재하지 않는 코드예요.
         setWhichPopup('noCode');
       }
-      else if (errorResponse?.data.statusCode == 1000) {
-        console.log(1000)
-        if (await refreshOrNot()) setReset(!reset);
-      }
     }
   };
   const askFriend = async () => {
     try {
       const response = await axios.post(`${Config.API_URL}/friendships/request`, {
         accountTargetId:otherUser.accountId, message:message
-      },
-      {
-        headers:{Authorization: `Bearer ${token}`},
-      });
+      },);
       console.log(response.data)
       // popup: 이도님께 친구 요청을 보냈어요!
       setWhichPopup('send');
@@ -145,13 +112,14 @@ export default function SearchFriends() {
           <Image style={styles.copyIcon} source={require('../../assets/image/copyIcon.png')}/>
         </Pressable>
       </View>
-      <Modal isVisible={!!otherUser.nickname} avoidKeyboard={true} backdropColor='#222222' backdropOpacity={0.5}>
-        {otherUser.isFriend == 2 && <Pressable style={styles.modalBGView} onPress={()=>Keyboard.dismiss()}>
-          <View style={styles.modalView}>
+      <Modal isVisible={!!otherUser.nickname} avoidKeyboard={true} backdropColor='#222222' backdropOpacity={0.5} onModalShow={()=>{inp.current?.blur(); inp.current?.focus();}}>
+        {otherUser.isFriend == 2 && <Pressable style={styles.modalBGView} onPress={()=>{Keyboard.dismiss(); setOtherUser({accountId:-1, nickname:'', isFriend:0});}}>
+          <Pressable onPress={(e)=>e.stopPropagation()} style={styles.modalView}>
             <View>
               <Text style={styles.searchViewName}>{otherUser.nickname}</Text>
               <Text style={styles.searchViewExplain}>친구가 나를 알아볼 수 있도록 인사를 건네주세요!</Text>
-              <TextInput 
+              <TextInput
+                ref={inp}
                 style={styles.commentInput}
                 value={message}
                 onChangeText={(text:string) => setMessage(text)}
@@ -161,14 +129,14 @@ export default function SearchFriends() {
               <Pressable style={styles.searchViewCloseBtn} onPress={()=>setOtherUser({accountId:-1, nickname:'', isFriend:0})}>
                 <Text style={styles.searchViewCloseTxt}>닫기</Text>
               </Pressable>
-              <Pressable style={styles.searchViewAskFriendBtn} onPress={askFriend}>
+              <Pressable style={styles.searchViewAskFriendBtn} onPress={()=>{askFriend();}}>
                 <Text style={styles.searchViewAskFriendTxt}>친구 요청 보내기</Text>
               </Pressable>
             </View>
-          </View>
+          </Pressable>
         </Pressable>}
-        {otherUser.isFriend == 1 && <Pressable style={styles.modalBGView} onPress={()=>Keyboard.dismiss()}>
-            <View style={styles.modalView}>
+        {otherUser.isFriend == 1 && <Pressable style={styles.modalBGView} onPress={()=>{Keyboard.dismiss(); setOtherUser({accountId:-1, nickname:'', isFriend:0});}}>
+            <Pressable onPress={(e)=>e.stopPropagation()} style={styles.modalView}>
               <View>
                 <Text style={styles.searchViewName}>{otherUser.nickname}</Text>
                 <Text style={styles.searchViewExplain}>이미 나와 친구 사이네요!</Text>
@@ -178,7 +146,7 @@ export default function SearchFriends() {
                   <Text style={styles.searchViewAskFriendTxt}>닫기</Text>
                 </Pressable>
               </View>
-            </View>
+            </Pressable>
           </Pressable>}
       </Modal>
       {whichPopup === 'noCode' && <ToastScreen
@@ -259,7 +227,9 @@ const styles = StyleSheet.create({
     height: 14
   },
   modalBGView:{
-    width:"100%", 
+    width:"100%",
+    flex:1,
+    justifyContent:'center',
     alignItems:'center',
     paddingHorizontal:36,
   },
