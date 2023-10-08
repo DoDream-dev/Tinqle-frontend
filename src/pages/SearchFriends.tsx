@@ -41,17 +41,22 @@ export default function SearchFriends() {
     try {
       const response = await axios.get(`${Config.API_URL}/accounts/search/code/${searchCode}`);
       let friendData;
-      if (response.data.data.isFriend === null) {
+      if (response.data.data.friendshipRelation === "me") {
         setWhichPopup('Me');
         setOtherUser({accountId:-1, nickname:'', isFriend:0})
       }
+      else if (response.data.data.friendshipRelation === "waiting") {
+        setWhichPopup('requested');
+        setOtherUser({accountId:-1, nickname:'', isFriend:0})
+      }
+      else if (response.data.data.friendshipRelation === "true") {
+          friendData = 1;
+          setOtherUser({accountId:response.data.data.accountId, nickname:response.data.data.nickname, isFriend:friendData});
+      }
       else {
-        if (response.data.data.isFriend) {friendData = 1;}
-        else {friendData = 2;}
-        // console.log(response.data)
+        friendData = 2;
         setOtherUser({accountId:response.data.data.accountId, nickname:response.data.data.nickname, isFriend:friendData});
-        // inp.current?.focus();
-        // console.log(otherUser)
+        
       }
 
     } catch (error) {
@@ -76,14 +81,14 @@ export default function SearchFriends() {
     } catch (error) {
       const errorResponse = (error as AxiosError<{message: string}>).response;
       console.log(errorResponse.data);
-      if (errorResponse?.data.statusCode == 1000) {
-        if (await refreshOrNot()) setReset(!reset);
-      }
-      if (errorResponse?.data.statusCode == 3010) {
-        setWhichPopup('requested');
-        setOtherUser({accountId:-1, nickname:'', isFriend:0});
-        setMessage('');
-      }
+      // if (errorResponse?.data.statusCode == 1000) {
+      //   // if (await refreshOrNot()) setReset(!reset);
+      // }
+      // if (errorResponse?.data.statusCode == 3010) {
+      //   setWhichPopup('requested');
+      //   setOtherUser({accountId:-1, nickname:'', isFriend:0});
+      //   setMessage('');
+      // }
     }
   };
   return (
@@ -112,7 +117,7 @@ export default function SearchFriends() {
           <Image style={styles.copyIcon} source={require('../../assets/image/copyIcon.png')}/>
         </Pressable>
       </View>
-      <Modal isVisible={!!otherUser.nickname} avoidKeyboard={true} backdropColor='#222222' backdropOpacity={0.5} onModalShow={()=>{inp.current?.blur(); inp.current?.focus();}}>
+      <Modal onBackButtonPress={()=>setOtherUser({accountId:-1, nickname:'', isFriend:0})} isVisible={!!otherUser.nickname} avoidKeyboard={true} backdropColor='#222222' backdropOpacity={0.5} onModalShow={()=>{inp.current?.blur(); inp.current?.focus();}}>
         {otherUser.isFriend == 2 && <Pressable style={styles.modalBGView} onPress={()=>{Keyboard.dismiss(); setOtherUser({accountId:-1, nickname:'', isFriend:0});}}>
           <Pressable onPress={(e)=>e.stopPropagation()} style={styles.modalView}>
             <View>

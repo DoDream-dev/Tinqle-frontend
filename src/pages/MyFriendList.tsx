@@ -4,8 +4,9 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../store/reducer';
 import Config from 'react-native-config';
 import axios, { AxiosError } from 'axios';
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { NativeStackNavigationProp, NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../AppInner';
+import { useNavigation } from '@react-navigation/native';
 
 type MyFriendListScreenProps = NativeStackScreenProps<RootStackParamList, 'MyFriendList'>;
 

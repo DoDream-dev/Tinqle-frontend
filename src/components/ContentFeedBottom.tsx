@@ -1,34 +1,36 @@
 import React from "react";
-import { StyleSheet, View, Text, Image } from "react-native";
+import { StyleSheet, View, Text, Image, Pressable } from "react-native";
 import Emoticons from "./Emoticons";
-
+type EmoticonsProps = {
+  smileEmoticonCount:number;
+  sadEmoticonCount:number;
+  heartEmoticonCount:number;
+  surpriseEmoticonCount:number;
+  isCheckedSmileEmoticon:boolean;
+  isCheckedSadEmoticon:boolean;
+  isCheckedHeartEmoticon:boolean;
+  isCheckedSurpriseEmoticon:boolean;
+}
 type ContentFeedBottomProps = {
   mine:boolean;
   detail:boolean;
-  commentCnt:number,
-  heartEmoticonNicknameList:string[];
-  smileEmoticonNicknameList:string[];
-  sadEmoticonNicknameList:string[];
-  surpriseEmoticonNicknameList:string[];
+  commentCnt:number;
+  emoticons:EmoticonsProps;
+  press:(feedId:number, emotion:string)=>Promise<void>;
+  feedId:number;
+  whoReact:(feedId:number)=>Promise<void>;
 }
 export default function ContentFeedBottom(props:ContentFeedBottomProps){
   const mine = props.mine;
   const detail = props.detail;
   const commentCnt = props.commentCnt;
-  const heartEmoticonNicknameList = props.heartEmoticonNicknameList;
-  const heartEmoticonCount = heartEmoticonNicknameList.length;
-  const smileEmoticonNicknameList = props.smileEmoticonNicknameList;
-  const smileEmoticonCount = smileEmoticonNicknameList.length;
-  const sadEmoticonNicknameList = props.sadEmoticonNicknameList;
-  const sadEmoticonCount = sadEmoticonNicknameList.length;
-  const surpriseEmoticonNicknameList = props.surpriseEmoticonNicknameList;
-  const surpriseEmoticonCount = surpriseEmoticonNicknameList.length;
+  const emoticons = props.emoticons;
   
   const emotionData = {
-    heart:{pressed:true, count:heartEmoticonCount}, // pressed: NicknameList에 자기가 있는지 확인
-    smile:{pressed:false, count:smileEmoticonCount},
-    sad:{pressed:false, count:sadEmoticonCount},
-    surprise:{pressed:false, count:surpriseEmoticonCount}
+    heart:{pressed:emoticons.isCheckedHeartEmoticon, count:emoticons.heartEmoticonCount},
+    smile:{pressed:emoticons.isCheckedSmileEmoticon, count:emoticons.smileEmoticonCount},
+    sad:{pressed:emoticons.isCheckedSadEmoticon, count:emoticons.sadEmoticonCount},
+    surprise:{pressed:emoticons.isCheckedSurpriseEmoticon, count:emoticons.surpriseEmoticonCount}
   }
   return (
     <View style={detail ? styles.entireDetail : styles.entire}>
@@ -37,8 +39,10 @@ export default function ContentFeedBottom(props:ContentFeedBottomProps){
         <Text style={styles.feedListCommentTxt}>{commentCnt}</Text>
       </View>}
       <View style={styles.emoticonView}>
-        <Emoticons mine={mine} emotionData={emotionData} />
-        {mine && <View style={styles.reactedPeopleBtn}><Image source={require('../../assets/image/reacted.png')} /></View>}
+        <Emoticons mine={mine} emotionData={emotionData} press={props.press} feedId={props.feedId}/>
+        {mine && <Pressable style={styles.reactedPeopleBtn} onPress={()=>{props.whoReact(props.feedId)}}>
+          <Image source={require('../../assets/image/reacted.png')} />
+        </Pressable>}
       </View>
     </View>
   );
@@ -46,17 +50,18 @@ export default function ContentFeedBottom(props:ContentFeedBottomProps){
 
 const styles = StyleSheet.create({
   entire:{
+    flex:1,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginLeft: 32
+    marginLeft: 44,
   },
   entireDetail:{
     flexDirection: 'row',
     justifyContent: 'flex-end',
     alignItems: 'center',
     marginLeft: 32,
-    marginRight: 10
+    marginRight: 10,
   },
   feedListCommentView:{
     flexDirection: 'row',

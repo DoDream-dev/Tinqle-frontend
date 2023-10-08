@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Pressable, Image, Alert } from 'react-native';
+import { View, Text, StyleSheet, Pressable, Image, Alert, Dimensions } from 'react-native';
 import * as KakaoLogin from '@react-native-seoul/kakao-login'
 import { useAppDispatch } from '../store';
 import userSlice from '../slices/user';
@@ -8,10 +8,20 @@ import Config from 'react-native-config'
 import axios, {AxiosError} from 'axios';
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
 import auth from '@react-native-firebase/auth'
+import Modal from 'react-native-modal';
+import Feather from 'react-native-vector-icons/Feather'
+import { Shadow } from 'react-native-shadow-2';
 
 export default function SignIn() {
   const [id, setID] = useState('사람');
   const dispatch = useAppDispatch();
+  const [signup, setSignUp] = useState('');
+  const [allP, setAllP] = useState(false);
+  const [serviceP, setServiceP] = useState(false);
+  const [personalP, setPersonalP] = useState(false);
+  const [ageP, setAgeP] = useState(false);
+  const [adsP, setAdsP] = useState(false);
+  const windowWidth = Dimensions.get('window').width;
   const LoginWithGoogle = async () => {
     console.log('로그인 시도 중')
     try {
@@ -47,7 +57,7 @@ export default function SignIn() {
       const errorResponse = (error as AxiosError<{message: string}>).response;
       if (errorResponse?.data.statusCode == 1030) {
         console.log('회원가입 진행')
-        Signup(errorResponse?.data.data.signToken);
+        setSignUp(errorResponse?.data.data.signToken);
       }
     }
   }
@@ -69,19 +79,21 @@ export default function SignIn() {
       const errorResponse = (error as AxiosError<{message: string}>).response;
       if (errorResponse?.data.statusCode == 1030) {
         console.log('회원가입 진행')
-        Signup(errorResponse?.data.data.signToken);
+        setSignUp(errorResponse?.data.data.signToken);
+        // Signup();
       }
     }
   };
 
   const Signup = async (signToken:string) => {
+    console.log(serviceP, personalP, ageP, adsP)
     try {
       const response = await axios.post(`${Config.API_URL}/auth/signup`, {
         signToken: signToken,
-        usePolicy: true,
-        agePolicy: true,
-        personalPolicy: true,
-        marketPolicy: true,
+        usePolicy: serviceP,
+        agePolicy: ageP,
+        personalPolicy: personalP,
+        marketPolicy: adsP,
         fcmToken: '',
       });
       // LOGIN call
@@ -125,14 +137,110 @@ export default function SignIn() {
       </View>
       <View style={styles.loginView}>
         <Pressable style={styles.loginBtnGoogle} onPress={LoginWithGoogle}>
-          <Image style={styles.logoGoogle} source={require('../../assets/image/LogoGoogle.png')}/>
-          <Text style={styles.loginBtnTxtGoogle}>Google로 계속하기</Text>
+          <Shadow distance={5} startColor='#00000009' style={{flex:1,alignSelf:'stretch', borderRadius:5}} stretch={true} containerStyle={{marginHorizontal:0}}>
+            <View style={[styles.forshadow, {width:windowWidth-32}]}>
+              <Image style={styles.logoGoogle} source={require('../../assets/image/LogoGoogle.png')}/>
+              <Text style={styles.loginBtnTxtGoogle}>Google로 계속하기</Text>
+            </View>
+          </Shadow>
         </Pressable>
-        <Pressable style={styles.loginBtnKakao} onPress={LoginWithKaKao}>
+        {/* <Pressable style={styles.loginBtnKakao} onPress={LoginWithKaKao}>
           <Image style={styles.logoKakao} source={require('../../assets/image/LogoKakao.png')}/>
           <Text style={styles.loginBtnTxtKakao}>카카오로 계속하기</Text>
+        </Pressable> */}
+        <Pressable style={styles.loginBtnKakao} onPress={LoginWithKaKao}>
+          <Shadow distance={5} startColor='#00000009' style={{flex:1,alignSelf:'stretch', borderRadius:5}} stretch={true} containerStyle={{marginHorizontal:0}}>
+            <View style={[styles.forshadow, {width:windowWidth-32}]}>
+              <Image style={styles.logoKakao} source={require('../../assets/image/LogoKakao.png')}/>
+              <Text style={styles.loginBtnTxtKakao}>카카오로 계속하기</Text>
+            </View>
+          </Shadow>
         </Pressable>
       </View>
+      <Modal isVisible={signup != ''}
+        onSwipeComplete={()=>setSignUp('')}
+        swipeDirection={'down'}
+        hasBackdrop={false}
+        style={{justifyContent:"flex-end", margin:0}}>
+        <Pressable onPress={()=>setSignUp('')} style={styles.modalBGView}>
+          <Shadow distance={6} startColor='#00000010'>
+            <View style={[styles.modalView, {width:windowWidth}]}>
+              <View style={styles.modalAllView}>
+                <Pressable style={styles.policyBtn} onPress={()=>{
+                  if (allP) {setServiceP(false); setPersonalP(false); setAdsP(false); setAgeP(false); setAllP(false);}
+                  else {setServiceP(true); setPersonalP(true); setAdsP(true); setAgeP(true); setAllP(true);}
+                }}>
+                    {allP ? <View style={styles.checkBtnSelected}>
+                      <Feather name={'check'} size={20} style={{color:'white'}}/>
+                    </View> : <View style={styles.checkBtn}></View>}
+                    <Text style={styles.policyTxtBold}>전체 동의하기</Text>
+                  </Pressable>
+              </View>
+              <View style={styles.modalItemView}>
+                <Pressable style={styles.policyBtn} onPress={()=>{
+                  if (serviceP) {setAllP(false)}
+                  else if (personalP && ageP && adsP) {setAllP(true)}
+                  setServiceP(!serviceP);
+                }}>
+                  {!serviceP && <View style={styles.checkBtn}></View>}
+                  {serviceP && <View style={styles.checkBtnSelected}>
+                    <Feather name={'check'} size={20} style={{color:'white'}}/>
+                  </View>}
+                  <Text style={styles.policyTxt}>[필수] 서비스 이용약관 동의</Text>
+                </Pressable>
+                <Pressable style={styles.seePolicy}>
+                  <Text style={styles.seePolicyTxt}>보기</Text>
+                </Pressable>
+              </View>
+              <View style={styles.modalItemView}>
+                <Pressable style={styles.policyBtn} onPress={()=>{
+                  if (personalP) {setAllP(false)}
+                  else if (serviceP && ageP && adsP) {setAllP(true)}
+                  setPersonalP(!personalP);
+                }}>
+                  {!personalP && <View style={styles.checkBtn}></View>}
+                  {personalP && <View style={styles.checkBtnSelected}>
+                    <Feather name={'check'} size={20} style={{color:'white'}}/>
+                  </View>}
+                  <Text style={styles.policyTxt}>[필수] 개인정보 수집 및 이용 동의</Text>
+                </Pressable>
+                <Pressable style={styles.seePolicy}>
+                  <Text style={styles.seePolicyTxt}>보기</Text>
+                </Pressable>
+              </View>
+              <View style={styles.modalItemView}>
+                <Pressable style={styles.policyBtn} onPress={()=>{
+                  if (ageP) {setAllP(false)}
+                  else if (personalP && serviceP && adsP) {setAllP(true)}
+                  setAgeP(!ageP);
+                }}>
+                  {!ageP && <View style={styles.checkBtn}></View>}
+                  {ageP && <View style={styles.checkBtnSelected}>
+                    <Feather name={'check'} size={20} style={{color:'white'}}/>
+                  </View>}
+                  <Text style={styles.policyTxt}>[필수] 만14세 이상입니다</Text>
+                </Pressable>
+              </View>
+              <View style={styles.modalItemView}>
+                <Pressable style={styles.policyBtn} onPress={()=>{
+                  if (adsP) {setAllP(false)}
+                  else if (personalP && ageP && serviceP) {setAllP(true)}
+                  setAdsP(!adsP);
+                }}>
+                  {!adsP && <View style={styles.checkBtn}></View>}
+                  {adsP && <View style={styles.checkBtnSelected}>
+                    <Feather name={'check'} size={20} style={{color:'white'}}/>
+                  </View>}
+                  <Text style={styles.policyTxt}>[선택] 마케팅 활용 및 광고성 정보 수신 동의</Text>
+                </Pressable>
+              </View>
+              <Pressable style={!(serviceP && personalP && ageP) ? styles.sendBtnUnActivated : styles.sendBtn} disabled={!(serviceP && personalP && ageP)} onPress={()=>{Signup(signup); setSignUp('');}}>
+                <Text style={styles.sendTxt}>시작하기</Text>
+              </Pressable>
+            </View>
+          </Shadow>
+        </Pressable>
+      </Modal>
     </View>
   );
 }
@@ -167,6 +275,13 @@ const styles = StyleSheet.create({
     marginVertical: 30,
     paddingHorizontal: 16
   },
+  forshadow:{
+    flex:1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: '100%',
+    flexDirection: 'row',
+  },
   loginBtnGoogle:{
     flex:1,
     justifyContent: 'center',
@@ -176,7 +291,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
     width: '100%',
     borderRadius: 5,
-    elevation: 4,
   },
   loginBtnKakao:{
     flex:1,
@@ -186,7 +300,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#FEE500',
     width: '100%',
     borderRadius: 5,
-    elevation: 4,
+    // elevation: 2,
 
   },
   loginBtnTxtGoogle:{
@@ -206,5 +320,93 @@ const styles = StyleSheet.create({
   logoKakao:{
     marginRight: 2,
     marginBottom: 1
+  },
+  modalBGView:{
+    flex:1,
+    justifyContent:'flex-end'
+  },
+  modalView:{
+    borderTopLeftRadius:30,
+    borderTopRightRadius:30,
+    // paddingHorizontal:16,
+    paddingTop:33,
+    backgroundColor:'white',
+    // elevation: 10,
+  },
+  modalAllView:{
+    marginBottom:20,
+    paddingBottom:16,
+    borderBottomColor:'#D9D9D9',
+    paddingHorizontal:16,
+    borderBottomWidth:1,
+  },
+  modalItemView:{
+    flexDirection:'row',
+    justifyContent:'space-between',
+    paddingHorizontal:16,
+    marginBottom:10
+  },
+  policyBtn:{
+    flexDirection:'row',
+    alignItems:'center'
+  },
+  checkBtn:{
+    width:24,
+    height:24,
+    borderRadius:20,
+    borderWidth: 2,
+    borderColor:'#848484'
+  },
+  checkBtnSelected:{
+    width:24,
+    height:24,
+    borderRadius:20,
+    backgroundColor:'#FFB443',
+    justifyContent:'center',
+    alignItems:'center',
+  },
+  policyTxt:{
+    paddingLeft:8,
+    color:'#222222',
+    fontWeight:'400',
+    fontSize:15
+  },
+  policyTxtBold:{
+    paddingLeft:8,
+    color:'#222222',
+    fontWeight:'500',
+    fontSize:15
+  },
+  seePolicy:{
+    justifyContent:'center',
+    alignItems:'center',
+  },
+  seePolicyTxt:{
+    color:'#848484',
+    fontWeight:'500',
+    fontSize:13,
+    borderBottomWidth:1,
+    borderBottomColor:'#848484',
+  },
+  sendBtn:{
+    width:'100%',
+    backgroundColor:'#FFB443',
+    justifyContent:'center',
+    alignItems:'center',
+    paddingVertical:17,
+    marginTop:24
+  },
+  sendBtnUnActivated:{
+    width:'100%',
+    backgroundColor:'#B7B7B7',
+    justifyContent:'center',
+    alignItems:'center',
+    paddingVertical:17,
+    marginTop:24
+  },
+  sendTxt:{
+    color:'#222222',
+    fontWeight:'500',
+    fontSize:15
   },
 });

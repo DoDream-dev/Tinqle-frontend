@@ -1,46 +1,80 @@
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 import ContentFeedBottom from "./ContentFeedBottom";
+import Content from "./Content";
+import { RootStackParamList } from "../../AppInner";
+// import { withNavigation } from 'react-navigation'
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 
+type EmoticonsProps = {
+  smileEmoticonCount:number;
+  sadEmoticonCount:number;
+  heartEmoticonCount:number;
+  surpriseEmoticonCount:number;
+  isCheckedSmileEmoticon:boolean;
+  isCheckedSadEmoticon:boolean;
+  isCheckedHeartEmoticon:boolean;
+  isCheckedSurpriseEmoticon:boolean;
+}
 type FeedProps = {
   mine:boolean;
   detail:boolean;
   commentCnt:number;
-  heartEmoticonNicknameList:string[];
-  smileEmoticonNicknameList:string[];
-  sadEmoticonNicknameList:string[];
-  surpriseEmoticonNicknameList:string[];
+  createdAt:string;
+  content:string;
+  emoticons:EmoticonsProps;
+  nickname:string;
+  status:string;
+  accountId:number;
+  imageURL:string[]|null[];
+  press:(feedId:number, emotion:string)=>Promise<void>;
+  feedId:number;
+  whoReact:(feedId:number)=>Promise<void>;
+  // heartEmoticonNicknameList:string[];
+  // smileEmoticonNicknameList:string[];
+  // sadEmoticonNicknameList:string[];
+  // surpriseEmoticonNicknameList:string[];
 }
 export default function Feed(props:FeedProps){
   const mine = props.mine;
-  // const mine = false;
+  const content = props.content;
   const detail = props.detail;
   const commentCnt = props.commentCnt;
-  const heartEmoticonNicknameList = props.heartEmoticonNicknameList;
-  const smileEmoticonNicknameList = props.smileEmoticonNicknameList;
-  const sadEmoticonNicknameList = props.sadEmoticonNicknameList;
-  const surpriseEmoticonNicknameList = props.surpriseEmoticonNicknameList;
+  const emoticons = props.emoticons;
+  const createdAt = props.createdAt;
+  const nickname = props.nickname;
+  const status = props.status;
+  const accountId = props.accountId;
+  const imageURL = props.imageURL;
 
   return (
-    <View style={styles.entrie}>
-      <View style={{height: 200}}><Text>Content</Text></View>
+    <View style={styles.entire}>
+      <Content 
+        nickname={nickname}
+        status={status}
+        content={content}
+        createdAt={createdAt}
+        accountId={accountId}
+        mine={mine}
+        imageURL = {imageURL}
+        detail={detail}
+      />
       <ContentFeedBottom 
         mine={mine}
         detail={detail}
         commentCnt={commentCnt}
-        heartEmoticonNicknameList={heartEmoticonNicknameList}
-        smileEmoticonNicknameList={smileEmoticonNicknameList}
-        sadEmoticonNicknameList={sadEmoticonNicknameList}
-        surpriseEmoticonNicknameList={surpriseEmoticonNicknameList}
+        emoticons={emoticons}
+        press={props.press}
+        feedId={props.feedId}
+        whoReact={props.whoReact}
       />
     </View>
   );
-
 }
 
 const styles = StyleSheet.create({
-  entrie:{
-    paddingBottom: 10,
+  entire:{
+    paddingBottom: 14,
     width: '100%',
   },
 })

@@ -227,7 +227,7 @@ export default function Profile({navigation, route}:ProfileScreenProps) {
         </View>}
       </View>
       {/* modal for changin status */}
-      <Modal isVisible={changeStatus} backdropColor='#222222' backdropOpacity={0.5}>
+      <Modal isVisible={changeStatus} backdropColor='#222222' backdropOpacity={0.5} onBackButtonPress={()=>setChangeStatus(false)}>
         <Pressable style={styles.modalBGView} onPress={()=>{Keyboard.dismiss(); setChangeStatus(false);}}>
           <Pressable onPress={(e)=>e.stopPropagation()} style={styles.modalView2}>
             <Pressable onPress={()=>{setChangeStatus(false); postStatus('smile');}} style={status == 'smile' ? styles.statusSelected : styles.statusSelect}>
@@ -288,7 +288,7 @@ export default function Profile({navigation, route}:ProfileScreenProps) {
         </Pressable>
       </Modal>
       {/* modal for changing name */}
-      <Modal isVisible={chageName} avoidKeyboard={true} backdropColor='#222222' backdropOpacity={0.5} onModalShow={()=>{inp1.current?.focus()}}>
+      <Modal isVisible={chageName} onBackButtonPress={()=>setChangeName(false)} avoidKeyboard={true} backdropColor='#222222' backdropOpacity={0.5} onModalShow={()=>{inp1.current?.focus()}}>
         <Pressable style={styles.modalBGView} onPress={()=>{setChangeName(false); Keyboard.dismiss();}}>
           <Pressable style={styles.modalView} onPress={(e)=>e.stopPropagation()}>
             {whoseProfile == 0 && <Text style={styles.modalTitleTxt}>내 이름 바꾸기</Text>}
@@ -328,7 +328,7 @@ export default function Profile({navigation, route}:ProfileScreenProps) {
         </Pressable>
       </Modal>
       {/* modal for sending msg */}
-      <Modal isVisible={whoseProfile == 1 ? writeNote : askFriendMsg} avoidKeyboard={true} backdropColor='#222222' backdropOpacity={0.5} onModalShow={()=>{inp2?.current?.focus();}}>
+      <Modal isVisible={whoseProfile == 1 ? writeNote : askFriendMsg} onBackButtonPress={()=>{if (whoseProfile == 1) setWriteNote(false); else setAskFriendMsg(false)}} avoidKeyboard={true} backdropColor='#222222' backdropOpacity={0.5} onModalShow={()=>{inp2?.current?.focus();}}>
         <Pressable style={styles.modalBGView} onPress={()=>{Keyboard.dismiss(); if(whoseProfile == 1) setWriteNote(false); else setAskFriendMsg(false);}}>
           <Pressable onPress={(e)=>e.stopPropagation()} style={styles.modalView}>
             {whoseProfile == 1 && <Text style={styles.modalTitleTxt}>익명 쪽지 보내기</Text>}

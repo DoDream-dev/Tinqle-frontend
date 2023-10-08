@@ -83,6 +83,7 @@ android {
         applicationId "com.tinqle"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
+        vectorDrawables.useSupportLibrary = true
         versionCode 1
         versionName "1.0"
         resValue "string", "build_config_package", "com.tinqle"

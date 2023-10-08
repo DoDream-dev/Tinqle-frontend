@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Pressable, View } from 'react-native'
 import {
+  NativeStackNavigationProp,
   createNativeStackNavigator,
 } from '@react-navigation/native-stack';
 import FeedList from "./src/pages/FeedList";
@@ -31,9 +32,10 @@ type emotionDataType = {
   sad: string[],
   surprise: string[],
 }
+
 export type RootStackParamList = {
   FeedList: undefined;
-  FeedDetail: {mine:boolean, emotionData:emotionDataType, commentCnt:number};
+  FeedDetail: {feedId:number};
   Profile: {whose:number, accountId:number};
   MyFriendList: undefined;
   SearchFriends: undefined;
@@ -41,6 +43,8 @@ export type RootStackParamList = {
   Setting: undefined;
   Notis: undefined;
 };
+
+export type RootStackNavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -112,6 +116,7 @@ export default function AppInner() {
         component={FeedDetail}
         options={{
           title: '',
+          headerRight: () => (<View></View>),
         }}
       />
       <Stack.Screen
@@ -210,6 +215,10 @@ export default function AppInner() {
           ),
         })}
       />
+      {/* <Stack.Screen
+        name="Content"
+        component={Content}
+      /> */}
       <Stack.Screen
         name="Notis"
         component={Notis}
