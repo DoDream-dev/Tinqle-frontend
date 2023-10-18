@@ -7,7 +7,7 @@ import axios, {AxiosError} from 'axios';
 export default function NoteBox() {
 
   const token = useSelector((state:RootState) => state.user.accessToken);
-  const [empty, setEmpty] = useState(true);
+  const [empty, setEmpty] = useState(false);
   const [loading, setLoading] = useState(false);
   // useEffect(()=>{
   //   const getNoteContent = async () => {
@@ -21,7 +21,7 @@ export default function NoteBox() {
   //   };
   //   getNoteContent();
   // },[]);
-  const noteData = [{content:"안뇽 내가 누구게"}, {content:"오늘 같이 밥먹어서 즐거웠엉"}];
+  const noteData = [{who:"익명",content:"안뇽 내가 누구게"}, {who:"익명",content:"오늘 같이 밥먹어서 즐거웠엉"}];
   const getData = async () => {
     // if (!isLast) {
     //   setLoading(true);
@@ -53,6 +53,7 @@ export default function NoteBox() {
           renderItem={({item}) => {
             return (
               <Pressable style={styles.eachmessageView}>
+                <Text style={styles.eachmessageTxtHeader}>{item.who}</Text>
                 <Text style={styles.eachmessageTxt}>{item.content}</Text>
               </Pressable>
             );
@@ -91,9 +92,15 @@ const styles = StyleSheet.create({
   eachmessageView:{
     borderRadius:10,
     backgroundColor:'#FFFFFF',
-    padding:10,
+    padding:16,
     marginBottom:10,
     // width:'100%',
+  },
+  eachmessageTxtHeader:{
+    color:'#222222',
+    fontSize:15,
+    fontWeight:'600',
+    marginBottom:4
   },
   eachmessageTxt:{
     color:'#222222', 

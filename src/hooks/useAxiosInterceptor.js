@@ -1,8 +1,6 @@
 import Config from 'react-native-config';
-import { DevSettings } from 'react-native';
 import { useAppDispatch } from '../store';
 import EncryptedStorage from 'react-native-encrypted-storage';
-import { setToken } from '../slices/user';
 import axios from 'axios';
 import store from '../store/index.ts';
 import userSlice from '../slices/user';
@@ -14,8 +12,12 @@ const useAxiosInterceptor = () => {
   axios.interceptors.request.use(
     (config) => {
     const accessToken = store.getState().user.accessToken;
-    
-    config.headers['Content-Type'] = 'application/json';
+    // console.log(accessToken)
+    // console.log(accessToken)
+    // console.log('axintercp', config.headers['Content-Type'])
+    if (config.headers['Content-Type'] == undefined) {
+      config.headers['Content-Type'] = 'application/json';
+    }
     config.headers['Authorization'] = `Bearer ${accessToken}`;
     return config;
   },
@@ -33,7 +35,13 @@ const useAxiosInterceptor = () => {
         try {
           console.log('access denied')
           const refreshToken = await EncryptedStorage.getItem('refreshToken');
-          if (!refreshToken) {DevSettings.reload(); console.log('reload');}
+          if (!refreshToken) {
+            dispatch(
+              userSlice.actions.setToken({
+                accessToken: '',
+              }),
+            );
+          }
           const resp = await axios.post(`${Config.API_URL}/auth/reissue`, {refreshToken:refreshToken},);
           await dispatch(
             userSlice.actions.setToken({
@@ -57,8 +65,11 @@ const useAxiosInterceptor = () => {
           const douleErrorResponseStatusCode = error2.response?.data.statusCode;
           if (douleErrorResponseStatusCode == 1070 || douleErrorResponseStatusCode == 1080 || douleErrorResponseStatusCode == 1060) {
             await EncryptedStorage.removeItem('refreshToken');
-            DevSettings.reload();
-            console.log('reload');
+            dispatch(
+              userSlice.actions.setToken({
+                accessToken: '',
+              }),
+            );
             return false;
           }
   

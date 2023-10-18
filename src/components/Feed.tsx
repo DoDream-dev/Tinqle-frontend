@@ -1,10 +1,7 @@
-import React from "react";
+import React, { useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import ContentFeedBottom from "./ContentFeedBottom";
 import Content from "./Content";
-import { RootStackParamList } from "../../AppInner";
-// import { withNavigation } from 'react-navigation'
-import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 
 type EmoticonsProps = {
   smileEmoticonCount:number;
@@ -46,6 +43,7 @@ export default function Feed(props:FeedProps){
   const status = props.status;
   const accountId = props.accountId;
   const imageURL = props.imageURL;
+  const [a, setA] = useState(-1);
 
   return (
     <View style={styles.entire}>
@@ -58,6 +56,9 @@ export default function Feed(props:FeedProps){
         mine={mine}
         imageURL = {imageURL}
         detail={detail}
+        cmt={false}
+        child={setA}
+        cmtId={-1}
       />
       <ContentFeedBottom 
         mine={mine}

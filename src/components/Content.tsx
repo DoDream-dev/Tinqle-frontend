@@ -15,6 +15,9 @@ type ContentProps = {
   mine:boolean;
   imageURL:string[]|null[];
   detail:boolean;
+  cmt:boolean;
+  child:React.Dispatch<React.SetStateAction<number>>;
+  cmtId:number;
   // navigation:NativeStackNavigationProp<RootStackParamList>
 }
 // type ContentScreenProps = NativeStackScreenProps<RootStackParamList, 'Content'>;
@@ -25,9 +28,11 @@ export default function Content( props:ContentProps){
   const createdAt = props.createdAt;
   const accountId = props.accountId;
   const imageURL = props.imageURL;
+  const cmt = props.cmt;
+  const child = props.child;
+  const cmtId = props.cmtId;
   let mine = 0;
   if (!props.mine) mine = 1;
-  // const navigation = useNavigation<props.navigation>
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   return (
     <View style={styles.entire}>
@@ -62,12 +67,18 @@ export default function Content( props:ContentProps){
         </View>
         <View style={styles.content}>
           <Text style={styles.contentTxt}>{content}</Text>
-          {imageURL.flatMap(f => !!f ? [f] : []).length != 0 && <SliderBox 
+          {/* {imageURL.flatMap(f => !!f ? [f] : []).length != 0 && <SliderBox 
             images={imageURL}
             sliderBoxHeight={283}
             parentWidth={283}
+          />} */}
+          {imageURL.flatMap(f => !!f ? [f] : []).length != 0 && <Image
+            source={{uri:imageURL[0]}}
           />}
         </View>
+        {cmt && <Pressable style={styles.recomment} onPress={()=>child(cmtId)}>
+          <Text style={styles.recommentTxt}>대댓글 쓰기</Text>
+        </Pressable>}
       </View>
     </View>
   );
@@ -76,7 +87,14 @@ export default function Content( props:ContentProps){
 const styles = StyleSheet.create({
   entire:{
     flexDirection:'row',
-    padding:10,
+    padding:16,
+  },
+  entireCmt:{
+    flexDirection:'row',
+    padding:16,
+    borderBottomWidth:1,
+    borderBottomColor:'#ECECEC',
+    // backgroundColor:'pink'
   },
   statusView:{
   },
@@ -101,10 +119,23 @@ const styles = StyleSheet.create({
   content:{
     justifyContent:'center',
     alignItems:'flex-start',
+    marginTop:4
   },
   contentTxt:{
     fontWeight:'400',
     fontSize:15,
-    color:'#222222'
-  }
+    color:'#222222',
+    // includeFontPadding:true
+    // paddingBottom:5
+
+  },
+  recomment:{
+    marginTop:8,
+    // marginBottom:8
+  },
+  recommentTxt:{
+    color:'#848484',
+    fontSize:12,
+    fontWeight:'500'
+  },
 })

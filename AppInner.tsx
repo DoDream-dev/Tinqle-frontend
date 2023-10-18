@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Pressable, View } from 'react-native'
+import { Pressable, View, Alert } from 'react-native'
 import {
   NativeStackNavigationProp,
   createNativeStackNavigator,
@@ -26,13 +26,6 @@ import Feather from 'react-native-vector-icons/Feather';
 import SplashScreen from "react-native-splash-screen";
 import useAxiosInterceptor from './src/hooks/useAxiosInterceptor'
 
-type emotionDataType = {
-  heart: string[],
-  smile: string[],
-  sad: string[],
-  surprise: string[],
-}
-
 export type RootStackParamList = {
   FeedList: undefined;
   FeedDetail: {feedId:number};
@@ -42,6 +35,7 @@ export type RootStackParamList = {
   NoteBox: undefined;
   Setting: undefined;
   Notis: undefined;
+  SignIn: undefined;
 };
 
 export type RootStackNavigationProp = NativeStackNavigationProp<RootStackParamList>;
@@ -58,7 +52,7 @@ export default function AppInner() {
   useEffect(() => {
     const getRefreshTokenAgain = async () => {
       try {
-        // await EncryptedStorage.removeItem('refreshToken')
+        await EncryptedStorage.removeItem('refreshToken')
         const token = await EncryptedStorage.getItem('refreshToken');
         if (!token) {
           console.log('no RefreshToken')
@@ -84,23 +78,23 @@ export default function AppInner() {
         name="FeedList"
         component={FeedList}
         options={({navigation}) => ({
-          title:'tinqle',
+          title:'tincle',
           headerTitleAlign:'center',
           headerLeft: () => (
             <Pressable onPress={()=>navigation.navigate('SearchFriends')}>
               <MaterialIcons name="person-add-alt" size={24} color={'#848484'} />
             </Pressable>
           ),
-          headerRight: () => (
-            <View style={{flexDirection:'row'}}>
-              <Pressable style={{marginRight:12}}>
-                <Feather name="bell" size={24} color={'#848484'} />
-              </Pressable>
-              <Pressable style={{marginRight:3}} onPress={()=>navigation.navigate('Profile', {whose:0, accountId:-1})}>
-              <Feather name="smile" size={24} color={'#848484'} />
-              </Pressable>
-            </View>
-          ),
+          // headerRight: () => (
+          //   <View style={{flexDirection:'row'}}>
+          //     <Pressable style={{marginRight:12}}>
+          //       <Feather name="bell" size={24} color={'#848484'} />
+          //     </Pressable>
+          //     <Pressable style={{marginRight:3}} onPress={()=>navigation.navigate('Profile', {whose:0, accountId:-1})}>
+          //     <Feather name="smile" size={24} color={'#848484'} />
+          //     </Pressable>
+          //   </View>
+          // ),
           headerStyle:{
 
           },
@@ -225,6 +219,15 @@ export default function AppInner() {
       />
     </Stack.Navigator>
   ) : (
-    <SignIn/>
+    // <SignIn/>
+    <Stack.Navigator>
+      <Stack.Screen 
+        name="SignIn"
+        component={SignIn}
+        options={()=>({
+          headerShown:false
+        })}
+      />
+    </Stack.Navigator>
   );
 }

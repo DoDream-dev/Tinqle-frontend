@@ -1,24 +1,47 @@
 import React from 'react';
-import { View, Text, StyleSheet, Pressable, DevSettings } from 'react-native';
-import { useSelector } from 'react-redux';
-import { RootState } from '../store/reducer';
+import { View, Text, StyleSheet, Pressable, Alert } from 'react-native';
+import { useAppDispatch } from '../store';
+import userSlice from '../slices/user';
 import axios, {AxiosError} from 'axios';
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { RootStackParamList } from "../../AppInner";
 import Config from 'react-native-config';
 import EncryptedStorage from "react-native-encrypted-storage";
+import { useNavigation } from "@react-navigation/native";
 
 export default function Setting() {
-  const token = useSelector((state:RootState) => state.user.accessToken);
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const dispatch = useAppDispatch();
+
   const LogOut = async () => {
     try {
-        const response = await axios.post(`${Config.API_URL}/auth/logout`, {}, {
-          headers:{Authorization: `Bearer ${token}`},
-        });
+        const response = await axios.post(`${Config.API_URL}/auth/logout`,);
         console.log(response.data);
       if (response.data.data.isLogout) {
         await EncryptedStorage.removeItem('refreshToken')
-        DevSettings.reload();
-
+        dispatch(
+          userSlice.actions.setToken({
+            accessToken: '',
+          }),
+        );
+        navigation.navigate('SignIn')
       }
+    } catch (error) {
+      const errorResponse = (error as AxiosError<{message: string}>).response;
+      console.log(errorResponse.data)
+    }
+  };
+
+  const deleteImsi = async () => {
+    try {
+      const response = await axios.post(`${Config.API_URL}/test/account/`,);
+      console.log(response.data);
+      await EncryptedStorage.removeItem('refreshToken')
+      dispatch(
+        userSlice.actions.setToken({
+          accessToken: '',
+        }),
+      );
     } catch (error) {
       const errorResponse = (error as AxiosError<{message: string}>).response;
       console.log(errorResponse.data)

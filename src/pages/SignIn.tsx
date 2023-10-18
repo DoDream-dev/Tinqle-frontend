@@ -11,6 +11,7 @@ import auth from '@react-native-firebase/auth'
 import Modal from 'react-native-modal';
 import Feather from 'react-native-vector-icons/Feather'
 import { Shadow } from 'react-native-shadow-2';
+import messaging from '@react-native-firebase/messaging'
 
 export default function SignIn() {
   const [id, setID] = useState('사람');
@@ -22,6 +23,31 @@ export default function SignIn() {
   const [ageP, setAgeP] = useState(false);
   const [adsP, setAdsP] = useState(false);
   const windowWidth = Dimensions.get('window').width;
+  const [fcm, setFcm] = useState('');
+  const handleFcmMessage = () => {
+    const unsubscribe = messaging().onMessage(async remoteMessage => {
+      Alert.alert('A new FCM message arrived', JSON.stringify(remoteMessage));
+    });
+    messaging().onNotificationOpenedApp(remoteMessage => {
+      console.log('Noti caused app to open from gb state: ', remoteMessage.notification,);
+    });
+  }
+  const requestUserPermissionForFCM = async () => {
+    const authStatus = await messaging().requestPermission();
+    const enabled = authStatus === messaging.AuthorizationStatus.AUTHORIZED || authStatus === messaging.AuthorizationStatus.PROVISIONAL;
+
+    if (enabled) {
+      const fcmToken = await messaging().getToken();
+
+      console.log('fcmToken: ', fcmToken);
+      // console.log('AuthStat: ', authStatus);
+      setFcm(fcmToken);
+      handleFcmMessage();
+    } else {
+      console.log('fcm auth fail')
+    }
+  }
+  requestUserPermissionForFCM();
   const LoginWithGoogle = async () => {
     console.log('로그인 시도 중')
     try {
@@ -48,7 +74,7 @@ export default function SignIn() {
         oauthAccessToken: '',
         authorizationCode: userInfo.serverAuthCode,
         socialType:"GOOGLE",
-        fcmToken:"",
+        fcmToken:fcm,
       });
       // console.log(res.data)
       Login(res.data.data.refreshToken, res.data.data.accessToken);
@@ -71,7 +97,7 @@ export default function SignIn() {
         oauthAccessToken: token.accessToken,
         authorizationCode: "",
         socialType: "KAKAO",
-        fcmToken:"",
+        fcmToken:fcm,
       });
       // 성공한 경우 LOGIN call
       Login(response.data.data.refreshToken, response.data.data.accessToken);
@@ -94,7 +120,7 @@ export default function SignIn() {
         agePolicy: ageP,
         personalPolicy: personalP,
         marketPolicy: adsP,
-        fcmToken: '',
+        fcmToken: fcm,
       });
       // LOGIN call
       Login(response.data.data.refreshToken, response.data.data.accessToken);
@@ -133,7 +159,7 @@ export default function SignIn() {
     <View style={styles.entire}>
       <View style={styles.logoView}>
         <Text style={styles.logoTxt}>내 친구는 지금 뭐할까?</Text>
-        <Text style={styles.logoTxtMain}>tinqle</Text>
+        <Text style={styles.logoTxtMain}>tincle</Text>
       </View>
       <View style={styles.loginView}>
         <Pressable style={styles.loginBtnGoogle} onPress={LoginWithGoogle}>
@@ -145,7 +171,7 @@ export default function SignIn() {
           </Shadow>
         </Pressable>
         {/* <Pressable style={styles.loginBtnKakao} onPress={LoginWithKaKao}>
-          <Image style={styles.logoKakao} source={require('../../assets/image/LogoKakao.png')}/>
+          <Image style={styles.logoKakao} source={require('../../assets/image/LogoKakao.svg')}/>
           <Text style={styles.loginBtnTxtKakao}>카카오로 계속하기</Text>
         </Pressable> */}
         <Pressable style={styles.loginBtnKakao} onPress={LoginWithKaKao}>

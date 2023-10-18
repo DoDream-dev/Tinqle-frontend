@@ -16,15 +16,17 @@ export default function MyFriendList({navigation}:MyFriendListScreenProps) {
   const [isLast, setIsLast] = useState(false);
   const [friendData, setFriendData] = useState([{accountId:-1, friendshipId:-1, friendNickname:'',status:''}]);
   const [loading, setLoading] = useState(false);
+  const [cursorId, setCursorId]= useState(0);
   useEffect(() => {
     const getFriendship = async () => {
       try {
-        const response = await axios.get(`${Config.API_URL}/friendships/manage`,);
+        const response = await axios.get(`${Config.API_URL}/friendships/manage?cursorId=${cursorId}`,);
         setIsLast(response.data.data.last);
         console.log(response.data.data)
         if (response.data.data.content.length == 0) setNoFriend(true);
         else {
           setFriendData(response.data.data.content);
+          setCursorId(response.data.data.content[response.data.data.content.length-1].friendshipId)
         }
       } catch (error) {
         const errorResponse = (error as AxiosError<{message: string}>).response;
@@ -40,12 +42,15 @@ export default function MyFriendList({navigation}:MyFriendListScreenProps) {
         const response = await axios.get(`${Config.API_URL}/friendships/manage`,);
         setIsLast(response.data.data.last);
         setFriendData(friendData.concat(response.data.data.content));
-        setLoading(false);
+        if (response.data.data.content.length != 0) {
+          setCursorId(response.data.data.content[response.data.data.content.length-1].friendshipId);
+        }
       } catch (error) {
         const errorResponse = (error as AxiosError<{message: string}>).response;
         console.log(errorResponse.data);
       }
     }
+    setLoading(false);
   };
   const onEndReached = () => {
     if (!loading) {getData();}

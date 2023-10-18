@@ -40,8 +40,8 @@ export default function Profile({navigation, route}:ProfileScreenProps) {
   const [status, setStatus] = useState('');
   const [name, setName] = useState('');
   
-  const inp1 = useRef(null);
-  const inp2 = useRef(null);
+  const inp1 = useRef();
+  const inp2 = useRef();
   useEffect(() => {
     if (whoseProfile == 0) {
       const getMyProfile = async () => {
@@ -169,6 +169,10 @@ export default function Profile({navigation, route}:ProfileScreenProps) {
     }
   };
 
+  useEffect(()=>{
+    if (chageName) {inp1.current.focus();}
+  },[chageName])
+
   return (
     <View style={styles.entire}>
       <View style={styles.profileView}>
@@ -288,7 +292,7 @@ export default function Profile({navigation, route}:ProfileScreenProps) {
         </Pressable>
       </Modal>
       {/* modal for changing name */}
-      <Modal isVisible={chageName} onBackButtonPress={()=>setChangeName(false)} avoidKeyboard={true} backdropColor='#222222' backdropOpacity={0.5} onModalShow={()=>{inp1.current?.focus()}}>
+      <Modal isVisible={chageName} onBackButtonPress={()=>setChangeName(false)} avoidKeyboard={true} backdropColor='#222222' backdropOpacity={0.5}>
         <Pressable style={styles.modalBGView} onPress={()=>{setChangeName(false); Keyboard.dismiss();}}>
           <Pressable style={styles.modalView} onPress={(e)=>e.stopPropagation()}>
             {whoseProfile == 0 && <Text style={styles.modalTitleTxt}>내 이름 바꾸기</Text>}
@@ -396,7 +400,8 @@ const styles = StyleSheet.create({
     width: '100%',
     backgroundColor:'#FFFFFF',
     paddingVertical:40,
-    alignItems:'center'
+    alignItems:'center',
+    borderRadius:10
   },
   statusView:{
     width: 120,

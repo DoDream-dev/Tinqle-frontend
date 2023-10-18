@@ -1,17 +1,57 @@
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import React, { useEffect, useState, useCallback } from 'react';
-import { View, Text, StyleSheet, Image, Pressable, Modal as M, TextInput } from 'react-native';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
+import { RefreshControl, Keyboard, View, Text, StyleSheet, Image, Pressable, Modal as M, TextInput, FlatList } from 'react-native';
 import { RootStackParamList } from '../../AppInner';
 import Feed from '../components/Feed';
 import axios, { AxiosError } from 'axios';
 // @ts-ignore
 import { Shadow } from 'react-native-shadow-2';
 import { useFocusEffect } from '@react-navigation/native';
+import Content from '../components/Content';
 import Feather from 'react-native-vector-icons/Feather';
 import Config from 'react-native-config';
 import Modal from 'react-native-modal'
+import ChildCmtItem from '../components/ChildCmtItem';
 
 type FeedDetailScreenProps = NativeStackScreenProps<RootStackParamList, 'FeedDetail'>;
+type itemProps = {
+  item:{
+    commentId:number;
+    content:string;
+    childCount:number;
+    accountId:number;
+    friendNickname:string;
+    status:string;
+    isAuthor:boolean,
+    createAt:string;
+    childCommentCardList: [
+      {
+        parentId:number;
+        commentId:number;
+        content:string;
+        accountId:number;
+        friendNickname:string;
+        status:string;
+        isAuthor:boolean;
+        createAt:string;
+      }
+    ]
+  }
+};
+
+// type citemProps = {
+//   citem:{
+//     parentId:number;
+//     commentId:number;
+//     content:string;
+//     accountId:number;
+//     friendNickname:string;
+//     status:string;
+//     isAuthor:boolean;
+//     createAt:string;
+//   }
+  
+// };
 
 export default function FeedDetail({navigation, route}:FeedDetailScreenProps) {
   const [refresh, setRefresh] = useState(false);
@@ -36,6 +76,7 @@ export default function FeedDetail({navigation, route}:FeedDetailScreenProps) {
     isAuthor : false,
     createdAt : ""
   });
+  const [cmtData, setCmtData] = useState([]);
   const [showBottomSheet, setShowBottomSheet] = useState(false);
   const [EmoticonList, setEmoticonList] = useState({
     heartEmoticonNicknameList:['-'],
@@ -45,33 +86,57 @@ export default function FeedDetail({navigation, route}:FeedDetailScreenProps) {
   });
   const [KBsize, setKBsize] = useState(0);
   const [cmtContent, setCmtContent] = useState('');
+  const [isLast, setIsLast] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [placeholder, setPlaceholder] = useState('댓글을 적어주세요');
+  const [cursorId, setCursorId] = useState(0);
 
   useFocusEffect(
     useCallback(()=>{
       const getFeed = async () => {
         try {
           const response = await axios.get(`${Config.API_URL}/feeds/${route.params.feedId}`,);
-          console.log(response.data.data);
           setFeedData(response.data.data);
         } catch (error) {
           const errorResponse = (error as AxiosError<{message: string}>).response;
           console.log(errorResponse.data);
         }
       }
+      const getCmt = async () => {
+        try {
+          const response = await axios.get(`${Config.API_URL}/feeds/${route.params.feedId}/comments`,);
+          setCmtData(response.data.data.content);
+          if (response.data.data.content.length == 0) {setCursorId(0);}
+          else {
+            setCursorId(response.data.data.content[response.data.data.content.length-1].commentId)
+          }
+          setIsLast(response.data.data.last);
+        } catch (error) {
+          const errorResponse = (error as AxiosError<{message: string}>).response;
+          console.log(errorResponse.data);
+        }
+      }
       getFeed();
+      getCmt();
     },[refresh])
   );
 
   const [deleteModal, setDeleteModal] = useState(false);
 
   useEffect(()=>{
+    const handleKeyboardDismiss = () => {
+      setWriteChildCmt(-1);
+    }
+    const KeyboardDidHideListener = Keyboard.addListener('keyboardDidHide', handleKeyboardDismiss);
     if (feedData.isAuthor) {
       navigation.setOptions({headerRight:()=>(
         <Pressable onPress={()=>(setDeleteModal(true))}>
           <Feather name="more-vertical" size={24} color={'#848484'} />
         </Pressable>
       )});
+    }
+    return () => {
+      KeyboardDidHideListener.remove();
     }
   },[]);
   
@@ -114,53 +179,184 @@ export default function FeedDetail({navigation, route}:FeedDetailScreenProps) {
     }
   }
 
-  const sendNewCmt = async () => {};
+  const sendNewCmt = async () => {
+    try {
+      const response = await axios.post(`${Config.API_URL}/feeds/${feedData.feedId}/comments/parent`, {content:cmtContent});
+      console.log(response.data.data);
+      setCmtContent('');
+      setRefresh(!refresh);
+      setIsLast(false);
+    } catch (error) {
+      const errorResponse = (error as AxiosError<{message: string}>).response;
+      console.log(errorResponse.data);
+    }
+  };
+
+  const sendNewChildCmt = async () => {
+    try {
+      const response = await axios.post(`${Config.API_URL}/feeds/${feedData.feedId}/comments/${writeChildCmt}/children`, {content:cmtContent});
+      console.log(response.data.data);
+      setCmtContent('');
+      setRefresh(!refresh);
+      setIsLast(false);
+      setWriteChildCmt(-1);
+    } catch (error) {
+      const errorResponse = (error as AxiosError<{message: string}>).response;
+      console.log(errorResponse.data);
+    }
+  };
+
+  const getData = async () => {
+    setLoading(true);
+    if (!isLast) {
+      try {
+        const response = await axios.get(`${Config.API_URL}/feeds/${route.params.feedId}/comments?cursorId=${cursorId}`,);
+        setIsLast(response.data.data.last);
+        setCmtData(cmtData.concat(response.data.data.content));
+        if (response.data.data.content.length == 0) {setCursorId(0)}
+        else {
+          setCursorId(response.data.data.content[response.data.data.content.length-1].commentId)
+        }
+      } catch (error) {
+        const errorResponse = (error as AxiosError<{message: string}>).response;
+        console.log(errorResponse.data);
+      }
+    }
+    setLoading(false);
+  };
+
+  const onEndReached = () => {
+    if (!loading) {getData();}
+  };
+
+  const [refreshing, setRefreshing] = useState(false);
+    
+  const onRefresh = async () => {
+    setRefreshing(true);
+    // await RefreshDataFetch();
+    setRefresh(!refresh)
+    setRefreshing(false);
+  }
+
   
+  const inputRef = useRef();
+  const [writeChildCmt, setWriteChildCmt] = useState(-1);
+  useEffect(()=>{
+    if (writeChildCmt != -1) {
+      setPlaceholder('대댓글을 적어주세요');
+      inputRef.current.focus();
+    }
+    else {
+      setPlaceholder('댓글을 적어주세요')
+    }
+  }, [writeChildCmt])
+
+
   return (
     <View style={styles.entire}>
-      <View style={styles.feedView}>
-        <Feed
-          mine={feedData.isAuthor}
-          detail={true}
-          commentCnt={feedData.commentCount}
-          createdAt={feedData.createdAt}
-          content={feedData.content}
-          emoticons={feedData.emoticons}
-          nickname={feedData.friendNickname}
-          status={feedData.status}
-          accountId={feedData.accountId}
-          imageURL={feedData.feedImageUrls}
-          press={pressEmoticon}
-          feedId={feedData.feedId}
-          whoReact={whoReact}
+      <View style={styles.commentView}>
+        <FlatList
+          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+          data={cmtData}
+          style={styles.cmtList}
+          onEndReached={onEndReached}
+          onEndReachedThreshold={0.4}
+          ListHeaderComponent={
+            <View>
+              <View style={styles.feedView}>
+                <Feed
+                  mine={feedData.isAuthor}
+                  detail={true}
+                  commentCnt={feedData.commentCount}
+                  createdAt={feedData.createdAt}
+                  content={feedData.content}
+                  emoticons={feedData.emoticons}
+                  nickname={feedData.friendNickname}
+                  status={feedData.status}
+                  accountId={feedData.accountId}
+                  imageURL={feedData.feedImageUrls}
+                  press={pressEmoticon}
+                  feedId={feedData.feedId}
+                  whoReact={whoReact}
+                />
+              </View>
+              <View style={styles.commentHeader}>
+                <Image source={require('../../assets/image/commentIcon.png')} />
+                <Text style={styles.commentHeaderTxt}>댓글 {feedData.commentCount}개</Text>
+              </View>
+            </View>
+          }
+          renderItem={({item}:itemProps) => {
+            const childData = item.childCommentCardList
+            return (
+              <Pressable style={writeChildCmt == item.commentId 
+              ? {borderBottomWidth:1,borderColor:'#ECECEC',backgroundColor:'#FFB4431A'} 
+              : {borderBottomWidth:1,borderColor:'#ECECEC'}}>
+                <Content 
+                  nickname={item.friendNickname}
+                  status={item.status}
+                  content={item.content}
+                  createdAt={item.createAt}
+                  accountId={item.accountId}
+                  mine={item.isAuthor}
+                  imageURL={[null]}
+                  detail={true}
+                  cmt={true}
+                  child={setWriteChildCmt}
+                  cmtId={item.commentId}
+                />
+                {item.childCount != 0 
+                && <View style={{backgroundColor:'white'}}>
+                  <FlatList 
+                    data={childData}
+                    // style={{borderTopWidth:1, borderTopColor:'#ECECEC',}}
+                    renderItem={({item}) => {
+                      return (
+                        <View style={styles.childCmt}>
+                          <Content 
+                            nickname={item.friendNickname}
+                            status={item.status}
+                            content={item.content}
+                            createdAt={item.createAt}
+                            accountId={item.accountId}
+                            mine={item.isAuthor}
+                            imageURL={[null]}
+                            detail={true}
+                            cmt={false}
+                            child={setWriteChildCmt}
+                            cmtId={item.commentId}
+                          />
+                        </View>
+                      );
+                    }}
+                  />
+                </View>}
+              </Pressable>
+            );
+          }}
         />
       </View>
-      <View style={styles.commentView}>
-        <View style={styles.commentHeader}>
-          <Image source={require('../../assets/image/commentIcon.png')} />
-          <Text style={styles.commentHeaderTxt}>댓글 {feedData.commentCount}개</Text>
-        </View>
-      </View>
+      <View style={{height:Math.min(80, Math.max(45, KBsize))}}></View>
       <View style={styles.newCmtView}>
         <TextInput 
           placeholder={placeholder}
           placeholderTextColor={'#848484'}
           style={[styles.newCmtTxtInput, {height:Math.min(80, Math.max(35, KBsize))}]}
-          onFocus={()=>setPlaceholder('')}
-          onBlur={()=>setPlaceholder('댓글을 적어주세요')}
+          onBlur={()=>setWriteChildCmt(-1)}
           onChangeText={(text:string)=>{setCmtContent(text)}}
           blurOnSubmit={false}
-          maxLength={500}
+          maxLength={200}
           value={cmtContent}
-          onSubmitEditing={sendNewCmt}
+          onSubmitEditing={()=>sendNewCmt()}
           multiline={true}
           autoCapitalize='none'
           autoComplete='off'
           autoCorrect={false}
           onContentSizeChange={(e) => {setKBsize(e.nativeEvent.contentSize.height);}}
+          ref={inputRef}
           // numberOfLines={4}
         />
-        <Pressable style={cmtContent == '' ? styles.sendNewCmt : styles.sendNewCmtActivated} disabled={cmtContent == ''} onPress={sendNewCmt}>
+        <Pressable style={cmtContent == '' ? styles.sendNewCmt : styles.sendNewCmtActivated} disabled={cmtContent == ''} onPress={writeChildCmt == -1 ? sendNewCmt : sendNewChildCmt}>
           <Feather name="check" size={24} style={{color:'white'}}/>
         </Pressable>
       </View>
@@ -220,16 +416,18 @@ const styles = StyleSheet.create({
   },
   commentView:{
     width: '100%',
+    flex:1,    
+    // borderTopColor: '#ECECEC',
+    // borderTopWidth: 1,
   },
   commentHeader:{
     flexDirection: 'row',
     alignItems: 'center',
     width: '100%',
     height: 36,
-    borderBottomColor: '#ECECEC',
-    borderBottomWidth: 1,
-    borderTopColor: '#ECECEC',
+    borderColor: '#ECECEC',
     borderTopWidth: 1,
+    borderBottomWidth: 1,
     paddingLeft: 15
   },
   commentHeaderTxt:{
@@ -238,6 +436,15 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: '500',
   },
+  cmtList:{
+    // borderBottomWidth:1,
+    // borderBottomColor:'#ECECEC',
+  },
+  childCmt:{
+    borderTopWidth:1,
+    borderTopColor:'#ECECEC',
+    paddingLeft:40
+},
   popup:{
     position:'absolute',
     right:35,

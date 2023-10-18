@@ -7,12 +7,14 @@
     "ios": "react-native run-ios",
     "lint": "eslint .",
     "start": "react-native start",
-    "test": "jest"
+    "test": "jest",
+    "bundle": "react-native bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle"
   },
   "dependencies": {
     "@react-native-clipboard/clipboard": "^1.11.2",
     "@react-native-firebase/app": "^18.4.0",
     "@react-native-firebase/auth": "^18.4.0",
+    "@react-native-firebase/messaging": "^18.4.0",
     "@react-native-google-signin/google-signin": "^10.0.1",
     "@react-native-seoul/kakao-login": "^5.3.0",
     "@react-navigation/native": "^6.1.7",
@@ -44,7 +46,7 @@
     "@babel/runtime": "^7.20.0",
     "@react-native/eslint-config": "^0.72.2",
     "@react-native/metro-config": "^0.72.11",
-    "@tsconfig/react-native": "^3.0.0",
+    "@tsconfig/react-native": "^3.0.2",
     "@types/react": "^18.0.24",
     "@types/react-native-vector-icons": "^6.4.14",
     "@types/react-test-renderer": "^18.0.0",
