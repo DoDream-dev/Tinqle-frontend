@@ -1,6 +1,8 @@
 import React from "react";
-import { StyleSheet, View, Text, Image, Pressable } from "react-native";
+import { StyleSheet, View, Text, Pressable } from "react-native";
 import Emoticons from "./Emoticons";
+import { svgXml } from '../../assets/image/svgXml';
+import { SvgXml } from 'react-native-svg'
 type EmoticonsProps = {
   smileEmoticonCount:number;
   sadEmoticonCount:number;
@@ -35,13 +37,13 @@ export default function ContentFeedBottom(props:ContentFeedBottomProps){
   return (
     <View style={detail ? styles.entireDetail : styles.entire}>
       {!detail && <View style={styles.feedListCommentView}>
-        <Image source={require('../../assets/image/commentIcon.png')} />
+        <SvgXml width={16} height={14} xml={svgXml.icon.commentIcon} />
         <Text style={styles.feedListCommentTxt}>{commentCnt}</Text>
       </View>}
       <View style={styles.emoticonView}>
         <Emoticons mine={mine} emotionData={emotionData} press={props.press} feedId={props.feedId}/>
         {mine && <Pressable style={styles.reactedPeopleBtn} onPress={()=>{props.whoReact(props.feedId)}}>
-          <Image source={require('../../assets/image/reacted.png')} />
+          <SvgXml width={20} height={20} xml={svgXml.icon.reacted} />
         </Pressable>}
       </View>
     </View>
@@ -65,7 +67,8 @@ const styles = StyleSheet.create({
   },
   feedListCommentView:{
     flexDirection: 'row',
-    marginLeft: 5
+    marginLeft: 5,
+    alignItems:'center'
   },
   feedListCommentTxt:{
     color: '#848484',

@@ -27,7 +27,7 @@ import SplashScreen from "react-native-splash-screen";
 import useAxiosInterceptor from './src/hooks/useAxiosInterceptor'
 
 export type RootStackParamList = {
-  FeedList: undefined;
+  FeedList: {newNoti:boolean, notiProp:React.Dispatch<React.SetStateAction<boolean>>};
   FeedDetail: {feedId:number};
   Profile: {whose:number, accountId:number};
   MyFriendList: undefined;
@@ -46,13 +46,14 @@ export default function AppInner() {
   useAxiosInterceptor();
   const dispatch = useAppDispatch();
   const isLoggedIn = useSelector((state:RootState) => !!state.user.accessToken);
+  const [newNoti, setNewNoti] = useState(false);
   useEffect(() => {
     SplashScreen.hide();
   }, []);
   useEffect(() => {
     const getRefreshTokenAgain = async () => {
       try {
-        await EncryptedStorage.removeItem('refreshToken')
+        // await EncryptedStorage.removeItem('refreshToken')
         const token = await EncryptedStorage.getItem('refreshToken');
         if (!token) {
           console.log('no RefreshToken')
@@ -64,6 +65,7 @@ export default function AppInner() {
             accessToken: response.data.data.accessToken,
           }),
         );
+        // console.log(response.data.data.accessTokenr);
         await EncryptedStorage.setItem('refreshToken', response.data.data.refreshToken,);
       } catch (error) {
         const errorResponse = (error as AxiosError<{message: string}>).response;
@@ -77,6 +79,7 @@ export default function AppInner() {
       <Stack.Screen
         name="FeedList"
         component={FeedList}
+        initialParams={{newNoti}}
         options={({navigation}) => ({
           title:'tincle',
           headerTitleAlign:'center',
@@ -216,6 +219,21 @@ export default function AppInner() {
       <Stack.Screen
         name="Notis"
         component={Notis}
+        options={({navigation}) => ({
+          title:'알림',
+          headerTitleAlign:'center',
+          headerTitleStyle:{
+            color:'#222222',
+            fontSize:15,
+            fontWeight:'600'
+          },
+          headerShadowVisible:true,
+          headerLeft: () => (
+            <Pressable onPress={()=>(navigation.goBack())}>
+              <AntDesign name="arrowleft" size={24} color={'#848484'} />
+            </Pressable>
+          ),
+        })}
       />
     </Stack.Navigator>
   ) : (
@@ -225,7 +243,7 @@ export default function AppInner() {
         name="SignIn"
         component={SignIn}
         options={()=>({
-          headerShown:false
+          headerShown:false,
         })}
       />
     </Stack.Navigator>

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Pressable, Image, Alert, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, Pressable, Alert, Dimensions } from 'react-native';
 import * as KakaoLogin from '@react-native-seoul/kakao-login'
 import { useAppDispatch } from '../store';
 import userSlice from '../slices/user';
@@ -11,7 +11,13 @@ import auth from '@react-native-firebase/auth'
 import Modal from 'react-native-modal';
 import Feather from 'react-native-vector-icons/Feather'
 import { Shadow } from 'react-native-shadow-2';
-import messaging from '@react-native-firebase/messaging'
+import messaging from '@react-native-firebase/messaging';
+import { svgXml } from '../../assets/image/svgXml';
+import { SvgXml } from 'react-native-svg';
+
+type Prop = {
+  notiProp:React.Dispatch<React.SetStateAction<boolean>>
+};
 
 export default function SignIn() {
   const [id, setID] = useState('사람');
@@ -27,6 +33,8 @@ export default function SignIn() {
   const handleFcmMessage = () => {
     const unsubscribe = messaging().onMessage(async remoteMessage => {
       Alert.alert('A new FCM message arrived', JSON.stringify(remoteMessage));
+      props.notiProp(true);
+      
     });
     messaging().onNotificationOpenedApp(remoteMessage => {
       console.log('Noti caused app to open from gb state: ', remoteMessage.notification,);
@@ -39,7 +47,7 @@ export default function SignIn() {
     if (enabled) {
       const fcmToken = await messaging().getToken();
 
-      console.log('fcmToken: ', fcmToken);
+      // console.log('fcmToken: ', fcmToken);
       // console.log('AuthStat: ', authStatus);
       setFcm(fcmToken);
       handleFcmMessage();
@@ -165,19 +173,15 @@ export default function SignIn() {
         <Pressable style={styles.loginBtnGoogle} onPress={LoginWithGoogle}>
           <Shadow distance={5} startColor='#00000009' style={{flex:1,alignSelf:'stretch', borderRadius:5}} stretch={true} containerStyle={{marginHorizontal:0}}>
             <View style={[styles.forshadow, {width:windowWidth-32}]}>
-              <Image style={styles.logoGoogle} source={require('../../assets/image/LogoGoogle.png')}/>
+              <SvgXml width={24} height={24} xml={svgXml.logo.google} style={styles.logoGoogle}/>
               <Text style={styles.loginBtnTxtGoogle}>Google로 계속하기</Text>
             </View>
           </Shadow>
         </Pressable>
-        {/* <Pressable style={styles.loginBtnKakao} onPress={LoginWithKaKao}>
-          <Image style={styles.logoKakao} source={require('../../assets/image/LogoKakao.svg')}/>
-          <Text style={styles.loginBtnTxtKakao}>카카오로 계속하기</Text>
-        </Pressable> */}
         <Pressable style={styles.loginBtnKakao} onPress={LoginWithKaKao}>
           <Shadow distance={5} startColor='#00000009' style={{flex:1,alignSelf:'stretch', borderRadius:5}} stretch={true} containerStyle={{marginHorizontal:0}}>
             <View style={[styles.forshadow, {width:windowWidth-32}]}>
-              <Image style={styles.logoKakao} source={require('../../assets/image/LogoKakao.png')}/>
+              <SvgXml width={24} height={24} xml={svgXml.logo.kakao} style={styles.logoKakao}/>
               <Text style={styles.loginBtnTxtKakao}>카카오로 계속하기</Text>
             </View>
           </Shadow>

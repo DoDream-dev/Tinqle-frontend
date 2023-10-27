@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Pressable, FlatList, Image } from 'react-native';
+import { View, Text, StyleSheet, Pressable, FlatList } from 'react-native';
 import { useSelector } from 'react-redux';
 import { RootState } from '../store/reducer';
 import Config from 'react-native-config';
 import axios, { AxiosError } from 'axios';
-import { NativeStackNavigationProp, NativeStackScreenProps } from '@react-navigation/native-stack';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../AppInner';
-import { useNavigation } from '@react-navigation/native';
+import { svgXml } from '../../assets/image/svgXml';
+import { SvgXml } from 'react-native-svg';
 
 type MyFriendListScreenProps = NativeStackScreenProps<RootStackParamList, 'MyFriendList'>;
 
@@ -20,7 +21,7 @@ export default function MyFriendList({navigation}:MyFriendListScreenProps) {
   useEffect(() => {
     const getFriendship = async () => {
       try {
-        const response = await axios.get(`${Config.API_URL}/friendships/manage?cursorId=${cursorId}`,);
+        const response = await axios.get(`${Config.API_URL}/friendships/manage`,);
         setIsLast(response.data.data.last);
         console.log(response.data.data)
         if (response.data.data.content.length == 0) setNoFriend(true);
@@ -39,7 +40,7 @@ export default function MyFriendList({navigation}:MyFriendListScreenProps) {
     if (!isLast) {
       setLoading(true);
       try {
-        const response = await axios.get(`${Config.API_URL}/friendships/manage`,);
+        const response = await axios.get(`${Config.API_URL}/friendships/manage?cursorId=${cursorId}`,);
         setIsLast(response.data.data.last);
         setFriendData(friendData.concat(response.data.data.content));
         if (response.data.data.content.length != 0) {
@@ -73,24 +74,24 @@ export default function MyFriendList({navigation}:MyFriendListScreenProps) {
         renderItem={({item}) => {
           return (
             <Pressable style={styles.friendView} onPress={()=>navigation.navigate('Profile', {whose:1, accountId:item.accountId})}>
-              {item.status.toLowerCase() == 'smile' && <Image style={{height:32, width:32}} source={require('../../assets/image/status01smile.png')}/>}
-              {item.status.toLowerCase() == 'happy' && <Image style={{height:32, width:32}} source={require('../../assets/image/status02happy.png')}/>}
-              {item.status.toLowerCase() == 'sad' && <Image style={{height:32, width:32}} source={require('../../assets/image/status03sad.png')}/>}
-              {item.status.toLowerCase() == 'mad' && <Image style={{height:32, width:32}} source={require('../../assets/image/status04mad.png')}/>}
-              {item.status.toLowerCase() == 'exhausted' && <Image style={{height:32, width:32}} source={require('../../assets/image/status05exhausted.png')}/>}
-              {item.status.toLowerCase() == 'coffee' && <Image style={{height:32, width:32}} source={require('../../assets/image/status06coffee.png')}/>}
-              {item.status.toLowerCase() == 'meal' && <Image style={{height:32, width:32}} source={require('../../assets/image/status07meal.png')}/>}
-              {item.status.toLowerCase() == 'alcohol' && <Image style={{height:32, width:32}} source={require('../../assets/image/status08alcohol.png')}/>}
-              {item.status.toLowerCase() == 'chicken' && <Image style={{height:32, width:32}} source={require('../../assets/image/status09chicken.png')}/>}
-              {item.status.toLowerCase() == 'sleep' && <Image style={{height:32, width:32}} source={require('../../assets/image/status10sleep.png')}/>}
-              {item.status.toLowerCase() == 'work' && <Image style={{height:32, width:32}} source={require('../../assets/image/status11work.png')}/>}
-              {item.status.toLowerCase() == 'study' && <Image style={{height:32, width:32}} source={require('../../assets/image/status12study.png')}/>}
-              {item.status.toLowerCase() == 'movie' && <Image style={{height:32, width:32}} source={require('../../assets/image/status13movie.png')}/>}
-              {item.status.toLowerCase() == 'move' && <Image style={{height:32, width:32}} source={require('../../assets/image/status14move.png')}/>}
-              {item.status.toLowerCase() == 'dance' && <Image style={{height:32, width:32}} source={require('../../assets/image/status15dance.png')}/>}
-              {item.status.toLowerCase() == 'read' && <Image style={{height:32, width:32}} source={require('../../assets/image/status16read.png')}/>}
-              {item.status.toLowerCase() == 'walk' && <Image style={{height:32, width:32}} source={require('../../assets/image/status17walk.png')}/>}
-              {item.status.toLowerCase() == 'travel' && <Image style={{height:32, width:32}} source={require('../../assets/image/status18travel.png')}/>}
+              {item.status == 'smile'.toUpperCase() && <SvgXml width={32} height={32} xml={svgXml.status.smile} />}
+              {item.status == 'happy'.toUpperCase() && <SvgXml width={32} height={32} xml={svgXml.status.happy} />}
+              {item.status == 'sad'.toUpperCase() && <SvgXml width={32} height={32} xml={svgXml.status.sad} />}
+              {item.status == 'mad'.toUpperCase() && <SvgXml width={32} height={32} xml={svgXml.status.mad} />}
+              {item.status == 'exhausted'.toUpperCase() && <SvgXml width={32} height={32} xml={svgXml.status.exhauseted} />}
+              {item.status == 'coffee'.toUpperCase() && <SvgXml width={32} height={32} xml={svgXml.status.coffee} />}
+              {item.status == 'meal'.toUpperCase() && <SvgXml width={32} height={32} xml={svgXml.status.meal} />}
+              {item.status == 'alcohol'.toUpperCase() && <SvgXml width={32} height={32} xml={svgXml.status.alcohol} />}
+              {item.status == 'chicken'.toUpperCase() && <SvgXml width={32} height={32} xml={svgXml.status.chicken} />}
+              {item.status == 'sleep'.toUpperCase() && <SvgXml width={32} height={32} xml={svgXml.status.sleep} />}
+              {item.status == 'work'.toUpperCase() && <SvgXml width={32} height={32} xml={svgXml.status.work} />}
+              {item.status == 'study'.toUpperCase() && <SvgXml width={32} height={32} xml={svgXml.status.study} />}
+              {item.status == 'movie'.toUpperCase() && <SvgXml width={32} height={32} xml={svgXml.status.movie} />}
+              {item.status == 'move'.toUpperCase() && <SvgXml width={32} height={32} xml={svgXml.status.move} />}
+              {item.status == 'dance'.toUpperCase() && <SvgXml width={32} height={32} xml={svgXml.status.dance} />}
+              {item.status == 'read'.toUpperCase() && <SvgXml width={32} height={32} xml={svgXml.status.read} />}
+              {item.status == 'walk'.toUpperCase() && <SvgXml width={32} height={32} xml={svgXml.status.walk} />}
+              {item.status == 'travel'.toUpperCase() && <SvgXml width={32} height={32} xml={svgXml.status.travel} />}
               <View style={styles.friendmiddle}>
                 <Text style={styles.friendName}>{item.friendNickname}</Text>
               </View>

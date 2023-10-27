@@ -18,6 +18,7 @@ const useAxiosInterceptor = () => {
     if (config.headers['Content-Type'] == undefined) {
       config.headers['Content-Type'] = 'application/json';
     }
+    console.log(config.headers['Content-Type'])
     config.headers['Authorization'] = `Bearer ${accessToken}`;
     return config;
   },

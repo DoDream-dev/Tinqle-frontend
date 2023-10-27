@@ -6,6 +6,8 @@ import { StyleSheet, View, Text, Image, Pressable } from "react-native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../../AppInner";
 import { useNavigation } from "@react-navigation/native";
+import { svgXml } from '../../assets/image/svgXml';
+import { SvgXml } from 'react-native-svg';
 type ContentProps = {
   nickname:string;
   status:string;
@@ -38,24 +40,24 @@ export default function Content( props:ContentProps){
     <View style={styles.entire}>
       <View style={styles.statusView}>
         <Pressable onPress={()=>{console.log(1111); navigation.navigate('Profile', {whose:mine, accountId:accountId}); }}>
-          {status == 'smile'.toUpperCase() && <Image style={{height:32, width:32}} source={require('../../assets/image/status01smile.png')}/>}
-          {status == 'happy'.toUpperCase() && <Image style={{height:32, width:32}} source={require('../../assets/image/status02happy.png')}/>}
-          {status == 'sad'.toUpperCase() && <Image style={{height:32, width:32}} source={require('../../assets/image/status03sad.png')}/>}
-          {status == 'mad'.toUpperCase() && <Image style={{height:32, width:32}} source={require('../../assets/image/status04mad.png')}/>}
-          {status == 'exhausted'.toUpperCase() && <Image style={{height:32, width:32}} source={require('../../assets/image/status05exhausted.png')}/>}
-          {status == 'coffee'.toUpperCase() && <Image style={{height:32, width:32}} source={require('../../assets/image/status06coffee.png')}/>}
-          {status == 'meal'.toUpperCase() && <Image style={{height:32, width:32}} source={require('../../assets/image/status07meal.png')}/>}
-          {status == 'alcohol'.toUpperCase() && <Image style={{height:32, width:32}} source={require('../../assets/image/status08alcohol.png')}/>}
-          {status == 'chicken'.toUpperCase() && <Image style={{height:32, width:32}} source={require('../../assets/image/status09chicken.png')}/>}
-          {status == 'sleep'.toUpperCase() && <Image style={{height:32, width:32}} source={require('../../assets/image/status10sleep.png')}/>}
-          {status == 'work'.toUpperCase() && <Image style={{height:32, width:32}} source={require('../../assets/image/status11work.png')}/>}
-          {status == 'study'.toUpperCase() && <Image style={{height:32, width:32}} source={require('../../assets/image/status12study.png')}/>}
-          {status == 'movie'.toUpperCase() && <Image style={{height:32, width:32}} source={require('../../assets/image/status13movie.png')}/>}
-          {status == 'move'.toUpperCase() && <Image style={{height:32, width:32}} source={require('../../assets/image/status14move.png')}/>}
-          {status == 'dance'.toUpperCase() && <Image style={{height:32, width:32}} source={require('../../assets/image/status15dance.png')}/>}
-          {status == 'read'.toUpperCase() && <Image style={{height:32, width:32}} source={require('../../assets/image/status16read.png')}/>}
-          {status == 'walk'.toUpperCase() && <Image style={{height:32, width:32}} source={require('../../assets/image/status17walk.png')}/>}
-          {status == 'travel'.toUpperCase() && <Image style={{height:32, width:32}} source={require('../../assets/image/status18travel.png')}/>}
+          {status == 'smile'.toUpperCase() && <SvgXml width={32} height={32} xml={svgXml.status.smile} />}
+          {status == 'happy'.toUpperCase() && <SvgXml width={32} height={32} xml={svgXml.status.happy} />}
+          {status == 'sad'.toUpperCase() && <SvgXml width={32} height={32} xml={svgXml.status.sad} />}
+          {status == 'mad'.toUpperCase() && <SvgXml width={32} height={32} xml={svgXml.status.mad} />}
+          {status == 'exhausted'.toUpperCase() && <SvgXml width={32} height={32} xml={svgXml.status.exhauseted} />}
+          {status == 'coffee'.toUpperCase() && <SvgXml width={32} height={32} xml={svgXml.status.coffee} />}
+          {status == 'meal'.toUpperCase() && <SvgXml width={32} height={32} xml={svgXml.status.meal} />}
+          {status == 'alcohol'.toUpperCase() && <SvgXml width={32} height={32} xml={svgXml.status.alcohol} />}
+          {status == 'chicken'.toUpperCase() && <SvgXml width={32} height={32} xml={svgXml.status.chicken} />}
+          {status == 'sleep'.toUpperCase() && <SvgXml width={32} height={32} xml={svgXml.status.sleep} />}
+          {status == 'work'.toUpperCase() && <SvgXml width={32} height={32} xml={svgXml.status.work} />}
+          {status == 'study'.toUpperCase() && <SvgXml width={32} height={32} xml={svgXml.status.study} />}
+          {status == 'movie'.toUpperCase() && <SvgXml width={32} height={32} xml={svgXml.status.movie} />}
+          {status == 'move'.toUpperCase() && <SvgXml width={32} height={32} xml={svgXml.status.move} />}
+          {status == 'dance'.toUpperCase() && <SvgXml width={32} height={32} xml={svgXml.status.dance} />}
+          {status == 'read'.toUpperCase() && <SvgXml width={32} height={32} xml={svgXml.status.read} />}
+          {status == 'walk'.toUpperCase() && <SvgXml width={32} height={32} xml={svgXml.status.walk} />}
+          {status == 'travel'.toUpperCase() && <SvgXml width={32} height={32} xml={svgXml.status.travel} />}
         </Pressable>
       </View>
       <View style={styles.contentView}>

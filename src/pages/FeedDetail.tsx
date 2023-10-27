@@ -1,6 +1,6 @@
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React, { useEffect, useState, useCallback, useRef } from 'react';
-import { RefreshControl, Keyboard, View, Text, StyleSheet, Image, Pressable, Modal as M, TextInput, FlatList } from 'react-native';
+import { RefreshControl, Keyboard, View, Text, StyleSheet, Pressable, Modal as M, TextInput, FlatList } from 'react-native';
 import { RootStackParamList } from '../../AppInner';
 import Feed from '../components/Feed';
 import axios, { AxiosError } from 'axios';
@@ -11,7 +11,10 @@ import Content from '../components/Content';
 import Feather from 'react-native-vector-icons/Feather';
 import Config from 'react-native-config';
 import Modal from 'react-native-modal'
-import ChildCmtItem from '../components/ChildCmtItem';
+import { svgXml } from '../../assets/image/svgXml';
+import { SvgXml } from 'react-native-svg'
+import { throttleTime, throttleTimeEmoticon } from '../hooks/Throttle';
+import _ from 'lodash';
 
 type FeedDetailScreenProps = NativeStackScreenProps<RootStackParamList, 'FeedDetail'>;
 type itemProps = {
@@ -120,6 +123,19 @@ export default function FeedDetail({navigation, route}:FeedDetailScreenProps) {
       getCmt();
     },[refresh])
   );
+  useFocusEffect(
+    useCallback(()=>{
+      const reloadStatus = () => {
+        navigation.setOptions({headerRight:()=>(
+          <View style={{flexDirection:'row'}}>
+            <Pressable onPress={()=>setDeleteModal(true)}>
+              <SvgXml width={24} height={24} xml={svgXml.icon.menu}/>
+            </Pressable>
+          </View>
+        )});
+      }
+      reloadStatus();
+    },[refresh]));
 
   const [deleteModal, setDeleteModal] = useState(false);
 
@@ -140,7 +156,7 @@ export default function FeedDetail({navigation, route}:FeedDetailScreenProps) {
     }
   },[]);
   
-  const deleteFeed = async () => {
+  const deleteFeed = _.throttle(async () => {
     try {
       console.log(feedData.feedId)
       const response = await axios.delete(`${Config.API_URL}/feeds/${feedData.feedId}`, {});
@@ -154,9 +170,9 @@ export default function FeedDetail({navigation, route}:FeedDetailScreenProps) {
       }
       console.log(errorResponse.data);
     }
-  };
+  }, throttleTime);
 
-  const pressEmoticon = async (feedId:number, emoticon:string) => {
+  const pressEmoticon = _.debounce(async (feedId:number, emoticon:string) => {
     try {
       const response = await axios.put(`${Config.API_URL}/emoticons/feeds/${feedId}`, {emoticonType:emoticon},);
       console.log(response.data.data);
@@ -165,9 +181,9 @@ export default function FeedDetail({navigation, route}:FeedDetailScreenProps) {
       const errorResponse = (error as AxiosError<{message: string}>).response;
       console.log(errorResponse.data);
     }
-  };
+  }, throttleTimeEmoticon);
 
-  const whoReact = async (feedId:number) => {
+  const whoReact = _.throttle(async (feedId:number) => {
     try {
       const response = await axios.get(`${Config.API_URL}/emoticons/feeds/${feedId}`,);
       console.log(response.data.data);
@@ -177,22 +193,23 @@ export default function FeedDetail({navigation, route}:FeedDetailScreenProps) {
       const errorResponse = (error as AxiosError<{message: string}>).response;
       console.log(errorResponse.data);
     }
-  }
+  }, throttleTime);
 
-  const sendNewCmt = async () => {
+  const sendNewCmt = _.throttle(async () => {
     try {
       const response = await axios.post(`${Config.API_URL}/feeds/${feedData.feedId}/comments/parent`, {content:cmtContent});
       console.log(response.data.data);
       setCmtContent('');
       setRefresh(!refresh);
       setIsLast(false);
+      console.log(throttleTime)
     } catch (error) {
       const errorResponse = (error as AxiosError<{message: string}>).response;
       console.log(errorResponse.data);
     }
-  };
+  }, throttleTime);
 
-  const sendNewChildCmt = async () => {
+  const sendNewChildCmt = _.throttle(async () => {
     try {
       const response = await axios.post(`${Config.API_URL}/feeds/${feedData.feedId}/comments/${writeChildCmt}/children`, {content:cmtContent});
       console.log(response.data.data);
@@ -204,7 +221,7 @@ export default function FeedDetail({navigation, route}:FeedDetailScreenProps) {
       const errorResponse = (error as AxiosError<{message: string}>).response;
       console.log(errorResponse.data);
     }
-  };
+  }, throttleTime);;
 
   const getData = async () => {
     setLoading(true);
@@ -281,7 +298,7 @@ export default function FeedDetail({navigation, route}:FeedDetailScreenProps) {
                 />
               </View>
               <View style={styles.commentHeader}>
-                <Image source={require('../../assets/image/commentIcon.png')} />
+                <SvgXml width={16} height={14} xml={svgXml.icon.commentIcon} />
                 <Text style={styles.commentHeaderTxt}>댓글 {feedData.commentCount}개</Text>
               </View>
             </View>
@@ -381,19 +398,19 @@ export default function FeedDetail({navigation, route}:FeedDetailScreenProps) {
         <Pressable style={styles.modalBGView} onPress={()=>setShowBottomSheet(false)}>
           <Pressable style={styles.modalView} onPress={(e)=>e.stopPropagation()}>
             <View style={styles.whoReacted}>
-              <Image style={styles.emoticon} source={require('../../assets/image/heartEmoticon.png')} />
+              <SvgXml width={22} height={22} xml={svgXml.emoticon.heart} />
               <Text style={styles.emoticonTxt}>{EmoticonList.heartEmoticonNicknameList.join(' ') == '' ? '-' : EmoticonList.heartEmoticonNicknameList.join(', ').replace(/ /g, '\u00A0')}</Text>
             </View>
             <View style={styles.whoReacted}>
-              <Image style={styles.emoticon} source={require('../../assets/image/smileEmoticon.png')} />
+              <SvgXml width={22} height={22} xml={svgXml.emoticon.smile} />
               <Text style={styles.emoticonTxt}>{EmoticonList.smileEmoticonNicknameList.join(' ') == '' ? '-' : EmoticonList.smileEmoticonNicknameList.join(', ').replace(/ /g, '\u00A0')}</Text>
             </View>
             <View style={styles.whoReacted}>
-              <Image style={styles.emoticon} source={require('../../assets/image/sadEmoticon.png')} />
+              <SvgXml width={22} height={22} xml={svgXml.emoticon.sad} />
               <Text style={styles.emoticonTxt}>{EmoticonList.sadEmoticonNicknameList.join(' ') == '' ? '-' : EmoticonList.sadEmoticonNicknameList.join(', ').replace(/ /g, '\u00A0')}</Text>
             </View>
             <View style={styles.whoReacted}>
-              <Image style={styles.emoticon} source={require('../../assets/image/surpriseEmoticon.png')} />
+              <SvgXml width={22} height={22} xml={svgXml.emoticon.surprise} />
               <Text style={styles.emoticonTxt}>{EmoticonList.surpriseEmoticonNicknameList.join(' ') == '' ? '-' : EmoticonList.surpriseEmoticonNicknameList.join(', ').replace(/ /g, '\u00A0')}</Text>
             </View>
           </Pressable>
@@ -478,10 +495,6 @@ const styles = StyleSheet.create({
   whoReacted:{
     flexDirection:'row',
     marginVertical:4,
-  },
-  emoticon:{
-    width:24,
-    height:24
   },
   emoticonTxtView:{
     flexShrink:1

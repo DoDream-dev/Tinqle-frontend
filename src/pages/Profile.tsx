@@ -1,6 +1,6 @@
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { View, Text, StyleSheet, Pressable, TextInput, Keyboard, Image } from 'react-native';
+import { View, Text, StyleSheet, Pressable, TextInput, Keyboard } from 'react-native';
 import MaterialCommunity from 'react-native-vector-icons/MaterialCommunityIcons';
 import Modal from'react-native-modal';
 import ToastScreen from '../components/ToastScreen';
@@ -8,6 +8,10 @@ import { RootStackParamList } from '../../AppInner';
 import axios, { AxiosError } from 'axios';
 import Config from 'react-native-config';
 import { useFocusEffect } from '@react-navigation/native';
+import { svgXml } from '../../assets/image/svgXml';
+import { SvgXml } from 'react-native-svg';
+import _ from 'lodash';
+import { throttleTime, throttleTimeEmoticon } from '../hooks/Throttle';
 
 
 type ProfileScreenProps = NativeStackScreenProps<RootStackParamList, 'Profile'>;
@@ -96,7 +100,7 @@ export default function Profile({navigation, route}:ProfileScreenProps) {
     },[whose, acId, status])
   );
 
-  const postStatus = async (stat:string) => {
+  const postStatus = _.throttle(async (stat:string) => {
     if (stat == status) {return;}
     else {
       try {
@@ -108,13 +112,13 @@ export default function Profile({navigation, route}:ProfileScreenProps) {
         console.log(errorResponse);
       }
     }
-  };
+  }, throttleTimeEmoticon);
 
-  const rename = async (text:string, accountId:number|undefined) => {
+  const rename =  _.throttle(async (text:string, accountId:number|undefined) => {
     if (text === name) return;
     if (whoseProfile == 0) {
       try {
-        const response = await axios.put(`${Config.API_URL}/accounts/me/nickname/${text}`, {nickname:text},);
+        const response = await axios.put(`${Config.API_URL}/accounts/me/nickname`, {nickname:text},);
         setName(response.data.data.nickname);
         setChangeNameVal(response.data.data.nickname);
         setChangeName(false);
@@ -138,21 +142,26 @@ export default function Profile({navigation, route}:ProfileScreenProps) {
         console.log(errorResponse.data);
       }
     }
-  };
+  }, throttleTime);
 
-  const sendNote = async () => {
+  const sendNote =  _.throttle(async () => {
     try {
-      console.log('send Note');
+      // console.log('send Note');
+      // console.log(writeNoteVal)
+      const response = await axios.post(`${Config.API_URL}/accounts/${accountId}/message`, {
+        message:writeNoteVal,
+      },);
       setWriteNote(false);
       setPopup(true);
+      console.log(response.data.data)
     } catch (error) {
       const errorResponse = (error as AxiosError<{message: string}>).response;
       console.log(errorResponse.data);
     }
     setwriteNoteVal('');
-  };
+  }, throttleTime);
 
-  const askFriend = async () => {
+  const askFriend =  _.throttle(async () => {
     try {
       const response = await axios.post(`${Config.API_URL}/friendships/request`, {
         accountTargetId:accountId, message:askFriendMsgVal
@@ -167,7 +176,7 @@ export default function Profile({navigation, route}:ProfileScreenProps) {
       const errorResponse = (error as AxiosError<{message: string}>).response;
       console.log(errorResponse.data);
     }
-  };
+  }, throttleTime);
 
   useEffect(()=>{
     if (chageName) {inp1.current.focus();}
@@ -178,24 +187,24 @@ export default function Profile({navigation, route}:ProfileScreenProps) {
       <View style={styles.profileView}>
         <View style={styles.statusView}>
           <Pressable style={styles.statusBtn} disabled={whoseProfile != 0} onPress={()=>setChangeStatus(true)}>
-            {status == 'smile' && <Image style={{height:90, width:90}} source={require('../../assets/image/status01smile.png')} />}
-            {status == 'happy' && <Image style={{height:90, width:90}} source={require('../../assets/image/status02happy.png')} />}
-            {status == 'sad' && <Image style={{height:90, width:90}} source={require('../../assets/image/status03sad.png')} />}
-            {status == 'mad' && <Image style={{height:90, width:90}} source={require('../../assets/image/status04mad.png')} />}
-            {status == 'exhausted' && <Image style={{height:90, width:90}} source={require('../../assets/image/status05exhausted.png')} />}
-            {status == 'coffee' && <Image style={{height:90, width:90}} source={require('../../assets/image/status06coffee.png')} />}
-            {status == 'meal' && <Image style={{height:90, width:90}} source={require('../../assets/image/status07meal.png')} />}
-            {status == 'alcohol' && <Image style={{height:90, width:90}} source={require('../../assets/image/status08alcohol.png')} />}
-            {status == 'chicken' && <Image style={{height:90, width:90}} source={require('../../assets/image/status09chicken.png')} />}
-            {status == 'sleep' && <Image style={{height:90, width:90}} source={require('../../assets/image/status10sleep.png')} />}
-            {status == 'work' && <Image style={{height:90, width:90}} source={require('../../assets/image/status11work.png')} />}
-            {status == 'study' && <Image style={{height:90, width:90}} source={require('../../assets/image/status12study.png')} />}
-            {status == 'movie' && <Image style={{height:90, width:90}} source={require('../../assets/image/status13movie.png')} />}
-            {status == 'move' && <Image style={{height:90, width:90}} source={require('../../assets/image/status14move.png')} />}
-            {status == 'dance' && <Image style={{height:90, width:90}} source={require('../../assets/image/status15dance.png')} />}
-            {status == 'read' && <Image style={{height:90, width:90}} source={require('../../assets/image/status16read.png')} />}
-            {status == 'walk' && <Image style={{height:90, width:90}} source={require('../../assets/image/status17walk.png')} />}
-            {status == 'travel' && <Image style={{height:90, width:90}} source={require('../../assets/image/status18travel.png')} />}
+            {status == 'smile' && <SvgXml width={90} height={90} xml={svgXml.status.smile} />}
+            {status == 'happy' && <SvgXml width={90} height={90} xml={svgXml.status.happy} />}
+            {status == 'sad' && <SvgXml width={90} height={90} xml={svgXml.status.sad} />}
+            {status == 'mad' && <SvgXml width={90} height={90} xml={svgXml.status.mad} />}
+            {status == 'exhausted' && <SvgXml width={90} height={90} xml={svgXml.status.exhauseted} />}
+            {status == 'coffee' && <SvgXml width={90} height={90} xml={svgXml.status.coffee} />}
+            {status == 'meal' && <SvgXml width={90} height={90} xml={svgXml.status.meal} />}
+            {status == 'alcohol' && <SvgXml width={90} height={90} xml={svgXml.status.alcohol} />}
+            {status == 'chicken' && <SvgXml width={90} height={90} xml={svgXml.status.chicken} />}
+            {status == 'sleep' && <SvgXml width={90} height={90} xml={svgXml.status.sleep} />}
+            {status == 'work' && <SvgXml width={90} height={90} xml={svgXml.status.work} />}
+            {status == 'study' && <SvgXml width={90} height={90} xml={svgXml.status.study} />}
+            {status == 'movie' && <SvgXml width={90} height={90} xml={svgXml.status.movie} />}
+            {status == 'move' && <SvgXml width={90} height={90} xml={svgXml.status.move} />}
+            {status == 'dance' && <SvgXml width={90} height={90} xml={svgXml.status.dance} />}
+            {status == 'read' && <SvgXml width={90} height={90} xml={svgXml.status.read} />}
+            {status == 'walk' && <SvgXml width={90} height={90} xml={svgXml.status.walk} />}
+            {status == 'travel' && <SvgXml width={90} height={90} xml={svgXml.status.travel} />}
           </Pressable>
         </View>
         <View style={styles.nameView}>
@@ -235,58 +244,58 @@ export default function Profile({navigation, route}:ProfileScreenProps) {
         <Pressable style={styles.modalBGView} onPress={()=>{Keyboard.dismiss(); setChangeStatus(false);}}>
           <Pressable onPress={(e)=>e.stopPropagation()} style={styles.modalView2}>
             <Pressable onPress={()=>{setChangeStatus(false); postStatus('smile');}} style={status == 'smile' ? styles.statusSelected : styles.statusSelect}>
-              <Image style={styles.statusImg} source={require('../../assets/image/status01smile.png')}/>
+              <SvgXml width={60} height={60} xml={svgXml.status.smile} />
             </Pressable>
             <Pressable onPress={()=>{setChangeStatus(false); postStatus('happy');}} style={status == 'happy' ? styles.statusSelected : styles.statusSelect}>
-              <Image style={styles.statusImg} source={require('../../assets/image/status02happy.png')}/>
+              <SvgXml width={60} height={60} xml={svgXml.status.happy} />
             </Pressable>
             <Pressable onPress={()=>{setChangeStatus(false); postStatus('sad');}} style={status == 'sad' ? styles.statusSelected : styles.statusSelect}>
-              <Image style={styles.statusImg} source={require('../../assets/image/status03sad.png')}/>
+              <SvgXml width={60} height={60} xml={svgXml.status.sad} />
             </Pressable>
             <Pressable onPress={()=>{setChangeStatus(false); postStatus('mad');}} style={status == 'mad' ? styles.statusSelected : styles.statusSelect}>
-              <Image style={styles.statusImg} source={require('../../assets/image/status04mad.png')}/>
+              <SvgXml width={60} height={60} xml={svgXml.status.mad} />
             </Pressable>
             <Pressable onPress={()=>{setChangeStatus(false); postStatus('exhausted');}} style={status == 'exhausted' ? styles.statusSelected : styles.statusSelect}>
-              <Image style={styles.statusImg} source={require('../../assets/image/status05exhausted.png')}/>
+              <SvgXml width={60} height={60} xml={svgXml.status.exhauseted} />
             </Pressable>
             <Pressable onPress={()=>{setChangeStatus(false); postStatus('coffee');}} style={status == 'coffee' ? styles.statusSelected : styles.statusSelect}>
-              <Image style={styles.statusImg} source={require('../../assets/image/status06coffee.png')}/>
+              <SvgXml width={60} height={60} xml={svgXml.status.coffee} />
             </Pressable>
             <Pressable onPress={()=>{setChangeStatus(false); postStatus('meal');}} style={status == 'meal' ? styles.statusSelected : styles.statusSelect}>
-              <Image style={styles.statusImg} source={require('../../assets/image/status07meal.png')}/>
+              <SvgXml width={60} height={60} xml={svgXml.status.meal} />
             </Pressable>
             <Pressable onPress={()=>{setChangeStatus(false); postStatus('alcohol');}} style={status == 'alcohol' ? styles.statusSelected : styles.statusSelect}>
-              <Image style={styles.statusImg} source={require('../../assets/image/status08alcohol.png')}/>
+              <SvgXml width={60} height={60} xml={svgXml.status.alcohol} />
             </Pressable>
             <Pressable onPress={()=>{setChangeStatus(false); postStatus('chicken');}} style={status == 'chicken' ? styles.statusSelected : styles.statusSelect}>
-              <Image style={styles.statusImg} source={require('../../assets/image/status09chicken.png')}/>
+              <SvgXml width={60} height={60} xml={svgXml.status.chicken} />
             </Pressable>
             <Pressable onPress={()=>{setChangeStatus(false); postStatus('sleep');}} style={status == 'sleep' ? styles.statusSelected : styles.statusSelect}>
-              <Image style={styles.statusImg} source={require('../../assets/image/status10sleep.png')}/>
+              <SvgXml width={60} height={60} xml={svgXml.status.sleep} />
             </Pressable>
             <Pressable onPress={()=>{setChangeStatus(false); postStatus('work');}} style={status == 'work' ? styles.statusSelected : styles.statusSelect}>
-              <Image style={styles.statusImg} source={require('../../assets/image/status11work.png')}/>
+              <SvgXml width={60} height={60} xml={svgXml.status.work} />
             </Pressable>
             <Pressable onPress={()=>{setChangeStatus(false); postStatus('study');}} style={status == 'study' ? styles.statusSelected : styles.statusSelect}>
-              <Image style={styles.statusImg} source={require('../../assets/image/status12study.png')}/>
+              <SvgXml width={60} height={60} xml={svgXml.status.study} />
             </Pressable>
             <Pressable onPress={()=>{setChangeStatus(false); postStatus('movie');}} style={status == 'movie' ? styles.statusSelected : styles.statusSelect}>
-              <Image style={styles.statusImg} source={require('../../assets/image/status13movie.png')}/>
+              <SvgXml width={60} height={60} xml={svgXml.status.movie} />
             </Pressable>
             <Pressable onPress={()=>{setChangeStatus(false); postStatus('move');}} style={status == 'move' ? styles.statusSelected : styles.statusSelect}>
-              <Image style={styles.statusImg} source={require('../../assets/image/status14move.png')}/>
+              <SvgXml width={60} height={60} xml={svgXml.status.move} />
             </Pressable>
             <Pressable onPress={()=>{setChangeStatus(false); postStatus('dance');}} style={status == 'dance' ? styles.statusSelected : styles.statusSelect}>
-              <Image style={styles.statusImg} source={require('../../assets/image/status15dance.png')}/>
+              <SvgXml width={60} height={60} xml={svgXml.status.dance} />
             </Pressable>
             <Pressable onPress={()=>{setChangeStatus(false); postStatus('read');}} style={status == 'read' ? styles.statusSelected : styles.statusSelect}>
-              <Image style={styles.statusImg} source={require('../../assets/image/status16read.png')}/>
+              <SvgXml width={60} height={60} xml={svgXml.status.read} />
             </Pressable>
             <Pressable onPress={()=>{setChangeStatus(false); postStatus('walk');}} style={status == 'walk' ? styles.statusSelected : styles.statusSelect}>
-              <Image style={styles.statusImg} source={require('../../assets/image/status17walk.png')}/>
+              <SvgXml width={60} height={60} xml={svgXml.status.walk} />
             </Pressable>
             <Pressable onPress={()=>{setChangeStatus(false); postStatus('travel');}} style={status == 'travel' ? styles.statusSelected : styles.statusSelect}>
-              <Image style={styles.statusImg} source={require('../../assets/image/status18travel.png')}/>
+              <SvgXml width={60} height={60} xml={svgXml.status.travel} />
             </Pressable>
           </Pressable>
         </Pressable>
@@ -307,21 +316,22 @@ export default function Profile({navigation, route}:ProfileScreenProps) {
                 value={chageNameVal}
                 autoFocus={true}
                 onSubmitEditing={()=>{
-                  if (whoseProfile == 0) {rename(chageNameVal, undefined);}
-                  else {rename(chageNameVal, accountId);}
+                  if (whoseProfile == 0) {rename(chageNameVal.trim(), undefined);}
+                  else {rename(chageNameVal.trim(), accountId);}
                 }}
               />
             </View>
             <View style={styles.modalBtnView}>
-              <Pressable style={styles.btnWhite} onPress={()=>{setChangeName(false); setChangeNameVal(name);}}>
+              <Pressable style={styles.btnWhite} onPress={()=>{setChangeName(false); setChangeNameVal(name);}} disabled={chageNameVal.trim() == ''}>
                 <Text style={styles.btnWhiteTxt}>취소</Text>
               </Pressable>
               <Pressable style={styles.btnYellow} onPress={()=>{
                 if (chageNameVal != '') {
                   if (chageNameVal == name) {setChangeName(false);}
                   else {
-                    if (whoseProfile == 0) {rename(chageNameVal, undefined);}
-                    else {rename(chageNameVal, accountId);}
+                    console.log(chageNameVal.trim())
+                    if (whoseProfile == 0) {rename(chageNameVal.trim(), undefined);}
+                    else {rename(chageNameVal.trim(), accountId);}
                   }
                 }
               }}>
@@ -531,10 +541,6 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     justifyContent:'center',
     alignItems:'center',
-  },
-  statusImg:{
-    height:60,
-    width:60,
   },
   modalTitleTxt:{
     color:'#222222',

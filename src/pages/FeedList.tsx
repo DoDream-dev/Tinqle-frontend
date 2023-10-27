@@ -7,8 +7,13 @@ import Config from 'react-native-config';
 import axios, { AxiosError } from 'axios';
 import Feather from 'react-native-vector-icons/Feather'
 import Modal from 'react-native-modal';
-import ImagePicker from 'react-native-image-crop-picker';
+import ImagePicker, { openPicker } from 'react-native-image-crop-picker';
 import { useFocusEffect } from '@react-navigation/native';
+import { SvgXml } from 'react-native-svg';
+import { svgXml } from '../../assets/image/svgXml';
+import { throttleTime, throttleTimeEmoticon } from '../hooks/Throttle';
+import _ from 'lodash';
+
 type FeedListScreenProps = NativeStackScreenProps<RootStackParamList, 'FeedList'>;
 type itemProps = {
   item:{
@@ -33,7 +38,7 @@ type itemProps = {
     createdAt:string;
   }
 }
-export default function FeedList({navigation}:FeedListScreenProps) {
+export default function FeedList({navigation, route}:FeedListScreenProps) {
   const [feedData, setFeedData] = useState([]);
   const [noFeed, setNoFeed] = useState(false);
   const [isLast, setIsLast] = useState(false);
@@ -50,7 +55,7 @@ export default function FeedList({navigation}:FeedListScreenProps) {
     sadEmoticonNicknameList:[''],
     surpriseEmoticonNicknameList:[''],
   });
-  const [uploadImage, setUploadImage] = useState(new FormData());
+  const [uploadImage, setUploadImage] = useState<FormData>();
   const [imgData, setImgData] = useState({
     uri:'',
     type:'',
@@ -61,67 +66,37 @@ export default function FeedList({navigation}:FeedListScreenProps) {
   const windowHeight = Dimensions.get('screen').height;
   const windowWidth = Dimensions.get('screen').width;
   const [status, setStatus] = useState('');
-
-  
-  // useEffect(() => {
-  //   const getFeed = async () => {
-  //     console.log('getdata')
-  //     try {
-  //       const response = await axios.get(`${Config.API_URL}/feeds`,);
-  //       if (response.data.data.content.length == 0) setNoFeed(true);
-  //       else {
-  //         if (refresh) setRefresh(false);
-  //         setIsLast(response.data.data.last);
-  //         setFeedData(response.data.data.content);
-  //         console.log(response.data.data.content[0].feedImageUrls)
-  //       }
-  //     } catch (error) {
-  //       const errorResponse = (error as AxiosError<{message: string}>).response;
-  //       console.log(errorResponse.data);
-  //     }
-  //   }
-  //   getFeed();
-  // }, [isLast, refresh]);
-
-  // useFocusEffect(
-  //   useCallback(()=>{
-  //     setRefresh(true);
-  //     console.log('focus')
-  //   },[refresh])
-  // );
-  // useEffect(()=>{
-  //   console.log(feedData.length)
-  //   flatRef.current.scrollToEnd({animated:true});
-  // },[feedData]);
+  const noti = route.params.newNoti;
 
   useFocusEffect(
     useCallback(()=>{
       const reloadStatus = () => {
         navigation.setOptions({headerRight:()=>(
           <View style={{flexDirection:'row'}}>
-            <Pressable style={{marginRight:12}}>
-              <Feather name="bell" size={24} color={'#848484'} />
+            <Pressable style={{marginRight:12}} onPress={()=>navigation.navigate('Notis')}>
+              {/* <Feather name="bell" size={24} color={'#848484'} /> */}
+              {!noti && <SvgXml width={24} height={24} xml={svgXml.icon.noti}/>}
+              {noti && <SvgXml width={24} height={24} xml={svgXml.icon.notiYes}/>}
             </Pressable>
             <Pressable style={{marginRight:3}} onPress={()=>navigation.navigate('Profile', {whose:0, accountId:-1})}>
-            {/* <Feather name="smile" size={24} color={'#848484'} /> */}
-            {status == 'smile' && <Image source={require('../../assets/image/status01smile.png')} style={{width:24, height:24}}/>}
-            {status == 'happy' && <Image style={{height:24, width:24}} source={require('../../assets/image/status02happy.png')} />}
-            {status == 'sad' && <Image style={{height:24, width:24}} source={require('../../assets/image/status03sad.png')} />}
-            {status == 'mad' && <Image style={{height:24, width:24}} source={require('../../assets/image/status04mad.png')} />}
-            {status == 'exhausted' && <Image style={{height:24, width:24}} source={require('../../assets/image/status05exhausted.png')} />}
-            {status == 'coffee' && <Image style={{height:24, width:24}} source={require('../../assets/image/status06coffee.png')} />}
-            {status == 'meal' && <Image style={{height:24, width:24}} source={require('../../assets/image/status07meal.png')} />}
-            {status == 'alcohol' && <Image style={{height:24, width:24}} source={require('../../assets/image/status08alcohol.png')} />}
-            {status == 'chicken' && <Image style={{height:24, width:24}} source={require('../../assets/image/status09chicken.png')} />}
-            {status == 'sleep' && <Image style={{height:24, width:24}} source={require('../../assets/image/status10sleep.png')} />}
-            {status == 'work' && <Image style={{height:24, width:24}} source={require('../../assets/image/status11work.png')} />}
-            {status == 'study' && <Image style={{height:24, width:24}} source={require('../../assets/image/status12study.png')} />}
-            {status == 'movie' && <Image style={{height:24, width:24}} source={require('../../assets/image/status13movie.png')} />}
-            {status == 'move' && <Image style={{height:24, width:24}} source={require('../../assets/image/status14move.png')} />}
-            {status == 'dance' && <Image style={{height:24, width:24}} source={require('../../assets/image/status15dance.png')} />}
-            {status == 'read' && <Image style={{height:24, width:24}} source={require('../../assets/image/status16read.png')} />}
-            {status == 'walk' && <Image style={{height:24, width:24}} source={require('../../assets/image/status17walk.png')} />}
-            {status == 'travel' && <Image style={{height:24, width:24}} source={require('../../assets/image/status18travel.png')} />}
+            {status == 'smile' && <SvgXml width={24} height={24} xml={svgXml.status.smile}/>}
+            {status == 'happy' && <SvgXml width={24} height={24} xml={svgXml.status.happy}/>}
+            {status == 'sad' && <SvgXml width={24} height={24} xml={svgXml.status.sad}/>}
+            {status == 'mad' && <SvgXml width={24} height={24} xml={svgXml.status.mad}/>}
+            {status == 'exhausted' && <SvgXml width={24} height={24} xml={svgXml.status.exhauseted}/>}
+            {status == 'coffee' && <SvgXml width={24} height={24} xml={svgXml.status.coffee}/>}
+            {status == 'meal' && <SvgXml width={24} height={24} xml={svgXml.status.meal}/>}
+            {status == 'alcohol' && <SvgXml width={24} height={24} xml={svgXml.status.alcohol}/>}
+            {status == 'chicken' && <SvgXml width={24} height={24} xml={svgXml.status.chicken}/>}
+            {status == 'sleep' && <SvgXml width={24} height={24} xml={svgXml.status.sleep}/>}
+            {status == 'work' && <SvgXml width={24} height={24} xml={svgXml.status.work}/>}
+            {status == 'study' && <SvgXml width={24} height={24} xml={svgXml.status.study}/>}
+            {status == 'movie' && <SvgXml width={24} height={24} xml={svgXml.status.movie}/>}
+            {status == 'move' && <SvgXml width={24} height={24} xml={svgXml.status.move}/>}
+            {status == 'dance' && <SvgXml width={24} height={24} xml={svgXml.status.dance}/>}
+            {status == 'read' && <SvgXml width={24} height={24} xml={svgXml.status.read}/>}
+            {status == 'walk' && <SvgXml width={24} height={24} xml={svgXml.status.walk}/>}
+            {status == 'travel' && <SvgXml width={24} height={24} xml={svgXml.status.travel}/>}
             </Pressable>
           </View>
         )});
@@ -175,7 +150,7 @@ export default function FeedList({navigation}:FeedListScreenProps) {
     if (!loading) {getData();}
   };
 
-  const sendNewFeed = async () => {
+  const sendNewFeed = _.throttle(async () => {
     try {
       let temp;
       if (selectImg) {
@@ -185,31 +160,31 @@ export default function FeedList({navigation}:FeedListScreenProps) {
         //   body: uploadImage,
         //   headers:{'Content-Type':'multipart/form-data'},
         // };
-        const imageFormData = new FormData();
-        let files = [];
-        image.map(x => {
-          const file = {
-            uri: x?.path.includes(':')
-              ? x?.path
-              : 'file://' + x?.path,
-            // type: x?.mime,
-            type: 'multipart/form-data',
-            name: 'image' + x?.mime.replace('image/', '.'),
-          };
-          files.push(file);
-        });
-        imageFormData.append('type', 'feed');
-        imageFormData.append('files', files);
-        console.log('files; ', files);
-        setImgData({
-          uri:image[0].path,
-          type:image[0].mime,
-        });
-        setSelectImg(true);
-        setUploadImage(imageFormData);
+        // const imageFormData = new FormData();
+        // let files = [];
+        // image.map(x => {
+        //   const file = {
+        //     uri: x?.path.includes(':')
+        //       ? x?.path
+        //       : 'file://' + x?.path,
+        //     // type: x?.mime,
+        //     type: 'multipart/form-data',
+        //     name: 'image' + x?.mime.replace('image/', '.'),
+        //   };
+        //   files.push(file);
+        // });
+        // imageFormData.append('type', 'feed');
+        // imageFormData.append('files', files);
+        // console.log('files; ', files);
+        // setImgData({
+        //   uri:image[0].path,
+        //   type:image[0].mime,
+        // });
+        // setSelectImg(true);
+        // setUploadImage(imageFormData);
       
         // await fetch(`${Config.API_URL}/feeds`, requestOptions)
-        const response = await axios.post(`${Config.API_URL}/images`, imageFormData, {
+        const response = await axios.post(`${Config.API_URL}/images`, uploadImage, {
           headers:{'Content-Type':'multipart/form-data'},
           transformRequest: (data, headers) => {
             return data;
@@ -234,13 +209,13 @@ export default function FeedList({navigation}:FeedListScreenProps) {
       setFeedContent('');
       setSelectImg(false);
       setImgData({uri:'',type:''});
-      setUploadImage(new FormData());
+      setUploadImage(undefined);
       setRefresh(!refresh);
     } catch (error) {
       const errorResponse = (error as AxiosError<{message: string}>).response;
       console.log(errorResponse.data);
     }
-  };
+  }, throttleTime);
 
   // const uploadImages = async () => {
   //   try {
@@ -253,7 +228,7 @@ export default function FeedList({navigation}:FeedListScreenProps) {
   // };
   
 
-  const pressEmoticon = async (feedId:number, emoticon:string) => {
+  const pressEmoticon = _.debounce(async (feedId:number, emoticon:string) => {
     try {
       const response = await axios.put(`${Config.API_URL}/emoticons/feeds/${feedId}`, {emoticonType:emoticon},);
       console.log(response.data.data);
@@ -262,9 +237,9 @@ export default function FeedList({navigation}:FeedListScreenProps) {
       const errorResponse = (error as AxiosError<{message: string}>).response;
       console.log(errorResponse.data);
     }
-  };
+  }, throttleTimeEmoticon);
 
-  const whoReact = async (feedId:number) => {
+  const whoReact = _.throttle(async (feedId:number) => {
     try {
       const response = await axios.get(`${Config.API_URL}/emoticons/feeds/${feedId}`,);
       console.log(response.data.data);
@@ -274,9 +249,41 @@ export default function FeedList({navigation}:FeedListScreenProps) {
       const errorResponse = (error as AxiosError<{message: string}>).response;
       console.log(errorResponse.data);
     }
-  }
+  }, throttleTime);
 
   const flatRef = useRef();
+
+  const temp = async () => {
+    const image = await ImagePicker.openPicker({
+      multiple:false,
+      cropping:true,
+    });
+    const imageFormData = new FormData();
+    let file = {
+      uri:image.path,
+      type:'multipart/form-data',
+      name:'img.jpg',
+    }
+    imageFormData.append('files', [file])
+  //   setImgData({
+  //     uri:image.path,
+  //     type:image.mime,
+  //   });
+  //   setSelectImg(true);
+    imageFormData.append('type', 'feed');
+    try {
+      const response = await axios.post(`${Config.API_URL}/images`, imageFormData, {
+        headers:{'Content-Type':'multipart/form-data'},
+        transformRequest: (data, headers) => {
+          return data;
+        },
+      });
+      console.log(response.data);
+    } catch (error) {
+      const errorResponse = (error as AxiosError<{message: string}>).response;
+      console.log(errorResponse.data);
+    }
+  }
 
   return (
     <View style={{flex:1}}>
@@ -321,46 +328,38 @@ export default function FeedList({navigation}:FeedListScreenProps) {
       <View style={{height:Math.min(80, Math.max(35, KBsize))}}></View>
       <View style={[styles.newFeedAll, {width:windowWidth}]}>
         {selectImg && <View style={[styles.newFeedImgView, {width:windowWidth}]}>
-          <Pressable onPress={()=>{setSelectImg(false); setImgData({uri:'',type:''}); setUploadImage(new FormData());}}>
+          <Pressable onPress={()=>{setSelectImg(false); setImgData({uri:'',type:''}); setUploadImage(undefined);}}>
             <Image source={{uri:imgData.uri}} style={styles.newFeedImg} />
-            <Image source={require('../../assets/image/x.svg')} style={styles.xBtn}/>
+            <SvgXml width={18} height={18} xml={svgXml.icon.imageX} style={styles.xBtn}/>
           </Pressable>
         </View>}
         <View style={styles.newFeedView}>
-          <Pressable style={styles.addPhoto} onPress={()=>ImagePicker.openPicker({
-            width: windowWidth,
-            height:315,
-            multiple:true,
+          <Pressable style={styles.addPhoto} onPress={
+            ()=>ImagePicker.openPicker({
+            multiple:false,
             cropping:true,
           })
           .then(image => {
             // uploadImages(image)
             console.log(image)
             const imageFormData = new FormData();
-            let files = [];
-            image.map(x => {
-              const file = {
-                uri: x?.path.includes(':')
-                  ? x?.path
-                  : 'file://' + x?.path,
-                // type: x?.mime,
-                type: 'multipart/form-data',
-                name: 'image' + x?.mime.replace('image/', '.'),
-              };
-              files.push(file);
-            });
-            imageFormData.append('files', files);
-            console.log('files; ', files);
+            let file = {
+              uri:image.path,
+              type:'multipart/form-data',
+              name:'img.jpg',
+            }
+            imageFormData.append('files', [image])
             setImgData({
-              uri:image[0].path,
-              type:image[0].mime,
+              uri:image.path,
+              type:image.mime,
             });
             setSelectImg(true);
-            setImage(image);
             imageFormData.append('type', 'feed');
             setUploadImage(imageFormData);
-          })}>
-            <Image style={{height:24, width:24}} source={require('../../assets/image/addphoto.png')}/>
+          })
+          }>
+            <SvgXml width={24} height={24} xml={svgXml.icon.addphoto}/>
+            
           </Pressable>
           <TextInput 
             placeholder={placeholder}
@@ -395,19 +394,19 @@ export default function FeedList({navigation}:FeedListScreenProps) {
         <Pressable style={styles.modalBGView} onPress={()=>setShowBottomSheet(false)}>
           <Pressable style={styles.modalView} onPress={(e)=>e.stopPropagation()}>
             <View style={styles.whoReacted}>
-              <Image style={styles.emoticon} source={require('../../assets/image/heartEmoticon.png')} />
+              <SvgXml width={22} height={22} xml={svgXml.emoticon.heart}/>
               <Text style={styles.emoticonTxt}>{EmoticonList.heartEmoticonNicknameList.join(' ') == '' ? '-' : EmoticonList.heartEmoticonNicknameList.join(', ').replace(/ /g, '\u00A0')}</Text>
             </View>
             <View style={styles.whoReacted}>
-              <Image style={styles.emoticon} source={require('../../assets/image/smileEmoticon.png')} />
+              <SvgXml width={22} height={22} xml={svgXml.emoticon.smile}/>
               <Text style={styles.emoticonTxt}>{EmoticonList.smileEmoticonNicknameList.join(' ') == '' ? '-' : EmoticonList.smileEmoticonNicknameList.join(', ').replace(/ /g, '\u00A0')}</Text>
             </View>
             <View style={styles.whoReacted}>
-              <Image style={styles.emoticon} source={require('../../assets/image/sadEmoticon.png')} />
+              <SvgXml width={22} height={22} xml={svgXml.emoticon.sad}/>
               <Text style={styles.emoticonTxt}>{EmoticonList.sadEmoticonNicknameList.join(' ') == '' ? '-' : EmoticonList.sadEmoticonNicknameList.join(', ').replace(/ /g, '\u00A0')}</Text>
             </View>
             <View style={styles.whoReacted}>
-              <Image style={styles.emoticon} source={require('../../assets/image/surpriseEmoticon.png')} />
+              <SvgXml width={22} height={22} xml={svgXml.emoticon.surprise}/>
               <Text style={styles.emoticonTxt}>{EmoticonList.surpriseEmoticonNicknameList.join(' ') == '' ? '-' : EmoticonList.surpriseEmoticonNicknameList.join(', ').replace(/ /g, '\u00A0')}</Text>
             </View>
           </Pressable>
@@ -465,8 +464,6 @@ const styles = StyleSheet.create({
     position:'absolute',
     right:-8,
     top:-8,
-    height:18,
-    width:18,
   },
   newFeedView:{
     flexDirection:'row',
@@ -522,10 +519,6 @@ const styles = StyleSheet.create({
   whoReacted:{
     flexDirection:'row',
     marginVertical:4,
-  },
-  emoticon:{
-    width:24,
-    height:24
   },
   emoticonTxtView:{
     flexShrink:1

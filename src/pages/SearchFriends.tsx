@@ -1,6 +1,6 @@
 import axios, {AxiosError} from 'axios';
 import React, { useEffect, useRef, useState } from 'react';
-import { View, Text, StyleSheet, TextInput, Pressable, Image, Keyboard } from 'react-native';
+import { View, Text, StyleSheet, TextInput, Pressable, Keyboard } from 'react-native';
 import Config from 'react-native-config';
 import { useSelector } from 'react-redux';
 import { RootState } from '../store/reducer';
@@ -9,6 +9,10 @@ import Icon from 'react-native-vector-icons/FontAwesome6';
 import { useAppDispatch } from '../store';
 import ToastScreen from '../components/ToastScreen';
 import Modal from 'react-native-modal';
+import { SvgXml } from 'react-native-svg';
+import _ from 'lodash';
+import { throttleTime, throttleTimeEmoticon } from '../hooks/Throttle';
+import { svgXml } from '../../assets/image/svgXml';
 
 export default function SearchFriends() {
   const dispatch = useAppDispatch();
@@ -37,7 +41,7 @@ export default function SearchFriends() {
     getMyCode();
   }, []);
 
-  const getFriendProfile = async () => {
+  const getFriendProfile = _.throttle(async () => {
     try {
       const response = await axios.get(`${Config.API_URL}/accounts/search/code/${searchCode}`);
       let friendData;
@@ -66,8 +70,8 @@ export default function SearchFriends() {
         setWhichPopup('noCode');
       }
     }
-  };
-  const askFriend = async () => {
+  }, throttleTime);
+  const askFriend = _.throttle(async () => {
     try {
       const response = await axios.post(`${Config.API_URL}/friendships/request`, {
         accountTargetId:otherUser.accountId, message:message
@@ -90,7 +94,7 @@ export default function SearchFriends() {
       //   setMessage('');
       // }
     }
-  };
+  }, throttleTime);
   return (
     <Pressable style={styles.entire} onPress={Keyboard.dismiss}>
       <View style={styles.searchView}>
@@ -114,7 +118,7 @@ export default function SearchFriends() {
           <Text style={styles.myCodeTxt}>
             내 코드: {myCode}
           </Text>
-          <Image style={styles.copyIcon} source={require('../../assets/image/copyIcon.png')}/>
+          <SvgXml width="14" height="14" xml={svgXml.icon.copyIcon} style={styles.copyIcon}/>
         </Pressable>
       </View>
       <Modal onBackButtonPress={()=>setOtherUser({accountId:-1, nickname:'', isFriend:0})} isVisible={!!otherUser.nickname} avoidKeyboard={true} backdropColor='#222222' backdropOpacity={0.5} onModalShow={()=>{inp.current?.blur(); inp.current?.focus();}}>
