@@ -29,9 +29,11 @@ const styles = StyleSheet.create({
     position: "absolute",
     zIndex: 1000000,
     alignItems: 'center',
-    height: height,
+    justifyContent:'center',
+    height: height+6,
     borderRadius: height,
     paddingHorizontal: 20,
+    paddingVertical: 3,
     bottom: marginBottom,
     backgroundColor: "rgba(0, 0, 0, 0.7)"
   },

@@ -254,7 +254,10 @@ const styles = StyleSheet.create({
     backgroundColor: '#F7F7F7',
     height: 56,
     borderRadius: 10,
-    paddingHorizontal: 10
+    paddingHorizontal: 10,
+    color:'#222222',
+    fontSize:15,
+    fontWeight:'400'
   },
   searchViewName:{
     color: '#222222',

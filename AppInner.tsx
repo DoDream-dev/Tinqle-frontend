@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Pressable, View, Alert } from 'react-native'
+import { Pressable, View } from 'react-native'
 import {
   NativeStackNavigationProp,
   createNativeStackNavigator,
@@ -20,14 +20,16 @@ import EncryptedStorage from "react-native-encrypted-storage";
 import axios, {AxiosError} from "axios";
 import Config from "react-native-config";
 import userSlice from "./src/slices/user";
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import Feather from 'react-native-vector-icons/Feather';
 import SplashScreen from "react-native-splash-screen";
-import useAxiosInterceptor from './src/hooks/useAxiosInterceptor'
+// import SplashScreen from "./src/components/SplashScreen";
+import useAxiosInterceptor from './src/hooks/useAxiosInterceptor';
+import { SvgXml } from 'react-native-svg';
+import { svgXml } from "./assets/image/svgXml";
 
 export type RootStackParamList = {
-  FeedList: {newNoti:boolean, notiProp:React.Dispatch<React.SetStateAction<boolean>>};
+  FeedList: undefined;
   FeedDetail: {feedId:number};
   Profile: {whose:number, accountId:number};
   MyFriendList: undefined;
@@ -65,7 +67,6 @@ export default function AppInner() {
             accessToken: response.data.data.accessToken,
           }),
         );
-        // console.log(response.data.data.accessTokenr);
         await EncryptedStorage.setItem('refreshToken', response.data.data.refreshToken,);
       } catch (error) {
         const errorResponse = (error as AxiosError<{message: string}>).response;
@@ -74,7 +75,7 @@ export default function AppInner() {
     };
     getRefreshTokenAgain();
   }, [dispatch]);
-  return isLoggedIn ? (
+  return isLoggedIn ? ( 
     <Stack.Navigator>
       <Stack.Screen
         name="FeedList"
@@ -84,22 +85,11 @@ export default function AppInner() {
           title:'tincle',
           headerTitleAlign:'center',
           headerLeft: () => (
-            <Pressable onPress={()=>navigation.navigate('SearchFriends')}>
-              <MaterialIcons name="person-add-alt" size={24} color={'#848484'} />
+            <Pressable onPress={()=>navigation.navigate('SearchFriends')} style={{marginLeft:2}}>
+              <SvgXml width={24} height={24} xml={svgXml.icon.addfriend}/>
             </Pressable>
           ),
-          // headerRight: () => (
-          //   <View style={{flexDirection:'row'}}>
-          //     <Pressable style={{marginRight:12}}>
-          //       <Feather name="bell" size={24} color={'#848484'} />
-          //     </Pressable>
-          //     <Pressable style={{marginRight:3}} onPress={()=>navigation.navigate('Profile', {whose:0, accountId:-1})}>
-          //     <Feather name="smile" size={24} color={'#848484'} />
-          //     </Pressable>
-          //   </View>
-          // ),
           headerStyle:{
-
           },
           headerTitleStyle:{
             color: '#FFB443',
@@ -212,10 +202,6 @@ export default function AppInner() {
           ),
         })}
       />
-      {/* <Stack.Screen
-        name="Content"
-        component={Content}
-      /> */}
       <Stack.Screen
         name="Notis"
         component={Notis}
@@ -235,9 +221,8 @@ export default function AppInner() {
           ),
         })}
       />
-    </Stack.Navigator>
-  ) : (
-    // <SignIn/>
+          </Stack.Navigator>
+ ) : (
     <Stack.Navigator>
       <Stack.Screen 
         name="SignIn"
@@ -247,5 +232,5 @@ export default function AppInner() {
         })}
       />
     </Stack.Navigator>
-  );
+    );
 }

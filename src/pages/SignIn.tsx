@@ -33,7 +33,6 @@ export default function SignIn() {
   const handleFcmMessage = () => {
     const unsubscribe = messaging().onMessage(async remoteMessage => {
       Alert.alert('A new FCM message arrived', JSON.stringify(remoteMessage));
-      props.notiProp(true);
       
     });
     messaging().onNotificationOpenedApp(remoteMessage => {
@@ -46,9 +45,6 @@ export default function SignIn() {
 
     if (enabled) {
       const fcmToken = await messaging().getToken();
-
-      // console.log('fcmToken: ', fcmToken);
-      // console.log('AuthStat: ', authStatus);
       setFcm(fcmToken);
       handleFcmMessage();
     } else {

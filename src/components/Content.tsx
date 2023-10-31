@@ -1,8 +1,7 @@
-// import { NativeStackScreenProps } from "@react-navigation/native-stack";
 // @ts-ignore
 import { SliderBox } from 'react-native-image-slider-box'
 import React from "react";
-import { StyleSheet, View, Text, Image, Pressable } from "react-native";
+import { StyleSheet, View, Text, Image, Pressable, Dimensions } from "react-native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../../AppInner";
 import { useNavigation } from "@react-navigation/native";
@@ -20,9 +19,7 @@ type ContentProps = {
   cmt:boolean;
   child:React.Dispatch<React.SetStateAction<number>>;
   cmtId:number;
-  // navigation:NativeStackNavigationProp<RootStackParamList>
 }
-// type ContentScreenProps = NativeStackScreenProps<RootStackParamList, 'Content'>;
 export default function Content( props:ContentProps){
   const nickname = props.nickname;
   const status = props.status;
@@ -33,6 +30,7 @@ export default function Content( props:ContentProps){
   const cmt = props.cmt;
   const child = props.child;
   const cmtId = props.cmtId;
+  const windowWidth = Dimensions.get('screen').width;
   let mine = 0;
   if (!props.mine) mine = 1;
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
@@ -75,7 +73,7 @@ export default function Content( props:ContentProps){
             parentWidth={283}
           />} */}
           {imageURL.flatMap(f => !!f ? [f] : []).length != 0 && <Image
-            source={{uri:imageURL[0]}}
+            source={{uri:imageURL[0]}} style={{width:windowWidth-100, height:windowWidth-100, marginTop:5}}
           />}
         </View>
         {cmt && <Pressable style={styles.recomment} onPress={()=>child(cmtId)}>

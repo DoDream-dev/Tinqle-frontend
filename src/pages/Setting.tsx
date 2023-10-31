@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, Pressable, Alert } from 'react-native';
+import { View, Text, StyleSheet, Pressable } from 'react-native';
 import { useAppDispatch } from '../store';
 import userSlice from '../slices/user';
 import axios, {AxiosError} from 'axios';
@@ -52,9 +52,9 @@ export default function Setting() {
       <Pressable style={styles.settingBtn} onPress={LogOut}>
         <Text style={styles.settingBtnTxt}>로그아웃</Text>
       </Pressable>
-      <Pressable style={styles.settingBtn}>
+      {/* <Pressable style={styles.settingBtn}>
         <Text style={styles.settingBtnTxt}>계정 삭제</Text>
-      </Pressable>
+      </Pressable> */}
     </View>
   );
 }

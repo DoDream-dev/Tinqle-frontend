@@ -42,20 +42,6 @@ type itemProps = {
   }
 };
 
-// type citemProps = {
-//   citem:{
-//     parentId:number;
-//     commentId:number;
-//     content:string;
-//     accountId:number;
-//     friendNickname:string;
-//     status:string;
-//     isAuthor:boolean;
-//     createAt:string;
-//   }
-  
-// };
-
 export default function FeedDetail({navigation, route}:FeedDetailScreenProps) {
   const [refresh, setRefresh] = useState(false);
   const [feedData, setFeedData] = useState({
@@ -65,15 +51,15 @@ export default function FeedDetail({navigation, route}:FeedDetailScreenProps) {
     friendNickname: "",
     content : "",
     feedImageUrls : [null],
-    commentCount : -1,
+    commentCount : 0,
     emoticons : {
-      heartEmoticonCount: -1,
+      heartEmoticonCount: 0,
       isCheckedHeartEmoticon: false,
-      smileEmoticonCount: -1,
+      smileEmoticonCount: 0,
       isCheckedSmileEmoticon: false,
-      sadEmoticonCount: -1,
+      sadEmoticonCount: 0,
       isCheckedSadEmoticon: false,
-      surpriseEmoticonCount: -1,
+      surpriseEmoticonCount: 0,
       isCheckedSurpriseEmoticon: false,
     },
     isAuthor : false,
@@ -93,6 +79,7 @@ export default function FeedDetail({navigation, route}:FeedDetailScreenProps) {
   const [loading, setLoading] = useState(false);
   const [placeholder, setPlaceholder] = useState('댓글을 적어주세요');
   const [cursorId, setCursorId] = useState(0);
+  const [deleted, setDeleted] = useState(false);
 
   useFocusEffect(
     useCallback(()=>{
@@ -103,6 +90,11 @@ export default function FeedDetail({navigation, route}:FeedDetailScreenProps) {
         } catch (error) {
           const errorResponse = (error as AxiosError<{message: string}>).response;
           console.log(errorResponse.data);
+          if (errorResponse?.data.statusCode == 4030) {
+            console.log('삭제된 글');
+            setDeleted(true);
+            navigation.navigate('FeedList')
+          }
         }
       }
       const getCmt = async () => {
@@ -128,14 +120,14 @@ export default function FeedDetail({navigation, route}:FeedDetailScreenProps) {
       const reloadStatus = () => {
         navigation.setOptions({headerRight:()=>(
           <View style={{flexDirection:'row'}}>
-            <Pressable onPress={()=>setDeleteModal(true)}>
+            {feedData.isAuthor && <Pressable onPress={()=>setDeleteModal(true)}>
               <SvgXml width={24} height={24} xml={svgXml.icon.menu}/>
-            </Pressable>
+            </Pressable>}
           </View>
         )});
       }
-      reloadStatus();
-    },[refresh]));
+      if (feedData.isAuthor) reloadStatus();
+    },[refresh, feedData.isAuthor]));
 
   const [deleteModal, setDeleteModal] = useState(false);
 
@@ -180,6 +172,10 @@ export default function FeedDetail({navigation, route}:FeedDetailScreenProps) {
     } catch (error) {
       const errorResponse = (error as AxiosError<{message: string}>).response;
       console.log(errorResponse.data);
+      if (errorResponse?.data.statusCode == 4030) {
+        console.log('삭제된 글');
+        navigation.navigate('FeedList')
+      }
     }
   }, throttleTimeEmoticon);
 
@@ -192,6 +188,11 @@ export default function FeedDetail({navigation, route}:FeedDetailScreenProps) {
     } catch (error) {
       const errorResponse = (error as AxiosError<{message: string}>).response;
       console.log(errorResponse.data);
+      if (errorResponse?.data.statusCode == 4030) {
+        console.log('삭제된 글');
+        setDeleted(true);
+        navigation.navigate('FeedList')
+      }
     }
   }, throttleTime);
 
@@ -206,6 +207,10 @@ export default function FeedDetail({navigation, route}:FeedDetailScreenProps) {
     } catch (error) {
       const errorResponse = (error as AxiosError<{message: string}>).response;
       console.log(errorResponse.data);
+      if (errorResponse?.data.statusCode == 4030) {
+        console.log('삭제된 글');
+        navigation.navigate('FeedList')
+      }
     }
   }, throttleTime);
 
@@ -220,6 +225,11 @@ export default function FeedDetail({navigation, route}:FeedDetailScreenProps) {
     } catch (error) {
       const errorResponse = (error as AxiosError<{message: string}>).response;
       console.log(errorResponse.data);
+      if (errorResponse?.data.statusCode == 4030) {
+        console.log('삭제된 글');
+        setDeleted(true);
+        navigation.navigate('FeedList')
+      }
     }
   }, throttleTime);;
 
@@ -237,6 +247,11 @@ export default function FeedDetail({navigation, route}:FeedDetailScreenProps) {
       } catch (error) {
         const errorResponse = (error as AxiosError<{message: string}>).response;
         console.log(errorResponse.data);
+        if (errorResponse?.data.statusCode == 4030) {
+          console.log('삭제된 글');
+          setDeleted(true);
+          navigation.navigate('FeedList')
+        }
       }
     }
     setLoading(false);
@@ -373,7 +388,7 @@ export default function FeedDetail({navigation, route}:FeedDetailScreenProps) {
           ref={inputRef}
           // numberOfLines={4}
         />
-        <Pressable style={cmtContent == '' ? styles.sendNewCmt : styles.sendNewCmtActivated} disabled={cmtContent == ''} onPress={writeChildCmt == -1 ? sendNewCmt : sendNewChildCmt}>
+        <Pressable style={cmtContent.trim() == '' ? styles.sendNewCmt : styles.sendNewCmtActivated} disabled={cmtContent.trim() == ''} onPress={writeChildCmt == -1 ? sendNewCmt : sendNewChildCmt}>
           <Feather name="check" size={24} style={{color:'white'}}/>
         </Pressable>
       </View>

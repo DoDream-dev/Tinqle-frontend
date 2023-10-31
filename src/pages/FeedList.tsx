@@ -1,6 +1,6 @@
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import React, { useCallback, useEffect, useState, useRef } from 'react';
-import { View, Text, StyleSheet, Pressable, FlatList, Image, TextInput, Dimensions } from 'react-native';
+import React, { useCallback, useState, useRef } from 'react';
+import { View, Text, StyleSheet, Pressable, FlatList, Image, TextInput, Dimensions, RefreshControl } from 'react-native';
 import { RootStackParamList } from '../../AppInner';
 import Feed from '../components/Feed';
 import Config from 'react-native-config';
@@ -59,14 +59,39 @@ export default function FeedList({navigation, route}:FeedListScreenProps) {
   const [imgData, setImgData] = useState({
     uri:'',
     type:'',
-    // name:undefined,
   });
-  const [image, setImage] = useState([]);
   const [selectImg, setSelectImg] = useState(false);
-  const windowHeight = Dimensions.get('screen').height;
   const windowWidth = Dimensions.get('screen').width;
   const [status, setStatus] = useState('');
-  const noti = route.params.newNoti;
+  const [noti, setNoti] = useState(false);
+
+  // const scroll = (offset:number) => {
+  //   if (flatRef.current) {
+  //     // flatRef.current.scrollToIndex({index:feedData.length-1, animated:true});
+  //     flatRef.current.scrollToIndex({index:offset, animated:true});
+  //     }
+  //   setFirst(false);
+  //   }
+  
+
+  // useEffect(() => {
+  //   const keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', (event) => {
+  //     const keyboardHeight = event.endCoordinates.height;
+  //     // const newY = textinpY - keyboardHeight;
+  //     console.log(keyboardHeight)
+  //     // scroll(keyboardHeight);
+  //     // setTextinY(newY);
+  //     setTextinY(keyboardHeight);
+  //   });
+
+  //   const KeyboardDidHideListener = Keyboard.addListener('keyboardDidHide', (event) => {
+  //     setTextinY(0);
+  //   });
+  //   return () => {
+  //     keyboardDidShowListener.remove();
+  //     KeyboardDidHideListener.remove();
+  //   };
+  // }, [textinpY]);
 
   useFocusEffect(
     useCallback(()=>{
@@ -74,7 +99,6 @@ export default function FeedList({navigation, route}:FeedListScreenProps) {
         navigation.setOptions({headerRight:()=>(
           <View style={{flexDirection:'row'}}>
             <Pressable style={{marginRight:12}} onPress={()=>navigation.navigate('Notis')}>
-              {/* <Feather name="bell" size={24} color={'#848484'} /> */}
               {!noti && <SvgXml width={24} height={24} xml={svgXml.icon.noti}/>}
               {noti && <SvgXml width={24} height={24} xml={svgXml.icon.notiYes}/>}
             </Pressable>
@@ -113,6 +137,7 @@ export default function FeedList({navigation, route}:FeedListScreenProps) {
           else {
             setIsLast(response.data.data.last);
             setFeedData(response.data.data.content);
+            // console.log(response.data.data.content[0].feedImageUrls)
             if (response.data.data.content.length != 0) {
               setCursorId(response.data.data.content[response.data.data.content.length-1].feedId)
             }
@@ -132,10 +157,11 @@ export default function FeedList({navigation, route}:FeedListScreenProps) {
     if (!isLast) {
       setLoading(true);
       try {
+        console.log(cursorId)
         const response = await axios.get(`${Config.API_URL}/feeds?cursorId=${cursorId}`,);
         console.log(response.data.data)
         setIsLast(response.data.data.last);
-        setFeedData(response.data.data.content.concat(feedData));
+        setFeedData(feedData.concat(response.data.data.content));
         if (response.data.data.content.length != 0) {
           setCursorId(response.data.data.content[response.data.data.content.length-1].feedId)
         }
@@ -152,83 +178,44 @@ export default function FeedList({navigation, route}:FeedListScreenProps) {
 
   const sendNewFeed = _.throttle(async () => {
     try {
-      let temp;
       if (selectImg) {
-        // console.log(uploadImage.getParts().at(0))
-        // const requestOptions = {
-        //   method: 'POST',
-        //   body: uploadImage,
-        //   headers:{'Content-Type':'multipart/form-data'},
-        // };
-        // const imageFormData = new FormData();
-        // let files = [];
-        // image.map(x => {
-        //   const file = {
-        //     uri: x?.path.includes(':')
-        //       ? x?.path
-        //       : 'file://' + x?.path,
-        //     // type: x?.mime,
-        //     type: 'multipart/form-data',
-        //     name: 'image' + x?.mime.replace('image/', '.'),
-        //   };
-        //   files.push(file);
-        // });
-        // imageFormData.append('type', 'feed');
-        // imageFormData.append('files', files);
-        // console.log('files; ', files);
-        // setImgData({
-        //   uri:image[0].path,
-        //   type:image[0].mime,
-        // });
-        // setSelectImg(true);
-        // setUploadImage(imageFormData);
-      
-        // await fetch(`${Config.API_URL}/feeds`, requestOptions)
-        const response = await axios.post(`${Config.API_URL}/images`, uploadImage, {
+        const response = await axios.post(`${Config.API_URL}/images/single`, uploadImage, {
           headers:{'Content-Type':'multipart/form-data'},
           transformRequest: (data, headers) => {
             return data;
           },
         });
-        console.log(response.data);
-        // .then(response => {
-          // console.log(response.json);
-          // temp = response.json()
-          // temp = response.data.data.files.fileUrl;
-        // })
-        // console.log(response.data.data);
-        // temp = response.data.data.files.fileUrl;
+        console.log(response.data.data.files[0].fileUrl);
+        const response2 = await axios.post(`${Config.API_URL}/feeds`, {
+          content:feedContent,
+          feedImageUrl:[response.data.data.files[0].fileUrl],
+        });
+        console.log(response2.data.data);
+        setFeedContent('');
+        setSelectImg(false);
+        setImgData({uri:'',type:''});
+        setUploadImage(undefined);
+        setRefresh(!refresh);
+      } else {
+        const response = await axios.post(`${Config.API_URL}/feeds`, {
+          content:feedContent,
+          feedImageUrl:[null],
+        });
+        console.log(response.data.data);
+        setFeedContent('');
+        setSelectImg(false);
+        setImgData({uri:'',type:''});
+        setUploadImage(undefined);
+        setRefresh(!refresh);
       }
-      else {temp=null;}
-      const response = await axios.post(`${Config.API_URL}/feeds`, {
-        content:feedContent,
-        feedImageUrl:[null],
-        isReceivedEmoticon:true,
-      });
-      console.log(response.data.data);
-      setFeedContent('');
-      setSelectImg(false);
-      setImgData({uri:'',type:''});
-      setUploadImage(undefined);
-      setRefresh(!refresh);
     } catch (error) {
       const errorResponse = (error as AxiosError<{message: string}>).response;
       console.log(errorResponse.data);
     }
   }, throttleTime);
-
-  // const uploadImages = async () => {
-  //   try {
-  //     const response = await axios.post(`${Config.API_URL}/images`, uploadImage, );
-  //     console.log(response.data.data);
-  //   } catch (error) {
-  //     const errorResponse = (error as AxiosError<{message: string}>).response;
-  //     console.log(errorResponse.data);
-  //   }
-  // };
   
 
-  const pressEmoticon = _.debounce(async (feedId:number, emoticon:string) => {
+  const pressEmoticon = async (feedId:number, emoticon:string) => {
     try {
       const response = await axios.put(`${Config.API_URL}/emoticons/feeds/${feedId}`, {emoticonType:emoticon},);
       console.log(response.data.data);
@@ -236,8 +223,12 @@ export default function FeedList({navigation, route}:FeedListScreenProps) {
     } catch (error) {
       const errorResponse = (error as AxiosError<{message: string}>).response;
       console.log(errorResponse.data);
+      if (errorResponse?.data.statusCode == 4030) {
+        console.log('삭제된 글')
+        setRefresh(!refresh);
+      }
     }
-  }, throttleTimeEmoticon);
+  };
 
   const whoReact = _.throttle(async (feedId:number) => {
     try {
@@ -248,42 +239,24 @@ export default function FeedList({navigation, route}:FeedListScreenProps) {
     } catch (error) {
       const errorResponse = (error as AxiosError<{message: string}>).response;
       console.log(errorResponse.data);
+      if (errorResponse?.data.statusCode == 4030) {
+        console.log('삭제된 글');
+        setRefresh(!refresh);
+      }
     }
   }, throttleTime);
 
   const flatRef = useRef();
 
-  const temp = async () => {
-    const image = await ImagePicker.openPicker({
-      multiple:false,
-      cropping:true,
-    });
-    const imageFormData = new FormData();
-    let file = {
-      uri:image.path,
-      type:'multipart/form-data',
-      name:'img.jpg',
-    }
-    imageFormData.append('files', [file])
-  //   setImgData({
-  //     uri:image.path,
-  //     type:image.mime,
-  //   });
-  //   setSelectImg(true);
-    imageFormData.append('type', 'feed');
-    try {
-      const response = await axios.post(`${Config.API_URL}/images`, imageFormData, {
-        headers:{'Content-Type':'multipart/form-data'},
-        transformRequest: (data, headers) => {
-          return data;
-        },
-      });
-      console.log(response.data);
-    } catch (error) {
-      const errorResponse = (error as AxiosError<{message: string}>).response;
-      console.log(errorResponse.data);
-    }
-  }
+  const [refreshing, setRefreshing] = React.useState(false);
+
+  const onRefresh = React.useCallback(() => {
+    setRefreshing(true);
+    setTimeout(() => {
+      setRefreshing(false);
+    }, 2000);
+    getData();
+  }, []);
 
   return (
     <View style={{flex:1}}>
@@ -291,17 +264,30 @@ export default function FeedList({navigation, route}:FeedListScreenProps) {
         {noFeed ? <View style={styles.noFeedView}>
           <Text style={styles.noFeedTxt}>지금 떠오르는 생각을 적어보세요!</Text>
         </View> : 
-        <FlatList 
-          // initialScrollIndex={feedData.length == 0 ? 0 :feedData.length-1}
-          data={feedData.slice().reverse()}
-          style={styles.feedList}
-          // onEndReached={onEndReached}
-          // onEndReachedThreshold={0.4}
+        <FlatList
+          data={feedData}
+          style={[styles.feedList, {}]}
           onEndReached={onEndReached}
           onEndReachedThreshold={0.4}
+          refreshControl={<RefreshControl 
+            refreshing={refreshing} onRefresh={onRefresh}
+          />}
+          // onStartReached={()=>{
+          //   if (first) scroll(feedData.length - 1)
+          //   else {
+          //     onEndReached();
+          //   }
+          // }}
+          // onStartReachedThreshold={0.4}
           keyboardShouldPersistTaps={'always'}
-          // inverted={true}
+          inverted={true}
           ref={flatRef}
+          // getItemLayout={(data, index) => ({
+          //   length:100,
+          //   offset:20000*index,
+          //   index,
+          // })}
+          // onLayout={()=>scrollToEnd()}
           renderItem={({item}:itemProps) => {
             return (
               <Pressable style={styles.feed} onPress={()=>navigation.navigate('FeedDetail', {feedId:item.feedId})}>
@@ -337,18 +323,19 @@ export default function FeedList({navigation, route}:FeedListScreenProps) {
           <Pressable style={styles.addPhoto} onPress={
             ()=>ImagePicker.openPicker({
             multiple:false,
-            cropping:true,
+            // cropping:true,
           })
           .then(image => {
-            // uploadImages(image)
             console.log(image)
+            let name = image.path.split('/');
             const imageFormData = new FormData();
             let file = {
               uri:image.path,
-              type:'multipart/form-data',
-              name:'img.jpg',
+              type:image.mime,
+              name:name[name.length-1]
             }
-            imageFormData.append('files', [image])
+            imageFormData.append('file', file)
+            console.log(file)
             setImgData({
               uri:image.path,
               type:image.mime,
@@ -377,9 +364,8 @@ export default function FeedList({navigation, route}:FeedListScreenProps) {
             autoComplete='off'
             autoCorrect={false}
             onContentSizeChange={(e) => {setKBsize(e.nativeEvent.contentSize.height);}}
-            // numberOfLines={4}
           />
-          <Pressable style={feedContent == '' && !selectImg ? styles.sendNewFeed : styles.sendNewFeedActivated} disabled={feedContent == '' && !selectImg} onPress={sendNewFeed}>
+          <Pressable style={feedContent.trim() == '' && !selectImg ? styles.sendNewFeed : styles.sendNewFeedActivated} disabled={feedContent.trim() == '' && !selectImg} onPress={sendNewFeed}>
             <Feather name="check" size={24} style={{color:'white'}}/>
           </Pressable>
         </View>
@@ -418,7 +404,6 @@ export default function FeedList({navigation, route}:FeedListScreenProps) {
 
 const styles = StyleSheet.create({
   entire: {
-    flex: 1,
     alignItems: 'center',
     width: '100%',
     paddingHorizontal:16,
@@ -448,7 +433,7 @@ const styles = StyleSheet.create({
     position:"absolute", 
     bottom:0,
     justifyContent:'flex-end', 
-    alignItems:'center'
+    alignItems:'center',
   },
   newFeedImgView:{
     paddingVertical:12, 

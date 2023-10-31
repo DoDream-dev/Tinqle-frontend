@@ -19,9 +19,6 @@ type ProfileScreenProps = NativeStackScreenProps<RootStackParamList, 'Profile'>;
 export default function Profile({navigation, route}:ProfileScreenProps) {
   const whose = route.params.whose;
   const acId = route.params.accountId;
-
-  
-  // const token = useSelector((state:RootState) => state.user.accessToken);
   
   const [whoseProfile, setWhoseProfile] = useState(route.params.whose);
   const [alreadyRequestFriend, setAlreadyRequestFriend] = useState(-1);
@@ -57,7 +54,7 @@ export default function Profile({navigation, route}:ProfileScreenProps) {
           console.log('내 프로필 조회')
         } catch (error) {
           const errorResponse = (error as AxiosError<{message: string}>).response;
-          // console.log(errorResponse?.data);
+          console.log(errorResponse?.data);
         }
       };
       getMyProfile();
@@ -115,7 +112,11 @@ export default function Profile({navigation, route}:ProfileScreenProps) {
   }, throttleTimeEmoticon);
 
   const rename =  _.throttle(async (text:string, accountId:number|undefined) => {
-    if (text === name) return;
+    if (text === name) {
+      setChangeName(false);
+      setChangeNameVal(text);
+      return;
+    }
     if (whoseProfile == 0) {
       try {
         const response = await axios.put(`${Config.API_URL}/accounts/me/nickname`, {nickname:text},);
@@ -146,8 +147,6 @@ export default function Profile({navigation, route}:ProfileScreenProps) {
 
   const sendNote =  _.throttle(async () => {
     try {
-      // console.log('send Note');
-      // console.log(writeNoteVal)
       const response = await axios.post(`${Config.API_URL}/accounts/${accountId}/message`, {
         message:writeNoteVal,
       },);
@@ -322,10 +321,10 @@ export default function Profile({navigation, route}:ProfileScreenProps) {
               />
             </View>
             <View style={styles.modalBtnView}>
-              <Pressable style={styles.btnWhite} onPress={()=>{setChangeName(false); setChangeNameVal(name);}} disabled={chageNameVal.trim() == ''}>
+              <Pressable style={styles.btnWhite} onPress={()=>{setChangeName(false); setChangeNameVal(name);}}>
                 <Text style={styles.btnWhiteTxt}>취소</Text>
               </Pressable>
-              <Pressable style={styles.btnYellow} onPress={()=>{
+              <Pressable style={styles.btnYellow} disabled={chageNameVal.trim() == ''} onPress={()=>{
                 if (chageNameVal != '') {
                   if (chageNameVal == name) {setChangeName(false);}
                   else {

@@ -64,10 +64,8 @@ export default function MyFriendList({navigation}:MyFriendListScreenProps) {
           <Text style={styles.nofriendBtnTxt}>친구 추가하기</Text>
         </Pressable>  
       </View>}
-      {noFriend && <View style={styles.empty}></View>}
       {!noFriend && <FlatList 
         data={friendData}
-        // keyExtractor={(_)=>_.accountId}
         style={styles.friendList}
         onEndReached={onEndReached}
         onEndReachedThreshold={0.4}
@@ -95,9 +93,9 @@ export default function MyFriendList({navigation}:MyFriendListScreenProps) {
               <View style={styles.friendmiddle}>
                 <Text style={styles.friendName}>{item.friendNickname}</Text>
               </View>
-              <Pressable style={styles.deleteBtn}>
+              {/* <Pressable style={styles.deleteBtn}>
                 <Text style={styles.deleteBtnTxt}>삭제</Text>
-              </Pressable>
+              </Pressable> */}
             </Pressable>
           );
         }}
@@ -112,12 +110,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   nofriendView:{
-    flex:3,
-    justifyContent:'flex-end',
+    flex:1,
+    justifyContent:'center',
     alignItems:'center',
-  },
-  empty:{
-    flex:4
   },
   nofriendTxt:{
     color:'#848484',

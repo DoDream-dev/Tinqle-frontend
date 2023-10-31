@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
-    <item>
-        <bitmap
-                android:gravity="center"
-                android:src="@drawable/splash" />
-    </item>
+  <!-- <item>
+    <bitmap
+      android:gravity="center"
+      android:src="@drawable/i" />
+  </item> -->
+  <item
+    android:drawable="@drawable/n"
+    android:gravity="center"/>
 </layer-list>
