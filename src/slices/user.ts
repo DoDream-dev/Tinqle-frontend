@@ -3,6 +3,8 @@ import { createSlice } from "@reduxjs/toolkit";
 const initialState = {
   accessToken:'',
   id:'',
+  deleted:false,
+  notis:false,
 };
 
 const userSlice = createSlice({
@@ -15,7 +17,13 @@ const userSlice = createSlice({
     },
     setToken(state, action) {
       state.accessToken = action.payload.accessToken;
-    }
+    },
+    setDeleted(state, action) {
+      state.deleted = action.payload.deleted;
+    },
+    setNotis(state, action) {
+      state.notis = action.payload.notis;
+    },
   },
   extraReducers: builder => {},
 });

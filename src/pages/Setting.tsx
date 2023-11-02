@@ -16,7 +16,7 @@ export default function Setting() {
   const LogOut = async () => {
     try {
         const response = await axios.post(`${Config.API_URL}/auth/logout`,);
-        console.log(response.data);
+        // console.log(response.data);
       if (response.data.data.isLogout) {
         await EncryptedStorage.removeItem('refreshToken')
         dispatch(
@@ -29,6 +29,13 @@ export default function Setting() {
     } catch (error) {
       const errorResponse = (error as AxiosError<{message: string}>).response;
       console.log(errorResponse.data)
+      if (errorResponse?.data.status == 500) {
+        dispatch(
+          userSlice.actions.setToken({
+            accessToken:'',
+          }),
+        );
+      }
     }
   };
 

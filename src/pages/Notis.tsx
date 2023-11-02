@@ -1,69 +1,124 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback, } from 'react';
 import { View, Text, StyleSheet, Pressable, FlatList } from 'react-native';
 import { SvgXml } from 'react-native-svg';
 import { svgXml } from '../../assets/image/svgXml';
 import axios, { AxiosError } from 'axios';
 import Config from 'react-native-config';
 import Modal from 'react-native-modal';
+import { useFocusEffect } from '@react-navigation/native';
 import ToastScreen from '../components/ToastScreen';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../AppInner';
+import { useAppDispatch } from '../store';
+import userSlice from '../slices/user';
 
 type itemProps = {
   item:{
-    notificcationId:number;
-    notificationType:string;
-    targetEntity:string;
-    redirectTargetId:number;
-    title:string;
-    body:string;
-    createdAt:string;
+    // notificationId:number;
+    // notificationType:string;
+    // targetEntity:string;
+    // redirectTargetId:number;
+    // title:string;
+    // content:string;
+    // createdAt:string;
+    // isRead:boolean;
+    accountId:number;
+    content:string;
+    friendNickname:string;
     isRead:boolean;
+    notificationId:number;
+    notificationType:string;
+    redirectTargetId:number;
+    status:string;
+    targetEntity:string;
   }
 }
 
 type NotisScreenProps = NativeStackScreenProps<RootStackParamList, 'Notis'>;
 
 export default function Notis({navigation}:NotisScreenProps) {
+  const dispatch = useAppDispatch();
   const [isEnabled, setIsEnabled] = useState(true);
-  const [allRead, setAllRead] = useState(false);
+  const [noNotis, setNoNotis] = useState(false);
   const [isLast, setIsLast] = useState(false);
   const [cursorId, setCursorId] = useState(0);
   const [loading, setLoading] = useState(false);
-  const [showModal, setShowModal] = useState(true);
-  const [popup, setPopup] = useState(true);
-  const [notisData, setNotisData] = useState([{
-    notificcationId:6,
-    notificationType:"CREATE_FEED_COMMENT",
-    targetEntity:"FEED",
-    redirectTargetId:106,
-    title:"댓글 알림",
-    body:"나의 피드에 누가 댓글을 달았습니다.",
-    createdAt:"몇년몇월며칠",
-    isRead:false
-  },
-  {
-    notificcationId:7,
-    notificationType:"CREATE_FEED_COMMENT",
-    targetEntity:"FEED",
-    redirectTargetId:1,
-    title:"피드 알림",
-    body:"나의 피드에 누가 대댓글을 달았습니다.나의 피드에 누가 대댓글을 달았습니다.나의 피드에 누가 대댓글을 달았습니다.나의 피드에 누가 대댓글을 달았습니다.",
-    createdAt:"몇년몇월며칠",
-    isRead:false
-  }]);
+  const [showModal, setShowModal] = useState(false);
+  const [modalData, setmodalData] = useState('');
+  const [friendMsg, setFriendMsg] = useState('');
+  const [modalDataId, setmodalDataId] = useState(-1);
+  const [refresh, setRefresh] = useState(false);
+  const [popup, setPopup] = useState(false);
+  const [notisData, setNotisData] = useState([
+  //   {
+  //   notificationId:6,
+  //   notificationType:"CREATE_FEED_COMMENT",
+  //   targetEntity:"FEED",
+  //   redirectTargetId:106,
+  //   title:"댓글 알림",
+  //   body:"나의 피드에 누가 댓글을 달았습니다.",
+  //   createdAt:"몇년몇월며칠",
+  //   isRead:false
+  // },
+  // {
+  //   notificationId:7,
+  //   notificationType:"CREATE_FEED_COMMENT",
+  //   targetEntity:"FEED",
+  //   redirectTargetId:1,
+  //   title:"피드 알림",
+  //   body:"나의 피드에 누가 대댓글을 달았습니다.나의 피드에 누가 대댓글을 달았습니다.나의 피드에 누가 대댓글을 달았습니다.나의 피드에 누가 대댓글을 달았습니다.",
+  //   createdAt:"몇년몇월며칠",
+  //   isRead:false
+  // }
+]);
+
+  useFocusEffect(
+    useCallback(()=>{
+      const getNotis = async () => {
+        try {
+          const response = await axios.get(`${Config.API_URL}/notifications/accounts/me`,);
+          // console.log(response.data.data)
+          if (response.data.data.content.length == 0) setNoNotis(true);
+          else {
+            setIsLast(response.data.data.last);
+            setNotisData(response.data.data.content);
+            // console.log(response.data.data)
+            if (response.data.data.content.length != 0) {
+              setCursorId(response.data.data.content[response.data.data.content.length-1].notificationId)
+            }
+          }
+        } catch (error) {
+          const errorResponse = (error as AxiosError<{message: string}>).response;
+          console.log(errorResponse?.data.status);
+          if (errorResponse?.data.status == 500) {
+            dispatch(
+              userSlice.actions.setToken({
+                accessToken:'',
+              }),
+            );
+          }
+        }
+      }
+      getNotis();
+      dispatch(
+        userSlice.actions.setNotis({
+          notis:false,
+        }),
+      );
+    },[refresh, noNotis])
+  );
 
   const getData = async () => {
     if (!isLast) {
       setLoading(true);
       try {
-        console.log(cursorId)
-        const response = await axios.get(`${Config.API_URL}/feeds?cursorId=${cursorId}`,);
-        console.log(response.data.data)
+        // console.log(cursorId)
+        const response = await axios.get(`${Config.API_URL}/notifications/accounts/me?cursorId=${cursorId}`,);
+        // console.log(response.data.data)
         setIsLast(response.data.data.last);
         setNotisData(notisData.concat(response.data.data.content));
         if (response.data.data.content.length != 0) {
-          setCursorId(response.data.data.content[response.data.data.content.length-1].notificcationId)
+          setCursorId(response.data.data.content[response.data.data.content.length-1].notificationId)
         }
       } catch (error) {
         const errorResponse = (error as AxiosError<{message: string}>).response;
@@ -76,6 +131,45 @@ export default function Notis({navigation}:NotisScreenProps) {
     if (!loading) {getData();}
   };
 
+  const deleteNotis = async (notificationId:number) => {
+    try {
+      const response = await axios.delete(`${Config.API_URL}/notifications/${notificationId}`);
+      // console.log(response.data.data)
+      setRefresh(!refresh)
+    } catch (error) {
+      const errorResponse = (error as AxiosError<{message: string}>).response;
+      console.log(errorResponse.data);
+    }
+  };
+
+  const approveFriendship = async (friendshipRequestId:number) => {
+    try {
+      const response = await axios.post(`${Config.API_URL}/friendships/request/${friendshipRequestId}/approval`,);
+      // console.log(response.data);
+    } catch (error) {
+      const errorResponse = (error as AxiosError<{message: string}>).response;
+      console.log(errorResponse.data);
+    }
+  };
+
+  const goToFeed = (feedId:number) => {
+    navigation.navigate('FeedDetail', {feedId:feedId});
+  }
+
+  const getFriendMsg = useCallback((friendshipRequestId:number)=>{
+    const getMSG = async () => {
+      try {
+        const response = await axios.get(`${Config.API_URL}/friendships/request/${friendshipRequestId}/message`,);
+        setFriendMsg(response.data.data.message);
+        setShowModal(true); 
+      } catch (error) {
+        const errorResponse = (error as AxiosError<{message: string}>).response;
+        console.log(errorResponse.data);
+      }
+    };
+    getMSG();
+  },[friendMsg]);
+
   return (
     <View style={styles.entire}>
       {/* <View style={styles.notisHeader}>
@@ -87,25 +181,47 @@ export default function Notis({navigation}:NotisScreenProps) {
           {!isEnabled && <Text style={styles.toggleInactiveTxt}>OFF</Text>}
         </Pressable>
       </View> */}
-      {allRead && <View style={styles.empty}>
+      {noNotis && <View style={styles.empty}>
         <Text style={styles.emptyTxt}>알림을 다 읽었어요</Text>
       </View>}
-      {!allRead && <FlatList 
+      {!noNotis && <FlatList 
           data={notisData}
           style={styles.notisEntire}
           renderItem={({item}:itemProps) => {
             return (
-              <Pressable style={styles.eachNotis} onPress={()=>navigation.navigate('FeedDetail', {feedId:item.notificcationId})}>
+              <Pressable style={styles.eachNotis} onPress={()=>{
+                if (item.notificationType.includes("FEED")) {goToFeed(item.redirectTargetId)}
+                else if (item.notificationType.includes("MESSAGE")) {navigation.navigate('NoteBox')}
+              }}>
                 <View style={styles.notisView}>
-                  <Pressable style={styles.notisProfile}>
-                    <SvgXml width={32} height={32} xml={svgXml.status.smile}/>
-                  </Pressable>
-                  <Text style={styles.notisText}>{item.body}</Text>
+                  {!item.notificationType.includes('MESSAGE') && <Pressable style={styles.notisProfile} onPress={()=>{navigation.navigate('Profile', {whose:1, accountId:item.accountId})}}>
+                    {item.status == 'SMILE' && <SvgXml width={32} height={32} xml={svgXml.status.smile}/>}
+                    {item.status == 'HAPPY' && <SvgXml width={32} height={32} xml={svgXml.status.happy}/>}
+                    {item.status == 'SAD' && <SvgXml width={32} height={32} xml={svgXml.status.sad}/>}
+                    {item.status == 'MAD' && <SvgXml width={32} height={32} xml={svgXml.status.mad}/>}
+                    {item.status == 'EXHAUSTED' && <SvgXml width={32} height={32} xml={svgXml.status.exhauseted}/>}
+                    {item.status == 'COFFEE' && <SvgXml width={32} height={32} xml={svgXml.status.coffee}/>}
+                    {item.status == 'MEAL' && <SvgXml width={32} height={32} xml={svgXml.status.meal}/>}
+                    {item.status == 'ALCOHOL' && <SvgXml width={32} height={32} xml={svgXml.status.alcohol}/>}
+                    {item.status == 'CHICKEN' && <SvgXml width={32} height={32} xml={svgXml.status.chicken}/>}
+                    {item.status == 'SLEEP' && <SvgXml width={32} height={32} xml={svgXml.status.sleep}/>}
+                    {item.status == 'WORK' && <SvgXml width={32} height={32} xml={svgXml.status.work}/>}
+                    {item.status == 'STUDY' && <SvgXml width={32} height={32} xml={svgXml.status.study}/>}
+                    {item.status == 'MOVIE' && <SvgXml width={32} height={32} xml={svgXml.status.movie}/>}
+                    {item.status == 'MOVE' && <SvgXml width={32} height={32} xml={svgXml.status.move}/>}
+                    {item.status == 'DANCE' && <SvgXml width={32} height={32} xml={svgXml.status.dance}/>}
+                    {item.status == 'READ' && <SvgXml width={32} height={32} xml={svgXml.status.read}/>}
+                    {item.status == 'WALK' && <SvgXml width={32} height={32} xml={svgXml.status.walk}/>}
+                    {item.status == 'TRAVEL' && <SvgXml width={32} height={32} xml={svgXml.status.travel}/>}
+                  </Pressable>}
+                  <View style={styles.notisTextView}>
+                    <Text style={!item.notificationType.includes('MESSAGE') ? styles.notisText : [styles.notisText, {marginVertical:10}]}>{item.content.replace('\n', '')}</Text>
+                  </View>
                 </View>
-                <Pressable style={styles.notisCheckBtn}>
+                {item.notificationType == 'CREATE_FRIENDSHIP_REQUEST' && <Pressable style={styles.notisCheckBtn} onPress={()=>{getFriendMsg(item.redirectTargetId); setmodalData(item.content); setmodalDataId(item.redirectTargetId);}}>
                   <Text style={styles.notisCheckBtnTxt}>보기</Text>
-                </Pressable>
-                <Pressable style={styles.xBtn}>
+                </Pressable>}
+                <Pressable style={styles.xBtn} onPress={()=>deleteNotis(item.notificationId)}>
                   <SvgXml width={16} height={16} xml={svgXml.icon.notisX}/>
                 </Pressable>
               </Pressable>
@@ -117,13 +233,13 @@ export default function Notis({navigation}:NotisScreenProps) {
             <Pressable style={styles.modalView} onPress={(e)=>e.stopPropagation()}>
               <Text style={styles.modalTitleTxt}>친구 요청 메시지</Text>
             <View style={styles.changeView}>
-              <Text style={styles.nameChangeTxtInput}>지훈아 나 과동기~~지훈아 나 과동기~~지훈아 나 과동기~~지훈아 나 과동기~~지훈아 나 과동기~~지훈아 나 과동기~~</Text>
+              <Text style={styles.nameChangeTxtInput}>{friendMsg}</Text>
             </View>
             <View style={styles.modalBtnView}>
-              <Pressable style={styles.btnWhite} onPress={()=>{setShowModal(false)}}>
+              <Pressable style={styles.btnWhite} onPress={()=>{setShowModal(false); setmodalData('');}}>
                 <Text style={styles.btnWhiteTxt}>닫기</Text>
               </Pressable>
-              <Pressable style={styles.btnYellow} onPress={()=>{}}>
+              <Pressable style={styles.btnYellow} onPress={()=>{approveFriendship(modalDataId); setShowModal(false); setmodalData(''); setmodalDataId(-1);}}>
                 <Text style={styles.btnYellowTxt}>수락하기</Text>
               </Pressable>
             </View>
@@ -232,18 +348,23 @@ const styles = StyleSheet.create({
     flexGrow:1,
     flexDirection:'row',
     alignItems:'center',
-    flex:1
+    flex:1,
   },
   notisProfile:{
     marginVertical:12,
     marginRight:10,
   },
+  notisTextView:{
+    justifyContent:'center',
+    flexShrink:1,
+    paddingVertical:11,
+  },
   notisText:{
     color:'#222222',
     fontWeight:'400',
     fontSize:14,
-    flexShrink:1,
-    marginVertical:11
+    textAlignVertical:'center',
+    flex:1
   },
   notisCheckBtn:{
     width:84,

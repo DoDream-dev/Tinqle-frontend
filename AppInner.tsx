@@ -23,7 +23,6 @@ import userSlice from "./src/slices/user";
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import Feather from 'react-native-vector-icons/Feather';
 import SplashScreen from "react-native-splash-screen";
-// import SplashScreen from "./src/components/SplashScreen";
 import useAxiosInterceptor from './src/hooks/useAxiosInterceptor';
 import { SvgXml } from 'react-native-svg';
 import { svgXml } from "./assets/image/svgXml";
@@ -48,7 +47,6 @@ export default function AppInner() {
   useAxiosInterceptor();
   const dispatch = useAppDispatch();
   const isLoggedIn = useSelector((state:RootState) => !!state.user.accessToken);
-  const [newNoti, setNewNoti] = useState(false);
   useEffect(() => {
     SplashScreen.hide();
   }, []);
@@ -71,6 +69,13 @@ export default function AppInner() {
       } catch (error) {
         const errorResponse = (error as AxiosError<{message: string}>).response;
         if (errorResponse?.data.statusCode == 1070) {console.log('reLogin');;}
+        if (errorResponse?.data.status == 500) {
+          dispach(
+            userSlice.actions.setToken({
+              accessToken:'',
+            }),
+          );
+        }
       }
     };
     getRefreshTokenAgain();
@@ -80,7 +85,6 @@ export default function AppInner() {
       <Stack.Screen
         name="FeedList"
         component={FeedList}
-        initialParams={{newNoti}}
         options={({navigation}) => ({
           title:'tincle',
           headerTitleAlign:'center',

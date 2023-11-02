@@ -12,6 +12,8 @@ import { svgXml } from '../../assets/image/svgXml';
 import { SvgXml } from 'react-native-svg';
 import _ from 'lodash';
 import { throttleTime, throttleTimeEmoticon } from '../hooks/Throttle';
+import userSlice from '../slices/user';
+import { useAppDispatch } from '../store';
 
 
 type ProfileScreenProps = NativeStackScreenProps<RootStackParamList, 'Profile'>;
@@ -43,6 +45,9 @@ export default function Profile({navigation, route}:ProfileScreenProps) {
   
   const inp1 = useRef();
   const inp2 = useRef();
+
+  const dispatch = useAppDispatch();
+  
   useEffect(() => {
     if (whoseProfile == 0) {
       const getMyProfile = async () => {
@@ -51,10 +56,17 @@ export default function Profile({navigation, route}:ProfileScreenProps) {
           setName(response.data.data.nickname);
           setChangeNameVal(response.data.data.nickname);
           setStatus(response.data.data.status.toLowerCase());
-          console.log('내 프로필 조회')
+          // console.log('내 프로필 조회')
         } catch (error) {
           const errorResponse = (error as AxiosError<{message: string}>).response;
           console.log(errorResponse?.data);
+          if (errorResponse?.data.status == 500) {
+            dispatch(
+              userSlice.actions.setToken({
+                accessToken:'',
+              }),
+            );
+          }
         }
       };
       getMyProfile();
@@ -64,7 +76,7 @@ export default function Profile({navigation, route}:ProfileScreenProps) {
       const getProfile = async () => {
         try {
           const response = await axios.get(`${Config.API_URL}/accounts/${accountId}/profile`,);
-          console.log(response.data.data)
+          // console.log(response.data.data)
           setName(response.data.data.nickname);
           setChangeNameVal(response.data.data.nickname);
           setStatus(response.data.data.status.toLowerCase());
@@ -103,7 +115,7 @@ export default function Profile({navigation, route}:ProfileScreenProps) {
       try {
         const response = await axios.put(`${Config.API_URL}/accounts/me/status/${stat.toUpperCase()}`);
         setStatus(response.data.status);
-        console.log(response.data)
+        // console.log(response.data)
       } catch (error) {
         const errorResponse = (error as AxiosError<{message: string}>).response;
         console.log(errorResponse);
@@ -130,7 +142,7 @@ export default function Profile({navigation, route}:ProfileScreenProps) {
     }
     else {
       try {
-        console.log(accountId)
+        // console.log(accountId)
         const response = await axios.post(`${Config.API_URL}/friendships/nickname/change`, {
           friendAccountId:accountId,
           nickname: text,
@@ -152,7 +164,7 @@ export default function Profile({navigation, route}:ProfileScreenProps) {
       },);
       setWriteNote(false);
       setPopup(true);
-      console.log(response.data.data)
+      // console.log(response.data.data)
     } catch (error) {
       const errorResponse = (error as AxiosError<{message: string}>).response;
       console.log(errorResponse.data);
@@ -165,7 +177,7 @@ export default function Profile({navigation, route}:ProfileScreenProps) {
       const response = await axios.post(`${Config.API_URL}/friendships/request`, {
         accountTargetId:accountId, message:askFriendMsgVal
       },);
-      console.log(response.data)
+      // console.log(response.data)
       // popup: 이도님께 친구 요청을 보냈어요!
       setPopup(true);
       setAskFriendMsg(false);
@@ -232,7 +244,7 @@ export default function Profile({navigation, route}:ProfileScreenProps) {
           {alreadyRequestFriend == 1 ? <Pressable style={styles.btnWhite} disabled={true}>
             <Text style={styles.btnWhiteTxt}>친구 수락 대기 중</Text>
           </Pressable> :
-          <Pressable style={styles.btnYellow} onPress={askFriend}>
+          <Pressable style={styles.btnYellow} onPress={()=>setAskFriendMsg(true)}>
             <Text style={styles.btnYellowTxt}>친구 요청하기</Text>
           </Pressable>}
           <View style={{flex:0.4}}></View>
@@ -328,7 +340,7 @@ export default function Profile({navigation, route}:ProfileScreenProps) {
                 if (chageNameVal != '') {
                   if (chageNameVal == name) {setChangeName(false);}
                   else {
-                    console.log(chageNameVal.trim())
+                    // console.log(chageNameVal.trim())
                     if (whoseProfile == 0) {rename(chageNameVal.trim(), undefined);}
                     else {rename(chageNameVal.trim(), accountId);}
                   }

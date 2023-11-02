@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, FlatList, Pressable } from 'react-native';
 import axios, {AxiosError} from 'axios';
 import Config from 'react-native-config';
+import userSlice from '../slices/user';
+import { useAppDispatch } from '../store';
 
 type itemProps = {
   item:{
@@ -17,11 +19,12 @@ export default function NoteBox() {
   const [isLast, setIsLast] = useState(false);
   const [cursorId, setCursorId] = useState(0);
   const [msgData, setMsgData] = useState([]);
+  const dispatch = useAppDispatch();
   useEffect(()=>{
     const getNoteContent = async () => {
       try {
         const response = await axios.get(`${Config.API_URL}/accounts/me/message`);
-        console.log(response.data.data);
+        // console.log(response.data.data);
         if (response.data.data.content.length == 0) {
           setEmpty(true)
         }
@@ -33,6 +36,13 @@ export default function NoteBox() {
       } catch(error) {
         const errorResponse = (error as AxiosError<{message: string}>).response;
         console.log(errorResponse.data);
+        if (errorResponse?.data.status == 500) {
+          dispatch(
+            userSlice.actions.setToken({
+              accessToken:'',
+            }),
+          );
+        }
       }
     };
     getNoteContent();

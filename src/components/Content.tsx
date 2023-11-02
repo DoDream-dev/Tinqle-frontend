@@ -37,7 +37,7 @@ export default function Content( props:ContentProps){
   return (
     <View style={styles.entire}>
       <View style={styles.statusView}>
-        <Pressable onPress={()=>{console.log(1111); navigation.navigate('Profile', {whose:mine, accountId:accountId}); }}>
+        <Pressable onPress={()=>{navigation.navigate('Profile', {whose:mine, accountId:accountId}); }}>
           {status == 'smile'.toUpperCase() && <SvgXml width={32} height={32} xml={svgXml.status.smile} />}
           {status == 'happy'.toUpperCase() && <SvgXml width={32} height={32} xml={svgXml.status.happy} />}
           {status == 'sad'.toUpperCase() && <SvgXml width={32} height={32} xml={svgXml.status.sad} />}
@@ -66,7 +66,7 @@ export default function Content( props:ContentProps){
           <Text style={styles.createdAt}>{createdAt}</Text>
         </View>
         <View style={styles.content}>
-          <Text style={styles.contentTxt}>{content}</Text>
+          {content != '' && <Text style={styles.contentTxt}>{content}</Text>}
           {/* {imageURL.flatMap(f => !!f ? [f] : []).length != 0 && <SliderBox 
             images={imageURL}
             sliderBoxHeight={283}
@@ -119,7 +119,7 @@ const styles = StyleSheet.create({
   content:{
     justifyContent:'center',
     alignItems:'flex-start',
-    marginTop:4
+    marginTop:4,
   },
   contentTxt:{
     fontWeight:'400',

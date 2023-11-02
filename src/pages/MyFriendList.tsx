@@ -8,6 +8,8 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../AppInner';
 import { svgXml } from '../../assets/image/svgXml';
 import { SvgXml } from 'react-native-svg';
+import userSlice from '../slices/user';
+import { useAppDispatch } from '../store';
 
 type MyFriendListScreenProps = NativeStackScreenProps<RootStackParamList, 'MyFriendList'>;
 
@@ -18,12 +20,13 @@ export default function MyFriendList({navigation}:MyFriendListScreenProps) {
   const [friendData, setFriendData] = useState([{accountId:-1, friendshipId:-1, friendNickname:'',status:''}]);
   const [loading, setLoading] = useState(false);
   const [cursorId, setCursorId]= useState(0);
+  const dispatch = useAppDispatch();
   useEffect(() => {
     const getFriendship = async () => {
       try {
         const response = await axios.get(`${Config.API_URL}/friendships/manage`,);
         setIsLast(response.data.data.last);
-        console.log(response.data.data)
+        // console.log(response.data.data)
         if (response.data.data.content.length == 0) setNoFriend(true);
         else {
           setFriendData(response.data.data.content);
@@ -32,6 +35,13 @@ export default function MyFriendList({navigation}:MyFriendListScreenProps) {
       } catch (error) {
         const errorResponse = (error as AxiosError<{message: string}>).response;
         console.log(errorResponse.data);
+        if (errorResponse?.data.status == 500) {
+          dispatch(
+            userSlice.actions.setToken({
+              accessToken:'',
+            }),
+          );
+        }
       }
     };
     getFriendship();

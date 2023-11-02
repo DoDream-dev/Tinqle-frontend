@@ -6,6 +6,6 @@
       android:src="@drawable/i" />
   </item> -->
   <item
-    android:drawable="@drawable/n"
+    android:drawable="@drawable/splashlogo"
     android:gravity="center"/>
 </layer-list>

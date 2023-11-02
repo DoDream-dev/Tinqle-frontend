@@ -15,6 +15,8 @@ import { svgXml } from '../../assets/image/svgXml';
 import { SvgXml } from 'react-native-svg'
 import { throttleTime, throttleTimeEmoticon } from '../hooks/Throttle';
 import _ from 'lodash';
+import { useAppDispatch } from '../store';
+import userSlice from '../slices/user';
 
 type FeedDetailScreenProps = NativeStackScreenProps<RootStackParamList, 'FeedDetail'>;
 type itemProps = {
@@ -43,6 +45,8 @@ type itemProps = {
 };
 
 export default function FeedDetail({navigation, route}:FeedDetailScreenProps) {
+  const dispach = useAppDispatch();
+
   const [refresh, setRefresh] = useState(false);
   const [feedData, setFeedData] = useState({
     accountId: -1,
@@ -79,7 +83,6 @@ export default function FeedDetail({navigation, route}:FeedDetailScreenProps) {
   const [loading, setLoading] = useState(false);
   const [placeholder, setPlaceholder] = useState('댓글을 적어주세요');
   const [cursorId, setCursorId] = useState(0);
-  const [deleted, setDeleted] = useState(false);
 
   useFocusEffect(
     useCallback(()=>{
@@ -90,10 +93,21 @@ export default function FeedDetail({navigation, route}:FeedDetailScreenProps) {
         } catch (error) {
           const errorResponse = (error as AxiosError<{message: string}>).response;
           console.log(errorResponse.data);
-          if (errorResponse?.data.statusCode == 4030) {
+          if (errorResponse?.data.statusCode == 4030 || errorResponse?.data.statusCode == 4010) {
             console.log('삭제된 글');
-            setDeleted(true);
+            dispach(
+              userSlice.actions.setDeleted({
+                deleted:true,
+              }),
+            );
             navigation.navigate('FeedList')
+          }
+          if (errorResponse?.data.status == 500) {
+            dispach(
+              userSlice.actions.setToken({
+                accessToken:'',
+              }),
+            );
           }
         }
       }
@@ -109,6 +123,13 @@ export default function FeedDetail({navigation, route}:FeedDetailScreenProps) {
         } catch (error) {
           const errorResponse = (error as AxiosError<{message: string}>).response;
           console.log(errorResponse.data);
+          if (errorResponse?.data.status == 500) {
+            dispach(
+              userSlice.actions.setToken({
+                accessToken:'',
+              }),
+            );
+          }
         }
       }
       getFeed();
@@ -150,15 +171,25 @@ export default function FeedDetail({navigation, route}:FeedDetailScreenProps) {
   
   const deleteFeed = _.throttle(async () => {
     try {
-      console.log(feedData.feedId)
+      if (feedData.feedImageUrls[0] != null) {
+        const response = await axios.delete(`${Config.API_URL}/images/feed?fileUrls=${feedData.feedImageUrls[0]}`,);
+        console.log('img del:',response.data.data)
+      }
       const response = await axios.delete(`${Config.API_URL}/feeds/${feedData.feedId}`, {});
       console.log(response.data.data);
       if (response.data.data.isDeleted) {navigation.goBack();}
     } catch (error) {
       const errorResponse = (error as AxiosError<{message: string}>).response;
-      if (errorResponse?.data.statusCode == 4030) {
+      if (errorResponse?.data.statusCode == 4030 || errorResponse?.data.statusCode == 4010) {
         console.log('already deleted');
         navigation.goBack();
+      }
+      if (errorResponse?.data.status == 500) {
+        dispach(
+          userSlice.actions.setToken({
+            accessToken:'',
+          }),
+        );
       }
       console.log(errorResponse.data);
     }
@@ -167,14 +198,26 @@ export default function FeedDetail({navigation, route}:FeedDetailScreenProps) {
   const pressEmoticon = _.debounce(async (feedId:number, emoticon:string) => {
     try {
       const response = await axios.put(`${Config.API_URL}/emoticons/feeds/${feedId}`, {emoticonType:emoticon},);
-      console.log(response.data.data);
+      // console.log(response.data.data);
       setRefresh(!refresh);
     } catch (error) {
       const errorResponse = (error as AxiosError<{message: string}>).response;
       console.log(errorResponse.data);
-      if (errorResponse?.data.statusCode == 4030) {
+      if (errorResponse?.data.statusCode == 4030 || errorResponse?.data.statusCode == 4010) {
         console.log('삭제된 글');
+        dispach(
+          userSlice.actions.setDeleted({
+            deleted:true,
+          }),
+        );
         navigation.navigate('FeedList')
+      }
+      if (errorResponse?.data.status == 500) {
+        dispach(
+          userSlice.actions.setToken({
+            accessToken:'',
+          }),
+        );
       }
     }
   }, throttleTimeEmoticon);
@@ -182,16 +225,27 @@ export default function FeedDetail({navigation, route}:FeedDetailScreenProps) {
   const whoReact = _.throttle(async (feedId:number) => {
     try {
       const response = await axios.get(`${Config.API_URL}/emoticons/feeds/${feedId}`,);
-      console.log(response.data.data);
+      // console.log(response.data.data);
       setEmoticonList(response.data.data);
       setShowBottomSheet(true);
     } catch (error) {
       const errorResponse = (error as AxiosError<{message: string}>).response;
       console.log(errorResponse.data);
-      if (errorResponse?.data.statusCode == 4030) {
+      if (errorResponse?.data.statusCode == 4030 || errorResponse?.data.statusCode == 4010) {
         console.log('삭제된 글');
-        setDeleted(true);
+        dispach(
+          userSlice.actions.setDeleted({
+            deleted:true,
+          }),
+        );
         navigation.navigate('FeedList')
+      }
+      if (errorResponse?.data.status == 500) {
+        dispach(
+          userSlice.actions.setToken({
+            accessToken:'',
+          }),
+        );
       }
     }
   }, throttleTime);
@@ -199,17 +253,29 @@ export default function FeedDetail({navigation, route}:FeedDetailScreenProps) {
   const sendNewCmt = _.throttle(async () => {
     try {
       const response = await axios.post(`${Config.API_URL}/feeds/${feedData.feedId}/comments/parent`, {content:cmtContent});
-      console.log(response.data.data);
+      // console.log(response.data.data);
       setCmtContent('');
       setRefresh(!refresh);
       setIsLast(false);
-      console.log(throttleTime)
+      // console.log(throttleTime)
     } catch (error) {
       const errorResponse = (error as AxiosError<{message: string}>).response;
       console.log(errorResponse.data);
-      if (errorResponse?.data.statusCode == 4030) {
+      if (errorResponse?.data.statusCode == 4030 || errorResponse?.data.statusCode == 4010) {
         console.log('삭제된 글');
+        dispach(
+          userSlice.actions.setDeleted({
+            deleted:true,
+          }),
+        );
         navigation.navigate('FeedList')
+      }
+      if (errorResponse?.data.status == 500) {
+        dispach(
+          userSlice.actions.setToken({
+            accessToken:'',
+          }),
+        );
       }
     }
   }, throttleTime);
@@ -217,7 +283,7 @@ export default function FeedDetail({navigation, route}:FeedDetailScreenProps) {
   const sendNewChildCmt = _.throttle(async () => {
     try {
       const response = await axios.post(`${Config.API_URL}/feeds/${feedData.feedId}/comments/${writeChildCmt}/children`, {content:cmtContent});
-      console.log(response.data.data);
+      // console.log(response.data.data);
       setCmtContent('');
       setRefresh(!refresh);
       setIsLast(false);
@@ -225,10 +291,21 @@ export default function FeedDetail({navigation, route}:FeedDetailScreenProps) {
     } catch (error) {
       const errorResponse = (error as AxiosError<{message: string}>).response;
       console.log(errorResponse.data);
-      if (errorResponse?.data.statusCode == 4030) {
+      if (errorResponse?.data.statusCode == 4030 || errorResponse?.data.statusCode == 4010) {
         console.log('삭제된 글');
-        setDeleted(true);
+        dispach(
+          userSlice.actions.setDeleted({
+            deleted:true,
+          }),
+        );
         navigation.navigate('FeedList')
+      }
+      if (errorResponse?.data.status == 500) {
+        dispach(
+          userSlice.actions.setToken({
+            accessToken:'',
+          }),
+        );
       }
     }
   }, throttleTime);;
@@ -247,10 +324,21 @@ export default function FeedDetail({navigation, route}:FeedDetailScreenProps) {
       } catch (error) {
         const errorResponse = (error as AxiosError<{message: string}>).response;
         console.log(errorResponse.data);
-        if (errorResponse?.data.statusCode == 4030) {
+        if (errorResponse?.data.statusCode == 4030 || errorResponse?.data.statusCode == 4010) {
           console.log('삭제된 글');
-          setDeleted(true);
+          dispach(
+            userSlice.actions.setDeleted({
+              deleted:true,
+            }),
+          );
           navigation.navigate('FeedList')
+        }
+        if (errorResponse?.data.status == 500) {
+          dispach(
+            userSlice.actions.setToken({
+              accessToken:'',
+            }),
+          );
         }
       }
     }

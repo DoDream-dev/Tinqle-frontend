@@ -13,6 +13,7 @@ import { SvgXml } from 'react-native-svg';
 import _ from 'lodash';
 import { throttleTime, throttleTimeEmoticon } from '../hooks/Throttle';
 import { svgXml } from '../../assets/image/svgXml';
+import userSlice from '../slices/user';
 
 export default function SearchFriends() {
   const dispatch = useAppDispatch();
@@ -36,6 +37,13 @@ export default function SearchFriends() {
       } catch (error) {
         const errorResponse = (error as AxiosError<{message: string}>).response;
         console.log(errorResponse.data)
+        if (errorResponse?.data.status == 500) {
+          dispatch(
+            userSlice.actions.setToken({
+              accessToken:'',
+            }),
+          );
+        }
       }
     };
     getMyCode();
@@ -76,7 +84,7 @@ export default function SearchFriends() {
       const response = await axios.post(`${Config.API_URL}/friendships/request`, {
         accountTargetId:otherUser.accountId, message:message
       },);
-      console.log(response.data)
+      // console.log(response.data)
       // popup: 이도님께 친구 요청을 보냈어요!
       setWhichPopup('send');
       setPopupName(otherUser.nickname);

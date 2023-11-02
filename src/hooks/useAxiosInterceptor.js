@@ -13,17 +13,14 @@ const useAxiosInterceptor = () => {
     (config) => {
     const accessToken = store.getState().user.accessToken;
     // console.log(accessToken)
-    // console.log(accessToken)
-    // console.log('axintercp', config.headers['Content-Type'])
     if (config.headers['Content-Type'] == undefined) {
       config.headers['Content-Type'] = 'application/json';
     }
-    // console.log(config.headers['Content-Type'])
     config.headers['Authorization'] = `Bearer ${accessToken}`;
     return config;
   },
   (error) => {
-    console.log(error.data);
+    // console.log(error.data);
     return Promise.reject(error);
   });
 
@@ -32,6 +29,7 @@ const useAxiosInterceptor = () => {
       return res;
     },
     async (error) => {
+      // console.log(error)
       if (error.response?.data.statusCode === 1000) {
         try {
           console.log('access denied')
@@ -62,7 +60,6 @@ const useAxiosInterceptor = () => {
           const response = await axios.request(error.config);
           return response;
         } catch (error2) {
-          console.log(error2)
           const douleErrorResponseStatusCode = error2.response?.data.statusCode;
           if (douleErrorResponseStatusCode == 1070 || douleErrorResponseStatusCode == 1080 || douleErrorResponseStatusCode == 1060) {
             await EncryptedStorage.removeItem('refreshToken');
@@ -73,10 +70,11 @@ const useAxiosInterceptor = () => {
             );
             return false;
           }
+          
   
           return Promise.reject(error2);
         }
-      }  
+      }
       return Promise.reject(error);
     }
   );

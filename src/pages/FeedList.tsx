@@ -1,5 +1,5 @@
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import React, { useCallback, useState, useRef } from 'react';
+import React, { useCallback, useState, useRef, useEffect } from 'react';
 import { View, Text, StyleSheet, Pressable, FlatList, Image, TextInput, Dimensions, RefreshControl } from 'react-native';
 import { RootStackParamList } from '../../AppInner';
 import Feed from '../components/Feed';
@@ -13,6 +13,11 @@ import { SvgXml } from 'react-native-svg';
 import { svgXml } from '../../assets/image/svgXml';
 import { throttleTime, throttleTimeEmoticon } from '../hooks/Throttle';
 import _ from 'lodash';
+import { RootState, useAppDispatch } from '../store';
+import { useSelector } from 'react-redux';
+import ToastScreen from '../components/ToastScreen';
+import userSlice from '../slices/user';
+import EncryptedStorage from 'react-native-encrypted-storage/lib/typescript/EncryptedStorage';
 
 type FeedListScreenProps = NativeStackScreenProps<RootStackParamList, 'FeedList'>;
 type itemProps = {
@@ -39,6 +44,15 @@ type itemProps = {
   }
 }
 export default function FeedList({navigation, route}:FeedListScreenProps) {
+  const dispach = useAppDispatch();
+  const deleted = useSelector((state:RootState) => !!state.user.deleted);
+  const setDeleted = () => {
+    dispach(
+      userSlice.actions.setDeleted({
+        deleted:false,
+      }),
+    );
+  };
   const [feedData, setFeedData] = useState([]);
   const [noFeed, setNoFeed] = useState(false);
   const [isLast, setIsLast] = useState(false);
@@ -62,8 +76,13 @@ export default function FeedList({navigation, route}:FeedListScreenProps) {
   });
   const [selectImg, setSelectImg] = useState(false);
   const windowWidth = Dimensions.get('screen').width;
+  // const windowHeight = Dimensions.get('window').height;
+  const [refreshcontrol, setrefreshcontrol] = useState(false);
   const [status, setStatus] = useState('');
-  const [noti, setNoti] = useState(false);
+  const noti = useSelector((state:RootState) => !!state.user.notis)
+  // console.log(noti)
+  const [newNotis, setNewNotis] = useState(false);
+  // console.log(newNotis)
 
   // const scroll = (offset:number) => {
   //   if (flatRef.current) {
@@ -99,8 +118,8 @@ export default function FeedList({navigation, route}:FeedListScreenProps) {
         navigation.setOptions({headerRight:()=>(
           <View style={{flexDirection:'row'}}>
             <Pressable style={{marginRight:12}} onPress={()=>navigation.navigate('Notis')}>
-              {!noti && <SvgXml width={24} height={24} xml={svgXml.icon.noti}/>}
-              {noti && <SvgXml width={24} height={24} xml={svgXml.icon.notiYes}/>}
+              {!(noti || newNotis) && <SvgXml width={24} height={24} xml={svgXml.icon.noti}/>}
+              {(noti || newNotis) && <SvgXml width={24} height={24} xml={svgXml.icon.notiYes}/>}
             </Pressable>
             <Pressable style={{marginRight:3}} onPress={()=>navigation.navigate('Profile', {whose:0, accountId:-1})}>
             {status == 'smile' && <SvgXml width={24} height={24} xml={svgXml.status.smile}/>}
@@ -126,18 +145,20 @@ export default function FeedList({navigation, route}:FeedListScreenProps) {
         )});
       }
       reloadStatus();
-  },[refresh, status]));
+  },[refresh, status, noti, newNotis]));
 
   useFocusEffect(
     useCallback(()=>{
       const getFeed = async () => {
         try {
           const response = await axios.get(`${Config.API_URL}/feeds`,);
+          // console.log(response.data.data)
           if (response.data.data.content.length == 0) setNoFeed(true);
           else {
+            setNoFeed(false);
             setIsLast(response.data.data.last);
             setFeedData(response.data.data.content);
-            // console.log(response.data.data.content[0].feedImageUrls)
+            // console.log(response.data.data.content)
             if (response.data.data.content.length != 0) {
               setCursorId(response.data.data.content[response.data.data.content.length-1].feedId)
             }
@@ -146,20 +167,46 @@ export default function FeedList({navigation, route}:FeedListScreenProps) {
           setStatus(res2.data.data.status.toLowerCase());
         } catch (error) {
           const errorResponse = (error as AxiosError<{message: string}>).response;
-          console.log(errorResponse.data);
+          console.log(errorResponse?.data.status);
+          if (errorResponse?.data.status == 500) {
+            dispach(
+              userSlice.actions.setToken({
+                accessToken:'',
+              }),
+            );
+          }
         }
       }
       getFeed();
-    },[refresh])
+      // console.log(noFeed)
+    },[refresh, noFeed])
+  );
+
+  useFocusEffect(
+    useCallback(()=>{
+      const getNewNotis = async () => {
+        try {
+          const response = await axios.get(`${Config.API_URL}/notifications/count`,);
+          // console.log(response.data.data)
+          if (response.data.data.count != 0) { setNewNotis(true); }
+          else { setNewNotis(false); }
+        } catch (error) {
+          const errorResponse = (error as AxiosError<{message: string}>).response;
+          console.log(errorResponse?.data)
+          
+        }
+      }
+      getNewNotis();
+    },[refresh, newNotis, noti])
   );
 
   const getData = async () => {
     if (!isLast) {
       setLoading(true);
       try {
-        console.log(cursorId)
+        // console.log(cursorId)
         const response = await axios.get(`${Config.API_URL}/feeds?cursorId=${cursorId}`,);
-        console.log(response.data.data)
+        // console.log(response.data.data)
         setIsLast(response.data.data.last);
         setFeedData(feedData.concat(response.data.data.content));
         if (response.data.data.content.length != 0) {
@@ -185,12 +232,12 @@ export default function FeedList({navigation, route}:FeedListScreenProps) {
             return data;
           },
         });
-        console.log(response.data.data.files[0].fileUrl);
+        // console.log(response.data.data.files[0].fileUrl);
         const response2 = await axios.post(`${Config.API_URL}/feeds`, {
           content:feedContent,
           feedImageUrl:[response.data.data.files[0].fileUrl],
         });
-        console.log(response2.data.data);
+        // console.log(response2.data.data);
         setFeedContent('');
         setSelectImg(false);
         setImgData({uri:'',type:''});
@@ -201,13 +248,14 @@ export default function FeedList({navigation, route}:FeedListScreenProps) {
           content:feedContent,
           feedImageUrl:[null],
         });
-        console.log(response.data.data);
+        // console.log(response.data.data);
         setFeedContent('');
         setSelectImg(false);
         setImgData({uri:'',type:''});
         setUploadImage(undefined);
         setRefresh(!refresh);
       }
+      setNoFeed(false);
     } catch (error) {
       const errorResponse = (error as AxiosError<{message: string}>).response;
       console.log(errorResponse.data);
@@ -218,13 +266,18 @@ export default function FeedList({navigation, route}:FeedListScreenProps) {
   const pressEmoticon = async (feedId:number, emoticon:string) => {
     try {
       const response = await axios.put(`${Config.API_URL}/emoticons/feeds/${feedId}`, {emoticonType:emoticon},);
-      console.log(response.data.data);
+      // console.log(response.data.data);
       setRefresh(!refresh);
     } catch (error) {
       const errorResponse = (error as AxiosError<{message: string}>).response;
       console.log(errorResponse.data);
-      if (errorResponse?.data.statusCode == 4030) {
+      if (errorResponse?.data.statusCode == 4030 || errorResponse?.data.statusCode == 4010) {
         console.log('삭제된 글')
+        dispach(
+          userSlice.actions.setDeleted({
+            deleted:true,
+          }),
+        );
         setRefresh(!refresh);
       }
     }
@@ -233,14 +286,19 @@ export default function FeedList({navigation, route}:FeedListScreenProps) {
   const whoReact = _.throttle(async (feedId:number) => {
     try {
       const response = await axios.get(`${Config.API_URL}/emoticons/feeds/${feedId}`,);
-      console.log(response.data.data);
+      // console.log(response.data.data);
       setEmoticonList(response.data.data);
       setShowBottomSheet(true);
     } catch (error) {
       const errorResponse = (error as AxiosError<{message: string}>).response;
       console.log(errorResponse.data);
-      if (errorResponse?.data.statusCode == 4030) {
+      if (errorResponse?.data.statusCode == 4030 || errorResponse?.data.statusCode == 4010) {
         console.log('삭제된 글');
+        dispach(
+          userSlice.actions.setDeleted({
+            deleted:true,
+          }),
+        );
         setRefresh(!refresh);
       }
     }
@@ -250,23 +308,25 @@ export default function FeedList({navigation, route}:FeedListScreenProps) {
 
   const [refreshing, setRefreshing] = React.useState(false);
 
-  const onRefresh = React.useCallback(() => {
+  const onRefresh = () => {
     setRefreshing(true);
     setTimeout(() => {
       setRefreshing(false);
-    }, 2000);
-    getData();
-  }, []);
+    }, 1000);
+    // setRefresh(!refresh)
+    // startRefresh()
+    setRefresh(!refresh)
+  }
 
   return (
-    <View style={{flex:1}}>
+    <View style={{flex:1, alignItems:'center'}}>
+      {noFeed ? <View style={[styles.noFeedView]}>
+        <Text style={styles.noFeedTxt}>지금 떠오르는 생각을 적어보세요!</Text>
+      </View> : 
       <View style={[styles.entire]}>
-        {noFeed ? <View style={styles.noFeedView}>
-          <Text style={styles.noFeedTxt}>지금 떠오르는 생각을 적어보세요!</Text>
-        </View> : 
         <FlatList
           data={feedData}
-          style={[styles.feedList, {}]}
+          style={[styles.feedList]}
           onEndReached={onEndReached}
           onEndReachedThreshold={0.4}
           refreshControl={<RefreshControl 
@@ -282,6 +342,7 @@ export default function FeedList({navigation, route}:FeedListScreenProps) {
           keyboardShouldPersistTaps={'always'}
           inverted={true}
           ref={flatRef}
+          ListFooterComponent={<View style={{height:10}}></View>}
           // getItemLayout={(data, index) => ({
           //   length:100,
           //   offset:20000*index,
@@ -309,9 +370,8 @@ export default function FeedList({navigation, route}:FeedListScreenProps) {
               </Pressable>
             );
           }}
-        />}
-      </View>
-      <View style={{height:Math.min(80, Math.max(35, KBsize))}}></View>
+        />
+      </View>}
       <View style={[styles.newFeedAll, {width:windowWidth}]}>
         {selectImg && <View style={[styles.newFeedImgView, {width:windowWidth}]}>
           <Pressable onPress={()=>{setSelectImg(false); setImgData({uri:'',type:''}); setUploadImage(undefined);}}>
@@ -326,7 +386,7 @@ export default function FeedList({navigation, route}:FeedListScreenProps) {
             // cropping:true,
           })
           .then(image => {
-            console.log(image)
+            // console.log(image)
             let name = image.path.split('/');
             const imageFormData = new FormData();
             let file = {
@@ -335,7 +395,7 @@ export default function FeedList({navigation, route}:FeedListScreenProps) {
               name:name[name.length-1]
             }
             imageFormData.append('file', file)
-            console.log(file)
+            // console.log(file)
             setImgData({
               uri:image.path,
               type:image.mime,
@@ -398,6 +458,12 @@ export default function FeedList({navigation, route}:FeedListScreenProps) {
           </Pressable>
         </Pressable>
       </Modal>
+      {deleted && <ToastScreen 
+        height={21}
+        marginBottom={48}
+        onClose={()=>setDeleted()}
+        message='삭제된 글이에요.'
+      />}
     </View>
   );
 }
@@ -407,18 +473,20 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     width: '100%',
     paddingHorizontal:16,
-    paddingTop:10,
-    paddingBottom:10,
+    // paddingTop:10,
+    // paddingBottom:10,
+    marginBottom:48
   },
   noFeedTxt:{
     color:'#848484',
     fontSize:12,
     fontWeight:'500'
   },
-  noFeedView:{
+  noFeedView:{  
     flex:1,
     justifyContent:'center',
     alignItems:'center',
+    marginBottom:48
   },
   feedList:{
     width:'100%',
