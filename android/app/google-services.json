@@ -22,6 +22,14 @@
           }
         },
         {
+          "client_id": "1036385861525-mteav8chbfv0d2765kt05rf1hj0j1iek.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.tinqle",
+            "certificate_hash": "36615776e6e832d5e8651eecf40daa2071049fb1"
+          }
+        },
+        {
           "client_id": "1036385861525-s4gnofbao3tabril8gfaccblab7olagn.apps.googleusercontent.com",
           "client_type": 3
         }

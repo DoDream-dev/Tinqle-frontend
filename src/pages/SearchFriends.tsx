@@ -126,7 +126,7 @@ export default function SearchFriends() {
           <Text style={styles.myCodeTxt}>
             내 코드: {myCode}
           </Text>
-          <SvgXml width="14" height="14" xml={svgXml.icon.copyIcon} style={styles.copyIcon}/>
+          <SvgXml width="15" height="15" xml={svgXml.icon.copyIcon} style={styles.copyIcon}/>
         </Pressable>
       </View>
       <Modal onBackButtonPress={()=>setOtherUser({accountId:-1, nickname:'', isFriend:0})} isVisible={!!otherUser.nickname} avoidKeyboard={true} backdropColor='#222222' backdropOpacity={0.5} onModalShow={()=>{inp.current?.blur(); inp.current?.focus();}}>
@@ -139,6 +139,8 @@ export default function SearchFriends() {
                 ref={inp}
                 style={styles.commentInput}
                 value={message}
+                placeholder='우리 친구해요!'
+                placeholderTextColor={'#848484'}
                 onChangeText={(text:string) => setMessage(text)}
               />
             </View>
@@ -233,7 +235,7 @@ const styles = StyleSheet.create({
   myCodeView:{},
   myCodeTxt:{
     color: '#848484',
-    fontSize: 11,
+    fontSize: 13,
     fontWeight: '500'
   },
   myCodeBtn:{

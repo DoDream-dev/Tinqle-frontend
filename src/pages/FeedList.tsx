@@ -76,7 +76,7 @@ export default function FeedList({navigation, route}:FeedListScreenProps) {
   });
   const [selectImg, setSelectImg] = useState(false);
   const windowWidth = Dimensions.get('screen').width;
-  // const windowHeight = Dimensions.get('window').height;
+  const windowHeight = Dimensions.get('screen').height;
   const [refreshcontrol, setrefreshcontrol] = useState(false);
   const [status, setStatus] = useState('');
   const noti = useSelector((state:RootState) => !!state.user.notis)
@@ -206,7 +206,7 @@ export default function FeedList({navigation, route}:FeedListScreenProps) {
       try {
         // console.log(cursorId)
         const response = await axios.get(`${Config.API_URL}/feeds?cursorId=${cursorId}`,);
-        // console.log(response.data.data)
+        console.log(response.data.data)
         setIsLast(response.data.data.last);
         setFeedData(feedData.concat(response.data.data.content));
         if (response.data.data.content.length != 0) {
@@ -237,7 +237,7 @@ export default function FeedList({navigation, route}:FeedListScreenProps) {
           content:feedContent,
           feedImageUrl:[response.data.data.files[0].fileUrl],
         });
-        // console.log(response2.data.data);
+        console.log(response2.data.data);
         setFeedContent('');
         setSelectImg(false);
         setImgData({uri:'',type:''});
@@ -246,9 +246,9 @@ export default function FeedList({navigation, route}:FeedListScreenProps) {
       } else {
         const response = await axios.post(`${Config.API_URL}/feeds`, {
           content:feedContent,
-          feedImageUrl:[null],
+          feedImageUrl:[],
         });
-        // console.log(response.data.data);
+        console.log(response.data.data);
         setFeedContent('');
         setSelectImg(false);
         setImgData({uri:'',type:''});
@@ -320,15 +320,19 @@ export default function FeedList({navigation, route}:FeedListScreenProps) {
 
   return (
     <View style={{flex:1, alignItems:'center'}}>
-      {noFeed ? <View style={[styles.noFeedView]}>
+      {/* {noFeed ? <View style={[styles.noFeedView]}>
         <Text style={styles.noFeedTxt}>지금 떠오르는 생각을 적어보세요!</Text>
-      </View> : 
+      </View> :  */}
       <View style={[styles.entire]}>
         <FlatList
           data={feedData}
           style={[styles.feedList]}
           onEndReached={onEndReached}
           onEndReachedThreshold={0.4}
+          ListHeaderComponent={<View>
+            <Text style={styles.noFeedTxt}>지금 떠오르는 생각을 적어보세요!</Text>
+          </View>}
+          ListHeaderComponentStyle={noFeed ? [styles.noFeedView, {height:windowHeight-150,}] : {height:0, width:0}}
           refreshControl={<RefreshControl 
             refreshing={refreshing} onRefresh={onRefresh}
           />}
@@ -371,7 +375,7 @@ export default function FeedList({navigation, route}:FeedListScreenProps) {
             );
           }}
         />
-      </View>}
+      </View>
       <View style={[styles.newFeedAll, {width:windowWidth}]}>
         {selectImg && <View style={[styles.newFeedImgView, {width:windowWidth}]}>
           <Pressable onPress={()=>{setSelectImg(false); setImgData({uri:'',type:''}); setUploadImage(undefined);}}>
@@ -383,6 +387,7 @@ export default function FeedList({navigation, route}:FeedListScreenProps) {
           <Pressable style={styles.addPhoto} onPress={
             ()=>ImagePicker.openPicker({
             multiple:false,
+            mediaType:"photo"
             // cropping:true,
           })
           .then(image => {
@@ -475,7 +480,9 @@ const styles = StyleSheet.create({
     paddingHorizontal:16,
     // paddingTop:10,
     // paddingBottom:10,
-    marginBottom:48
+    marginBottom:48,
+    flex:1,
+    // backgroundColor:'yellow'
   },
   noFeedTxt:{
     color:'#848484',
@@ -486,10 +493,12 @@ const styles = StyleSheet.create({
     flex:1,
     justifyContent:'center',
     alignItems:'center',
-    marginBottom:48
+    // marginBottom:48,
   },
   feedList:{
     width:'100%',
+    flex:1,
+    
   },
   feed:{
     width:'100%',

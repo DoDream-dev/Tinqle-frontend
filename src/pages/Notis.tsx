@@ -170,6 +170,17 @@ export default function Notis({navigation}:NotisScreenProps) {
     getMSG();
   },[friendMsg]);
 
+  const isDeleted = async (feedId:number) => {
+    try {
+      const response = await axios.get(`${Config.API_URL}/feeds/${feedId}`,);
+      if (response.data.data) return false;
+    } catch (error) {
+      const errorResponse = (error as AxiosError<{message: string}>).response;
+      if (errorResponse?.data.statusCode == 4030 || errorResponse?.data.statusCode == 4010) {return true;}
+      console.log(errorResponse.data);
+    }
+  }
+
   return (
     <View style={styles.entire}>
       {/* <View style={styles.notisHeader}>
@@ -187,10 +198,19 @@ export default function Notis({navigation}:NotisScreenProps) {
       {!noNotis && <FlatList 
           data={notisData}
           style={styles.notisEntire}
+          onEndReached={onEndReached}
+          onEndReachedThreshold={0.4}
           renderItem={({item}:itemProps) => {
             return (
-              <Pressable style={styles.eachNotis} onPress={()=>{
-                if (item.notificationType.includes("FEED")) {goToFeed(item.redirectTargetId)}
+              <Pressable style={styles.eachNotis} onPress={ async ()=>{
+                if (item.notificationType.includes("FEED")) {
+                  if (await isDeleted(item.redirectTargetId)) {
+                    setPopup(true);
+                    deleteNotis(item.notificationId)
+                  }
+                  else goToFeed(item.redirectTargetId)
+                }
+                else if (item.notificationType == 'APPROVE_FRIENDSHIP_REQUEST') {navigation.navigate('Profile', {whose:1, accountId:item.accountId})}
                 else if (item.notificationType.includes("MESSAGE")) {navigation.navigate('NoteBox')}
               }}>
                 <View style={styles.notisView}>
@@ -233,7 +253,7 @@ export default function Notis({navigation}:NotisScreenProps) {
             <Pressable style={styles.modalView} onPress={(e)=>e.stopPropagation()}>
               <Text style={styles.modalTitleTxt}>친구 요청 메시지</Text>
             <View style={styles.changeView}>
-              <Text style={styles.nameChangeTxtInput}>{friendMsg}</Text>
+              <Text style={friendMsg.trim() == "" ?  [styles.nameChangeTxtInput, {color:'#848484'}] : styles.nameChangeTxtInput}>{friendMsg.trim() == "" ? "우리 친구해요!" : friendMsg}</Text>
             </View>
             <View style={styles.modalBtnView}>
               <Pressable style={styles.btnWhite} onPress={()=>{setShowModal(false); setmodalData('');}}>

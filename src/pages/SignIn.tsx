@@ -97,11 +97,13 @@ export default function SignIn() {
     }
   }
   const LoginWithKaKao = async () => {
-    // Alert.alert('login try')
+    // const response = await axios.get(`${Config.API_URL}/hello`)
+    // Alert.alert(response.data)
     // const token = await KakaoLogin.loginWithKakaoAccount();
     const token = await KakaoLogin.login();
     const profile = await KakaoLogin.getProfile();
     setID(profile.id);
+    // Alert.alert(profile.name)
     try {
       const response = await axios.post(`${Config.API_URL}/auth/login`, {
         oauthAccessToken: token.accessToken,

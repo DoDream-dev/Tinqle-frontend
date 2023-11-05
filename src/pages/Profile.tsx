@@ -368,6 +368,8 @@ export default function Profile({navigation, route}:ProfileScreenProps) {
                   else setAskFriendMsgVal(text);
                 }}
                 blurOnSubmit={true}
+                placeholder={whoseProfile == 2 ? '우리 친구해요!' : ''}
+                placeholderTextColor={'#848484'}
                 maxLength={whoseProfile == 1 ? 100 : 30}
                 value={whoseProfile == 1 ? writeNoteVal : askFriendMsgVal}
                 autoFocus={true}
