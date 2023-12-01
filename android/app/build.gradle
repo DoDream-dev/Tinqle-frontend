@@ -86,7 +86,7 @@ android {
         targetSdkVersion rootProject.ext.targetSdkVersion
         vectorDrawables.useSupportLibrary = true
         versionCode 1
-        versionName "1.0.0"
+        versionName "1.0.1"
         resValue "string", "build_config_package", "com.tinqle"
     }
     // splits {
@@ -139,6 +139,7 @@ dependencies {
     implementation platform("com.google.firebase:firebase-bom:32.2.3")
     implementation "com.google.firebase:firebase-analytics"
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0-alpha02'
+    // implementation 'com.google.firebase:firebasee-messaging-ktx'
     //implementation project(':react-native-splash-screen')
 
     debugImplementation("com.facebook.flipper:flipper:${FLIPPER_VERSION}")
