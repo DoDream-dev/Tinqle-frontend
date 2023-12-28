@@ -8,6 +8,9 @@ import com.facebook.react.ReactPackage;
 import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint;
 import com.facebook.react.defaults.DefaultReactNativeHost;
 import com.facebook.soloader.SoLoader;
+// // import com.dieam.reactnativepushnotification.ReactNativePushNotificationPackage;
+// import io.invertase.firebase.messaging.RNFirebaseMessagingPackage;
+// import io.invertase.firebase.notifications.RNFirebaseNotificationsPackage;
 import java.util.List;
 // import org.devio.rn.splashscreen.SplashScreenReactPackage;
 
@@ -27,6 +30,9 @@ public class MainApplication extends Application implements ReactApplication {
           // Packages that cannot be autolinked yet can be added manually here, for example:
           // packages.add(new MyReactNativePackage());
           // new SplashScreenReactPackage()
+          // packages.add(new ReactNativePushNotificationPackage());
+          // packages.add(new RNFirebaseMessagingPackage());
+          // packages.add(new RNFirebaseNotificationsPackage());
           return packages;
         }
 

@@ -31,19 +31,19 @@ export default function SignIn() {
   const windowWidth = Dimensions.get('window').width;
   const [fcm, setFcm] = useState('');
   const [policy, setPolicy] = useState('');
-  const handleFcmMessage = () => {
-    const unsubscribe = messaging().onMessage(async remoteMessage => {
-      console.log('new messag arrived')
-      dispatch(
-        userSlice.actions.setNotis({
-          notis:true,
-        }),
-      );
-    });
-    messaging().onNotificationOpenedApp(remoteMessage => {
-      console.log('Noti caused app to open from gb state: ', remoteMessage.notification,);
-    });
-  }
+  // const handleFcmMessage = () => {
+  //   const unsubscribe = messaging().onMessage(async remoteMessage => {
+  //     console.log('new messag arrived')
+  //     dispatch(
+  //       userSlice.actions.setNotis({
+  //         notis:true,
+  //       }),
+  //     );
+  //   });
+  //   messaging().onNotificationOpenedApp(remoteMessage => {
+  //     console.log('Noti caused app to open from gb state: ', remoteMessage.notification,);
+  //   });
+  // }
   const requestUserPermissionForFCM = async () => {
     const authStatus = await messaging().requestPermission();
     const enabled = authStatus === messaging.AuthorizationStatus.AUTHORIZED || authStatus === messaging.AuthorizationStatus.PROVISIONAL;
@@ -51,7 +51,7 @@ export default function SignIn() {
     if (enabled) {
       const fcmToken = await messaging().getToken();
       setFcm(fcmToken);
-      handleFcmMessage();
+      // handleFcmMessage();
     } else {
       console.log('fcm auth fail')
     }

@@ -85,8 +85,8 @@ android {
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         vectorDrawables.useSupportLibrary = true
-        versionCode 1
-        versionName "1.0.1"
+        versionCode 3
+        versionName "1.0.2"
         resValue "string", "build_config_package", "com.tinqle"
     }
     // splits {
@@ -138,6 +138,7 @@ dependencies {
     implementation("com.facebook.react:react-android:0.72.4")
     implementation platform("com.google.firebase:firebase-bom:32.2.3")
     implementation "com.google.firebase:firebase-analytics"
+    // implementation project(':react-native-push-notification')
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0-alpha02'
     // implementation 'com.google.firebase:firebasee-messaging-ktx'
     //implementation project(':react-native-splash-screen')

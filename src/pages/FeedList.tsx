@@ -206,7 +206,7 @@ export default function FeedList({navigation, route}:FeedListScreenProps) {
       try {
         // console.log(cursorId)
         const response = await axios.get(`${Config.API_URL}/feeds?cursorId=${cursorId}`,);
-        console.log(response.data.data)
+        // console.log(response.data.data)
         setIsLast(response.data.data.last);
         setFeedData(feedData.concat(response.data.data.content));
         if (response.data.data.content.length != 0) {
@@ -237,7 +237,7 @@ export default function FeedList({navigation, route}:FeedListScreenProps) {
           content:feedContent,
           feedImageUrl:[response.data.data.files[0].fileUrl],
         });
-        console.log(response2.data.data);
+        // console.log(response2.data.data);
         setFeedContent('');
         setSelectImg(false);
         setImgData({uri:'',type:''});
@@ -248,7 +248,7 @@ export default function FeedList({navigation, route}:FeedListScreenProps) {
           content:feedContent,
           feedImageUrl:[],
         });
-        console.log(response.data.data);
+        // console.log(response.data.data);
         setFeedContent('');
         setSelectImg(false);
         setImgData({uri:'',type:''});

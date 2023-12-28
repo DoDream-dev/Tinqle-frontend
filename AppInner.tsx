@@ -26,6 +26,7 @@ import SplashScreen from "react-native-splash-screen";
 import useAxiosInterceptor from './src/hooks/useAxiosInterceptor';
 import { SvgXml } from 'react-native-svg';
 import { svgXml } from "./assets/image/svgXml";
+import messaging from '@react-native-firebase/messaging';
 
 export type RootStackParamList = {
   FeedList: undefined;
@@ -70,7 +71,7 @@ export default function AppInner() {
         const errorResponse = (error as AxiosError<{message: string}>).response;
         if (errorResponse?.data.statusCode == 1070) {console.log('reLogin');;}
         if (errorResponse?.data.status == 500) {
-          dispach(
+          dispatch(
             userSlice.actions.setToken({
               accessToken:'',
             }),
@@ -80,6 +81,21 @@ export default function AppInner() {
     };
     getRefreshTokenAgain();
   }, [dispatch]);
+  useEffect(() => {
+    const unsubscribe = messaging().onMessage(async remoteMessage => {
+      Alert.alert('alarm', JSON.stringify(remoteMessage));
+      console.log('new messag arrived:', remoteMessage)
+      dispatch(
+        userSlice.actions.setNotis({
+          notis:true,
+        }),
+      );
+    });
+    // messaging().onNotificationOpenedApp(remoteMessage => {
+    //   console.log('Noti caused app to open from gb state: ', remoteMessage.notification,);
+    // });
+    return unsubscribe;
+  }, []);
   return isLoggedIn ? ( 
     <Stack.Navigator>
       <Stack.Screen
@@ -105,10 +121,15 @@ export default function AppInner() {
       <Stack.Screen
         name="FeedDetail"
         component={FeedDetail}
-        options={{
+        options={({navigation})=>({
           title: '',
           headerRight: () => (<View></View>),
-        }}
+          headerLeft: () => (
+            <Pressable onPress={()=>(navigation.goBack())}>
+              <AntDesign name="arrowleft" size={24} color={'#848484'} />
+            </Pressable>
+          ),
+        })}
       />
       <Stack.Screen
         name="Profile"
