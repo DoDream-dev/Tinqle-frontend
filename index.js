@@ -57,6 +57,7 @@ import {request, check, PERMISSIONS, RESULTS} from 'react-native-permissions';
 // requestUserPermissionForFCM();
 
 const requestNotificationPermission = async () => {
+  //todo: ios
   if (Platform.OS === 'android') {
     const result = await request(PERMISSIONS.ANDROID.POST_NOTIFICATIONS);
     return result;
