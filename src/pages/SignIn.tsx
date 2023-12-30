@@ -8,7 +8,7 @@ import {
   Dimensions,
   ScrollView,
 } from 'react-native';
-// import * as KakaoLogin from '@react-native-seoul/kakao-login';
+import * as KakaoLogin from '@react-native-seoul/kakao-login';
 import {useAppDispatch} from '../store';
 import userSlice from '../slices/user';
 import EncryptedStorage from 'react-native-encrypted-storage';
@@ -108,33 +108,41 @@ export default function SignIn() {
       }
     }
   };
-  // const LoginWithKaKao = async () => {
-  //   // const response = await axios.get(`${Config.API_URL}/hello`)
-  //   // Alert.alert(response.data)
-  //   // const token = await KakaoLogin.loginWithKakaoAccount();
-  //   const token = await KakaoLogin.login();
-  //   const profile = await KakaoLogin.getProfile();
-  //   setID(profile.id);
-  //   // Alert.alert(profile.name)
-  //   try {
-  //     const response = await axios.post(`${Config.API_URL}/auth/login`, {
-  //       oauthAccessToken: token.accessToken,
-  //       authorizationCode: '',
-  //       socialType: 'KAKAO',
-  //       fcmToken: fcm,
-  //     });
-  //     // 성공한 경우 LOGIN call
-  //     // Alert.alert('login started')
-  //     Login(response.data.data.refreshToken, response.data.data.accessToken);
-  //   } catch (error) {
-  //     const errorResponse = (error as AxiosError<{message: string}>).response;
-  //     if (errorResponse?.data.statusCode == 1030) {
-  //       console.log('회원가입 진행');
-  //       setSignUp(errorResponse?.data.data.signToken);
-  //       // Signup();
-  //     }
-  //   }
-  // };
+  const LoginWithKaKao = async () => {
+    // const response = await axios.get(`${Config.API_URL}/hello`)
+    // Alert.alert(response.data)
+    // const token = await KakaoLogin.loginWithKakaoAccount();
+    const token = await KakaoLogin.login();
+    const profile = await KakaoLogin.getProfile();
+
+    // console.log('######');
+    // console.log('token', token);
+    // console.log('profile', profile);
+
+    setID(profile.id);
+    // Alert.alert(profile.name)
+    try {
+      const response = await axios.post(`${Config.API_URL}/auth/login`, {
+        oauthAccessToken: token.accessToken,
+        authorizationCode: '',
+        socialType: 'KAKAO',
+        fcmToken: fcm,
+      });
+
+      // console.log('login started');
+      // 성공한 경우 LOGIN call
+      // Alert.alert('login started')
+      Login(response.data.data.refreshToken, response.data.data.accessToken);
+    } catch (error) {
+      // console.log('login not started', error);
+      const errorResponse = (error as AxiosError<{message: string}>).response;
+      if (errorResponse?.data.statusCode == 1030) {
+        console.log('회원가입 진행');
+        setSignUp(errorResponse?.data.data.signToken);
+        // Signup();
+      }
+    }
+  };
 
   const Signup = async (signToken: string) => {
     // console.log(serviceP, personalP, ageP, adsP)
@@ -211,11 +219,7 @@ export default function SignIn() {
             </View>
           </Shadow>
         </Pressable>
-        <Pressable
-          style={styles.loginBtnKakao}
-          onPress={() => {
-            console.log('RRR');
-          }}>
+        <Pressable style={styles.loginBtnKakao} onPress={LoginWithKaKao}>
           <Shadow
             distance={5}
             startColor="#00000009"
