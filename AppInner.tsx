@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { Pressable, View, Alert } from 'react-native'
+import {createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import {
-  NativeStackNavigationProp,
+  NativeStackNavigationProp,  
   createNativeStackNavigator,
 } from '@react-navigation/native-stack';
 import FeedList from "./src/pages/FeedList";
@@ -43,6 +44,7 @@ export type RootStackParamList = {
 export type RootStackNavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
+const Tab = createBottomTabNavigator();
 
 export default function AppInner() {
   useAxiosInterceptor();
@@ -81,6 +83,7 @@ export default function AppInner() {
     };
     getRefreshTokenAgain();
   }, [dispatch]);
+
   useEffect(() => {
     const unsubscribe = messaging().onMessage(async remoteMessage => {
       Alert.alert('alarm', JSON.stringify(remoteMessage));
@@ -96,6 +99,8 @@ export default function AppInner() {
     // });
     return unsubscribe;
   }, []);
+  
+
   return isLoggedIn ? ( 
     <Stack.Navigator>
       <Stack.Screen

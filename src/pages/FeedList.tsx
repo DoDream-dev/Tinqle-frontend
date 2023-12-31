@@ -54,7 +54,6 @@ export default function FeedList({navigation, route}:FeedListScreenProps) {
     );
   };
   const [feedData, setFeedData] = useState([]);
-  const [noFeed, setNoFeed] = useState(false);
   const [isLast, setIsLast] = useState(false);
   const [cursorId, setCursorId] = useState(0);
   const [loading, setLoading] = useState(false);
@@ -153,9 +152,8 @@ export default function FeedList({navigation, route}:FeedListScreenProps) {
         try {
           const response = await axios.get(`${Config.API_URL}/feeds`,);
           // console.log(response.data.data)
-          if (response.data.data.content.length == 0) setNoFeed(true);
+          if (response.data.data.content.length == 0) setFeedData([]);
           else {
-            setNoFeed(false);
             setIsLast(response.data.data.last);
             setFeedData(response.data.data.content);
             // console.log(response.data.data.content)
@@ -178,8 +176,8 @@ export default function FeedList({navigation, route}:FeedListScreenProps) {
         }
       }
       getFeed();
-      // console.log(noFeed)
-    },[refresh, noFeed])
+      // console.log(feedData)
+    },[refresh])
   );
 
   useFocusEffect(
@@ -255,7 +253,6 @@ export default function FeedList({navigation, route}:FeedListScreenProps) {
         setUploadImage(undefined);
         setRefresh(!refresh);
       }
-      setNoFeed(false);
     } catch (error) {
       const errorResponse = (error as AxiosError<{message: string}>).response;
       console.log(errorResponse.data);
@@ -320,9 +317,6 @@ export default function FeedList({navigation, route}:FeedListScreenProps) {
 
   return (
     <View style={{flex:1, alignItems:'center'}}>
-      {/* {noFeed ? <View style={[styles.noFeedView]}>
-        <Text style={styles.noFeedTxt}>지금 떠오르는 생각을 적어보세요!</Text>
-      </View> :  */}
       <View style={[styles.entire]}>
         <FlatList
           data={feedData}
@@ -332,7 +326,7 @@ export default function FeedList({navigation, route}:FeedListScreenProps) {
           ListHeaderComponent={<View>
             <Text style={styles.noFeedTxt}>지금 떠오르는 생각을 적어보세요!</Text>
           </View>}
-          ListHeaderComponentStyle={noFeed ? [styles.noFeedView, {height:windowHeight-150,}] : {height:0, width:0}}
+          ListHeaderComponentStyle={feedData.length === 0 ? [styles.noFeedView, {height:windowHeight-200,}] : {height:0, width:0}}
           refreshControl={<RefreshControl 
             refreshing={refreshing} onRefresh={onRefresh}
           />}

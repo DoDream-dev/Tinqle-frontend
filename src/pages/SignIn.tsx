@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Pressable, Alert, Dimensions, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, Pressable, Alert, Dimensions, ScrollView, Modal as M } from 'react-native';
 import * as KakaoLogin from '@react-native-seoul/kakao-login'
 import { useAppDispatch } from '../store';
 import userSlice from '../slices/user';
@@ -23,6 +23,7 @@ export default function SignIn() {
   const [id, setID] = useState('사람');
   const dispatch = useAppDispatch();
   const [signup, setSignUp] = useState('');
+  const [settingID, setSettingID] = useState('');
   const [allP, setAllP] = useState(false);
   const [serviceP, setServiceP] = useState(false);
   const [personalP, setPersonalP] = useState(false);
@@ -57,6 +58,13 @@ export default function SignIn() {
     }
   }
   requestUserPermissionForFCM();
+  useEffect(() => {
+    const unsubscribe = messaging().onTokenRefresh(token => {
+      console.log('A new FCM token refreshed!', token);
+    });
+  
+    return unsubscribe;
+  }, []);
   const LoginWithGoogle = async () => {
     console.log('로그인 시도 중')
     try {
@@ -193,6 +201,20 @@ export default function SignIn() {
           </Shadow>
         </Pressable>
       </View>
+      <M visible={settingID == 'tincle'}
+        // onBackButtonPress={()=>setSettingID('')}
+        // hasBackdrop={false}
+        style={{margin:0}}>
+        <Pressable onPress={()=>setSettingID('')} style={{flex:1, justifyContent:'center'}}>
+          <Pressable style={[styles.modalView2, {width:windowWidth}]} onPress={(e)=>e.stopPropagation()}>
+            <Text>내 아이디 정하기</Text>
+            <Text>내 아이디 정하기</Text>
+            <Pressable onPress={()=>{Signup(signup); setSignUp('')}}>
+              <Text>완료</Text>
+            </Pressable>
+          </Pressable>
+        </Pressable>
+      </M>
       <Modal isVisible={signup != ''}
         onSwipeComplete={()=>setSignUp('')}
         swipeDirection={'down'}
@@ -270,7 +292,10 @@ export default function SignIn() {
                   <Text style={styles.policyTxt}>[선택] 마케팅 활용 및 광고성 정보 수신 동의</Text>
                 </Pressable>
               </View> */}
-              <Pressable style={!(serviceP && personalP && ageP) ? styles.sendBtnUnActivated : styles.sendBtn} disabled={!(serviceP && personalP && ageP)} onPress={()=>{Signup(signup); setSignUp('');}}>
+              <Pressable style={!(serviceP && personalP && ageP) ? styles.sendBtnUnActivated : styles.sendBtn} disabled={!(serviceP && personalP && ageP)} 
+              // onPress={()=>{Signup(signup); setSignUp('');}}
+              onPress={()=>{setSettingID('tincle')}}
+              >
                 <Text style={styles.sendTxt}>시작하기</Text>
               </Pressable>
             </Pressable>
@@ -527,6 +552,10 @@ const styles = StyleSheet.create({
     paddingTop:33,
     backgroundColor:'white',
     // elevation: 10,
+  }, 
+  modalView2:{
+    borderRadius:10,
+    backgroundColor:'#333333',
   },
   modalAllView:{
     marginBottom:20,

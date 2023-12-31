@@ -323,7 +323,7 @@ export default function Profile({navigation, route}:ProfileScreenProps) {
                 style={styles.nameChangeTxtInput}
                 onChangeText={(text:string)=>{setChangeNameVal(text)}}
                 blurOnSubmit={true}
-                maxLength={15}
+                maxLength={10}
                 value={chageNameVal}
                 autoFocus={true}
                 onSubmitEditing={()=>{
