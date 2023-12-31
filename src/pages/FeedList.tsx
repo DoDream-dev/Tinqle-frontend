@@ -82,14 +82,6 @@ export default function FeedList({navigation, route}:FeedListScreenProps) {
   // console.log(noti)
   const [newNotis, setNewNotis] = useState(false);
   // console.log(newNotis)
-
-  // const scroll = (offset:number) => {
-  //   if (flatRef.current) {
-  //     // flatRef.current.scrollToIndex({index:feedData.length-1, animated:true});
-  //     flatRef.current.scrollToIndex({index:offset, animated:true});
-  //     }
-  //   setFirst(false);
-  //   }
   
 
   // useEffect(() => {
