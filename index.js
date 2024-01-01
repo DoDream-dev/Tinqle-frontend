@@ -2,10 +2,10 @@
  * @format
  */
 
-import {AppRegistry, Platform} from 'react-native';
+import {AppRegistry, Platform, Vibration, Linking} from 'react-native';
 import App from './App';
 import {name as appName} from './app.json';
-// import messaging from '@react-native-firebase/messaging';
+import messaging from '@react-native-firebase/messaging';
 import store from './src/store';
 import userSlice from './src/slices/user';
 import {request, check, PERMISSIONS, RESULTS} from 'react-native-permissions';
@@ -64,21 +64,37 @@ const requestNotificationPermission = async () => {
   }
 };
 
-const checkNotificationPermission = async () => {
-  const result = await check(PERMISSIONS.ANDROID.POST_NOTIFICATIONS);
-  return result;
-};
+messaging().setBackgroundMessageHandler(async remoteMessage => {
+  onMessageReceived(remoteMessage);
+});
 
-const requestPermission = async () => {
-  const checkPermission = await checkNotificationPermission();
-  if (checkPermission !== RESULTS.GRANTED) {
-    const request = await requestNotificationPermission();
-    if (request !== RESULTS.GRANTED) {
-      // permission not granted
-    }
+const onMessageReceived = message => {
+  console.log('[index.js] onMessageReceived: ', message);
+  if (Platform.OS === 'ios') {
+    const {link = null} = notification?.data || {}; // <---- 1
+    const pushDeepLink = message?.data?.link;
+    //console.log('pushDeepLink : ', pushDeepLink);
+    pushDeepLink && Linking.openURL(pushDeepLink);
+    Vibration.vibrate([400]);
   }
 };
-requestPermission();
+
+//원래 주석 아님
+// const checkNotificationPermission = async () => {
+//   const result = await check(PERMISSIONS.ANDROID.POST_NOTIFICATIONS);
+//   return result;
+// };
+
+// const requestPermission = async () => {
+//   const checkPermission = await checkNotificationPermission();
+//   if (checkPermission !== RESULTS.GRANTED) {
+//     const request = await requestNotificationPermission();
+//     if (request !== RESULTS.GRANTED) {
+//       // permission not granted
+//     }
+//   }
+// };
+// requestPermission();
 
 // messaging().setBackgroundMessageHandler(async remoteMessage => {
 //   console.log('Message: ', remoteMessage)
