@@ -14,8 +14,8 @@ import userSlice from '../slices/user';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import Config from 'react-native-config';
 import axios, {AxiosError} from 'axios';
-// import {GoogleSignin} from '@react-native-google-signin/google-signin';
-// import auth from '@react-native-firebase/auth'
+import {GoogleSignin} from '@react-native-google-signin/google-signin';
+// import auth from '@react-native-firebase/auth';
 import Modal from 'react-native-modal';
 import Feather from 'react-native-vector-icons/Feather';
 import {Shadow} from 'react-native-shadow-2';
@@ -71,8 +71,8 @@ export default function SignIn() {
   const LoginWithGoogle = async () => {
     console.log('로그인 시도 중');
     try {
-      // await GoogleSignin.hasPlayServices();
-      // const userInfo = await GoogleSignin.signIn();
+      await GoogleSignin.hasPlayServices();
+      const userInfo = await GoogleSignin.signIn();
 
       // const response = await fetch('https://oauth2.googleapis.com/token', {
       //   method: 'POST',
@@ -91,7 +91,8 @@ export default function SignIn() {
       //   userInfo.idToken,
       // );
       // auth().signInWithCredential(googleCredential);
-      // console.log(userInfo.serverAuthCode);
+
+      console.log(userInfo.serverAuthCode);
       const res = await axios.post(`${Config.API_URL}/auth/login`, {
         oauthAccessToken: '',
         authorizationCode: userInfo.serverAuthCode,
@@ -101,6 +102,7 @@ export default function SignIn() {
       // console.log(res.data)
       Login(res.data.data.refreshToken, res.data.data.accessToken);
     } catch (error) {
+      console.log(error);
       const errorResponse = (error as AxiosError<{message: string}>).response;
       if (errorResponse?.data.statusCode == 1030) {
         console.log('회원가입 진행');
@@ -114,11 +116,6 @@ export default function SignIn() {
     // const token = await KakaoLogin.loginWithKakaoAccount();
     const token = await KakaoLogin.login();
     const profile = await KakaoLogin.getProfile();
-
-    // console.log('######');
-    // console.log('token', token);
-    // console.log('profile', profile);
-
     setID(profile.id);
     // Alert.alert(profile.name)
     try {
@@ -128,13 +125,10 @@ export default function SignIn() {
         socialType: 'KAKAO',
         fcmToken: fcm,
       });
-
-      // console.log('login started');
       // 성공한 경우 LOGIN call
       // Alert.alert('login started')
       Login(response.data.data.refreshToken, response.data.data.accessToken);
     } catch (error) {
-      // console.log('login not started', error);
       const errorResponse = (error as AxiosError<{message: string}>).response;
       if (errorResponse?.data.statusCode == 1030) {
         console.log('회원가입 진행');
@@ -145,7 +139,7 @@ export default function SignIn() {
   };
 
   const Signup = async (signToken: string) => {
-    // console.log(serviceP, personalP, ageP, adsP)
+    // console.log(serviceP, personalP, ageP, adsP, signToken, fcm);
     try {
       const response = await axios.post(`${Config.API_URL}/auth/signup`, {
         signToken: signToken,
@@ -154,11 +148,13 @@ export default function SignIn() {
         personalPolicy: personalP,
         // marketPolicy: false,
         fcmToken: fcm,
+        code: 'aaaaa', //이거 없으면 오류
       });
       // LOGIN call
       Login(response.data.data.refreshToken, response.data.data.accessToken);
       console.log('회원가입 완료');
     } catch (error) {
+      console.log('error ', error);
       const errorResponse = (error as AxiosError<{message: string}>).response;
       if (errorResponse?.data.statusCode == 1090) {
         return Alert.alert('알림', 'try again');
@@ -167,6 +163,7 @@ export default function SignIn() {
       }
     }
   };
+
   const Login = async (refreshToken: string, accessToken: string) => {
     // Alert.alert('login finished', accessToken)
     // try {
@@ -187,7 +184,9 @@ export default function SignIn() {
     //   console.log(errorResponse);
     // }
   };
+
   useEffect(() => {
+    // console.log('####', Config);
     // GoogleSignin.configure({
     //   webClientId: Config.GOOGLE_CLIENT_ID,
     //   offlineAccess: true,
