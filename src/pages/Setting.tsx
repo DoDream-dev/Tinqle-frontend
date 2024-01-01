@@ -9,6 +9,7 @@ import Config from 'react-native-config';
 import EncryptedStorage from "react-native-encrypted-storage";
 import { useNavigation } from "@react-navigation/native";
 import Modal from 'react-native-modal';
+import { version } from "../../package.json"
 
 export default function Setting() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
@@ -58,12 +59,6 @@ export default function Setting() {
   };
   return (
     <View style={styles.entire}>
-      <Pressable style={styles.settingBtn} onPress={LogOut}>
-        <Text style={styles.settingBtnTxt}>로그아웃</Text>
-      </Pressable>
-      <Pressable style={styles.settingBtn} onPress={revoke}>
-        <Text style={styles.settingBtnTxt}>계정 삭제</Text>
-      </Pressable>
       <Pressable style={styles.settingBtn} onPress={()=>Linking.openURL(
         'https://understood-blender-196.notion.site/ef94bd7843e94cc0ab57521878b482e0?pvs=4'
       )}>
@@ -74,11 +69,24 @@ export default function Setting() {
       )}>
         <Text style={styles.settingBtnTxt}>의견 남기기</Text>
       </Pressable>
+      <Pressable style={styles.settingBtn} onPress={()=>{console.log('change id')}}>
+        <Text style={styles.settingBtnTxt}>내 아이디 변경하기</Text>
+      </Pressable>
       <Pressable style={styles.settingBtn} onPress={()=>{setPolicy('service')}}>
         <Text style={styles.settingBtnTxt}>서비스 이용약관</Text>
       </Pressable>
       <Pressable style={styles.settingBtn} onPress={()=>{setPolicy('personal')}}>
         <Text style={styles.settingBtnTxt}>개인정보 처리방침</Text>
+      </Pressable>
+      <Pressable style={styles.settingBtn} onPress={LogOut}>
+        <Text style={styles.settingBtnTxt}>로그아웃</Text>
+      </Pressable>
+      <Pressable style={styles.settingBtn} onPress={revoke}>
+        <Text style={styles.settingBtnTxt}>계정 삭제</Text>
+      </Pressable>
+      <Pressable style={styles.settingBtn}>
+        <Text style={styles.settingBtnTxt}>앱 버전</Text>
+        <Text style={styles.settingBtnTxt}>{version}</Text>
       </Pressable>
       <Modal isVisible={policy == 'service'}
         hasBackdrop={false}

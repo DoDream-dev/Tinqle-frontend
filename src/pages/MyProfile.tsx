@@ -1,7 +1,6 @@
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { View, Text, StyleSheet, Pressable, TextInput, Keyboard } from 'react-native';
-import MaterialCommunity from 'react-native-vector-icons/MaterialCommunityIcons';
+import { View, Text, StyleSheet, Pressable, TextInput, Keyboard, Linking, ScrollView } from 'react-native';
 import Modal from'react-native-modal';
 import ToastScreen from '../components/ToastScreen';
 import { RootStackParamList } from '../../AppInner';
@@ -13,22 +12,32 @@ import { SvgXml } from 'react-native-svg';
 import _ from 'lodash';
 import { throttleTime, throttleTimeEmoticon } from '../hooks/Throttle';
 import userSlice from '../slices/user';
+import Clipboard from '@react-native-clipboard/clipboard';
 import { useAppDispatch } from '../store';
+import { version } from "../../package.json"
+
+import EncryptedStorage from "react-native-encrypted-storage";
+import Profile from '../components/Profile';
+import ServicePolicyModal from '../components/ServicePolicyModal';
+import PersonalPolicyModal from '../components/PersonalPolicyModal';
 
 
-type ProfileScreenProps = NativeStackScreenProps<RootStackParamList, 'Profile'>;
+// type ProfileScreenProps = NativeStackScreenProps<RootStackParamList, 'Profile'>;
 
-export default function Profile({navigation, route}:ProfileScreenProps) {
-  const whose = route.params.whose;
-  const acId = route.params.accountId;
+export default function MyProfile() {
+  // const whose = route.params.whose;
+  // const acId = route.params.accountId;
   
-  const [whoseProfile, setWhoseProfile] = useState(route.params.whose);
-  const [alreadyRequestFriend, setAlreadyRequestFriend] = useState(-1);
-  const [accountId, setAcoountId] = useState(route.params.accountId);
+  // const [whoseProfile, setWhoseProfile] = useState(route.params.whose);
+  // const [alreadyRequestFriend, setAlreadyRequestFriend] = useState(-1);
+  const [myCode, setMyCode] = useState('');
+  // const [accountId, setAcoountId] = useState(route.params.accountId);
   
   // modal or not
   const [chageName, setChangeName] = useState(false);
   const [changeStatus, setChangeStatus] = useState(false);
+  const [policy, setPolicy] = useState('');
+
   // const [checkNoteBox, setCheckNoteBox] = useState(false);
   const [writeNote, setWriteNote] = useState(false);
   const [askFriendMsg, setAskFriendMsg] = useState(false);
@@ -49,65 +58,82 @@ export default function Profile({navigation, route}:ProfileScreenProps) {
   const dispatch = useAppDispatch();
   
   useEffect(() => {
-    if (whoseProfile == 0) {
-      const getMyProfile = async () => {
-        try {
-          const response = await axios.get(`${Config.API_URL}/accounts/me`);
-          setName(response.data.data.nickname);
-          setChangeNameVal(response.data.data.nickname);
-          setStatus(response.data.data.status.toLowerCase());
-          // console.log('내 프로필 조회')
-        } catch (error) {
-          const errorResponse = (error as AxiosError<{message: string}>).response;
-          console.log(errorResponse?.data);
-          if (errorResponse?.data.status == 500) {
-            dispatch(
-              userSlice.actions.setToken({
-                accessToken:'',
-              }),
-            );
-          }
+    // if (whoseProfile == 0) {
+    const getMyProfile = async () => {
+      try {
+        const response = await axios.get(`${Config.API_URL}/accounts/me`);
+        setName(response.data.data.nickname);
+        setChangeNameVal(response.data.data.nickname);
+        setStatus(response.data.data.status.toLowerCase());
+        // console.log('내 프로필 조회')
+      } catch (error) {
+        const errorResponse = (error as AxiosError<{message: string}>).response;
+        console.log(errorResponse?.data);
+        if (errorResponse?.data.status == 500) {
+          dispatch(
+            userSlice.actions.setToken({
+              accessToken:'',
+            }),
+          );
         }
-      };
-      getMyProfile();
-    }
-    else {
-      navigation.setOptions({headerRight:()=>(<View></View>)});
-      const getProfile = async () => {
-        try {
-          const response = await axios.get(`${Config.API_URL}/accounts/${accountId}/profile`,);
-          // console.log(response.data.data)
-          setName(response.data.data.nickname);
-          setChangeNameVal(response.data.data.nickname);
-          setStatus(response.data.data.status.toLowerCase());
-          switch (response.data.data.friendshipRelation) {
-            case "true":
-              setWhoseProfile(1);
-              break;
-            case "false":
-              setWhoseProfile(2);
-              setAlreadyRequestFriend(0);
-              break;
-            case "waiting":
-              setWhoseProfile(2);
-              setAlreadyRequestFriend(1);
-              break;
-          }
-        } catch (error) {
-          const errorResponse = (error as AxiosError<{message: string}>).response;
-          console.log(errorResponse.data);
+      }
+    };
+    const getMyCode = async () => {
+      try {
+        const response = await axios.get(`${Config.API_URL}/friendships`);
+        setMyCode(response.data.data.code);
+      } catch (error) {
+        const errorResponse = (error as AxiosError<{message: string}>).response;
+        console.log(errorResponse.data)
+        if (errorResponse?.data.status == 500) {
+          dispatch(
+            userSlice.actions.setToken({
+              accessToken:'',
+            }),
+          );
         }
-      };
-      getProfile();
-    }
-  }, [name, status, whoseProfile]);
+      }
+    };
+    getMyCode();
+    getMyProfile();
+    // }
+    // else {
+    //   navigation.setOptions({headerRight:()=>(<View></View>)});
+    //   const getProfile = async () => {
+    //     try {
+    //       const response = await axios.get(`${Config.API_URL}/accounts/${accountId}/profile`,);
+    //       // console.log(response.data.data)
+    //       setName(response.data.data.nickname);
+    //       setChangeNameVal(response.data.data.nickname);
+    //       setStatus(response.data.data.status.toLowerCase());
+    //       switch (response.data.data.friendshipRelation) {
+    //         case "true":
+    //           setWhoseProfile(1);
+    //           break;
+    //         case "false":
+    //           setWhoseProfile(2);
+    //           setAlreadyRequestFriend(0);
+    //           break;
+    //         case "waiting":
+    //           setWhoseProfile(2);
+    //           setAlreadyRequestFriend(1);
+    //           break;
+    //       }
+    //     } catch (error) {
+    //       const errorResponse = (error as AxiosError<{message: string}>).response;
+    //       console.log(errorResponse.data);
+    //     }
+    //   };
+    //   getProfile();
+    // }
+  }, [name, status]);
 
-  useFocusEffect(
-    useCallback(()=>{
-      setWhoseProfile(whose);
-      setAcoountId(acId);
-    },[whose, acId, status])
-  );
+  // useFocusEffect(
+  //   useCallback(()=>{
+  //     setWhoseProfile(whose);
+  //     setAcoountId(acId);
+  //   },[whose, acId, status])
+  // );
 
   const postStatus = _.throttle(async (stat:string) => {
     if (stat == status) {return;}
@@ -123,108 +149,119 @@ export default function Profile({navigation, route}:ProfileScreenProps) {
     }
   }, throttleTimeEmoticon);
 
-  const rename =  _.throttle(async (text:string, accountId:number|undefined) => {
+  const rename =  _.throttle(async (text:string) => {
     if (text === name) {
       setChangeName(false);
       setChangeNameVal(text);
       return;
     }
-    if (whoseProfile == 0) {
-      try {
-        const response = await axios.put(`${Config.API_URL}/accounts/me/nickname`, {nickname:text},);
-        setName(response.data.data.nickname);
-        setChangeNameVal(response.data.data.nickname);
-        setChangeName(false);
-      } catch (error) {
-        const errorResponse = (error as AxiosError<{message: string}>).response;
-        console.log(errorResponse.data);
-      }
-    }
-    else {
-      try {
-        // console.log(accountId)
-        const response = await axios.post(`${Config.API_URL}/friendships/nickname/change`, {
-          friendAccountId:accountId,
-          nickname: text,
-        },);
-        setName(response.data.data.friendNickname);
-        setChangeNameVal(response.data.data.friendNickname);
-        setChangeName(false);
-      } catch (error) {
-        const errorResponse = (error as AxiosError<{message: string}>).response;
-        console.log(errorResponse.data);
-      }
-    }
-  }, throttleTime);
-
-  const sendNote =  _.throttle(async () => {
     try {
-      const response = await axios.post(`${Config.API_URL}/accounts/${accountId}/message`, {
-        message:writeNoteVal,
-      },);
-      setWriteNote(false);
-      setPopup(true);
-      // console.log(response.data.data)
-    } catch (error) {
-      const errorResponse = (error as AxiosError<{message: string}>).response;
-      console.log(errorResponse.data);
-    }
-    setwriteNoteVal('');
-  }, throttleTime);
-
-  const askFriend =  _.throttle(async () => {
-    try {
-      const response = await axios.post(`${Config.API_URL}/friendships/request`, {
-        accountTargetId:accountId, message:askFriendMsgVal
-      },);
-      // console.log(response.data)
-      // popup: 이도님께 친구 요청을 보냈어요!
-      setPopup(true);
-      setAskFriendMsg(false);
-      setAskFriendMsgVal('');
-      setAlreadyRequestFriend(1);
+      const response = await axios.put(`${Config.API_URL}/accounts/me/nickname`, {nickname:text},);
+      setName(response.data.data.nickname);
+      setChangeNameVal(response.data.data.nickname);
+      setChangeName(false);
     } catch (error) {
       const errorResponse = (error as AxiosError<{message: string}>).response;
       console.log(errorResponse.data);
     }
   }, throttleTime);
+
+  // const sendNote =  _.throttle(async () => {
+  //   try {
+  //     const response = await axios.post(`${Config.API_URL}/accounts/${accountId}/message`, {
+  //       message:writeNoteVal,
+  //     },);
+  //     setWriteNote(false);
+  //     setPopup(true);
+  //     // console.log(response.data.data)
+  //   } catch (error) {
+  //     const errorResponse = (error as AxiosError<{message: string}>).response;
+  //     console.log(errorResponse.data);
+  //   }
+  //   setwriteNoteVal('');
+  // }, throttleTime);
+
+  // const askFriend =  _.throttle(async () => {
+  //   try {
+  //     const response = await axios.post(`${Config.API_URL}/friendships/request`, {
+  //       accountTargetId:accountId, message:askFriendMsgVal
+  //     },);
+  //     // console.log(response.data)
+  //     // popup: 이도님께 친구 요청을 보냈어요!
+  //     setPopup(true);
+  //     setAskFriendMsg(false);
+  //     setAskFriendMsgVal('');
+  //     setAlreadyRequestFriend(1);
+  //   } catch (error) {
+  //     const errorResponse = (error as AxiosError<{message: string}>).response;
+  //     console.log(errorResponse.data);
+  //   }
+  // }, throttleTime);
 
   useEffect(()=>{
     if (chageName) {inp1.current.focus();}
-  },[chageName])
+  }, [chageName])
+
+  const LogOut = async () => {
+    try {
+        const response = await axios.post(`${Config.API_URL}/auth/logout`,);
+        // console.log(response.data);
+      if (response.data.data.isLogout) {
+        await EncryptedStorage.removeItem('refreshToken')
+        dispatch(
+          userSlice.actions.setToken({
+            accessToken: '',
+          }),
+        );
+        // navigation.navigate('SignIn')
+      }
+    } catch (error) {
+      const errorResponse = (error as AxiosError<{message: string}>).response;
+      console.log(errorResponse.data)
+      if (errorResponse?.data.status == 500) {
+        dispatch(
+          userSlice.actions.setToken({
+            accessToken:'',
+          }),
+        );
+      }
+    }
+  };
+
+  const revoke = async () => {
+    try {
+      const response = await axios.post(`${Config.API_URL}/accounts/revoke`,);
+      console.log(response.data);
+      await EncryptedStorage.removeItem('refreshToken')
+      dispatch(
+        userSlice.actions.setToken({
+          accessToken: '',
+        }),
+      );
+    } catch (error) {
+      const errorResponse = (error as AxiosError<{message: string}>).response;
+      console.log(errorResponse.data)
+    }
+  };
 
   return (
-    <View style={styles.entire}>
+    <ScrollView style={styles.entire}>
       <View style={styles.profileView}>
-        <View style={styles.statusView}>
-          <Pressable style={styles.statusBtn} disabled={whoseProfile != 0} onPress={()=>setChangeStatus(true)}>
-            {status == 'smile' && <SvgXml width={90} height={90} xml={svgXml.status.smile} />}
-            {status == 'happy' && <SvgXml width={90} height={90} xml={svgXml.status.happy} />}
-            {status == 'sad' && <SvgXml width={90} height={90} xml={svgXml.status.sad} />}
-            {status == 'mad' && <SvgXml width={90} height={90} xml={svgXml.status.mad} />}
-            {status == 'exhausted' && <SvgXml width={90} height={90} xml={svgXml.status.exhauseted} />}
-            {status == 'coffee' && <SvgXml width={90} height={90} xml={svgXml.status.coffee} />}
-            {status == 'meal' && <SvgXml width={90} height={90} xml={svgXml.status.meal} />}
-            {status == 'alcohol' && <SvgXml width={90} height={90} xml={svgXml.status.alcohol} />}
-            {status == 'chicken' && <SvgXml width={90} height={90} xml={svgXml.status.chicken} />}
-            {status == 'sleep' && <SvgXml width={90} height={90} xml={svgXml.status.sleep} />}
-            {status == 'work' && <SvgXml width={90} height={90} xml={svgXml.status.work} />}
-            {status == 'study' && <SvgXml width={90} height={90} xml={svgXml.status.study} />}
-            {status == 'movie' && <SvgXml width={90} height={90} xml={svgXml.status.movie} />}
-            {status == 'move' && <SvgXml width={90} height={90} xml={svgXml.status.move} />}
-            {status == 'dance' && <SvgXml width={90} height={90} xml={svgXml.status.dance} />}
-            {status == 'read' && <SvgXml width={90} height={90} xml={svgXml.status.read} />}
-            {status == 'walk' && <SvgXml width={90} height={90} xml={svgXml.status.walk} />}
-            {status == 'travel' && <SvgXml width={90} height={90} xml={svgXml.status.travel} />}
-          </Pressable>
-        </View>
-        <View style={styles.nameView}>
-          <Text style={whoseProfile !=2 ? styles.nameTxt : styles.nameTxtWithoutPencil}>{name}</Text>
-          {whoseProfile != 2 &&<Pressable style={styles.changeNameBtn} onPress={()=>setChangeName(true)}>
-            <MaterialCommunity name='pencil-outline' size={14} color={'#848484'} />
-          </Pressable>}
-        </View>
-        {whoseProfile == 0 && <View style={styles.btnView}>
+        <Profile 
+          status={status}
+          name={name}
+          restatusModal={setChangeStatus}
+          renameModal={setChangeName}
+        />
+        <View style={styles.myCodeView}>
+            <Pressable style={styles.myCodeBtn} onPress={()=>Clipboard.setString(myCode)}>
+              <Text style={styles.myCodeTxt}>
+                내 아이디: {myCode}
+              </Text>
+              <SvgXml width="15" height="15" xml={svgXml.icon.copyIcon} style={styles.copyIcon}/>
+            </Pressable>
+          </View>
+        {/* {whoseProfile == 0 && <View style={styles.btnView}>
           <Pressable style={styles.btnWhite} onPress={()=>navigation.navigate('MyFriendList')}>
             <Text style={styles.btnWhiteTxt}>친구 관리</Text>
           </Pressable>
@@ -248,10 +285,86 @@ export default function Profile({navigation, route}:ProfileScreenProps) {
             <Text style={styles.btnYellowTxt}>친구 요청하기</Text>
           </Pressable>}
           <View style={{flex:0.4}}></View>
-        </View>}
+        </View>} */}
       </View>
+
+      <View style={styles.settingView}>
+        <Pressable style={styles.settingBtn} onPress={()=>Linking.openURL(
+          'https://understood-blender-196.notion.site/ef94bd7843e94cc0ab57521878b482e0?pvs=4'
+        )}>
+          <Text style={styles.settingBtnTxt}>공지사항</Text>
+        </Pressable>
+        <Pressable style={styles.settingBtn} onPress={()=>Linking.openURL(
+          'https://docs.google.com/forms/d/e/1FAIpQLSeAsQ-hqAzVdrgmIS5re1MEP_yjxWwhXtg_RT9qKgW9HyBbZQ/viewform?usp=sf_link'
+        )}>
+          <Text style={styles.settingBtnTxt}>의견 남기기</Text>
+        </Pressable>
+        <Pressable style={styles.settingBtn} onPress={()=>{console.log('change id')}}>
+          <Text style={styles.settingBtnTxt}>내 아이디 변경하기</Text>
+        </Pressable>
+        <Pressable style={styles.settingBtn} onPress={()=>{setPolicy('service')}}>
+          <Text style={styles.settingBtnTxt}>서비스 이용약관</Text>
+        </Pressable>
+        <Pressable style={styles.settingBtn} onPress={()=>{setPolicy('personal')}}>
+          <Text style={styles.settingBtnTxt}>개인정보 처리방침</Text>
+        </Pressable>
+        <Pressable style={styles.settingBtn} onPress={LogOut}>
+          <Text style={styles.settingBtnTxt}>로그아웃</Text>
+        </Pressable>
+        <Pressable style={styles.settingBtn} onPress={revoke}>
+          <Text style={styles.settingBtnTxt}>계정 삭제</Text>
+        </Pressable>
+        <Pressable style={[styles.settingBtn, {flexDirection:'row', justifyContent:'space-between'}]}>
+          <Text style={styles.settingBtnTxt}>앱 버전</Text>
+          <Text style={[styles.settingBtnTxt, {color:'#888888'}]}>{version}</Text>
+        </Pressable>
+      </View>
+
+      {/* modal for policy */}
+      <ServicePolicyModal policy={policy} setPolicy={setPolicy} />
+      <PersonalPolicyModal policy={policy} setPolicy={setPolicy} />
+      
+      {/* modal for changing name */}
+      <Modal isVisible={chageName} onBackButtonPress={()=>setChangeName(false)} avoidKeyboard={true} backdropColor='#222222' backdropOpacity={0.5}>
+        <Pressable style={styles.modalBGView} onPress={()=>{setChangeName(false); Keyboard.dismiss();}}>
+          <Pressable style={styles.modalView} onPress={(e)=>e.stopPropagation()}>
+            <Text style={styles.modalTitleTxt}>내 이름 바꾸기</Text>
+            <View style={styles.changeView}>
+              <TextInput 
+                ref={inp1}
+                style={styles.nameChangeTxtInput}
+                onChangeText={(text:string)=>{setChangeNameVal(text)}}
+                blurOnSubmit={true}
+                maxLength={10}
+                value={chageNameVal}
+                autoFocus={true}
+                onSubmitEditing={()=>{
+                  rename(chageNameVal.trim());
+                }}
+              />
+            </View>
+            <View style={styles.modalBtnView}>
+              <Pressable style={styles.btnWhite} onPress={()=>{setChangeName(false); setChangeNameVal(name);}}>
+                <Text style={styles.btnWhiteTxt}>취소</Text>
+              </Pressable>
+              <Pressable style={styles.btnYellow} disabled={chageNameVal.trim() == ''} onPress={()=>{
+                if (chageNameVal != '') {
+                  if (chageNameVal == name) {setChangeName(false);}
+                  else {
+                    rename(chageNameVal.trim());
+                  }
+                }
+              }}>
+                <Text style={styles.btnYellowTxt}>완료</Text>
+              </Pressable>
+            </View>
+          </Pressable>
+        </Pressable>
+      </Modal>
+
+      
       {/* modal for changin status */}
-      <Modal isVisible={changeStatus} backdropColor='#222222' backdropOpacity={0.5} onBackButtonPress={()=>setChangeStatus(false)}>
+      {/* <Modal isVisible={changeStatus} backdropColor='#222222' backdropOpacity={0.5} onBackButtonPress={()=>setChangeStatus(false)}>
         <Pressable style={styles.modalBGView} onPress={()=>{Keyboard.dismiss(); setChangeStatus(false);}}>
           <Pressable onPress={(e)=>e.stopPropagation()} style={styles.modalView2}>
             <Pressable onPress={()=>{setChangeStatus(false); postStatus('smile');}} style={status == 'smile' ? styles.statusSelected : styles.statusSelect}>
@@ -310,50 +423,9 @@ export default function Profile({navigation, route}:ProfileScreenProps) {
             </Pressable>
           </Pressable>
         </Pressable>
-      </Modal>
-      {/* modal for changing name */}
-      <Modal isVisible={chageName} onBackButtonPress={()=>setChangeName(false)} avoidKeyboard={true} backdropColor='#222222' backdropOpacity={0.5}>
-        <Pressable style={styles.modalBGView} onPress={()=>{setChangeName(false); Keyboard.dismiss();}}>
-          <Pressable style={styles.modalView} onPress={(e)=>e.stopPropagation()}>
-            {whoseProfile == 0 && <Text style={styles.modalTitleTxt}>내 이름 바꾸기</Text>}
-            {whoseProfile == 1 && <Text style={styles.modalTitleTxt}>친구 이름 바꾸기</Text>}
-            <View style={styles.changeView}>
-              <TextInput 
-                ref={inp1}
-                style={styles.nameChangeTxtInput}
-                onChangeText={(text:string)=>{setChangeNameVal(text)}}
-                blurOnSubmit={true}
-                maxLength={10}
-                value={chageNameVal}
-                autoFocus={true}
-                onSubmitEditing={()=>{
-                  if (whoseProfile == 0) {rename(chageNameVal.trim(), undefined);}
-                  else {rename(chageNameVal.trim(), accountId);}
-                }}
-              />
-            </View>
-            <View style={styles.modalBtnView}>
-              <Pressable style={styles.btnWhite} onPress={()=>{setChangeName(false); setChangeNameVal(name);}}>
-                <Text style={styles.btnWhiteTxt}>취소</Text>
-              </Pressable>
-              <Pressable style={styles.btnYellow} disabled={chageNameVal.trim() == ''} onPress={()=>{
-                if (chageNameVal != '') {
-                  if (chageNameVal == name) {setChangeName(false);}
-                  else {
-                    // console.log(chageNameVal.trim())
-                    if (whoseProfile == 0) {rename(chageNameVal.trim(), undefined);}
-                    else {rename(chageNameVal.trim(), accountId);}
-                  }
-                }
-              }}>
-                <Text style={styles.btnYellowTxt}>완료</Text>
-              </Pressable>
-            </View>
-          </Pressable>
-        </Pressable>
-      </Modal>
+      </Modal> */}
       {/* modal for sending msg */}
-      <Modal isVisible={whoseProfile == 1 ? writeNote : askFriendMsg} onBackButtonPress={()=>{if (whoseProfile == 1) setWriteNote(false); else setAskFriendMsg(false)}} avoidKeyboard={true} backdropColor='#222222' backdropOpacity={0.5} onModalShow={()=>{inp2?.current?.focus();}}>
+      {/* <Modal isVisible={whoseProfile == 1 ? writeNote : askFriendMsg} onBackButtonPress={()=>{if (whoseProfile == 1) setWriteNote(false); else setAskFriendMsg(false)}} avoidKeyboard={true} backdropColor='#222222' backdropOpacity={0.5} onModalShow={()=>{inp2?.current?.focus();}}>
         <Pressable style={styles.modalBGView} onPress={()=>{Keyboard.dismiss(); if(whoseProfile == 1) setWriteNote(false); else setAskFriendMsg(false);}}>
           <Pressable onPress={(e)=>e.stopPropagation()} style={styles.modalView}>
             {whoseProfile == 1 && <Text style={styles.modalTitleTxt}>익명 쪽지 보내기</Text>}
@@ -407,60 +479,40 @@ export default function Profile({navigation, route}:ProfileScreenProps) {
         marginBottom={48}
         onClose={()=>setPopup(false)}
         message={`${name}님께 친구 요청을 보냈어요!`}
-      />}
-    </View>
+      />} */}
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   entire:{
     flex: 1,
-    alignItems: 'center',
+    // alignItems: 'center',
     paddingTop: 10,
     paddingHorizontal: 16,
+    backgroundColor:'#202020',
   },
   profileView:{
     width: '100%',
-    backgroundColor:'#FFFFFF',
+    backgroundColor:'#333333',
     paddingVertical:40,
     alignItems:'center',
     borderRadius:10
   },
-  statusView:{
-    width: 120,
-    height: 120,
-    justifyContent: 'center',
-    alignItems: 'center'
+  myCodeView:{},
+  myCodeTxt:{
+    color: '#848484',
+    fontSize: 13,
+    fontWeight: '500'
   },
-  statusBtn:{
-    flex:1,
-    justifyContent: 'center',
-    alignItems:'center',
-    backgroundColor:'#F7F7F7',
-    width: '100%',
-    borderRadius: 30,
-  },
-  nameView:{
+  myCodeBtn:{
     flexDirection: 'row',
-    paddingTop:12,
-    paddingBottom:16,
-    justifyContent:'center',
-    alignItems:'baseline'
   },
-  nameTxt:{
-    color:'#222222',
-    fontWeight: '600',
-    fontSize:22,
-    marginRight:2,
-    marginLeft:16
+  copyIcon:{
+    marginLeft: 4,
+    height: 14,
+    top: 1,
   },
-  nameTxtWithoutPencil:{
-    color:'#222222',
-    fontWeight: '600',
-    fontSize:22,
-    marginRight:2,
-  },
-  changeNameBtn:{},
   btnView:{
     flexDirection: 'row',
     justifyContent: 'center',
@@ -473,8 +525,8 @@ const styles = StyleSheet.create({
     alignItems:'center',
     borderRadius: 10,
     borderWidth: 1,
-    borderColor: '#FFB443',
-    backgroundColor: '#FFFFFF',
+    borderColor: '#A55FFF',
+    backgroundColor: '#F0F0F0',
     marginHorizontal: 4,
   },
   btnYellow:{
@@ -484,8 +536,8 @@ const styles = StyleSheet.create({
     alignItems:'center',
     borderRadius: 10,
     borderWidth: 1,
-    borderColor: '#FFB443',
-    backgroundColor: '#FFB443',
+    borderColor: '#A55FFF',
+    backgroundColor: '#A55FFF',
     marginHorizontal: 4,
   },
   btnYellowBig:{
@@ -495,17 +547,17 @@ const styles = StyleSheet.create({
     alignItems:'center',
     borderRadius: 10,
     borderWidth: 1,
-    borderColor: '#FFB443',
-    backgroundColor: '#FFB443',
+    borderColor: '#A55FFF',
+    backgroundColor: '#A55FFF',
     marginHorizontal: 4,
   },
   btnWhiteTxt:{
-    color:'#FFB443',
+    color:'#A55FFF',
     fontSize:15,
     fontWeight:'600'
   },
   btnYellowTxt:{
-    color:'#FFFFFF',
+    color:'#F0F0F0',
     fontSize:15,
     fontWeight:'600'
   },
@@ -517,7 +569,7 @@ const styles = StyleSheet.create({
     paddingHorizontal:36,
   },
   modalView:{
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#333333',
     borderRadius: 10,
     justifyContent: 'center',
     alignItems:'center',
@@ -556,7 +608,7 @@ const styles = StyleSheet.create({
     alignItems:'center',
   },
   modalTitleTxt:{
-    color:'#222222',
+    color:'#F0F0F0',
     fontSize:15,
     fontWeight:'600',
     marginBottom:10
@@ -614,5 +666,18 @@ const styles = StyleSheet.create({
     marginBottom:20,
     textAlignVertical:'top'
   },
-
+  settingView:{
+    paddingVertical:20,
+    width: '100%',
+  },
+  settingBtn:{
+    width:'100%',
+    paddingVertical:10,
+  },
+  settingBtnTxt:{
+    color:'#F0F0F0',
+    fontWeight:'600',
+    fontSize:15
+  },
+  
 });

@@ -83,6 +83,8 @@ export default function FeedDetail({navigation, route}:FeedDetailScreenProps) {
   const [loading, setLoading] = useState(false);
   const [placeholder, setPlaceholder] = useState('댓글을 적어주세요');
   const [cursorId, setCursorId] = useState(0);
+  const [showWhoseModal, setShowWhoseModal] = useState(0);
+
 
   useFocusEffect(
     useCallback(()=>{
@@ -134,7 +136,7 @@ export default function FeedDetail({navigation, route}:FeedDetailScreenProps) {
       }
       getFeed();
       getCmt();
-    },[refresh])
+    },[refresh, showWhoseModal])
   );
   useFocusEffect(
     useCallback(()=>{
@@ -398,6 +400,8 @@ export default function FeedDetail({navigation, route}:FeedDetailScreenProps) {
                   press={pressEmoticon}
                   feedId={feedData.feedId}
                   whoReact={whoReact}
+                  showWhoseModal={showWhoseModal}
+                  setShowWhoseModal={setShowWhoseModal}
                 />
               </View>
               <View style={styles.commentHeader}>

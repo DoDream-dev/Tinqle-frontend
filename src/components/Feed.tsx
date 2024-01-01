@@ -27,6 +27,8 @@ type FeedProps = {
   press:(feedId:number, emotion:string)=>Promise<void>;
   feedId:number;
   whoReact:(feedId:number)=>Promise<void>;
+  showWhoseModal:number;
+  setShowWhoseModal:React.Dispatch<React.SetStateAction<number>>;
   // heartEmoticonNicknameList:string[];
   // smileEmoticonNicknameList:string[];
   // sadEmoticonNicknameList:string[];
@@ -44,6 +46,8 @@ export default function Feed(props:FeedProps){
   const accountId = props.accountId;
   const imageURL = props.imageURL;
   const [a, setA] = useState(-1);
+  const showWhoseModal = props.showWhoseModal;
+  const setShowWhoseModal = props.setShowWhoseModal;
 
   return (
     <View style={styles.entire}>
@@ -59,6 +63,8 @@ export default function Feed(props:FeedProps){
         cmt={false}
         child={setA}
         cmtId={-1}
+        showWhoseModal={showWhoseModal}
+        setShowWhoseModal={setShowWhoseModal}
       />
       <ContentFeedBottom 
         mine={mine}

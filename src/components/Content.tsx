@@ -1,12 +1,13 @@
 // @ts-ignore
 import { SliderBox } from 'react-native-image-slider-box'
-import React from "react";
+import React, { useState } from "react";
 import { StyleSheet, View, Text, Image, Pressable, Dimensions } from "react-native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../../AppInner";
 import { useNavigation } from "@react-navigation/native";
 import { svgXml } from '../../assets/image/svgXml';
 import { SvgXml } from 'react-native-svg';
+import FriendProfileModal from './FriendProfileModal';
 type ContentProps = {
   nickname:string;
   status:string;
@@ -19,6 +20,8 @@ type ContentProps = {
   cmt:boolean;
   child:React.Dispatch<React.SetStateAction<number>>;
   cmtId:number;
+  showWhoseModal:number;
+  setShowWhoseModal:React.Dispatch<React.SetStateAction<number>>;
 }
 export default function Content( props:ContentProps){
   const nickname = props.nickname;
@@ -31,13 +34,22 @@ export default function Content( props:ContentProps){
   const child = props.child;
   const cmtId = props.cmtId;
   const windowWidth = Dimensions.get('screen').width;
-  let mine = 0;
-  if (!props.mine) mine = 1;
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const showWhoseModal = props.showWhoseModal;
+  const setShowWhoseModal = props.setShowWhoseModal;
   return (
     <View style={styles.entire}>
       <View style={styles.statusView}>
-        <Pressable onPress={()=>{navigation.navigate('Profile', {whose:mine, accountId:accountId}); }}>
+        <Pressable 
+          onPress={()=>{
+            if (props.mine) {
+              navigation.navigate('MyProfile')
+            }
+            else { 
+              setShowWhoseModal(accountId);
+            }
+          }}
+        >
           {status == 'smile'.toUpperCase() && <SvgXml width={32} height={32} xml={svgXml.status.smile} />}
           {status == 'happy'.toUpperCase() && <SvgXml width={32} height={32} xml={svgXml.status.happy} />}
           {status == 'sad'.toUpperCase() && <SvgXml width={32} height={32} xml={svgXml.status.sad} />}
@@ -60,7 +72,14 @@ export default function Content( props:ContentProps){
       </View>
       <View style={styles.contentView}>
         <View style={styles.txtView}>
-          <Pressable onPress={()=>navigation.navigate('Profile', {whose:mine, accountId:accountId})}>
+          <Pressable onPress={()=>{
+            if (props.mine) {
+              navigation.navigate('MyProfile')
+            }
+            else { 
+              setShowWhoseModal(accountId);
+            }
+          }}>
             <Text style={styles.nickname}>{nickname}</Text>
           </Pressable>
           <Text style={styles.createdAt}>{createdAt}</Text>
@@ -80,6 +99,7 @@ export default function Content( props:ContentProps){
           <Text style={styles.recommentTxt}>대댓글 쓰기</Text>
         </Pressable>}
       </View>
+      <FriendProfileModal showWhoseModal={showWhoseModal} setShowWhoseModal={setShowWhoseModal} />
     </View>
   );
 }

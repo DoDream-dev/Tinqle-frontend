@@ -143,6 +143,7 @@ export default function SignIn() {
         personalPolicy: personalP,
         // marketPolicy: false,
         fcmToken: fcm,
+        code: id,
       });
       // LOGIN call
       Login(response.data.data.refreshToken, response.data.data.accessToken);
@@ -178,16 +179,26 @@ export default function SignIn() {
   },[]);
 
   const checkDuplicate = async () => {
-    try {
-      const reg = new RegExp(`^[a-zA-Z0-9]{4,12}$`);
-      if (!reg.test(id)) {
-        setDuplicate('NO')
-      }
-      // const response = await axios.get(`${Config.API_URL}/~`)
+    const reg = new RegExp(`^[a-zA-Z0-9]{4,12}$`);
+    if (!reg.test(id)) {
+      setDuplicate('NO')
     }
-    catch (error) {
-      const errorResponse = (error as AxiosError<{message: string}>).response;
-      console.log(errorResponse);
+    else {
+      try {
+        const response = await axios.get(`${Config.API_URL}/accounts/check/code/${id}`);
+        if (response.data.data.isDuplicated) {
+          setDuplicate('CAN');
+        }
+        else {
+          setDuplicate('CANNOT');
+        }
+      }
+      catch (error) {
+        const errorResponse = (error as AxiosError<{message: string}>).response;
+        console.log(errorResponse);
+        setDuplicate('CANNOT');
+
+      }
     }
   };
 
@@ -244,8 +255,8 @@ export default function SignIn() {
             {duplicate == 'YET' && <View style={{height:12}}></View>}
             {duplicate == 'CANNOT' && <Text style={styles.idModalBodyBtnTxt}>이미 존재하는 아이디예요.</Text>}
             {duplicate == 'CAN' && <Text style={styles.idModalBodyBtnTxt}>사용할 수 있는 아이디예요.</Text>}
-            {duplicate == 'NO' && <Text style={styles.idModalBodyBtnTxt}>4-12자</Text>}
-            <Pressable style={duplicate == 'CAN'? styles.idModalFooterBtnActive : styles.idModalFooterBtn} onPress={()=>{Signup(signup); setSignUp('')}}
+            {duplicate == 'NO' && <Text style={styles.idModalBodyBtnTxt}>아이디는 4~12자, 영문이나 숫자로만 가능합니다.</Text>}
+            <Pressable style={duplicate == 'CAN'? styles.idModalFooterBtnActive : styles.idModalFooterBtn} onPress={()=>{Signup(signup); setSignUp(''); setSettingID(false);}}
             disabled={duplicate != 'CAN'}>
               <Text style={styles.idModalFooterBtnTxt}>완료</Text>
             </Pressable>

@@ -44,10 +44,10 @@ type itemProps = {
   }
 }
 export default function FeedList({navigation, route}:FeedListScreenProps) {
-  const dispach = useAppDispatch();
+  const dispatch = useAppDispatch();
   const deleted = useSelector((state:RootState) => !!state.user.deleted);
   const setDeleted = () => {
-    dispach(
+    dispatch(
       userSlice.actions.setDeleted({
         deleted:false,
       }),
@@ -82,6 +82,7 @@ export default function FeedList({navigation, route}:FeedListScreenProps) {
   // console.log(noti)
   const [newNotis, setNewNotis] = useState(false);
   // console.log(newNotis)
+  const [showWhoseModal, setShowWhoseModal] = useState(0);
   
 
   // useEffect(() => {
@@ -112,7 +113,7 @@ export default function FeedList({navigation, route}:FeedListScreenProps) {
               {!(noti || newNotis) && <SvgXml width={24} height={24} xml={svgXml.icon.noti}/>}
               {(noti || newNotis) && <SvgXml width={24} height={24} xml={svgXml.icon.notiYes}/>}
             </Pressable>
-            <Pressable style={{marginRight:3}} onPress={()=>navigation.navigate('Profile', {whose:0, accountId:-1})}>
+            <Pressable style={{marginRight:3}} onPress={()=>navigation.navigate('MyProfile')}>
             {status == 'smile' && <SvgXml width={24} height={24} xml={svgXml.status.smile}/>}
             {status == 'happy' && <SvgXml width={24} height={24} xml={svgXml.status.happy}/>}
             {status == 'sad' && <SvgXml width={24} height={24} xml={svgXml.status.sad}/>}
@@ -159,7 +160,7 @@ export default function FeedList({navigation, route}:FeedListScreenProps) {
           const errorResponse = (error as AxiosError<{message: string}>).response;
           console.log(errorResponse?.data.status);
           if (errorResponse?.data.status == 500) {
-            dispach(
+            dispatch(
               userSlice.actions.setToken({
                 accessToken:'',
               }),
@@ -169,7 +170,7 @@ export default function FeedList({navigation, route}:FeedListScreenProps) {
       }
       getFeed();
       // console.log(feedData)
-    },[refresh])
+    },[refresh, showWhoseModal])
   );
 
   useFocusEffect(
@@ -262,7 +263,7 @@ export default function FeedList({navigation, route}:FeedListScreenProps) {
       console.log(errorResponse.data);
       if (errorResponse?.data.statusCode == 4030 || errorResponse?.data.statusCode == 4010) {
         console.log('삭제된 글')
-        dispach(
+        dispatch(
           userSlice.actions.setDeleted({
             deleted:true,
           }),
@@ -283,7 +284,7 @@ export default function FeedList({navigation, route}:FeedListScreenProps) {
       console.log(errorResponse.data);
       if (errorResponse?.data.statusCode == 4030 || errorResponse?.data.statusCode == 4010) {
         console.log('삭제된 글');
-        dispach(
+        dispatch(
           userSlice.actions.setDeleted({
             deleted:true,
           }),
@@ -356,6 +357,8 @@ export default function FeedList({navigation, route}:FeedListScreenProps) {
                   press={pressEmoticon}
                   feedId={item.feedId}
                   whoReact={whoReact}
+                  showWhoseModal={showWhoseModal}
+                  setShowWhoseModal={setShowWhoseModal}
                 />
               </Pressable>
             );

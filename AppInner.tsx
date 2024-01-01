@@ -7,7 +7,7 @@ import {
 } from '@react-navigation/native-stack';
 import FeedList from "./src/pages/FeedList";
 import FeedDetail from "./src/pages/FeedDetail";
-import Profile from "./src/pages/Profile";
+import MyProfile from "./src/pages/MyProfile";
 import MyFriendList from "./src/pages/MyFriendList";
 import SearchFriends from "./src/pages/SearchFriends";
 import NoteBox from "./src/pages/NoteBox";
@@ -32,7 +32,7 @@ import messaging from '@react-native-firebase/messaging';
 export type RootStackParamList = {
   FeedList: undefined;
   FeedDetail: {feedId:number};
-  Profile: {whose:number, accountId:number};
+  MyProfile: undefined;
   MyFriendList: undefined;
   SearchFriends: undefined;
   NoteBox: undefined;
@@ -115,6 +115,7 @@ export default function AppInner() {
             </Pressable>
           ),
           headerStyle:{
+            backgroundColor:'#202020'
           },
           headerTitleStyle:{
             color: '#FFB443',
@@ -137,26 +138,29 @@ export default function AppInner() {
         })}
       />
       <Stack.Screen
-        name="Profile"
-        component={Profile}
-        options={({navigation}) => ({
+        name="MyProfile"
+        component={MyProfile}
+        options={() => ({
           title:'프로필',
           headerTitleAlign:'center',
           headerTitleStyle:{
-            color:'#222222',
+            color:'#F0F0F0',
             fontSize:15,
             fontWeight:'600'
           },
-          headerRight: () => (
-            <Pressable onPress={()=>(navigation.navigate('Setting'))}>
-              <Feather name="settings" size={24} color={'#848484'} />
-            </Pressable>
-          ),
-          headerLeft: () => (
-            <Pressable onPress={()=>(navigation.goBack())}>
-              <AntDesign name="arrowleft" size={24} color={'#848484'} />
-            </Pressable>
-          ),
+          headerStyle: {
+            backgroundColor:'#202020'
+          }
+          // headerRight: () => (
+          //   <Pressable onPress={()=>(navigation.navigate('Setting'))}>
+          //     <Feather name="settings" size={24} color={'#848484'} />
+          //   </Pressable>
+          // ),
+          // headerLeft: () => (
+          //   <Pressable onPress={()=>(navigation.goBack())}>
+          //     <AntDesign name="arrowleft" size={24} color={'#848484'} />
+          //   </Pressable>
+          // ),
         })}
       />
       <Stack.Screen

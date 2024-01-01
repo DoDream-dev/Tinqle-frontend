@@ -1,6 +1,6 @@
 import axios, {AxiosError} from 'axios';
 import React, { useEffect, useRef, useState } from 'react';
-import { View, Text, StyleSheet, TextInput, Pressable, Keyboard } from 'react-native';
+import { View, Text, StyleSheet, TextInput, Pressable, Keyboard, FlatList } from 'react-native';
 import Config from 'react-native-config';
 import { useSelector } from 'react-redux';
 import { RootState } from '../store/reducer';
@@ -11,9 +11,19 @@ import ToastScreen from '../components/ToastScreen';
 import Modal from 'react-native-modal';
 import { SvgXml } from 'react-native-svg';
 import _ from 'lodash';
-import { throttleTime, throttleTimeEmoticon } from '../hooks/Throttle';
+import { throttleTime } from '../hooks/Throttle';
 import { svgXml } from '../../assets/image/svgXml';
 import userSlice from '../slices/user';
+import FriendProfileModal from '../components/FriendProfileModal';
+
+type friendListItemProps = {
+  item:{
+    accountId:number,
+    friendNickname:string,
+    friendshipId:number,
+    status:string,
+  }
+}
 
 export default function SearchFriends() {
   const dispatch = useAppDispatch();
@@ -24,10 +34,19 @@ export default function SearchFriends() {
   const [message, setMessage] = useState('');
   const [otherUser, setOtherUser] = useState({accountId:-1, nickname:'', isFriend:0})
   const [reset, setReset] = useState(false);
+  // const [friendData, setFriendData] = useState([{accountId:-1, friendshipId:-1, friendNickname:'',status:''}]);
+  const [friendData, setFriendData] = useState([]);
+  const [isLast, setIsLast] = useState(false);
+  const [cursorId, setCursorId]= useState(0);
+  const [loading, setLoading] = useState(false);
+  
   const [whichPopup, setWhichPopup] = useState('');
   const [popupName, setPopupName] = useState('');
   const token = useSelector((state:RootState) => state.user.accessToken);
   const inp = useRef(null);
+  
+  const [showWhoseModal, setShowWhoseModal] = useState(0);
+
 
   useEffect(() => {
     const getMyCode = async () => {
@@ -47,7 +66,30 @@ export default function SearchFriends() {
       }
     };
     getMyCode();
-  }, []);
+    const getFriendship = async () => {
+      try {
+        const response = await axios.get(`${Config.API_URL}/friendships/manage`,);
+        setIsLast(response.data.data.last);
+        // console.log(response.data.data)
+        if (response.data.data.content.length == 0) setFriendData([]);
+        else {
+          setFriendData(response.data.data.content);
+          setCursorId(response.data.data.content[response.data.data.content.length-1].friendshipId)
+        }
+      } catch (error) {
+        const errorResponse = (error as AxiosError<{message: string}>).response;
+        console.log(errorResponse.data);
+        if (errorResponse?.data.status == 500) {
+          dispatch(
+            userSlice.actions.setToken({
+              accessToken:'',
+            }),
+          );
+        }
+      }
+    };
+    getFriendship();
+  }, [isLast, showWhoseModal]);
 
   const getFriendProfile = _.throttle(async () => {
     try {
@@ -103,32 +145,95 @@ export default function SearchFriends() {
       // }
     }
   }, throttleTime);
+  const getData = async () => {
+    if (!isLast) {
+      setLoading(true);
+      try {
+        const response = await axios.get(`${Config.API_URL}/friendships/manage?cursorId=${cursorId}`,);
+        setIsLast(response.data.data.last);
+        setFriendData(friendData.concat(response.data.data.content));
+        if (response.data.data.content.length != 0) {
+          setCursorId(response.data.data.content[response.data.data.content.length-1].friendshipId);
+        }
+      } catch (error) {
+        const errorResponse = (error as AxiosError<{message: string}>).response;
+        console.log(errorResponse.data);
+      }
+    }
+    setLoading(false);
+  };
+  const onEndReached = () => {
+    if (!loading) {getData();}
+  };
   return (
     <Pressable style={styles.entire} onPress={Keyboard.dismiss}>
-      <View style={styles.searchView}>
-        <TextInput 
-          placeholder={placeholder} 
-          style={styles.codeSearch} 
-          onFocus={()=>setPlaceholder('')} 
-          onBlur={()=>setPlaceholder('친구 코드 검색')}
-          onChangeText={(text:string)=>{setSearchCode(text)}}
-          blurOnSubmit={true}
-          maxLength={6}
-          value={searchCode}
-          onSubmitEditing={getFriendProfile}
-        />
-        {(!placeholder || searchCode) && <Pressable onPress={() => setSearchCode('')} style={styles.clearBtn}>
-          <Icon name="circle-xmark" size={20} color={'#848484'}/>
-        </Pressable>}
-      </View>
-      <View style={styles.myCodeView}>
-        <Pressable style={styles.myCodeBtn} onPress={()=>Clipboard.setString(myCode)}>
-          <Text style={styles.myCodeTxt}>
-            내 코드: {myCode}
-          </Text>
-          <SvgXml width="15" height="15" xml={svgXml.icon.copyIcon} style={styles.copyIcon}/>
-        </Pressable>
-      </View>
+      <FlatList 
+        data={friendData}
+        style={styles.friendList}
+        onEndReached={onEndReached}
+        onEndReachedThreshold={0.4}
+        ListHeaderComponent={<View style={{}}>
+          <View style={styles.searchView}>
+            <TextInput 
+              placeholder={placeholder} 
+              style={styles.codeSearch} 
+              onFocus={()=>setPlaceholder('')} 
+              onBlur={()=>setPlaceholder('친구 코드 검색')}
+              onChangeText={(text:string)=>{setSearchCode(text)}}
+              blurOnSubmit={true}
+              maxLength={6}
+              value={searchCode}
+              onSubmitEditing={getFriendProfile}
+            />
+            {(!placeholder || searchCode) && <Pressable onPress={() => setSearchCode('')} style={styles.clearBtn}>
+              <Icon name="circle-xmark" size={20} color={'#848484'}/>
+            </Pressable>}
+          </View>
+          <View style={styles.myCodeView}>
+            <Pressable style={styles.myCodeBtn} onPress={()=>Clipboard.setString(myCode)}>
+              <Text style={styles.myCodeTxt}>
+                내 아이디: {myCode}
+              </Text>
+              <SvgXml width="15" height="15" xml={svgXml.icon.copyIcon} style={styles.copyIcon}/>
+            </Pressable>
+          </View>
+        </View>}
+        keyExtractor={(item, index) => index}
+        numColumns={2}
+        renderItem={({item}:friendListItemProps) => {
+          return (
+            <Pressable style={styles.friendView} 
+            onPress={()=>{setShowWhoseModal(item.accountId);}}
+            >
+              {item.status == 'smile'.toUpperCase() && <SvgXml width={32} height={32} xml={svgXml.status.smile} />}
+              {item.status == 'happy'.toUpperCase() && <SvgXml width={32} height={32} xml={svgXml.status.happy} />}
+              {item.status == 'sad'.toUpperCase() && <SvgXml width={32} height={32} xml={svgXml.status.sad} />}
+              {item.status == 'mad'.toUpperCase() && <SvgXml width={32} height={32} xml={svgXml.status.mad} />}
+              {item.status == 'exhausted'.toUpperCase() && <SvgXml width={32} height={32} xml={svgXml.status.exhauseted} />}
+              {item.status == 'coffee'.toUpperCase() && <SvgXml width={32} height={32} xml={svgXml.status.coffee} />}
+              {item.status == 'meal'.toUpperCase() && <SvgXml width={32} height={32} xml={svgXml.status.meal} />}
+              {item.status == 'alcohol'.toUpperCase() && <SvgXml width={32} height={32} xml={svgXml.status.alcohol} />}
+              {item.status == 'chicken'.toUpperCase() && <SvgXml width={32} height={32} xml={svgXml.status.chicken} />}
+              {item.status == 'sleep'.toUpperCase() && <SvgXml width={32} height={32} xml={svgXml.status.sleep} />}
+              {item.status == 'work'.toUpperCase() && <SvgXml width={32} height={32} xml={svgXml.status.work} />}
+              {item.status == 'study'.toUpperCase() && <SvgXml width={32} height={32} xml={svgXml.status.study} />}
+              {item.status == 'movie'.toUpperCase() && <SvgXml width={32} height={32} xml={svgXml.status.movie} />}
+              {item.status == 'move'.toUpperCase() && <SvgXml width={32} height={32} xml={svgXml.status.move} />}
+              {item.status == 'dance'.toUpperCase() && <SvgXml width={32} height={32} xml={svgXml.status.dance} />}
+              {item.status == 'read'.toUpperCase() && <SvgXml width={32} height={32} xml={svgXml.status.read} />}
+              {item.status == 'walk'.toUpperCase() && <SvgXml width={32} height={32} xml={svgXml.status.walk} />}
+              {item.status == 'travel'.toUpperCase() && <SvgXml width={32} height={32} xml={svgXml.status.travel} />}
+              <View style={styles.friendmiddle}>
+                <Text style={styles.friendName}>{item.friendNickname}</Text>
+              </View>
+              {/* <Pressable style={styles.deleteBtn}>
+                <Text style={styles.deleteBtnTxt}>삭제</Text>
+              </Pressable> */}
+            </Pressable>
+          );
+        }}
+      />
+      <FriendProfileModal showWhoseModal={showWhoseModal} setShowWhoseModal={setShowWhoseModal} />
       <Modal onBackButtonPress={()=>setOtherUser({accountId:-1, nickname:'', isFriend:0})} isVisible={!!otherUser.nickname} avoidKeyboard={true} backdropColor='#222222' backdropOpacity={0.5} onModalShow={()=>{inp.current?.blur(); inp.current?.focus();}}>
         {otherUser.isFriend == 2 && <Pressable style={styles.modalBGView} onPress={()=>{Keyboard.dismiss(); setOtherUser({accountId:-1, nickname:'', isFriend:0});}}>
           <Pressable onPress={(e)=>e.stopPropagation()} style={styles.modalView}>
@@ -243,7 +348,33 @@ const styles = StyleSheet.create({
   },
   copyIcon:{
     marginLeft: 4,
-    height: 14
+    height: 14,
+    top: 1,
+  },
+  friendList:{
+    flex:1,
+    width:'100%',
+  },
+  friendView:{
+    width:'40%',
+    alignItems:'center',
+    flexDirection:'row',
+    paddingVertical:10,
+    paddingHorizontal:16,
+    // backgroundColor:'pink'
+    borderWidth:1,
+    borderColor:'pink',
+    margin:10,
+  },
+  friendmiddle:{
+    flex:1,
+    justifyContent:'center',
+    marginLeft:8
+  },
+  friendName:{
+    color:'#222222',
+    fontWeight:'600',
+    fontSize:15
   },
   modalBGView:{
     width:"100%",
