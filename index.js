@@ -5,7 +5,7 @@
 import {AppRegistry, Platform} from 'react-native';
 import App from './App';
 import {name as appName} from './app.json';
-// import messaging from '@react-native-firebase/messaging'
+// import messaging from '@react-native-firebase/messaging';
 import store from './src/store';
 import userSlice from './src/slices/user';
 import {request, check, PERMISSIONS, RESULTS} from 'react-native-permissions';

@@ -187,10 +187,10 @@ export default function SignIn() {
 
   useEffect(() => {
     // console.log('####', Config);
-    // GoogleSignin.configure({
-    //   webClientId: Config.GOOGLE_CLIENT_ID,
-    //   offlineAccess: true,
-    // });
+    GoogleSignin.configure({
+      webClientId: Config.GOOGLE_CLIENT_ID,
+      offlineAccess: true,
+    });
   }, []);
 
   return (
