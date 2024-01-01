@@ -20,8 +20,35 @@
 	<string>$(MARKETING_VERSION)</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>kakao12cbe5606f424138d2aa12ef7361fad5</string>
+			</array>
+		</dict>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>com.googleusercontent.apps.1036385861525-jlg8ptg26901gj13l3m0ec4nifivmk5u</string>
+			</array>
+		</dict>
+	</array>
 	<key>CFBundleVersion</key>
 	<string>$(CURRENT_PROJECT_VERSION)</string>
+	<key>KAKAO_APP_KEY</key>
+	<string>12cbe5606f424138d2aa12ef7361fad5</string>
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>kakaokompassauth</string>
+		<string>storykompassauth</string>
+		<string>kakaolink</string>
+	</array>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSAppTransportSecurity</key>
@@ -35,8 +62,12 @@
 			</dict>
 		</dict>
 	</dict>
+	<key>NSCameraUsageDescription</key>
+	<string>tinqle앱의 카메라 권한을 허용하시겠습니까?</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string></string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>사진 사용을 위해 tinqle앱의 갤러리 접근을 허용하시겠습니까?</string>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIRequiredDeviceCapabilities</key>
@@ -51,32 +82,5 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
-	<!-- react-native-permissions -->
-	 <key>NSCameraUsageDescription</key>
-  <string>tinqle앱의 카메라 권한을 허용하시겠습니까?</string>
-	<key>NSPhotoLibraryUsageDescription</key>
-  <string>사진 사용을 위해 tinqle앱의 갤러리 접근을 허용하시겠습니까?</string>
-	<!-- kaako login -->
-	<key>CFBundleURLTypes</key>
-	 <array>
-		<dict>
-	  <key>CFBundleTypeRole</key>
-  	<string>Editor</string>
-		<key>CFBundleURLSchemes</key>
-		<array>
-			<string>kakao12cbe5606f424138d2aa12ef7361fad5</string>
-		</array>
-		</dict>
-	</array>
-	<key>KAKAO_APP_KEY</key>
-	<string>12cbe5606f424138d2aa12ef7361fad5</string>
-	<!-- <key>KAKAO_APP_SCHEME</key> // 선택 사항 멀티 플랫폼 앱 구현 시에만 추가하면 됩니다
-	<string>{카카오 앱 스킴을 적어주세요}</string> // 선택 사항  -->
-	<key>LSApplicationQueriesSchemes</key>
-	<array>
-		<string>kakaokompassauth</string>
-		<string>storykompassauth</string>
-		<string>kakaolink</string>
-	</array>
 </dict>
 </plist>
