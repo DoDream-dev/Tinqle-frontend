@@ -138,7 +138,7 @@ dependencies {
     implementation("com.facebook.react:react-android:0.72.4")
     implementation platform("com.google.firebase:firebase-bom:32.2.3")
     implementation "com.google.firebase:firebase-analytics"
-    // implementation project(':react-native-push-notification')
+    implementation project(':react-native-push-notification')
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0-alpha02'
     // implementation 'com.google.firebase:firebasee-messaging-ktx'
     //implementation project(':react-native-splash-screen')
