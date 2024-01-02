@@ -70,6 +70,7 @@
 	<string>사진 사용을 위해 tinqle앱의 갤러리 접근을 허용하시겠습니까?</string>
 	<key>UIBackgroundModes</key>
 	<array>
+		<string>fetch</string>
 		<string>remote-notification</string>
 	</array>
 	<key>UILaunchStoryboardName</key>
