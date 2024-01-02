@@ -47,12 +47,14 @@ export default function App() {
   const onOpenNotification = (notify: any) => {
     //앱 켜진 상태에서 알림 받았을 때 하는 일
     console.log('[App] onOpenNotification 앱 켜진 상태에서 : notify :', notify);
-    // Alert.alert('Open Notification : notify.body :' + notify.body);
+
     if (Platform.OS === 'ios') {
-      console.log('2. [onNotification] notify.body :', notify.body);
+      //ios noti resive when app is open
+      console.log('ios noti resive when app is open :', notify.body);
     } else {
+      // android noti resive when app is open
       if (notify.message) {
-        console.log('3. [onNotification] notify.body :', notify.body);
+        console.log('android noti resive when app is open :', notify.body);
       }
     }
   };
@@ -78,6 +80,7 @@ export default function App() {
     //     Linking.openURL(link); // <---- 2
     //   }
     // });
+
     fcmService.registerAppWithFCM(); //ios일때 자동으로 가져오도록 하는 코드
     fcmService.register(onRegister, onNotification, onOpenNotification);
     localNotificationService.configure(onOpenNotification);
