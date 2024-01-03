@@ -1,5 +1,5 @@
 import React, { useState, useRef } from "react";
-import { StyleSheet, Text, Pressable, View, Keyboard, TextInput } from "react-native";
+import { StyleSheet, Text, Pressable, View, Keyboard, TextInput, Dimensions } from "react-native";
 import axios, { AxiosError } from 'axios';
 import Modal from'react-native-modal';
 import Config from 'react-native-config';
@@ -22,6 +22,7 @@ export default function FriendProfileModal(props:ProfileProps){
   const [chageNameVal, setChangeNameVal] = useState('');
   const [status, setStatus] = useState('');
   const [name, setName] = useState('');
+  const [profileImg, setProfileImg] = useState(null);
 
   const inp1 = useRef();
 
@@ -33,6 +34,7 @@ export default function FriendProfileModal(props:ProfileProps){
       setName(response.data.data.nickname);
       setChangeNameVal(response.data.data.nickname);
       setStatus(response.data.data.status.toLowerCase());
+      setProfileImg(response.data.data.profileImageUrl);
       
     } catch (error) {
       const errorResponse = (error as AxiosError<{message: string}>).response;
@@ -61,26 +63,29 @@ export default function FriendProfileModal(props:ProfileProps){
   }, throttleTime);
   
   return (
-    <Modal isVisible={showWhoseModal != 0}
+  <Modal isVisible={showWhoseModal != 0 && showWhoseModal != undefined}
     onModalWillShow={getProfile}
-    hasBackdrop={false}
+    hasBackdrop={true}
+    onBackdropPress={()=>setShowWhoseModal(0)}
+    // coverScreen={false}
     onBackButtonPress={()=>setShowWhoseModal(0)}
-    style={styles.entire}>
-      <Pressable style={styles.xBtn} onPress={()=>setShowWhoseModal(0)}>
+    style={[styles.entire, {marginVertical:(Dimensions.get('screen').height - 400)/2}]}>
+      {/* <Pressable style={styles.xBtn} onPress={()=>setShowWhoseModal(0)}>
         <Text style={styles.btnTxt}>x</Text>
-      </Pressable>
+      </Pressable> */}
       <View style={styles.profileView}>
         <Profile
           name={name}
           status={status}
+          profileImg={profileImg}
           renameModal={setChangeName}
           restatusModal={setChangeStatus}
         />
       </View>
       <View style={styles.btnView}>
-        <Pressable><Text style={styles.btnTxt}>지금 뭐해?</Text></Pressable>
-        <Pressable><Text style={styles.btnTxt}>쪽지 보내기</Text></Pressable>
-        <Pressable><Text style={styles.btnTxt}>친구 삭제</Text></Pressable>
+        <Pressable style={styles.btn}><Text style={styles.btnTxt}>지금 뭐해?</Text></Pressable>
+        <View style={{width:8}}></View>
+        <Pressable style={styles.btnGray}><Text style={styles.btnTxt}>친구 삭제하기</Text></Pressable>
       </View>
       <Modal isVisible={chageName} onBackButtonPress={()=>setChangeName(false)} avoidKeyboard={true} backdropColor='#222222' backdropOpacity={0.5}>
         <Pressable style={styles.modalBGView} onPress={()=>{setChangeName(false); Keyboard.dismiss();}}>
@@ -92,7 +97,7 @@ export default function FriendProfileModal(props:ProfileProps){
                 style={styles.nameChangeTxtInput}
                 onChangeText={(text:string)=>{setChangeNameVal(text)}}
                 blurOnSubmit={true}
-                maxLength={10}
+                maxLength={15}
                 value={chageNameVal}
                 autoFocus={true}
                 onSubmitEditing={()=>{
@@ -126,24 +131,40 @@ export default function FriendProfileModal(props:ProfileProps){
 const styles = StyleSheet.create({
   entire:{
     position:'relative',
-    margin: 80,
+    marginHorizontal: 36,
     backgroundColor:'#333333',
-    justifyContent:'center'
-  },
-  xBtn:{
-    position:'absolute',
-    top:10,
-    right:10,
-    backgroundColor:'red',
-    padding:10,
+    justifyContent:'center',
+    borderRadius:10,
   },
   profileView:{
-    justifyContent:'center'
+    justifyContent:'center',
   },
   btnView:{
+    flexDirection:'row',
+    justifyContent:'space-between',
+    paddingHorizontal: 17,
+    marginTop:16,
+  },
+  btn:{
+    flex:1,
+    justifyContent:'center',
+    alignItems:'center',
+    borderRadius:5,
+    paddingVertical:13,
+    backgroundColor:'#A55FFF',
+  },
+  btnGray:{
+    flex:1,
+    justifyContent:'center',
+    alignItems:'center',
+    borderRadius:5,
+    paddingVertical:13,
+    backgroundColor:'#888888',
   },
   btnTxt:{
-    color:'#F0F0F0'
+    color:'#F0F0F0',
+    fontSize:15,
+    fontWeight:'600'
   },
   modalBGView:{
     width:"100%", 

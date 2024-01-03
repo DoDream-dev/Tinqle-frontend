@@ -1,16 +1,18 @@
 import React, { useState } from "react";
-import { StyleSheet, Text, Pressable, View } from "react-native";
+import { StyleSheet, Text, Pressable, View, Image } from "react-native";
 import MaterialCommunity from 'react-native-vector-icons/MaterialCommunityIcons';
 import { svgXml } from '../../assets/image/svgXml';
 import { SvgXml } from 'react-native-svg'
 type ProfileProps = {
   status:string;
   name:string;
+  profileImg:string | null;
   restatusModal:React.Dispatch<React.SetStateAction<boolean>>;
   renameModal:React.Dispatch<React.SetStateAction<boolean>>;
 }
 export default function Profile(props:ProfileProps){
   const status = props.status;
+  const profileImage = props.profileImg;
   const name = props.name;
   const restatusModal = props.restatusModal;
   const renameModal = props.renameModal;
@@ -22,7 +24,7 @@ export default function Profile(props:ProfileProps){
   return (
     <View style={styles.entire}>
       <View style={styles.statusView}>
-        <Pressable style={styles.statusBtn} disabled={imsi} onPress={()=>restatusModal(true)}>
+        {/* <Pressable style={styles.statusBtn} disabled={imsi} onPress={()=>restatusModal(true)}>
           {status == 'smile' && <SvgXml width={90} height={90} xml={svgXml.status.smile} />}
           {status == 'happy' && <SvgXml width={90} height={90} xml={svgXml.status.happy} />}
           {status == 'sad' && <SvgXml width={90} height={90} xml={svgXml.status.sad} />}
@@ -41,7 +43,12 @@ export default function Profile(props:ProfileProps){
           {status == 'read' && <SvgXml width={90} height={90} xml={svgXml.status.read} />}
           {status == 'walk' && <SvgXml width={90} height={90} xml={svgXml.status.walk} />}
           {status == 'travel' && <SvgXml width={90} height={90} xml={svgXml.status.travel} />}
-        </Pressable>
+        </Pressable> */}
+        {profileImage == null 
+        ? <SvgXml width={90} height={90} xml={svgXml.profile.null} />
+        : <Image
+          source={{uri:profileImage}} style={{width:90, height:90, borderRadius:45}}
+        />}
       </View>
       <View style={styles.nameView}>
         <Text style={styles.nameTxt} onPress={()=>renameModal(true)}>{name}</Text>

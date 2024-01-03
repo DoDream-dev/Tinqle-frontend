@@ -1,6 +1,6 @@
 import axios, {AxiosError} from 'axios';
 import React, { useEffect, useRef, useState } from 'react';
-import { View, Text, StyleSheet, TextInput, Pressable, Keyboard, FlatList } from 'react-native';
+import { View, Text, StyleSheet, TextInput, Pressable, Keyboard, FlatList, Image } from 'react-native';
 import Config from 'react-native-config';
 import { useSelector } from 'react-redux';
 import { RootState } from '../store/reducer';
@@ -15,6 +15,7 @@ import { throttleTime } from '../hooks/Throttle';
 import { svgXml } from '../../assets/image/svgXml';
 import userSlice from '../slices/user';
 import FriendProfileModal from '../components/FriendProfileModal';
+import { Dimensions } from 'react-native';
 
 type friendListItemProps = {
   item:{
@@ -22,6 +23,7 @@ type friendListItemProps = {
     friendNickname:string,
     friendshipId:number,
     status:string,
+    profileImageUrl:string,
   }
 }
 
@@ -29,7 +31,7 @@ export default function SearchFriends() {
   const dispatch = useAppDispatch();
 
   const [myCode, setMyCode] = useState('');
-  const [placeholder, setPlaceholder] = useState('친구 코드 검색');
+  const [placeholder, setPlaceholder] = useState('이름, 아이디로 친구 찾기');
   const [searchCode, setSearchCode] = useState('');
   const [message, setMessage] = useState('');
   const [otherUser, setOtherUser] = useState({accountId:-1, nickname:'', isFriend:0})
@@ -74,6 +76,7 @@ export default function SearchFriends() {
         if (response.data.data.content.length == 0) setFriendData([]);
         else {
           setFriendData(response.data.data.content);
+          // console.log(response.data.data.content)
           setCursorId(response.data.data.content[response.data.data.content.length-1].friendshipId)
         }
       } catch (error) {
@@ -178,15 +181,16 @@ export default function SearchFriends() {
               placeholder={placeholder} 
               style={styles.codeSearch} 
               onFocus={()=>setPlaceholder('')} 
-              onBlur={()=>setPlaceholder('친구 코드 검색')}
+              onBlur={()=>setPlaceholder('이름, 아이디로 친구 찾기')}
               onChangeText={(text:string)=>{setSearchCode(text)}}
               blurOnSubmit={true}
-              maxLength={6}
+              maxLength={12}
               value={searchCode}
               onSubmitEditing={getFriendProfile}
+              placeholderTextColor={'#F0F0F0'}
             />
             {(!placeholder || searchCode) && <Pressable onPress={() => setSearchCode('')} style={styles.clearBtn}>
-              <Icon name="circle-xmark" size={20} color={'#848484'}/>
+              <Icon name="circle-xmark" size={20} color={'#F0F0F0'}/>
             </Pressable>}
           </View>
           <View style={styles.myCodeView}>
@@ -202,30 +206,40 @@ export default function SearchFriends() {
         numColumns={2}
         renderItem={({item}:friendListItemProps) => {
           return (
-            <Pressable style={styles.friendView} 
+            <Pressable style={[styles.friendView, {width: (Dimensions.get('window').width - 40)/2}]} 
             onPress={()=>{setShowWhoseModal(item.accountId);}}
             >
-              {item.status == 'smile'.toUpperCase() && <SvgXml width={32} height={32} xml={svgXml.status.smile} />}
-              {item.status == 'happy'.toUpperCase() && <SvgXml width={32} height={32} xml={svgXml.status.happy} />}
-              {item.status == 'sad'.toUpperCase() && <SvgXml width={32} height={32} xml={svgXml.status.sad} />}
-              {item.status == 'mad'.toUpperCase() && <SvgXml width={32} height={32} xml={svgXml.status.mad} />}
-              {item.status == 'exhausted'.toUpperCase() && <SvgXml width={32} height={32} xml={svgXml.status.exhauseted} />}
-              {item.status == 'coffee'.toUpperCase() && <SvgXml width={32} height={32} xml={svgXml.status.coffee} />}
-              {item.status == 'meal'.toUpperCase() && <SvgXml width={32} height={32} xml={svgXml.status.meal} />}
-              {item.status == 'alcohol'.toUpperCase() && <SvgXml width={32} height={32} xml={svgXml.status.alcohol} />}
-              {item.status == 'chicken'.toUpperCase() && <SvgXml width={32} height={32} xml={svgXml.status.chicken} />}
-              {item.status == 'sleep'.toUpperCase() && <SvgXml width={32} height={32} xml={svgXml.status.sleep} />}
-              {item.status == 'work'.toUpperCase() && <SvgXml width={32} height={32} xml={svgXml.status.work} />}
-              {item.status == 'study'.toUpperCase() && <SvgXml width={32} height={32} xml={svgXml.status.study} />}
-              {item.status == 'movie'.toUpperCase() && <SvgXml width={32} height={32} xml={svgXml.status.movie} />}
-              {item.status == 'move'.toUpperCase() && <SvgXml width={32} height={32} xml={svgXml.status.move} />}
-              {item.status == 'dance'.toUpperCase() && <SvgXml width={32} height={32} xml={svgXml.status.dance} />}
-              {item.status == 'read'.toUpperCase() && <SvgXml width={32} height={32} xml={svgXml.status.read} />}
-              {item.status == 'walk'.toUpperCase() && <SvgXml width={32} height={32} xml={svgXml.status.walk} />}
-              {item.status == 'travel'.toUpperCase() && <SvgXml width={32} height={32} xml={svgXml.status.travel} />}
+              <Pressable style={styles.friendProfileImg} onPress={()=>{setShowWhoseModal(item.accountId);}}>
+                {item.profileImageUrl == null 
+                ? <SvgXml width={32} height={32} xml={svgXml.profile.null} />
+                : <Image
+                  source={{uri:item.profileImageUrl}} style={{width:32, height:32, borderRadius:16}}
+                />
+                }
+              </Pressable>
               <View style={styles.friendmiddle}>
                 <Text style={styles.friendName}>{item.friendNickname}</Text>
               </View>
+              <Pressable style={styles.friendProfileStatus}>
+                {item.status == 'smile'.toUpperCase() && <SvgXml width={40} height={40} xml={svgXml.status.smile} />}
+                {item.status == 'happy'.toUpperCase() && <SvgXml width={40} height={40} xml={svgXml.status.happy} />}
+                {item.status == 'sad'.toUpperCase() && <SvgXml width={40} height={40} xml={svgXml.status.sad} />}
+                {item.status == 'mad'.toUpperCase() && <SvgXml width={40} height={40} xml={svgXml.status.mad} />}
+                {item.status == 'exhausted'.toUpperCase() && <SvgXml width={40} height={40} xml={svgXml.status.exhauseted} />}
+                {item.status == 'coffee'.toUpperCase() && <SvgXml width={40} height={40} xml={svgXml.status.coffee} />}
+                {item.status == 'meal'.toUpperCase() && <SvgXml width={40} height={40} xml={svgXml.status.meal} />}
+                {item.status == 'alcohol'.toUpperCase() && <SvgXml width={40} height={40} xml={svgXml.status.alcohol} />}
+                {item.status == 'chicken'.toUpperCase() && <SvgXml width={40} height={40} xml={svgXml.status.chicken} />}
+                {item.status == 'sleep'.toUpperCase() && <SvgXml width={40} height={40} xml={svgXml.status.sleep} />}
+                {item.status == 'work'.toUpperCase() && <SvgXml width={40} height={40} xml={svgXml.status.work} />}
+                {item.status == 'study'.toUpperCase() && <SvgXml width={40} height={40} xml={svgXml.status.study} />}
+                {item.status == 'movie'.toUpperCase() && <SvgXml width={40} height={40} xml={svgXml.status.movie} />}
+                {item.status == 'move'.toUpperCase() && <SvgXml width={40} height={40} xml={svgXml.status.move} />}
+                {item.status == 'dance'.toUpperCase() && <SvgXml width={40} height={40} xml={svgXml.status.dance} />}
+                {item.status == 'read'.toUpperCase() && <SvgXml width={40} height={40} xml={svgXml.status.read} />}
+                {item.status == 'walk'.toUpperCase() && <SvgXml width={40} height={40} xml={svgXml.status.walk} />}
+                {item.status == 'travel'.toUpperCase() && <SvgXml width={40} height={40} xml={svgXml.status.travel} />}
+              </Pressable>
               {/* <Pressable style={styles.deleteBtn}>
                 <Text style={styles.deleteBtnTxt}>삭제</Text>
               </Pressable> */}
@@ -307,7 +321,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 16,
     paddingTop: 20,
-    backgroundColor: '#F7F7F7'
+    backgroundColor: '#202020'
   },
   nonempty:{
     flex:4,
@@ -329,15 +343,19 @@ const styles = StyleSheet.create({
   codeSearch:{
     fontSize: 15,
     fontWeight: '400',
-    color: '#848484',
-    backgroundColor: '#FFFFFF',
+    color: '#F0F0F0',
+    backgroundColor: '#333333',
     borderRadius: 10,
     width: '100%',
     height: 40,
     paddingLeft: 10,
     marginBottom: 17,
   },
-  myCodeView:{},
+  myCodeView:{
+    justifyContent:'center',
+    alignItems:'center',
+    marginBottom:18,
+  },
   myCodeTxt:{
     color: '#848484',
     fontSize: 13,
@@ -356,23 +374,29 @@ const styles = StyleSheet.create({
     width:'100%',
   },
   friendView:{
-    width:'40%',
     alignItems:'center',
+    justifyContent:'space-between',
     flexDirection:'row',
-    paddingVertical:10,
-    paddingHorizontal:16,
-    // backgroundColor:'pink'
-    borderWidth:1,
-    borderColor:'pink',
-    margin:10,
+    paddingVertical:7,
+    paddingHorizontal:10,
+    backgroundColor:'#333333',
+    borderRadius:5,
+    marginRight:8,
+    marginBottom:8,
+  },
+  friendProfileImg:{
+    marginVertical:7,
   },
   friendmiddle:{
     flex:1,
     justifyContent:'center',
     marginLeft:8
   },
+  friendProfileStatus:{
+    marginVertical:7,
+  },
   friendName:{
-    color:'#222222',
+    color:'#F0F0F0',
     fontWeight:'600',
     fontSize:15
   },

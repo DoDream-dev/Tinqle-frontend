@@ -51,6 +51,7 @@ export default function MyProfile() {
   // original value
   const [status, setStatus] = useState('');
   const [name, setName] = useState('');
+  const [profileImg, setProfileImg] = useState(null);
   
   const inp1 = useRef();
   const inp2 = useRef();
@@ -65,6 +66,7 @@ export default function MyProfile() {
         setName(response.data.data.nickname);
         setChangeNameVal(response.data.data.nickname);
         setStatus(response.data.data.status.toLowerCase());
+        setProfileImg(response.data.data.profileImageUrl);
         // console.log('내 프로필 조회')
       } catch (error) {
         const errorResponse = (error as AxiosError<{message: string}>).response;
@@ -252,7 +254,11 @@ export default function MyProfile() {
           name={name}
           restatusModal={setChangeStatus}
           renameModal={setChangeName}
+          profileImg={profileImg}
         />
+        <Pressable style={styles.addProfileImgBtn} onPress={()=>console.log('profileImg select')}>
+          <SvgXml width={24} height={24} xml={svgXml.icon.photo} />
+        </Pressable>
         <View style={styles.myCodeView}>
             <Pressable style={styles.myCodeBtn} onPress={()=>Clipboard.setString(myCode)}>
               <Text style={styles.myCodeTxt}>
@@ -497,7 +503,16 @@ const styles = StyleSheet.create({
     backgroundColor:'#333333',
     paddingVertical:40,
     alignItems:'center',
-    borderRadius:10
+    borderRadius:10,
+    position:'relative'
+  },
+  addProfileImgBtn:{
+    position:'absolute',
+    top: 116,
+    left:208,
+    backgroundColor:'#101010',
+    borderRadius:15,
+    padding:3
   },
   myCodeView:{},
   myCodeTxt:{
