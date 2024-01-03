@@ -72,7 +72,7 @@ export default function SearchFriends() {
       try {
         const response = await axios.get(`${Config.API_URL}/friendships/manage`,);
         setIsLast(response.data.data.last);
-        // console.log(response.data.data)
+        /// console.log(response.data.data)
         if (response.data.data.content.length == 0) setFriendData([]);
         else {
           setFriendData(response.data.data.content);
