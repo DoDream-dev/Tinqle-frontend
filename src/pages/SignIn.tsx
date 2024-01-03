@@ -16,7 +16,7 @@ import EncryptedStorage from 'react-native-encrypted-storage';
 import Config from 'react-native-config';
 import axios, {AxiosError} from 'axios';
 import {GoogleSignin} from '@react-native-google-signin/google-signin';
-// import auth from '@react-native-firebase/auth';
+import auth from '@react-native-firebase/auth';
 import Modal from 'react-native-modal';
 import Feather from 'react-native-vector-icons/Feather';
 import {Shadow} from 'react-native-shadow-2';
@@ -90,10 +90,10 @@ export default function SignIn() {
       // const data = await response.json();
       // setID(userInfo.user.id);
 
-      // const googleCredential = auth.GoogleAuthProvider.credential(
-      //   userInfo.idToken,
-      // );
-      // auth().signInWithCredential(googleCredential);
+      const googleCredential = auth.GoogleAuthProvider.credential(
+        userInfo.idToken,
+      );
+      auth().signInWithCredential(googleCredential);
 
       console.log(userInfo.serverAuthCode);
       const res = await axios.post(`${Config.API_URL}/auth/login`, {
