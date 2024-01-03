@@ -2,10 +2,10 @@
 
 import PushNotification from 'react-native-push-notification';
 import PushNotificationIOS from '@react-native-community/push-notification-ios';
-import {Platform, Linking} from 'react-native';
+import {Platform} from 'react-native';
 
 class LocalNotificationService {
-  configure = onOpenNotification => {
+  configure = (onOpenNotification: any) => {
     PushNotification.configure({
       onRegister: function (token) {
         console.log(
@@ -54,7 +54,13 @@ class LocalNotificationService {
     PushNotification.unregister();
   };
 
-  showNotification = (id, title, message, data = {}, options = {}) => {
+  showNotification = (
+    id: any,
+    title: any,
+    message: any,
+    data = {},
+    options = {},
+  ) => {
     // console.log('TEST : ', id, title, message, data, options);
 
     if (Platform.OS === 'ios') {
@@ -75,7 +81,13 @@ class LocalNotificationService {
     }
   };
 
-  buildAndroidNotification = (id, title, message, data = {}, options = {}) => {
+  buildAndroidNotification = (
+    id: any,
+    title: any,
+    message: any,
+    data = {},
+    options = {},
+  ) => {
     // console.log('$$$TEST : ', id, title, message, data, options);
     return {
       channelId: 'fcm_fallback_notification_channel',
@@ -94,7 +106,13 @@ class LocalNotificationService {
     };
   };
 
-  buildIOSNotification = (id, title, message, data = {}, options = {}) => {
+  buildIOSNotification = (
+    id: any,
+    title: any,
+    message: any,
+    data = {},
+    options = {},
+  ) => {
     return {
       alertAction: options.alertAction || 'view',
       category: options.category || '',
@@ -118,7 +136,7 @@ class LocalNotificationService {
     }
   };
 
-  removeDeliveredNotificationByID = notification => {
+  removeDeliveredNotificationByID = (notification: any) => {
     // console.log('[LocalNotificationService] removeDeliveredNotificationByID:',notification,);
     PushNotification.cancelLocalNotifications({id: `${notification.id}`});
   };

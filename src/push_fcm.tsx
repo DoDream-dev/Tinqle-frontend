@@ -1,10 +1,14 @@
 // push.fcm.js
 import PushNotification from 'react-native-push-notification';
 import messaging from '@react-native-firebase/messaging';
-import {Alert, Platform} from 'react-native';
+import {Platform} from 'react-native';
 
 class FCMService {
-  register = (onRegister, onNotification, onOpenNotification) => {
+  register = (
+    onRegister: any,
+    onNotification: any,
+    onOpenNotification: any,
+  ) => {
     //this.checkPermission(onRegister); //권한 확인 해서 get token & onRegister 함수 실행
     this.createNotificationListeners(
       onRegister,
@@ -21,7 +25,7 @@ class FCMService {
   };
 
   //권한 확인 하고 있으면 바로 gettoken, 없으면 권한 요청하고 get
-  checkPermission = onRegister => {
+  checkPermission = (onRegister: any) => {
     messaging()
       .hasPermission()
       .then(enabled => {
@@ -37,7 +41,7 @@ class FCMService {
   };
 
   //메세징 에서 토큰 가져옴 & onRegister 함수 실행
-  getToken = onRegister => {
+  getToken = (onRegister: any) => {
     messaging()
       .getToken()
       .then(fcmToken => {
@@ -53,7 +57,7 @@ class FCMService {
   };
 
   //권한 없는 경우 요청 & getToken 함수 실행
-  requestPermission = onRegister => {
+  requestPermission = (onRegister: any) => {
     messaging()
       .requestPermission()
       .then(() => {
@@ -73,9 +77,9 @@ class FCMService {
   };
 
   createNotificationListeners = (
-    onRegister,
-    onNotification,
-    onOpenNotification,
+    onRegister: any,
+    onNotification: any,
+    onOpenNotification: any,
   ) => {
     if (Platform.OS === 'android') {
       const channelId = 'fcm_fallback_notification_channel';
