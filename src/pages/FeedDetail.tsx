@@ -28,6 +28,7 @@ type itemProps = {
     friendNickname:string;
     status:string;
     isAuthor:boolean,
+    profileImageUrl:string|null,
     createAt:string;
     childCommentCardList: [
       {
@@ -37,6 +38,7 @@ type itemProps = {
         accountId:number;
         friendNickname:string;
         status:string;
+        profileImageUrl:string|null,
         isAuthor:boolean;
         createAt:string;
       }
@@ -67,7 +69,9 @@ export default function FeedDetail({navigation, route}:FeedDetailScreenProps) {
       isCheckedSurpriseEmoticon: false,
     },
     isAuthor : false,
-    createdAt : ""
+    createdAt : "",
+    profileImageUrl:null,
+
   });
   const [cmtData, setCmtData] = useState([]);
   const [showBottomSheet, setShowBottomSheet] = useState(false);
@@ -83,6 +87,8 @@ export default function FeedDetail({navigation, route}:FeedDetailScreenProps) {
   const [loading, setLoading] = useState(false);
   const [placeholder, setPlaceholder] = useState('댓글을 적어주세요');
   const [cursorId, setCursorId] = useState(0);
+  const [showWhoseModal, setShowWhoseModal] = useState(0);
+
 
   useFocusEffect(
     useCallback(()=>{
@@ -115,6 +121,7 @@ export default function FeedDetail({navigation, route}:FeedDetailScreenProps) {
         try {
           const response = await axios.get(`${Config.API_URL}/feeds/${route.params.feedId}/comments`,);
           setCmtData(response.data.data.content);
+          // console.log(response.data.data.content[0])
           if (response.data.data.content.length == 0) {setCursorId(0);}
           else {
             setCursorId(response.data.data.content[response.data.data.content.length-1].commentId)
@@ -134,7 +141,7 @@ export default function FeedDetail({navigation, route}:FeedDetailScreenProps) {
       }
       getFeed();
       getCmt();
-    },[refresh])
+    },[refresh, showWhoseModal])
   );
   useFocusEffect(
     useCallback(()=>{
@@ -398,6 +405,9 @@ export default function FeedDetail({navigation, route}:FeedDetailScreenProps) {
                   press={pressEmoticon}
                   feedId={feedData.feedId}
                   whoReact={whoReact}
+                  profileImg={feedData.profileImageUrl}
+                  showWhoseModal={showWhoseModal}
+                  setShowWhoseModal={setShowWhoseModal}
                 />
               </View>
               <View style={styles.commentHeader}>
@@ -424,6 +434,9 @@ export default function FeedDetail({navigation, route}:FeedDetailScreenProps) {
                   cmt={true}
                   child={setWriteChildCmt}
                   cmtId={item.commentId}
+                  profileImg={item.profileImageUrl}
+                  showWhoseModal={showWhoseModal}
+                  setShowWhoseModal={setShowWhoseModal}
                 />
                 {item.childCount != 0 
                 && <View style={{backgroundColor:'white'}}>
@@ -445,6 +458,9 @@ export default function FeedDetail({navigation, route}:FeedDetailScreenProps) {
                             cmt={false}
                             child={setWriteChildCmt}
                             cmtId={item.commentId}
+                            profileImg={item.profileImageUrl}
+                            showWhoseModal={showWhoseModal}
+                            setShowWhoseModal={setShowWhoseModal}
                           />
                         </View>
                       );
@@ -527,7 +543,7 @@ const styles = StyleSheet.create({
   entire: {
     flex: 1,
     alignItems: 'center',
-    backgroundColor:'#FFFFFF'
+    backgroundColor:'#202020'
   },
   feedView:{
     paddingHorizontal:6,
@@ -563,7 +579,8 @@ const styles = StyleSheet.create({
   childCmt:{
     borderTopWidth:1,
     borderTopColor:'#ECECEC',
-    paddingLeft:40
+    paddingLeft:40,
+    backgroundColor:'#202020'
 },
   popup:{
     position:'absolute',

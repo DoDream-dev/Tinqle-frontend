@@ -1,6 +1,6 @@
 import axios, {AxiosError} from 'axios';
 import React, { useEffect, useRef, useState } from 'react';
-import { View, Text, StyleSheet, TextInput, Pressable, Keyboard } from 'react-native';
+import { View, Text, StyleSheet, TextInput, Pressable, Keyboard, FlatList, Image } from 'react-native';
 import Config from 'react-native-config';
 import { useSelector } from 'react-redux';
 import { RootState } from '../store/reducer';
@@ -11,23 +11,44 @@ import ToastScreen from '../components/ToastScreen';
 import Modal from 'react-native-modal';
 import { SvgXml } from 'react-native-svg';
 import _ from 'lodash';
-import { throttleTime, throttleTimeEmoticon } from '../hooks/Throttle';
+import { throttleTime } from '../hooks/Throttle';
 import { svgXml } from '../../assets/image/svgXml';
 import userSlice from '../slices/user';
+import FriendProfileModal from '../components/FriendProfileModal';
+import { Dimensions } from 'react-native';
+
+type friendListItemProps = {
+  item:{
+    accountId:number,
+    friendNickname:string,
+    friendshipId:number,
+    status:string,
+    profileImageUrl:string,
+  }
+}
 
 export default function SearchFriends() {
   const dispatch = useAppDispatch();
 
   const [myCode, setMyCode] = useState('');
-  const [placeholder, setPlaceholder] = useState('친구 코드 검색');
+  const [placeholder, setPlaceholder] = useState('이름, 아이디로 친구 찾기');
   const [searchCode, setSearchCode] = useState('');
   const [message, setMessage] = useState('');
   const [otherUser, setOtherUser] = useState({accountId:-1, nickname:'', isFriend:0})
   const [reset, setReset] = useState(false);
+  // const [friendData, setFriendData] = useState([{accountId:-1, friendshipId:-1, friendNickname:'',status:''}]);
+  const [friendData, setFriendData] = useState([]);
+  const [isLast, setIsLast] = useState(false);
+  const [cursorId, setCursorId]= useState(0);
+  const [loading, setLoading] = useState(false);
+  
   const [whichPopup, setWhichPopup] = useState('');
   const [popupName, setPopupName] = useState('');
   const token = useSelector((state:RootState) => state.user.accessToken);
   const inp = useRef(null);
+  
+  const [showWhoseModal, setShowWhoseModal] = useState(0);
+
 
   useEffect(() => {
     const getMyCode = async () => {
@@ -47,7 +68,31 @@ export default function SearchFriends() {
       }
     };
     getMyCode();
-  }, []);
+    const getFriendship = async () => {
+      try {
+        const response = await axios.get(`${Config.API_URL}/friendships/manage`,);
+        setIsLast(response.data.data.last);
+        // console.log(response.data.data)
+        if (response.data.data.content.length == 0) setFriendData([]);
+        else {
+          setFriendData(response.data.data.content);
+          // console.log(response.data.data.content)
+          setCursorId(response.data.data.content[response.data.data.content.length-1].friendshipId)
+        }
+      } catch (error) {
+        const errorResponse = (error as AxiosError<{message: string}>).response;
+        console.log(errorResponse.data);
+        if (errorResponse?.data.status == 500) {
+          dispatch(
+            userSlice.actions.setToken({
+              accessToken:'',
+            }),
+          );
+        }
+      }
+    };
+    getFriendship();
+  }, [isLast, showWhoseModal]);
 
   const getFriendProfile = _.throttle(async () => {
     try {
@@ -103,32 +148,106 @@ export default function SearchFriends() {
       // }
     }
   }, throttleTime);
+  const getData = async () => {
+    if (!isLast) {
+      setLoading(true);
+      try {
+        const response = await axios.get(`${Config.API_URL}/friendships/manage?cursorId=${cursorId}`,);
+        setIsLast(response.data.data.last);
+        setFriendData(friendData.concat(response.data.data.content));
+        if (response.data.data.content.length != 0) {
+          setCursorId(response.data.data.content[response.data.data.content.length-1].friendshipId);
+        }
+      } catch (error) {
+        const errorResponse = (error as AxiosError<{message: string}>).response;
+        console.log(errorResponse.data);
+      }
+    }
+    setLoading(false);
+  };
+  const onEndReached = () => {
+    if (!loading) {getData();}
+  };
   return (
     <Pressable style={styles.entire} onPress={Keyboard.dismiss}>
-      <View style={styles.searchView}>
-        <TextInput 
-          placeholder={placeholder} 
-          style={styles.codeSearch} 
-          onFocus={()=>setPlaceholder('')} 
-          onBlur={()=>setPlaceholder('친구 코드 검색')}
-          onChangeText={(text:string)=>{setSearchCode(text)}}
-          blurOnSubmit={true}
-          maxLength={6}
-          value={searchCode}
-          onSubmitEditing={getFriendProfile}
-        />
-        {(!placeholder || searchCode) && <Pressable onPress={() => setSearchCode('')} style={styles.clearBtn}>
-          <Icon name="circle-xmark" size={20} color={'#848484'}/>
-        </Pressable>}
-      </View>
-      <View style={styles.myCodeView}>
-        <Pressable style={styles.myCodeBtn} onPress={()=>Clipboard.setString(myCode)}>
-          <Text style={styles.myCodeTxt}>
-            내 코드: {myCode}
-          </Text>
-          <SvgXml width="15" height="15" xml={svgXml.icon.copyIcon} style={styles.copyIcon}/>
-        </Pressable>
-      </View>
+      <FlatList 
+        data={friendData}
+        style={styles.friendList}
+        onEndReached={onEndReached}
+        onEndReachedThreshold={0.4}
+        ListHeaderComponent={<View style={{}}>
+          <View style={styles.searchView}>
+            <TextInput 
+              placeholder={placeholder} 
+              style={styles.codeSearch} 
+              onFocus={()=>setPlaceholder('')} 
+              onBlur={()=>setPlaceholder('이름, 아이디로 친구 찾기')}
+              onChangeText={(text:string)=>{setSearchCode(text)}}
+              blurOnSubmit={true}
+              maxLength={12}
+              value={searchCode}
+              onSubmitEditing={getFriendProfile}
+              placeholderTextColor={'#F0F0F0'}
+            />
+            {(!placeholder || searchCode) && <Pressable onPress={() => setSearchCode('')} style={styles.clearBtn}>
+              <Icon name="circle-xmark" size={20} color={'#F0F0F0'}/>
+            </Pressable>}
+          </View>
+          <View style={styles.myCodeView}>
+            <Pressable style={styles.myCodeBtn} onPress={()=>Clipboard.setString(myCode)}>
+              <Text style={styles.myCodeTxt}>
+                내 아이디: {myCode}
+              </Text>
+              <SvgXml width="15" height="15" xml={svgXml.icon.copyIcon} style={styles.copyIcon}/>
+            </Pressable>
+          </View>
+        </View>}
+        keyExtractor={(item, index) => index}
+        numColumns={2}
+        renderItem={({item}:friendListItemProps) => {
+          return (
+            <Pressable style={[styles.friendView, {width: (Dimensions.get('window').width - 40)/2}]} 
+            onPress={()=>{setShowWhoseModal(item.accountId);}}
+            >
+              <Pressable style={styles.friendProfileImg} onPress={()=>{setShowWhoseModal(item.accountId);}}>
+                {item.profileImageUrl == null 
+                ? <SvgXml width={32} height={32} xml={svgXml.profile.null} />
+                : <Image
+                  source={{uri:item.profileImageUrl}} style={{width:32, height:32, borderRadius:16}}
+                />
+                }
+              </Pressable>
+              <View style={styles.friendmiddle}>
+                <Text style={styles.friendName}>{item.friendNickname}</Text>
+              </View>
+              <Pressable style={styles.friendProfileStatus}>
+                {item.status == 'smile'.toUpperCase() && <SvgXml width={40} height={40} xml={svgXml.status.smile} />}
+                {item.status == 'happy'.toUpperCase() && <SvgXml width={40} height={40} xml={svgXml.status.happy} />}
+                {item.status == 'sad'.toUpperCase() && <SvgXml width={40} height={40} xml={svgXml.status.sad} />}
+                {item.status == 'mad'.toUpperCase() && <SvgXml width={40} height={40} xml={svgXml.status.mad} />}
+                {item.status == 'exhausted'.toUpperCase() && <SvgXml width={40} height={40} xml={svgXml.status.exhauseted} />}
+                {item.status == 'coffee'.toUpperCase() && <SvgXml width={40} height={40} xml={svgXml.status.coffee} />}
+                {item.status == 'meal'.toUpperCase() && <SvgXml width={40} height={40} xml={svgXml.status.meal} />}
+                {item.status == 'alcohol'.toUpperCase() && <SvgXml width={40} height={40} xml={svgXml.status.alcohol} />}
+                {item.status == 'chicken'.toUpperCase() && <SvgXml width={40} height={40} xml={svgXml.status.chicken} />}
+                {item.status == 'sleep'.toUpperCase() && <SvgXml width={40} height={40} xml={svgXml.status.sleep} />}
+                {item.status == 'work'.toUpperCase() && <SvgXml width={40} height={40} xml={svgXml.status.work} />}
+                {item.status == 'study'.toUpperCase() && <SvgXml width={40} height={40} xml={svgXml.status.study} />}
+                {item.status == 'movie'.toUpperCase() && <SvgXml width={40} height={40} xml={svgXml.status.movie} />}
+                {item.status == 'move'.toUpperCase() && <SvgXml width={40} height={40} xml={svgXml.status.move} />}
+                {item.status == 'dance'.toUpperCase() && <SvgXml width={40} height={40} xml={svgXml.status.dance} />}
+                {item.status == 'read'.toUpperCase() && <SvgXml width={40} height={40} xml={svgXml.status.read} />}
+                {item.status == 'walk'.toUpperCase() && <SvgXml width={40} height={40} xml={svgXml.status.walk} />}
+                {item.status == 'travel'.toUpperCase() && <SvgXml width={40} height={40} xml={svgXml.status.travel} />}
+              </Pressable>
+              {/* <Pressable style={styles.deleteBtn}>
+                <Text style={styles.deleteBtnTxt}>삭제</Text>
+              </Pressable> */}
+            </Pressable>
+          );
+        }}
+      />
+      <FriendProfileModal showWhoseModal={showWhoseModal} setShowWhoseModal={setShowWhoseModal} />
       <Modal onBackButtonPress={()=>setOtherUser({accountId:-1, nickname:'', isFriend:0})} isVisible={!!otherUser.nickname} avoidKeyboard={true} backdropColor='#222222' backdropOpacity={0.5} onModalShow={()=>{inp.current?.blur(); inp.current?.focus();}}>
         {otherUser.isFriend == 2 && <Pressable style={styles.modalBGView} onPress={()=>{Keyboard.dismiss(); setOtherUser({accountId:-1, nickname:'', isFriend:0});}}>
           <Pressable onPress={(e)=>e.stopPropagation()} style={styles.modalView}>
@@ -202,7 +321,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 16,
     paddingTop: 20,
-    backgroundColor: '#F7F7F7'
+    backgroundColor: '#202020'
   },
   nonempty:{
     flex:4,
@@ -224,15 +343,19 @@ const styles = StyleSheet.create({
   codeSearch:{
     fontSize: 15,
     fontWeight: '400',
-    color: '#848484',
-    backgroundColor: '#FFFFFF',
+    color: '#F0F0F0',
+    backgroundColor: '#333333',
     borderRadius: 10,
     width: '100%',
     height: 40,
     paddingLeft: 10,
     marginBottom: 17,
   },
-  myCodeView:{},
+  myCodeView:{
+    justifyContent:'center',
+    alignItems:'center',
+    marginBottom:18,
+  },
   myCodeTxt:{
     color: '#848484',
     fontSize: 13,
@@ -243,7 +366,39 @@ const styles = StyleSheet.create({
   },
   copyIcon:{
     marginLeft: 4,
-    height: 14
+    height: 14,
+    top: 1,
+  },
+  friendList:{
+    flex:1,
+    width:'100%',
+  },
+  friendView:{
+    alignItems:'center',
+    justifyContent:'space-between',
+    flexDirection:'row',
+    paddingVertical:7,
+    paddingHorizontal:10,
+    backgroundColor:'#333333',
+    borderRadius:5,
+    marginRight:8,
+    marginBottom:8,
+  },
+  friendProfileImg:{
+    marginVertical:7,
+  },
+  friendmiddle:{
+    flex:1,
+    justifyContent:'center',
+    marginLeft:8
+  },
+  friendProfileStatus:{
+    marginVertical:7,
+  },
+  friendName:{
+    color:'#F0F0F0',
+    fontWeight:'600',
+    fontSize:15
   },
   modalBGView:{
     width:"100%",

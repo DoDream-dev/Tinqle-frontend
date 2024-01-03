@@ -41,13 +41,14 @@ type itemProps = {
     },
     isAuthor:boolean;
     createdAt:string;
+    profileImageUrl:string|null;
   }
 }
 export default function FeedList({navigation, route}:FeedListScreenProps) {
-  const dispach = useAppDispatch();
+  const dispatch = useAppDispatch();
   const deleted = useSelector((state:RootState) => !!state.user.deleted);
   const setDeleted = () => {
-    dispach(
+    dispatch(
       userSlice.actions.setDeleted({
         deleted:false,
       }),
@@ -82,14 +83,7 @@ export default function FeedList({navigation, route}:FeedListScreenProps) {
   // console.log(noti)
   const [newNotis, setNewNotis] = useState(false);
   // console.log(newNotis)
-
-  // const scroll = (offset:number) => {
-  //   if (flatRef.current) {
-  //     // flatRef.current.scrollToIndex({index:feedData.length-1, animated:true});
-  //     flatRef.current.scrollToIndex({index:offset, animated:true});
-  //     }
-  //   setFirst(false);
-  //   }
+  const [showWhoseModal, setShowWhoseModal] = useState(0);
   
 
   // useEffect(() => {
@@ -116,11 +110,11 @@ export default function FeedList({navigation, route}:FeedListScreenProps) {
       const reloadStatus = () => {
         navigation.setOptions({headerRight:()=>(
           <View style={{flexDirection:'row'}}>
-            <Pressable style={{marginRight:12}} onPress={()=>navigation.navigate('Notis')}>
+            <Pressable onPress={()=>navigation.navigate('Notis')}>
               {!(noti || newNotis) && <SvgXml width={24} height={24} xml={svgXml.icon.noti}/>}
               {(noti || newNotis) && <SvgXml width={24} height={24} xml={svgXml.icon.notiYes}/>}
             </Pressable>
-            <Pressable style={{marginRight:3}} onPress={()=>navigation.navigate('Profile', {whose:0, accountId:-1})}>
+            {/* <Pressable style={{marginRight:3}} onPress={()=>navigation.navigate('MyProfile')}>
             {status == 'smile' && <SvgXml width={24} height={24} xml={svgXml.status.smile}/>}
             {status == 'happy' && <SvgXml width={24} height={24} xml={svgXml.status.happy}/>}
             {status == 'sad' && <SvgXml width={24} height={24} xml={svgXml.status.sad}/>}
@@ -139,7 +133,7 @@ export default function FeedList({navigation, route}:FeedListScreenProps) {
             {status == 'read' && <SvgXml width={24} height={24} xml={svgXml.status.read}/>}
             {status == 'walk' && <SvgXml width={24} height={24} xml={svgXml.status.walk}/>}
             {status == 'travel' && <SvgXml width={24} height={24} xml={svgXml.status.travel}/>}
-            </Pressable>
+            </Pressable> */}
           </View>
         )});
       }
@@ -167,7 +161,7 @@ export default function FeedList({navigation, route}:FeedListScreenProps) {
           const errorResponse = (error as AxiosError<{message: string}>).response;
           console.log(errorResponse?.data.status);
           if (errorResponse?.data.status == 500) {
-            dispach(
+            dispatch(
               userSlice.actions.setToken({
                 accessToken:'',
               }),
@@ -177,7 +171,7 @@ export default function FeedList({navigation, route}:FeedListScreenProps) {
       }
       getFeed();
       // console.log(feedData)
-    },[refresh])
+    },[refresh, showWhoseModal])
   );
 
   useFocusEffect(
@@ -270,7 +264,7 @@ export default function FeedList({navigation, route}:FeedListScreenProps) {
       console.log(errorResponse.data);
       if (errorResponse?.data.statusCode == 4030 || errorResponse?.data.statusCode == 4010) {
         console.log('삭제된 글')
-        dispach(
+        dispatch(
           userSlice.actions.setDeleted({
             deleted:true,
           }),
@@ -291,7 +285,7 @@ export default function FeedList({navigation, route}:FeedListScreenProps) {
       console.log(errorResponse.data);
       if (errorResponse?.data.statusCode == 4030 || errorResponse?.data.statusCode == 4010) {
         console.log('삭제된 글');
-        dispach(
+        dispatch(
           userSlice.actions.setDeleted({
             deleted:true,
           }),
@@ -316,7 +310,7 @@ export default function FeedList({navigation, route}:FeedListScreenProps) {
   }
 
   return (
-    <View style={{flex:1, alignItems:'center'}}>
+    <View style={{flex:1, alignItems:'center', backgroundColor:'#202020'}}>
       <View style={[styles.entire]}>
         <FlatList
           data={feedData}
@@ -364,6 +358,9 @@ export default function FeedList({navigation, route}:FeedListScreenProps) {
                   press={pressEmoticon}
                   feedId={item.feedId}
                   whoReact={whoReact}
+                  profileImg={item.profileImageUrl}
+                  showWhoseModal={showWhoseModal}
+                  setShowWhoseModal={setShowWhoseModal}
                 />
               </Pressable>
             );
@@ -476,7 +473,7 @@ const styles = StyleSheet.create({
     // paddingBottom:10,
     marginBottom:48,
     flex:1,
-    // backgroundColor:'yellow'
+    backgroundColor:'#202020'
   },
   noFeedTxt:{
     color:'#848484',
@@ -498,7 +495,7 @@ const styles = StyleSheet.create({
     width:'100%',
     marginBottom:11,
     borderRadius:10,
-    backgroundColor:'#FFFFFF',
+    backgroundColor:'#333333',
   },
   newFeedAll:{
     position:"absolute", 
@@ -523,7 +520,7 @@ const styles = StyleSheet.create({
   },
   newFeedView:{
     flexDirection:'row',
-    backgroundColor:'#F7F7F7',
+    backgroundColor:'#333333',
     width:'100%',
     justifyContent:'space-between',
     alignItems:'center',
@@ -554,7 +551,7 @@ const styles = StyleSheet.create({
     height:'100%'
   },
   sendNewFeedActivated:{
-    backgroundColor:'#FFB443',
+    backgroundColor:'#A55FFF',
     justifyContent:'center',
     alignItems:'center',
     width:48,

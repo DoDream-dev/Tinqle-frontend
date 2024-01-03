@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Pressable, Alert, Dimensions, ScrollView, Modal as M } from 'react-native';
+import { View, Text, StyleSheet, Pressable, Alert, Dimensions, ScrollView, Modal as M, TextInput } from 'react-native';
 import * as KakaoLogin from '@react-native-seoul/kakao-login'
 import { useAppDispatch } from '../store';
 import userSlice from '../slices/user';
@@ -20,10 +20,11 @@ import { RootStackParamList } from '../../AppInner';
 
 export default function SignIn() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-  const [id, setID] = useState('사람');
+  const [id, setID] = useState('');
   const dispatch = useAppDispatch();
   const [signup, setSignUp] = useState('');
-  const [settingID, setSettingID] = useState('');
+  const [settingID, setSettingID] = useState(false);
+  const [duplicate, setDuplicate] = useState('YET'); // YET -> NO (4-12) -> CANNOT -> CAN
   const [allP, setAllP] = useState(false);
   const [serviceP, setServiceP] = useState(false);
   const [personalP, setPersonalP] = useState(false);
@@ -110,7 +111,7 @@ export default function SignIn() {
     // const token = await KakaoLogin.loginWithKakaoAccount();
     const token = await KakaoLogin.login();
     const profile = await KakaoLogin.getProfile();
-    setID(profile.id);
+    // setID(profile.id);
     // Alert.alert(profile.name)
     try {
       const response = await axios.post(`${Config.API_URL}/auth/login`, {
@@ -142,6 +143,7 @@ export default function SignIn() {
         personalPolicy: personalP,
         // marketPolicy: false,
         fcmToken: fcm,
+        code: id,
       });
       // LOGIN call
       Login(response.data.data.refreshToken, response.data.data.accessToken);
@@ -157,13 +159,12 @@ export default function SignIn() {
     // Alert.alert('login finished', accessToken)
     // try {
       dispatch(
-        userSlice.actions.setUser({
+        userSlice.actions.setToken({
           accessToken: accessToken,
-          id: id,
         }),
       );
       await EncryptedStorage.setItem('refreshToken', refreshToken,);
-      setID('');
+      // setID('');
       const token = await EncryptedStorage.getItem('refreshToken');
       console.log('로그인 완료')
       // console.log('token', token)
@@ -176,6 +177,30 @@ export default function SignIn() {
   useEffect(()=>{
     GoogleSignin.configure({webClientId: Config.GOOGLE_CLIENT_ID, offlineAccess: true});
   },[]);
+
+  const checkDuplicate = async () => {
+    const reg = new RegExp(`^[a-zA-Z0-9]{4,12}$`);
+    if (!reg.test(id)) {
+      setDuplicate('NO')
+    }
+    else {
+      try {
+        const response = await axios.get(`${Config.API_URL}/accounts/check/code/${id}`);
+        if (response.data.data.isDuplicated) {
+          setDuplicate('CAN');
+        }
+        else {
+          setDuplicate('CANNOT');
+        }
+      }
+      catch (error) {
+        const errorResponse = (error as AxiosError<{message: string}>).response;
+        console.log(errorResponse);
+        setDuplicate('CANNOT');
+
+      }
+    }
+  };
 
   return (
     <View style={styles.entire}>
@@ -201,16 +226,39 @@ export default function SignIn() {
           </Shadow>
         </Pressable>
       </View>
-      <M visible={settingID == 'tincle'}
+      <M visible={settingID}
         // onBackButtonPress={()=>setSettingID('')}
         // hasBackdrop={false}
         style={{margin:0}}>
-        <Pressable onPress={()=>setSettingID('')} style={{flex:1, justifyContent:'center'}}>
-          <Pressable style={[styles.modalView2, {width:windowWidth}]} onPress={(e)=>e.stopPropagation()}>
-            <Text>내 아이디 정하기</Text>
-            <Text>내 아이디 정하기</Text>
-            <Pressable onPress={()=>{Signup(signup); setSignUp('')}}>
-              <Text>완료</Text>
+        <Pressable onPress={()=>setSettingID(false)} style={styles.modalBGView2}>
+          <Pressable style={[styles.modalView2, /*{width:windowWidth}*/]} onPress={(e)=>e.stopPropagation()}>
+            <View style={styles.idModalHeader}>
+              <Text style={styles.idModalHeaderTxt}>내 아이디 정하기</Text>
+            </View>
+            <View style={styles.idModalBody}>
+              <TextInput 
+                // ref={inp1}
+                onChangeText={(text:string)=>{setID(text); setDuplicate('YET');}}
+                // blurOnSubmit={true}
+                maxLength={12}
+                value={id}
+                // autoFocus={true}
+                // onSubmitEditing={()=>{
+                //   if (whoseProfile == 0) {rename(chageNameVal.trim(), undefined);}
+                //   else {rename(chageNameVal.trim(), accountId);}
+                // }}
+                style={styles.idModalBodyTxtInp} />
+              <Pressable style={styles.idModalBodyBtn} onPress={()=>{checkDuplicate();}}>
+                <Text style={styles.idModalBodyBtnTxt}>중복확인</Text>
+              </Pressable>
+            </View>
+            {duplicate == 'YET' && <View style={{height:12}}></View>}
+            {duplicate == 'CANNOT' && <Text style={styles.idModalBodyBtnTxt}>이미 존재하는 아이디예요.</Text>}
+            {duplicate == 'CAN' && <Text style={styles.idModalBodyBtnTxt}>사용할 수 있는 아이디예요.</Text>}
+            {duplicate == 'NO' && <Text style={styles.idModalBodyBtnTxt}>아이디는 4~12자, 영문이나 숫자로만 가능합니다.</Text>}
+            <Pressable style={duplicate == 'CAN'? styles.idModalFooterBtnActive : styles.idModalFooterBtn} onPress={()=>{Signup(signup); setSignUp(''); setSettingID(false);}}
+            disabled={duplicate != 'CAN'}>
+              <Text style={styles.idModalFooterBtnTxt}>완료</Text>
             </Pressable>
           </Pressable>
         </Pressable>
@@ -294,7 +342,7 @@ export default function SignIn() {
               </View> */}
               <Pressable style={!(serviceP && personalP && ageP) ? styles.sendBtnUnActivated : styles.sendBtn} disabled={!(serviceP && personalP && ageP)} 
               // onPress={()=>{Signup(signup); setSignUp('');}}
-              onPress={()=>{setSettingID('tincle')}}
+              onPress={()=>{setSettingID(true)}}
               >
                 <Text style={styles.sendTxt}>시작하기</Text>
               </Pressable>
@@ -545,17 +593,25 @@ const styles = StyleSheet.create({
     flex:1,
     justifyContent:'flex-end'
   },
+  modalBGView2:{
+    flex:1,
+    justifyContent:'center',
+    paddingHorizontal: 36,
+    backgroundColor:'#202020'
+  },
   modalView:{
     borderTopLeftRadius:30,
     borderTopRightRadius:30,
-    // paddingHorizontal:16,
     paddingTop:33,
     backgroundColor:'white',
     // elevation: 10,
   }, 
   modalView2:{
+    paddingHorizontal:16,
     borderRadius:10,
     backgroundColor:'#333333',
+    paddingTop: 30,
+    paddingBottom: 24,
   },
   modalAllView:{
     marginBottom:20,
@@ -569,6 +625,67 @@ const styles = StyleSheet.create({
     justifyContent:'space-between',
     paddingHorizontal:16,
     marginBottom:10
+  },
+  idModalHeader:{
+    justifyContent:'center',
+    alignItems:'center',
+    marginBottom:20,
+  },
+  idModalHeaderTxt:{
+    color:'#F0F0F0',
+    fontWeight:'600',
+    fontSize:15,
+  },
+  idModalBody:{
+    backgroundColor:'#F0F0F0',
+    marginBottom:4,
+    flexDirection:'row',
+    paddingHorizontal:8,
+    paddingVertical:6,
+    borderRadius:5,
+    alignItems:'center',
+    justifyContent:'space-between'
+  },
+  idModalBodyTxtInp:{
+    color:'#888888',
+    fontWeight:'400',
+    fontSize:15,
+    padding:0,
+    flex:1,
+  },
+  idModalBodyBtn:{
+    backgroundColor:'#A55FFF',
+    padding:5,
+    marginLeft:5,
+    justifyContent:'center',
+    alignItems:'center',
+    borderRadius:5,
+  },
+  idModalBodyBtnTxt:{
+    color:'#F0F0F0',
+    fontWeight:'500',
+    fontSize:13,
+  },
+  idModalFooterBtn:{
+    marginTop:8,
+    backgroundColor:'#888888',
+    borderRadius:5,
+    justifyContent:'center',
+    alignItems:'center',
+    paddingVertical:13,
+  },
+  idModalFooterBtnActive:{
+    marginTop:8,
+    backgroundColor:'#A55FFF',
+    borderRadius:5,
+    justifyContent:'center',
+    alignItems:'center',
+    paddingVertical:13,
+  },
+  idModalFooterBtnTxt:{
+    fontSize:15,
+    fontWeight:'600',
+    color:'#F0F0F0'
   },
   policyBtn:{
     flexDirection:'row',
