@@ -56,13 +56,13 @@ import {request, check, PERMISSIONS, RESULTS} from 'react-native-permissions';
 // }
 // requestUserPermissionForFCM();
 
-const requestNotificationPermission = async () => {
-  //todo: ios
-  if (Platform.OS === 'android') {
-    const result = await request(PERMISSIONS.ANDROID.POST_NOTIFICATIONS);
-    return result;
-  }
-};
+// const requestNotificationPermission = async () => {
+//   //todo: ios
+//   if (Platform.OS === 'android') {
+//     const result = await request(PERMISSIONS.ANDROID.POST_NOTIFICATIONS);
+//     return result;
+//   }
+// };
 
 messaging().setBackgroundMessageHandler(async remoteMessage => {
   onMessageReceived(remoteMessage);
@@ -70,13 +70,13 @@ messaging().setBackgroundMessageHandler(async remoteMessage => {
 
 const onMessageReceived = message => {
   console.log('[index.js] onMessageReceived: ', message);
-  if (Platform.OS === 'ios') {
-    const {link = null} = notification?.data || {}; // <---- 1
-    const pushDeepLink = message?.data?.link;
-    //console.log('pushDeepLink : ', pushDeepLink);
-    pushDeepLink && Linking.openURL(pushDeepLink);
-    Vibration.vibrate([400]);
-  }
+  // if (Platform.OS === 'ios') {
+  //   // const {link = null} = message?.data || {}; // <---- 1
+  //   const pushDeepLink = message?.data?.link;
+  //   //console.log('pushDeepLink : ', pushDeepLink);
+  //   pushDeepLink && Linking.openURL(pushDeepLink);
+  //   Vibration.vibrate([400]);
+  // }
 };
 
 //원래 주석 아님
@@ -120,4 +120,5 @@ function headlessCheck({isHeadless}) {
   return <App />;
 }
 
-AppRegistry.registerComponent(appName, () => App);
+// AppRegistry.registerComponent(appName, () => App);
+AppRegistry.registerComponent(appName, () => headlessCheck);

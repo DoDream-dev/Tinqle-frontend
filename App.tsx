@@ -11,19 +11,6 @@ import {Platform, Linking} from 'react-native';
 import PushNotification from 'react-native-push-notification';
 
 export default function App() {
-  const requestUserPermission = async () => {
-    fcmService.checkPermission(updateDeviceTokenData);
-
-    // const authStatus = await messaging().requestPermission();
-    // const enabled =
-    //   authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
-    //   authStatus === messaging.AuthorizationStatus.PROVISIONAL;
-
-    // if (enabled) {
-    //   return getDeviceToken();
-    // }
-  };
-
   const onNotification = (notify: any) => {
     console.log('[onNotification] notify 알림 왔을 때 :', notify);
     const options = {
@@ -31,36 +18,34 @@ export default function App() {
       playSound: true,
     };
 
-    if (Platform.OS === 'ios') {
-      console.log('1. [onNotification] notify.body :', notify.body);
+    if (Platform.OS === 'android') {
+      console.log('1. [onNotification] notify.body :', notify);
+      // console.log('1. [onNotification] notify.body :', notify.body);
+      localNotificationService.showNotification(
+        0,
+        notify.title,
+        notify.body,
+        notify,
+        options,
+      );
     }
-
-    localNotificationService.showNotification(
-      0,
-      notify.title,
-      notify.body,
-      notify,
-      options,
-    );
   };
 
   const onOpenNotification = (notify: any) => {
     //앱 켜진 상태에서 알림 받았을 때 하는 일
-    console.log('[App] onOpenNotification 앱 켜진 상태에서 : notify :', notify);
+    console.log('### 앱 켜졌을 때 알림 도착:', notify);
 
-    if (Platform.OS === 'ios') {
-      //ios noti resive when app is open
-      console.log('ios noti resive when app is open :', notify.body);
-    } else {
-      // android noti resive when app is open
-      if (notify.message) {
-        console.log('android noti resive when app is open :', notify.body);
-      }
-    }
-  };
+    //TODO: 안드로이드, ios 인앱 알림 띄우기
 
-  const updateDeviceTokenData = (token: string) => {
-    console.log('[App] updateDeviceTokenData : token :', token);
+    // if (Platform.OS === 'ios') {
+    //   //ios noti resive when app is open
+    //   console.log('ios noti resive when app is open :', notify.body);
+    // } else {
+    //   // android noti resive when app is open
+    //   if (notify.message) {
+    //     console.log('android noti resive when app is open');
+    //   }
+    // }
   };
 
   const onRegister = (tk: string) => {
@@ -82,6 +67,7 @@ export default function App() {
     // });
 
     fcmService.registerAppWithFCM(); //ios일때 자동으로 가져오도록 하는 코드
+    //앱 켜졌을 때 작동부                 여기
     fcmService.register(onRegister, onNotification, onOpenNotification);
     localNotificationService.configure(onOpenNotification);
   }, []);
@@ -93,8 +79,6 @@ export default function App() {
         link && Linking.openURL(link); // <---- 2
       }
     });
-
-    requestUserPermission();
   }, []);
 
   return (

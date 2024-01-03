@@ -7,6 +7,7 @@ import {
   Alert,
   Dimensions,
   ScrollView,
+  Linking,
 } from 'react-native';
 import * as KakaoLogin from '@react-native-seoul/kakao-login';
 import {useAppDispatch} from '../store';
@@ -25,6 +26,7 @@ import {SvgXml} from 'react-native-svg';
 import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {RootStackParamList} from '../../AppInner';
+import {fcmService} from '../push_fcm';
 
 export default function SignIn() {
   const navigation =
@@ -68,6 +70,7 @@ export default function SignIn() {
   //   }
   // };
   // requestUserPermissionForFCM();
+
   const LoginWithGoogle = async () => {
     console.log('로그인 시도 중');
     try {
@@ -110,6 +113,7 @@ export default function SignIn() {
       }
     }
   };
+
   const LoginWithKaKao = async () => {
     // const response = await axios.get(`${Config.API_URL}/hello`)
     // Alert.alert(response.data)
@@ -185,12 +189,23 @@ export default function SignIn() {
     // }
   };
 
+  const requestUserPermission = async () => {
+    fcmService.checkPermission(updateDeviceTokenData);
+  };
+
+  const updateDeviceTokenData = (token: string) => {
+    console.log('[App] updateDeviceTokenData : token :', token);
+    setFcm(token);
+  };
+
   useEffect(() => {
     // console.log('####', Config);
     GoogleSignin.configure({
       webClientId: Config.GOOGLE_CLIENT_ID,
       offlineAccess: true,
     });
+
+    requestUserPermission();
   }, []);
 
   return (
