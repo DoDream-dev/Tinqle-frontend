@@ -28,7 +28,6 @@ import {SvgXml} from 'react-native-svg';
 import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {RootStackParamList} from '../../AppInner';
-import {fcmService} from '../push_fcm';
 
 export default function SignIn() {
   const navigation =
@@ -55,6 +54,7 @@ export default function SignIn() {
 
     if (enabled) {
       const fcmToken = await messaging().getToken();
+      console.log('fcm auth success', fcmToken);
       setFcm(fcmToken);
       // handleFcmMessage();
     } else {
@@ -188,23 +188,12 @@ export default function SignIn() {
     // }
   };
 
-  const requestUserPermission = async () => {
-    fcmService.checkPermission(updateDeviceTokenData);
-  };
-
-  const updateDeviceTokenData = (token: string) => {
-    console.log('[App] updateDeviceTokenData : token :', token);
-    setFcm(token);
-  };
-
   useEffect(() => {
     // console.log('####', Config);
     GoogleSignin.configure({
       webClientId: Config.GOOGLE_CLIENT_ID,
       offlineAccess: true,
     });
-
-    requestUserPermission();
   }, []);
 
   const checkDuplicate = async () => {
