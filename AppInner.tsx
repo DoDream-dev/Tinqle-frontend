@@ -1,41 +1,46 @@
-import React, {useEffect, useState} from 'react';
-import {Pressable, View, Alert} from 'react-native';
+import React, { useEffect, useState } from "react";
+import { Pressable, View, Alert } from 'react-native'
+import {createBottomTabNavigator } from '@react-navigation/bottom-tabs'
+
 import {
-  NativeStackNavigationProp,
+  NativeStackNavigationProp,  
   createNativeStackNavigator,
 } from '@react-navigation/native-stack';
-import FeedList from './src/pages/FeedList';
-import FeedDetail from './src/pages/FeedDetail';
-import Profile from './src/pages/Profile';
-import MyFriendList from './src/pages/MyFriendList';
-import SearchFriends from './src/pages/SearchFriends';
-import NoteBox from './src/pages/NoteBox';
-import Setting from './src/pages/Setting';
-import Notis from './src/pages/Notis';
-import SignIn from './src/pages/SignIn';
-import {useAppDispatch} from './src/store';
-import {RootState} from './src/store/reducer';
-import {useSelector} from 'react-redux';
-import EncryptedStorage from 'react-native-encrypted-storage';
-import axios, {AxiosError} from 'axios';
-import Config from 'react-native-config';
-import userSlice from './src/slices/user';
+import FeedList from "./src/pages/FeedList";
+import FeedDetail from "./src/pages/FeedDetail";
+import MyProfile from "./src/pages/MyProfile";
+// import MyFriendList from "./src/pages/MyFriendList";
+import SearchFriends from "./src/pages/SearchFriends";
+import NoteBox from "./src/pages/NoteBox";
+// import Setting from "./src/pages/Setting";
+import Notis from "./src/pages/Notis";
+import SignIn from "./src/pages/SignIn";
+import { useAppDispatch } from "./src/store";
+import { RootState } from "./src/store/reducer";
+import { useSelector } from "react-redux";
+import EncryptedStorage from "react-native-encrypted-storage";
+import axios, {AxiosError} from "axios";
+import Config from "react-native-config";
+import userSlice from "./src/slices/user";
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import Feather from 'react-native-vector-icons/Feather';
 import SplashScreen from 'react-native-splash-screen';
 import useAxiosInterceptor from './src/hooks/useAxiosInterceptor';
-import {SvgXml} from 'react-native-svg';
-import {svgXml} from './assets/image/svgXml';
-// import messaging from '@react-native-firebase/messaging';
+
+import { SvgXml } from 'react-native-svg';
+import { svgXml } from "./assets/image/svgXml";
+import messaging from '@react-native-firebase/messaging';
+import FeedNavigation from "./src/navigations/FeedNavigation";
+import NoteNavigation from "./src/navigations/NoteNavigation";
 
 export type RootStackParamList = {
   FeedList: undefined;
-  FeedDetail: {feedId: number};
-  Profile: {whose: number; accountId: number};
-  MyFriendList: undefined;
+  FeedDetail: {feedId:number};
+  MyProfile: undefined;
+  // MyFriendList: undefined;
   SearchFriends: undefined;
   NoteBox: undefined;
-  Setting: undefined;
+  // Setting: undefined;
   Notis: undefined;
   SignIn: undefined;
 };
@@ -43,7 +48,25 @@ export type RootStackParamList = {
 export type RootStackNavigationProp =
   NativeStackNavigationProp<RootStackParamList>;
 
+const screenoptions = () => {
+  return {
+    tabBarStyle: {
+      height: 48,
+      backgroundColor:'#202020',
+      borderTopWidth: 0,
+      elevation: 0
+    },
+    tabBarHideOnKeyboard: true,
+    tabBarActiveTintColor: '#A55FFF',
+    tabBarInactiveTintColor: '#F0F0F0',
+    tabBarLabelStyle: {fontSize: 11, paddingBottom: 10},
+    tabBarShadowVisible: false,
+
+  };
+};
+
 const Stack = createNativeStackNavigator<RootStackParamList>();
+const Tab = createBottomTabNavigator();
 
 export default function AppInner() {
   useAxiosInterceptor();
@@ -91,6 +114,7 @@ export default function AppInner() {
     };
     getRefreshTokenAgain();
   }, [dispatch]);
+
   useEffect(() => {
     // const unsubscribe = messaging().onMessage(async remoteMessage => {
     //   Alert.alert('alarm', JSON.stringify(remoteMessage));
@@ -106,159 +130,71 @@ export default function AppInner() {
     // // });
     // return unsubscribe;
   }, []);
-  return isLoggedIn ? (
-    <Stack.Navigator>
-      <Stack.Screen
-        name="FeedList"
-        component={FeedList}
-        options={({navigation}) => ({
-          title: 'tincle',
-          headerTitleAlign: 'center',
-          headerLeft: () => (
-            <Pressable
-              onPress={() => navigation.navigate('SearchFriends')}
-              style={{marginLeft: 2}}>
-              <SvgXml width={24} height={24} xml={svgXml.icon.addfriend} />
-            </Pressable>
-          ),
-          headerStyle: {},
-          headerTitleStyle: {
-            color: '#FFB443',
-            fontWeight: 'bold',
-            fontSize: 25,
-          },
-        })}
+
+  return isLoggedIn ? ( 
+    <Tab.Navigator initialRouteName="FeedNavigation" screenOptions={screenoptions}>
+      <Tab.Screen
+        name="FeedNavigation"
+        component={FeedNavigation}
+        options={{
+          headerShown: false,
+          tabBarLabel: 'Feed',
+          // tabBarIcon:
+        }}
       />
-      <Stack.Screen
-        name="FeedDetail"
-        component={FeedDetail}
-        options={({navigation}) => ({
-          title: '',
-          headerRight: () => <View></View>,
-          headerLeft: () => (
-            <Pressable onPress={() => navigation.goBack()}>
-              <AntDesign name="arrowleft" size={24} color={'#848484'} />
-            </Pressable>
-          ),
-        })}
-      />
-      <Stack.Screen
-        name="Profile"
-        component={Profile}
-        options={({navigation}) => ({
-          title: '프로필',
-          headerTitleAlign: 'center',
-          headerTitleStyle: {
-            color: '#222222',
-            fontSize: 15,
-            fontWeight: '600',
-          },
-          headerRight: () => (
-            <Pressable onPress={() => navigation.navigate('Setting')}>
-              <Feather name="settings" size={24} color={'#848484'} />
-            </Pressable>
-          ),
-          headerLeft: () => (
-            <Pressable onPress={() => navigation.goBack()}>
-              <AntDesign name="arrowleft" size={24} color={'#848484'} />
-            </Pressable>
-          ),
-        })}
-      />
-      <Stack.Screen
+      <Tab.Screen
         name="SearchFriends"
         component={SearchFriends}
-        options={({navigation}) => ({
-          title: '친구 추가하기',
-          headerTitleAlign: 'center',
-          headerTitleStyle: {
-            color: '#222222',
-            fontSize: 15,
-            fontWeight: '600',
+        options={{
+          title: '친구',
+          headerShown: true,
+          headerTitleAlign:'center',
+          headerTitleStyle:{
+            color:'#F0F0F0',
+            fontSize:15,
+            fontWeight:'600'
           },
-          headerLeft: () => (
-            <Pressable onPress={() => navigation.goBack()}>
-              <AntDesign name="arrowleft" size={24} color={'#848484'} />
-            </Pressable>
-          ),
-        })}
-      />
-      <Stack.Screen
-        name="MyFriendList"
-        component={MyFriendList}
-        options={({navigation}) => ({
-          title: '친구 관리',
-          headerTitleAlign: 'center',
-          headerTitleStyle: {
-            color: '#222222',
-            fontSize: 15,
-            fontWeight: '600',
-          },
-          headerLeft: () => (
-            <Pressable onPress={() => navigation.goBack()}>
-              <AntDesign name="arrowleft" size={24} color={'#848484'} />
-            </Pressable>
-          ),
-        })}
-      />
-      <Stack.Screen
-        name="NoteBox"
-        component={NoteBox}
-        options={({navigation}) => ({
-          title: '익명 쪽지함',
-          headerTitleAlign: 'center',
-          headerTitleStyle: {
-            color: '#222222',
-            fontSize: 15,
-            fontWeight: '600',
-          },
-          headerLeft: () => (
-            <Pressable onPress={() => navigation.goBack()}>
-              <AntDesign name="arrowleft" size={24} color={'#848484'} />
-            </Pressable>
-          ),
-        })}
-      />
-      <Stack.Screen
-        name="Setting"
-        component={Setting}
-        options={({navigation}) => ({
-          title: '',
-          headerTitleAlign: 'center',
-          headerTitleStyle: {
-            color: '#222222',
-            fontSize: 15,
-            fontWeight: '600',
+          headerStyle: {
+            backgroundColor:'#202020',
           },
           headerShadowVisible: false,
-          headerLeft: () => (
-            <Pressable onPress={() => navigation.goBack()}>
-              <AntDesign name="arrowleft" size={24} color={'#848484'} />
-            </Pressable>
-          ),
-        })}
+
+          tabBarLabel: 'Friend',
+          // tabBarIcon:
+        }}
       />
-      <Stack.Screen
-        name="Notis"
-        component={Notis}
-        options={({navigation}) => ({
-          title: '알림',
-          headerTitleAlign: 'center',
-          headerTitleStyle: {
-            color: '#222222',
-            fontSize: 15,
-            fontWeight: '600',
+      <Tab.Screen
+        name="NoteNavigation"
+        component={NoteNavigation}
+        options={{
+          title: '1:1대화',
+          headerShown: false,
+          tabBarLabel: 'Note',
+          // tabBarIcon:
+        }}
+      />
+      <Tab.Screen
+        name="MyProfile"
+        component={MyProfile}
+        options={{
+          title: '프로필',
+          headerShown: true,
+          headerTitleAlign:'center',
+          headerTitleStyle:{
+            color:'#F0F0F0',
+            fontSize:15,
+            fontWeight:'600'
           },
-          headerShadowVisible: true,
-          headerLeft: () => (
-            <Pressable onPress={() => navigation.goBack()}>
-              <AntDesign name="arrowleft" size={24} color={'#848484'} />
-            </Pressable>
-          ),
-        })}
+          headerStyle: {
+            backgroundColor:'#202020',
+          },
+          headerShadowVisible: false,
+          tabBarLabel: 'Profile',
+          // tabBarIcon:
+        }}
       />
-    </Stack.Navigator>
-  ) : (
+    </Tab.Navigator>
+ ) : (
     <Stack.Navigator>
       <Stack.Screen
         name="SignIn"

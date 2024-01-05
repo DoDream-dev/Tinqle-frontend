@@ -183,15 +183,15 @@ export default function Notis({navigation}:NotisScreenProps) {
 
   return (
     <View style={styles.entire}>
-      {/* <View style={styles.notisHeader}>
-        <Text style={styles.notisHeaderTxt}>알림</Text>
-        <Pressable onPress={()=>setIsEnabled(!isEnabled)} style={[styles.toggleView, isEnabled?{backgroundColor:'#FFB443'}:{backgroundColor:'#B7B7B7'}]}>
+      <View style={styles.notisHeader}>
+        <Text style={styles.notisHeaderTxt}>푸시알림</Text>
+        <Pressable onPress={()=>setIsEnabled(!isEnabled)} style={[styles.toggleView, isEnabled?{backgroundColor:'#A55FFF'}:{backgroundColor:'#B7B7B7'}]}>
           {isEnabled && <Text style={styles.toggleActiveTxt}>ON</Text>}
           {isEnabled && <View style={styles.toggleActiveCircle}></View>}
           {!isEnabled && <View style={styles.toggleInactiveCircle}></View>}
           {!isEnabled && <Text style={styles.toggleInactiveTxt}>OFF</Text>}
         </Pressable>
-      </View> */}
+      </View>
       {noNotis && <View style={styles.empty}>
         <Text style={styles.emptyTxt}>알림을 다 읽었어요</Text>
       </View>}
@@ -281,7 +281,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent:'center',
-    backgroundColor:'#F7F7F7'
+    backgroundColor:'#202020'
   },
   notisHeader:{
     width:'100%',
@@ -290,10 +290,10 @@ const styles = StyleSheet.create({
     alignItems:'center',
     paddingRight:16,
     height:40,
-    backgroundColor:'#FFFFFF'
+    backgroundColor:'#333333'
   },
   notisHeaderTxt:{
-    color:'#848484',
+    color:'#F0F0F0',
     fontWeight:'500',
     fontSize:12,
     marginRight:3
@@ -331,9 +331,10 @@ const styles = StyleSheet.create({
     top:-2
   },
   toggleInactiveCircle:{
-    width:14,
+    width:16,
     height:16,
     borderRadius:8,
+    left: 3,
     backgroundColor:'#FFFFFF',
   },
   empty:{
@@ -343,12 +344,13 @@ const styles = StyleSheet.create({
     alignItems:'center',
   },
   emptyTxt:{
-    color:'#848484',
+    color:'#888888',
     fontSize:12,
     fontWeight:'500',
     textAlign:'center',
     justifyContent:'center',
-    alignItems:'center'
+    alignItems:'center',
+    marginBottom:40,
   },
   notisEntire:{
     width:'100%',
