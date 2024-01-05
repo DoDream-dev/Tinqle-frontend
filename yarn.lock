@@ -1720,9 +1720,9 @@
   resolved "https://registry.npmjs.org/@react-native-google-signin/google-signin/-/google-signin-10.0.1.tgz"
   integrity sha512-oZoU2lfKyn0s0GqqdFsi4v2FSENrxQYQU9DD/RSkxDdkIQ49Wwo6p5LKlgXY04GwZEVdYMuvZN3G89gQW0ig2g==
 
-"@react-native-seoul/kakao-login@^5.3.1":
+"@react-native-seoul/kakao-login@^5.3.0":
   version "5.3.1"
-  resolved "https://registry.npmjs.org/@react-native-seoul/kakao-login/-/kakao-login-5.3.1.tgz"
+  resolved "https://registry.yarnpkg.com/@react-native-seoul/kakao-login/-/kakao-login-5.3.1.tgz#e168a0e7f0d73b7d8b8fac1363ca73646da03ffe"
   integrity sha512-IvFssr0j4IeVATJ6Jq2CmUKOZ5j1vF1+dOWha1KAHt5lbk+ktU1HbMmDCX8aldnDgpPsfYnRzhkweZJ3A3viag==
   dependencies:
     dooboolab-welcome "^1.3.2"
@@ -1799,6 +1799,15 @@
     invariant "^2.2.4"
     nullthrows "^1.1.1"
 
+"@react-navigation/bottom-tabs@^6.5.11":
+  version "6.5.11"
+  resolved "https://registry.yarnpkg.com/@react-navigation/bottom-tabs/-/bottom-tabs-6.5.11.tgz#b6e67a3aa19e60ed9c1139fa0253586c479832d5"
+  integrity sha512-CBN/NOdxnMvmjw+AJQI1kltOYaClTZmGec5pQ3ZNTPX86ytbIOylDIITKMfTgHZcIEFQDymx1SHeS++PIL3Szw==
+  dependencies:
+    "@react-navigation/elements" "^1.3.21"
+    color "^4.2.3"
+    warn-once "^0.1.0"
+
 "@react-navigation/core@^6.4.9":
   version "6.4.9"
   resolved "https://registry.npmjs.org/@react-navigation/core/-/core-6.4.9.tgz"
@@ -1815,6 +1824,11 @@
   version "1.3.18"
   resolved "https://registry.npmjs.org/@react-navigation/elements/-/elements-1.3.18.tgz"
   integrity sha512-/0hwnJkrr415yP0Hf4PjUKgGyfshrvNUKFXN85Mrt1gY49hy9IwxZgrrxlh0THXkPeq8q4VWw44eHDfAcQf20Q==
+
+"@react-navigation/elements@^1.3.21":
+  version "1.3.21"
+  resolved "https://registry.yarnpkg.com/@react-navigation/elements/-/elements-1.3.21.tgz#debac6becc6b6692da09ec30e705e476a780dfe1"
+  integrity sha512-eyS2C6McNR8ihUoYfc166O1D8VYVh9KIl0UQPI8/ZJVsStlfSTgeEEh+WXge6+7SFPnZ4ewzEJdSAHH+jzcEfg==
 
 "@react-navigation/native-stack@^6.9.13":
   version "6.9.13"
@@ -6464,11 +6478,6 @@ react-native-shadow-2@^7.0.8:
   integrity sha512-6QlmbJvHCmDGa85jwtfrVxhro1oGm/ezTlciom0A+i0UFAzxlvmRiMHyKXg1hEB2PQkKPoG6ZpANju4mpqPqGA==
   dependencies:
     colord "2.9.2"
-
-react-native-shadow-generator@^1.1.2:
-  version "1.1.2"
-  resolved "https://registry.npmjs.org/react-native-shadow-generator/-/react-native-shadow-generator-1.1.2.tgz"
-  integrity sha512-WfeBx/lHsEq2AwjeEm+4/n8F3Tbl/rl1EeEQkl8lMAsCVmYVBPc4XmXgjo9HQuN5sWt5MdAOrJOBiZBKZNrnZA==
 
 react-native-snap-carousel@latest:
   version "3.9.1"
