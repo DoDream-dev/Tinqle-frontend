@@ -2,13 +2,13 @@
  * @format
  */
 
-import {AppRegistry} from 'react-native';
+import {AppRegistry, Platform, Vibration, Linking} from 'react-native';
 import App from './App';
 import {name as appName} from './app.json';
-import messaging from '@react-native-firebase/messaging'
+import messaging from '@react-native-firebase/messaging';
 import store from './src/store';
 import userSlice from './src/slices/user';
-import { request, check, PERMISSIONS, RESULTS } from 'react-native-permissions';
+import {request, check, PERMISSIONS, RESULTS} from 'react-native-permissions';
 // import PushNotification, { Importance } from 'react-native-push-notification';
 
 // PushNotification.configure({
@@ -26,7 +26,7 @@ import { request, check, PERMISSIONS, RESULTS } from 'react-native-permissions';
 // PushNotification.createChannel({
 //   channelId: 'dodream',
 //   channelName: 'tincle',
-// }, 
+// },
 // (created) => console.log('createChannel returned', created))
 
 // const handleFcmMessage = () => {
@@ -56,31 +56,50 @@ import { request, check, PERMISSIONS, RESULTS } from 'react-native-permissions';
 // }
 // requestUserPermissionForFCM();
 
-const requestNotificationPermission = async () => {
-  const result = await request(PERMISSIONS.ANDROID.POST_NOTIFICATIONS);
-  return result;
-};
-
-const checkNotificationPermission = async () => {
-  const result = await check(PERMISSIONS.ANDROID.POST_NOTIFICATIONS);
-  return result;
-};
-
-const requestPermission = async () => {
-  const checkPermission = await checkNotificationPermission();
-  if (checkPermission !== RESULTS.GRANTED) {
-   const request = await requestNotificationPermission();
-     if(request !== RESULTS.GRANTED){
-          // permission not granted
-      }
-  }
-};
-requestPermission();
+// const requestNotificationPermission = async () => {
+//   //todo: ios
+//   if (Platform.OS === 'android') {
+//     const result = await request(PERMISSIONS.ANDROID.POST_NOTIFICATIONS);
+//     return result;
+//   }
+// };
 
 messaging().setBackgroundMessageHandler(async remoteMessage => {
-  console.log('Message: ', remoteMessage)
-  store.dispatch(userSlice.actions.setNotis({notis:true,}));
+  onMessageReceived(remoteMessage);
 });
+
+const onMessageReceived = message => {
+  console.log('[index.js] onMessageReceived: ', message);
+  // if (Platform.OS === 'ios') {
+  //   // const {link = null} = message?.data || {}; // <---- 1
+  //   const pushDeepLink = message?.data?.link;
+  //   //console.log('pushDeepLink : ', pushDeepLink);
+  //   pushDeepLink && Linking.openURL(pushDeepLink);
+  //   Vibration.vibrate([400]);
+  // }
+};
+
+//원래 주석 아님
+// const checkNotificationPermission = async () => {
+//   const result = await check(PERMISSIONS.ANDROID.POST_NOTIFICATIONS);
+//   return result;
+// };
+
+// const requestPermission = async () => {
+//   const checkPermission = await checkNotificationPermission();
+//   if (checkPermission !== RESULTS.GRANTED) {
+//     const request = await requestNotificationPermission();
+//     if (request !== RESULTS.GRANTED) {
+//       // permission not granted
+//     }
+//   }
+// };
+// requestPermission();
+
+// messaging().setBackgroundMessageHandler(async remoteMessage => {
+//   console.log('Message: ', remoteMessage)
+//   store.dispatch(userSlice.actions.setNotis({notis:true,}));
+// });
 
 // messaging().onMessage(async remoteMessage => {
 //   console.log('new messag arrived:', remoteMessage)
@@ -94,11 +113,12 @@ messaging().setBackgroundMessageHandler(async remoteMessage => {
 //   console.log('Noti caused app to open from gb state: ', remoteMessage.notification,);
 // });
 
-function headlessCheck({ isHeadless }) {
+function headlessCheck({isHeadless}) {
   if (isHeadless) {
     return null;
   }
-  return <App />
+  return <App />;
 }
 
-AppRegistry.registerComponent(appName, () => App);
+// AppRegistry.registerComponent(appName, () => App);
+AppRegistry.registerComponent(appName, () => headlessCheck);

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Pressable, View, Alert } from 'react-native'
 import {createBottomTabNavigator } from '@react-navigation/bottom-tabs'
+
 import {
   NativeStackNavigationProp,  
   createNativeStackNavigator,
@@ -23,8 +24,9 @@ import Config from "react-native-config";
 import userSlice from "./src/slices/user";
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import Feather from 'react-native-vector-icons/Feather';
-import SplashScreen from "react-native-splash-screen";
+import SplashScreen from 'react-native-splash-screen';
 import useAxiosInterceptor from './src/hooks/useAxiosInterceptor';
+
 import { SvgXml } from 'react-native-svg';
 import { svgXml } from "./assets/image/svgXml";
 import messaging from '@react-native-firebase/messaging';
@@ -43,7 +45,8 @@ export type RootStackParamList = {
   SignIn: undefined;
 };
 
-export type RootStackNavigationProp = NativeStackNavigationProp<RootStackParamList>;
+export type RootStackNavigationProp =
+  NativeStackNavigationProp<RootStackParamList>;
 
 const screenoptions = () => {
   return {
@@ -68,7 +71,9 @@ const Tab = createBottomTabNavigator();
 export default function AppInner() {
   useAxiosInterceptor();
   const dispatch = useAppDispatch();
-  const isLoggedIn = useSelector((state:RootState) => !!state.user.accessToken);
+  const isLoggedIn = useSelector(
+    (state: RootState) => !!state.user.accessToken,
+  );
   useEffect(() => {
     SplashScreen.hide();
   }, []);
@@ -78,23 +83,30 @@ export default function AppInner() {
         // await EncryptedStorage.removeItem('refreshToken')
         const token = await EncryptedStorage.getItem('refreshToken');
         if (!token) {
-          console.log('no RefreshToken')
+          console.log('no RefreshToken');
           return;
         }
-        const response = await axios.post(`${Config.API_URL}/auth/reissue`, {refreshToken:token},);
+        const response = await axios.post(`${Config.API_URL}/auth/reissue`, {
+          refreshToken: token,
+        });
         dispatch(
           userSlice.actions.setToken({
             accessToken: response.data.data.accessToken,
           }),
         );
-        await EncryptedStorage.setItem('refreshToken', response.data.data.refreshToken,);
+        await EncryptedStorage.setItem(
+          'refreshToken',
+          response.data.data.refreshToken,
+        );
       } catch (error) {
         const errorResponse = (error as AxiosError<{message: string}>).response;
-        if (errorResponse?.data.statusCode == 1070) {console.log('reLogin');;}
+        if (errorResponse?.data.statusCode == 1070) {
+          console.log('reLogin');
+        }
         if (errorResponse?.data.status == 500) {
           dispatch(
             userSlice.actions.setToken({
-              accessToken:'',
+              accessToken: '',
             }),
           );
         }
@@ -104,21 +116,20 @@ export default function AppInner() {
   }, [dispatch]);
 
   useEffect(() => {
-    const unsubscribe = messaging().onMessage(async remoteMessage => {
-      Alert.alert('alarm', JSON.stringify(remoteMessage));
-      console.log('new messag arrived:', remoteMessage)
-      dispatch(
-        userSlice.actions.setNotis({
-          notis:true,
-        }),
-      );
-    });
+    // const unsubscribe = messaging().onMessage(async remoteMessage => {
+    //   Alert.alert('alarm', JSON.stringify(remoteMessage));
+    //   console.log('new messag arrived:', remoteMessage)
+    //   dispatch(
+    //     userSlice.actions.setNotis({
+    //       notis:true,
+    //     }),
+    //   );
+    // });
     // messaging().onNotificationOpenedApp(remoteMessage => {
     //   console.log('Noti caused app to open from gb state: ', remoteMessage.notification,);
-    // });
-    return unsubscribe;
+    // // });
+    // return unsubscribe;
   }, []);
-  
 
   return isLoggedIn ? ( 
     <Tab.Navigator initialRouteName="FeedNavigation" screenOptions={screenoptions}>
@@ -185,13 +196,13 @@ export default function AppInner() {
     </Tab.Navigator>
  ) : (
     <Stack.Navigator>
-      <Stack.Screen 
+      <Stack.Screen
         name="SignIn"
         component={SignIn}
-        options={()=>({
-          headerShown:false,
+        options={() => ({
+          headerShown: false,
         })}
       />
     </Stack.Navigator>
-    );
+  );
 }
