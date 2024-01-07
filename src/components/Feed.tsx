@@ -1,41 +1,41 @@
-import React, { useState } from "react";
-import { StyleSheet, Text, View } from "react-native";
-import ContentFeedBottom from "./ContentFeedBottom";
-import Content from "./Content";
+import React, {useState} from 'react';
+import {StyleSheet, Text, View} from 'react-native';
+import ContentFeedBottom from './ContentFeedBottom';
+import Content from './Content';
 
 type EmoticonsProps = {
-  smileEmoticonCount:number;
-  sadEmoticonCount:number;
-  heartEmoticonCount:number;
-  surpriseEmoticonCount:number;
-  isCheckedSmileEmoticon:boolean;
-  isCheckedSadEmoticon:boolean;
-  isCheckedHeartEmoticon:boolean;
-  isCheckedSurpriseEmoticon:boolean;
-}
+  smileEmoticonCount: number;
+  sadEmoticonCount: number;
+  heartEmoticonCount: number;
+  surpriseEmoticonCount: number;
+  isCheckedSmileEmoticon: boolean;
+  isCheckedSadEmoticon: boolean;
+  isCheckedHeartEmoticon: boolean;
+  isCheckedSurpriseEmoticon: boolean;
+};
 type FeedProps = {
-  mine:boolean;
-  detail:boolean;
-  commentCnt:number;
-  createdAt:string;
-  content:string;
-  emoticons:EmoticonsProps;
-  nickname:string;
-  status:string;
-  accountId:number;
-  imageURL:string[]|null[];
-  press:(feedId:number, emotion:string)=>Promise<void>;
-  feedId:number;
-  whoReact:(feedId:number)=>Promise<void>;
-  profileImg:string|null;
-  showWhoseModal:number;
-  setShowWhoseModal:React.Dispatch<React.SetStateAction<number>>;
+  mine: boolean;
+  detail: boolean;
+  commentCnt: number;
+  createdAt: string;
+  content: string;
+  emoticons: EmoticonsProps;
+  nickname: string;
+  status: string;
+  accountId: number;
+  imageURL: string[] | null[];
+  press: (feedId: number, emotion: string) => Promise<void>;
+  feedId: number;
+  whoReact: (feedId: number) => Promise<void>;
+  profileImg: string | null;
+  showWhoseModal: number;
+  setShowWhoseModal: React.Dispatch<React.SetStateAction<number>>;
   // heartEmoticonNicknameList:string[];
   // smileEmoticonNicknameList:string[];
   // sadEmoticonNicknameList:string[];
   // surpriseEmoticonNicknameList:string[];
-}
-export default function Feed(props:FeedProps){
+};
+export default function Feed(props: FeedProps) {
   const mine = props.mine;
   const content = props.content;
   const detail = props.detail;
@@ -53,14 +53,14 @@ export default function Feed(props:FeedProps){
 
   return (
     <View style={styles.entire}>
-      <Content 
+      <Content
         nickname={nickname}
         status={status}
         content={content}
         createdAt={createdAt}
         accountId={accountId}
         mine={mine}
-        imageURL = {imageURL}
+        imageURL={imageURL}
         detail={detail}
         cmt={false}
         child={setA}
@@ -69,7 +69,7 @@ export default function Feed(props:FeedProps){
         showWhoseModal={showWhoseModal}
         setShowWhoseModal={setShowWhoseModal}
       />
-      <ContentFeedBottom 
+      <ContentFeedBottom
         mine={mine}
         detail={detail}
         commentCnt={commentCnt}
@@ -83,8 +83,8 @@ export default function Feed(props:FeedProps){
 }
 
 const styles = StyleSheet.create({
-  entire:{
+  entire: {
     paddingBottom: 14,
     width: '100%',
   },
-})
+});
