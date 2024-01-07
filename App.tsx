@@ -83,11 +83,17 @@ export default function App() {
 
   return (
     <Provider store={store}>
-      <SafeAreaProvider>
+      {Platform.OS === 'ios' ? (
         <NavigationContainer>
           <AppInner />
         </NavigationContainer>
-      </SafeAreaProvider>
+      ) : (
+        <SafeAreaProvider>
+          <NavigationContainer>
+            <AppInner />
+          </NavigationContainer>
+        </SafeAreaProvider>
+      )}
     </Provider>
   );
 }
