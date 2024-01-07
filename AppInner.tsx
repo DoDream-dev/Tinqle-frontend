@@ -173,7 +173,6 @@ export default function AppInner() {
                   backgroundColor: '#202020',
                 },
                 headerShadowVisible: false,
-
                 tabBarLabel: 'Friend',
                 // tabBarIcon:
               }}
