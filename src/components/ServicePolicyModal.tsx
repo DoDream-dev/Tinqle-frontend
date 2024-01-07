@@ -2,6 +2,8 @@ import React from 'react';
 import {StyleSheet, Text, ScrollView, View} from 'react-native';
 import Modal from 'react-native-modal';
 import {Safe} from './Safe';
+import AnimatedButton from '../components/AnimatedButton';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
 type PolicyProps = {
   policy: string;
@@ -194,6 +196,13 @@ export default function ServicePolicyModal(props: PolicyProps) {
           </View>
           <View style={{height: 40}}></View>
         </ScrollView>
+        <AnimatedButton
+          onPress={() => {
+            setPolicy('');
+          }}
+          style={styles.closeButton}>
+          <MaterialIcons name="close" size={40} color={'#848484'} />
+        </AnimatedButton>
       </Safe>
     </Modal>
   );
@@ -225,5 +234,15 @@ const styles = StyleSheet.create({
     color: '#222222',
     fontSize: 13,
     fontWeight: '400',
+  },
+  closeButton: {
+    position: 'absolute',
+    right: 15,
+    bottom: 40,
+    zIndex: 10,
+    backgroundColor: '#E6E4F2',
+    borderRadius: 10,
+    width: 40,
+    height: 40,
   },
 });
