@@ -12,6 +12,8 @@ import {
   RefreshControl,
   Keyboard,
   TouchableWithoutFeedback,
+  KeyboardAvoidingView,
+  Platform,
 } from 'react-native';
 import {RootStackParamList} from '../../AppInner';
 import Feed from '../components/Feed';
