@@ -20,6 +20,7 @@ import Animated, {
   runOnJS,
 } from 'react-native-reanimated';
 import AnimatedButton from './src/components/AnimatedButton';
+import GestureRecognizer, {swipeDirections} from 'react-native-swipe-gestures';
 
 export type NotificationProps = {
   title: string;
@@ -71,29 +72,51 @@ export default function App() {
       };
     });
 
+    const config = {
+      velocityThreshold: 0.1,
+      directionalOffsetThreshold: 20,
+    };
+
     return isNotification ? (
       <Animated.View style={[styles.container, animatedStyle]}>
-        <AnimatedButton
-          style={styles.buttonArea}
-          onPress={() => {
-            Linking.openURL(link);
-          }}>
-          <Image source={icon} style={styles.icon} />
-          <View style={styles.textContainer}>
-            <View
-              style={{
-                flexDirection: 'row',
-                alignItems: 'flex-end',
-                justifyContent: 'space-between',
-              }}>
-              <Text style={styles.title}>{title}</Text>
-              <Text style={styles.now}>now</Text>
+        <GestureRecognizer
+          onSwipeUp={() => {
+            console.log('swipe up');
+            translateY.value = withSpring(-50);
+            opacity.value = withTiming(
+              0,
+              {duration: 100, easing: Easing.in(Easing.exp)},
+              () => {
+                runOnJS(setIsNotification)(false);
+              },
+            );
+          }}
+          config={config}>
+          <AnimatedButton
+            style={styles.buttonArea}
+            onPress={() => {
+              Linking.openURL(link);
+            }}>
+            <Image source={icon} style={styles.icon} />
+            <View style={styles.textContainer}>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'flex-end',
+                  justifyContent: 'space-between',
+                }}>
+                <Text style={styles.title}>{title}</Text>
+                <Text style={styles.now}>now</Text>
+              </View>
+              <Text
+                numberOfLines={2}
+                ellipsizeMode="tail"
+                style={styles.message}>
+                {message}
+              </Text>
             </View>
-            <Text numberOfLines={2} ellipsizeMode="tail" style={styles.message}>
-              {message}
-            </Text>
-          </View>
-        </AnimatedButton>
+          </AnimatedButton>
+        </GestureRecognizer>
       </Animated.View>
     ) : null;
   };
@@ -207,7 +230,6 @@ const styles = StyleSheet.create({
     right: 0,
     zIndex: 100,
     backgroundColor: 'rgba(255, 255, 255, 0.8)',
-    padding: 9,
     borderRadius: 16,
     // elevation: 5,
     // shadowColor: '#000',
@@ -219,6 +241,7 @@ const styles = StyleSheet.create({
   buttonArea: {
     flexDirection: 'row',
     alignItems: 'center',
+    padding: 9,
   },
   icon: {
     width: 40,

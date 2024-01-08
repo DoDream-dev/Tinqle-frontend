@@ -40,6 +40,7 @@
     "react-native-shadow-2": "^7.0.8",
     "react-native-splash-screen": "^3.3.0",
     "react-native-svg": "^13.14.0",
+    "react-native-swipe-gestures": "^1.0.5",
     "react-native-switch-selector": "^2.3.0",
     "react-native-vector-icons": "^10.0.0",
     "react-navigation": "^5.0.0",
