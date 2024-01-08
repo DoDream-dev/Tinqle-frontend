@@ -1,27 +1,61 @@
-import React from 'react';
+import React, {useState, useEffect} from 'react';
 import {View, Text, Image, StyleSheet} from 'react-native';
-// import Animated, {
-//   useSharedValue,
-//   useAnimatedStyle,
-//   withSpring,
-//   withTiming,
-//   Easing,
-//   runOnJS,
-// } from 'react-native-reanimated';
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withSpring,
+  withTiming,
+  Easing,
+  runOnJS,
+} from 'react-native-reanimated';
+import icon from '../../icon.png';
 
 interface NotificationProps {
   title: string;
   message: string;
-  icon: number;
 }
 
 const NotificationComponent: React.FC<NotificationProps> = ({
   title,
   message,
-  icon,
 }) => {
+  const [isSnackbarVisible, setIsSnackbarVisible] = useState(true);
+  const translateY = useSharedValue(0);
+  const opacity = useSharedValue(0);
+
+  useEffect(() => {
+    if (isSnackbarVisible) {
+      translateY.value = withSpring(0, {mass: 0.1});
+      opacity.value = withTiming(1, {
+        duration: 50,
+        easing: Easing.out(Easing.exp),
+      });
+
+      const timeout = setTimeout(() => {
+        translateY.value = withSpring(-50);
+        opacity.value = withTiming(
+          0,
+          {duration: 100, easing: Easing.in(Easing.exp)},
+          () => {
+            runOnJS(setIsSnackbarVisible)(false);
+          },
+        );
+      }, 3000);
+
+      return () => clearTimeout(timeout);
+    }
+  }, [isSnackbarVisible]);
+
+  const animatedStyle = useAnimatedStyle(() => {
+    'worklet';
+    return {
+      transform: [{translateY: translateY.value}],
+      opacity: opacity.value,
+    };
+  });
+
   return (
-    <View style={styles.container}>
+    <Animated.View style={[styles.container, animatedStyle]}>
       <Image source={icon} style={styles.icon} />
       <View style={styles.textContainer}>
         <View
@@ -35,7 +69,7 @@ const NotificationComponent: React.FC<NotificationProps> = ({
         </View>
         <Text style={styles.message}>{message}</Text>
       </View>
-    </View>
+    </Animated.View>
   );
 };
 
