@@ -7,6 +7,8 @@ import {
   KeyboardAvoidingView,
   Keyboard,
   TouchableWithoutFeedback,
+  Text,
+  TouchableOpacity,
 } from 'react-native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 
@@ -41,6 +43,8 @@ import messaging from '@react-native-firebase/messaging';
 import FeedNavigation from './src/navigations/FeedNavigation';
 import NoteNavigation from './src/navigations/NoteNavigation';
 import {Safe} from './src/components/Safe';
+import NotificationComponent from './src/components/NotificationComponent';
+// import {FadeDownView} from './src/components/AnimatedView';
 
 export type RootStackParamList = {
   FeedList: undefined;
@@ -141,6 +145,11 @@ export default function AppInner() {
 
   return isLoggedIn ? (
     <Safe color="#202020">
+      <NotificationComponent
+        title="New Message"
+        message="You have a new message from John Doe."
+        icon={require('./icon.png')}
+      />
       <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
         <KeyboardAvoidingView
           behavior={Platform.OS === 'ios' ? 'padding' : undefined}
