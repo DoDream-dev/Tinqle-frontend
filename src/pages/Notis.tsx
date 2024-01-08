@@ -1,19 +1,19 @@
-import React, { useState, useCallback, } from 'react';
-import { View, Text, StyleSheet, Pressable, FlatList } from 'react-native';
-import { SvgXml } from 'react-native-svg';
-import { svgXml } from '../../assets/image/svgXml';
-import axios, { AxiosError } from 'axios';
+import React, {useState, useCallback} from 'react';
+import {View, Text, StyleSheet, Pressable, FlatList} from 'react-native';
+import {SvgXml} from 'react-native-svg';
+import {svgXml} from '../../assets/image/svgXml';
+import axios, {AxiosError} from 'axios';
 import Config from 'react-native-config';
 import Modal from 'react-native-modal';
-import { useFocusEffect } from '@react-navigation/native';
+import {useFocusEffect} from '@react-navigation/native';
 import ToastScreen from '../components/ToastScreen';
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { RootStackParamList } from '../../AppInner';
-import { useAppDispatch } from '../store';
+import {NativeStackScreenProps} from '@react-navigation/native-stack';
+import {RootStackParamList} from '../../AppInner';
+import {useAppDispatch} from '../store';
 import userSlice from '../slices/user';
 
 type itemProps = {
-  item:{
+  item: {
     // notificationId:number;
     // notificationType:string;
     // targetEntity:string;
@@ -22,21 +22,21 @@ type itemProps = {
     // content:string;
     // createdAt:string;
     // isRead:boolean;
-    accountId:number;
-    content:string;
-    friendNickname:string;
-    isRead:boolean;
-    notificationId:number;
-    notificationType:string;
-    redirectTargetId:number;
-    status:string;
-    targetEntity:string;
-  }
-}
+    accountId: number;
+    content: string;
+    friendNickname: string;
+    isRead: boolean;
+    notificationId: number;
+    notificationType: string;
+    redirectTargetId: number;
+    status: string;
+    targetEntity: string;
+  };
+};
 
 type NotisScreenProps = NativeStackScreenProps<RootStackParamList, 'Notis'>;
 
-export default function Notis({navigation}:NotisScreenProps) {
+export default function Notis({navigation}: NotisScreenProps) {
   const dispatch = useAppDispatch();
   const [isEnabled, setIsEnabled] = useState(true);
   const [noNotis, setNoNotis] = useState(false);
@@ -50,33 +50,35 @@ export default function Notis({navigation}:NotisScreenProps) {
   const [refresh, setRefresh] = useState(false);
   const [popup, setPopup] = useState(false);
   const [notisData, setNotisData] = useState([
-  //   {
-  //   notificationId:6,
-  //   notificationType:"CREATE_FEED_COMMENT",
-  //   targetEntity:"FEED",
-  //   redirectTargetId:106,
-  //   title:"댓글 알림",
-  //   body:"나의 피드에 누가 댓글을 달았습니다.",
-  //   createdAt:"몇년몇월며칠",
-  //   isRead:false
-  // },
-  // {
-  //   notificationId:7,
-  //   notificationType:"CREATE_FEED_COMMENT",
-  //   targetEntity:"FEED",
-  //   redirectTargetId:1,
-  //   title:"피드 알림",
-  //   body:"나의 피드에 누가 대댓글을 달았습니다.나의 피드에 누가 대댓글을 달았습니다.나의 피드에 누가 대댓글을 달았습니다.나의 피드에 누가 대댓글을 달았습니다.",
-  //   createdAt:"몇년몇월며칠",
-  //   isRead:false
-  // }
-]);
+    //   {
+    //   notificationId:6,
+    //   notificationType:"CREATE_FEED_COMMENT",
+    //   targetEntity:"FEED",
+    //   redirectTargetId:106,
+    //   title:"댓글 알림",
+    //   body:"나의 피드에 누가 댓글을 달았습니다.",
+    //   createdAt:"몇년몇월며칠",
+    //   isRead:false
+    // },
+    // {
+    //   notificationId:7,
+    //   notificationType:"CREATE_FEED_COMMENT",
+    //   targetEntity:"FEED",
+    //   redirectTargetId:1,
+    //   title:"피드 알림",
+    //   body:"나의 피드에 누가 대댓글을 달았습니다.나의 피드에 누가 대댓글을 달았습니다.나의 피드에 누가 대댓글을 달았습니다.나의 피드에 누가 대댓글을 달았습니다.",
+    //   createdAt:"몇년몇월며칠",
+    //   isRead:false
+    // }
+  ]);
 
   useFocusEffect(
-    useCallback(()=>{
+    useCallback(() => {
       const getNotis = async () => {
         try {
-          const response = await axios.get(`${Config.API_URL}/notifications/accounts/me`,);
+          const response = await axios.get(
+            `${Config.API_URL}/notifications/accounts/me`,
+          );
           // console.log(response.data.data)
           if (response.data.data.content.length == 0) setNoNotis(true);
           else {
@@ -84,28 +86,33 @@ export default function Notis({navigation}:NotisScreenProps) {
             setNotisData(response.data.data.content);
             // console.log(response.data.data)
             if (response.data.data.content.length != 0) {
-              setCursorId(response.data.data.content[response.data.data.content.length-1].notificationId)
+              setCursorId(
+                response.data.data.content[
+                  response.data.data.content.length - 1
+                ].notificationId,
+              );
             }
           }
         } catch (error) {
-          const errorResponse = (error as AxiosError<{message: string}>).response;
+          const errorResponse = (error as AxiosError<{message: string}>)
+            .response;
           console.log(errorResponse?.data.status);
           if (errorResponse?.data.status == 500) {
             dispatch(
               userSlice.actions.setToken({
-                accessToken:'',
+                accessToken: '',
               }),
             );
           }
         }
-      }
+      };
       getNotis();
       dispatch(
         userSlice.actions.setNotis({
-          notis:false,
+          notis: false,
         }),
       );
-    },[refresh, noNotis])
+    }, [refresh, noNotis]),
   );
 
   const getData = async () => {
@@ -113,12 +120,17 @@ export default function Notis({navigation}:NotisScreenProps) {
       setLoading(true);
       try {
         // console.log(cursorId)
-        const response = await axios.get(`${Config.API_URL}/notifications/accounts/me?cursorId=${cursorId}`,);
+        const response = await axios.get(
+          `${Config.API_URL}/notifications/accounts/me?cursorId=${cursorId}`,
+        );
         // console.log(response.data.data)
         setIsLast(response.data.data.last);
         setNotisData(notisData.concat(response.data.data.content));
         if (response.data.data.content.length != 0) {
-          setCursorId(response.data.data.content[response.data.data.content.length-1].notificationId)
+          setCursorId(
+            response.data.data.content[response.data.data.content.length - 1]
+              .notificationId,
+          );
         }
       } catch (error) {
         const errorResponse = (error as AxiosError<{message: string}>).response;
@@ -128,23 +140,29 @@ export default function Notis({navigation}:NotisScreenProps) {
     setLoading(false);
   };
   const onEndReached = () => {
-    if (!loading) {getData();}
+    if (!loading) {
+      getData();
+    }
   };
 
-  const deleteNotis = async (notificationId:number) => {
+  const deleteNotis = async (notificationId: number) => {
     try {
-      const response = await axios.delete(`${Config.API_URL}/notifications/${notificationId}`);
+      const response = await axios.delete(
+        `${Config.API_URL}/notifications/${notificationId}`,
+      );
       // console.log(response.data.data)
-      setRefresh(!refresh)
+      setRefresh(!refresh);
     } catch (error) {
       const errorResponse = (error as AxiosError<{message: string}>).response;
       console.log(errorResponse.data);
     }
   };
 
-  const approveFriendship = async (friendshipRequestId:number) => {
+  const approveFriendship = async (friendshipRequestId: number) => {
     try {
-      const response = await axios.post(`${Config.API_URL}/friendships/request/${friendshipRequestId}/approval`,);
+      const response = await axios.post(
+        `${Config.API_URL}/friendships/request/${friendshipRequestId}/approval`,
+      );
       // console.log(response.data);
     } catch (error) {
       const errorResponse = (error as AxiosError<{message: string}>).response;
@@ -152,126 +170,321 @@ export default function Notis({navigation}:NotisScreenProps) {
     }
   };
 
-  const goToFeed = (feedId:number) => {
-    navigation.navigate('FeedDetail', {feedId:feedId});
-  }
+  const goToFeed = (feedId: number) => {
+    navigation.navigate('FeedDetail', {feedId: feedId});
+  };
 
-  const getFriendMsg = useCallback((friendshipRequestId:number)=>{
-    const getMSG = async () => {
-      try {
-        const response = await axios.get(`${Config.API_URL}/friendships/request/${friendshipRequestId}/message`,);
-        setFriendMsg(response.data.data.message);
-        setShowModal(true); 
-      } catch (error) {
-        const errorResponse = (error as AxiosError<{message: string}>).response;
-        console.log(errorResponse.data);
-      }
-    };
-    getMSG();
-  },[friendMsg]);
+  const getFriendMsg = useCallback(
+    (friendshipRequestId: number) => {
+      const getMSG = async () => {
+        try {
+          const response = await axios.get(
+            `${Config.API_URL}/friendships/request/${friendshipRequestId}/message`,
+          );
+          setFriendMsg(response.data.data.message);
+          setShowModal(true);
+        } catch (error) {
+          const errorResponse = (error as AxiosError<{message: string}>)
+            .response;
+          console.log(errorResponse.data);
+        }
+      };
+      getMSG();
+    },
+    [friendMsg],
+  );
 
-  const isDeleted = async (feedId:number) => {
+  const isDeleted = async (feedId: number) => {
     try {
-      const response = await axios.get(`${Config.API_URL}/feeds/${feedId}`,);
+      const response = await axios.get(`${Config.API_URL}/feeds/${feedId}`);
       if (response.data.data) return false;
     } catch (error) {
       const errorResponse = (error as AxiosError<{message: string}>).response;
-      if (errorResponse?.data.statusCode == 4030 || errorResponse?.data.statusCode == 4010) {return true;}
+      if (
+        errorResponse?.data.statusCode == 4030 ||
+        errorResponse?.data.statusCode == 4010
+      ) {
+        return true;
+      }
       console.log(errorResponse.data);
     }
-  }
+  };
 
   return (
     <View style={styles.entire}>
       <View style={styles.notisHeader}>
         <Text style={styles.notisHeaderTxt}>푸시알림</Text>
-        <Pressable onPress={()=>setIsEnabled(!isEnabled)} style={[styles.toggleView, isEnabled?{backgroundColor:'#A55FFF'}:{backgroundColor:'#B7B7B7'}]}>
+        <Pressable
+          onPress={() => setIsEnabled(!isEnabled)}
+          style={[
+            styles.toggleView,
+            isEnabled
+              ? {backgroundColor: '#A55FFF'}
+              : {backgroundColor: '#B7B7B7'},
+          ]}>
           {isEnabled && <Text style={styles.toggleActiveTxt}>ON</Text>}
           {isEnabled && <View style={styles.toggleActiveCircle}></View>}
           {!isEnabled && <View style={styles.toggleInactiveCircle}></View>}
           {!isEnabled && <Text style={styles.toggleInactiveTxt}>OFF</Text>}
         </Pressable>
       </View>
-      {noNotis && <View style={styles.empty}>
-        <Text style={styles.emptyTxt}>알림을 다 읽었어요</Text>
-      </View>}
-      {!noNotis && <FlatList 
+      {noNotis && (
+        <View style={styles.empty}>
+          <Text style={styles.emptyTxt}>알림을 다 읽었어요</Text>
+        </View>
+      )}
+      {!noNotis && (
+        <FlatList
           data={notisData}
           style={styles.notisEntire}
           onEndReached={onEndReached}
           onEndReachedThreshold={0.4}
-          renderItem={({item}:itemProps) => {
+          renderItem={({item}: itemProps) => {
             return (
-              <Pressable style={styles.eachNotis} onPress={ async ()=>{
-                if (item.notificationType.includes("FEED")) {
-                  if (await isDeleted(item.redirectTargetId)) {
-                    setPopup(true);
-                    deleteNotis(item.notificationId)
+              <Pressable
+                style={styles.eachNotis}
+                onPress={async () => {
+                  if (item.notificationType.includes('FEED')) {
+                    if (await isDeleted(item.redirectTargetId)) {
+                      setPopup(true);
+                      deleteNotis(item.notificationId);
+                    } else goToFeed(item.redirectTargetId);
+                  } else if (
+                    item.notificationType == 'APPROVE_FRIENDSHIP_REQUEST'
+                  ) {
+                    navigation.navigate('Profile', {
+                      whose: 1,
+                      accountId: item.accountId,
+                    });
+                  } else if (item.notificationType.includes('MESSAGE')) {
+                    navigation.navigate('NoteBox');
                   }
-                  else goToFeed(item.redirectTargetId)
-                }
-                else if (item.notificationType == 'APPROVE_FRIENDSHIP_REQUEST') {navigation.navigate('Profile', {whose:1, accountId:item.accountId})}
-                else if (item.notificationType.includes("MESSAGE")) {navigation.navigate('NoteBox')}
-              }}>
+                }}>
                 <View style={styles.notisView}>
-                  {!item.notificationType.includes('MESSAGE') && <Pressable style={styles.notisProfile} onPress={()=>{navigation.navigate('Profile', {whose:1, accountId:item.accountId})}}>
-                    {item.status == 'SMILE' && <SvgXml width={32} height={32} xml={svgXml.status.smile}/>}
-                    {item.status == 'HAPPY' && <SvgXml width={32} height={32} xml={svgXml.status.happy}/>}
-                    {item.status == 'SAD' && <SvgXml width={32} height={32} xml={svgXml.status.sad}/>}
-                    {item.status == 'MAD' && <SvgXml width={32} height={32} xml={svgXml.status.mad}/>}
-                    {item.status == 'EXHAUSTED' && <SvgXml width={32} height={32} xml={svgXml.status.exhauseted}/>}
-                    {item.status == 'COFFEE' && <SvgXml width={32} height={32} xml={svgXml.status.coffee}/>}
-                    {item.status == 'MEAL' && <SvgXml width={32} height={32} xml={svgXml.status.meal}/>}
-                    {item.status == 'ALCOHOL' && <SvgXml width={32} height={32} xml={svgXml.status.alcohol}/>}
-                    {item.status == 'CHICKEN' && <SvgXml width={32} height={32} xml={svgXml.status.chicken}/>}
-                    {item.status == 'SLEEP' && <SvgXml width={32} height={32} xml={svgXml.status.sleep}/>}
-                    {item.status == 'WORK' && <SvgXml width={32} height={32} xml={svgXml.status.work}/>}
-                    {item.status == 'STUDY' && <SvgXml width={32} height={32} xml={svgXml.status.study}/>}
-                    {item.status == 'MOVIE' && <SvgXml width={32} height={32} xml={svgXml.status.movie}/>}
-                    {item.status == 'MOVE' && <SvgXml width={32} height={32} xml={svgXml.status.move}/>}
-                    {item.status == 'DANCE' && <SvgXml width={32} height={32} xml={svgXml.status.dance}/>}
-                    {item.status == 'READ' && <SvgXml width={32} height={32} xml={svgXml.status.read}/>}
-                    {item.status == 'WALK' && <SvgXml width={32} height={32} xml={svgXml.status.walk}/>}
-                    {item.status == 'TRAVEL' && <SvgXml width={32} height={32} xml={svgXml.status.travel}/>}
-                  </Pressable>}
+                  {!item.notificationType.includes('MESSAGE') && (
+                    <Pressable
+                      style={styles.notisProfile}
+                      onPress={() => {
+                        navigation.navigate('Profile', {
+                          whose: 1,
+                          accountId: item.accountId,
+                        });
+                      }}>
+                      {item.status == 'SMILE' && (
+                        <SvgXml
+                          width={32}
+                          height={32}
+                          xml={svgXml.status.smile}
+                        />
+                      )}
+                      {item.status == 'HAPPY' && (
+                        <SvgXml
+                          width={32}
+                          height={32}
+                          xml={svgXml.status.happy}
+                        />
+                      )}
+                      {item.status == 'SAD' && (
+                        <SvgXml
+                          width={32}
+                          height={32}
+                          xml={svgXml.status.sad}
+                        />
+                      )}
+                      {item.status == 'MAD' && (
+                        <SvgXml
+                          width={32}
+                          height={32}
+                          xml={svgXml.status.mad}
+                        />
+                      )}
+                      {item.status == 'EXHAUSTED' && (
+                        <SvgXml
+                          width={32}
+                          height={32}
+                          xml={svgXml.status.exhauseted}
+                        />
+                      )}
+                      {item.status == 'COFFEE' && (
+                        <SvgXml
+                          width={32}
+                          height={32}
+                          xml={svgXml.status.coffee}
+                        />
+                      )}
+                      {item.status == 'MEAL' && (
+                        <SvgXml
+                          width={32}
+                          height={32}
+                          xml={svgXml.status.meal}
+                        />
+                      )}
+                      {item.status == 'ALCOHOL' && (
+                        <SvgXml
+                          width={32}
+                          height={32}
+                          xml={svgXml.status.alcohol}
+                        />
+                      )}
+                      {item.status == 'CHICKEN' && (
+                        <SvgXml
+                          width={32}
+                          height={32}
+                          xml={svgXml.status.chicken}
+                        />
+                      )}
+                      {item.status == 'SLEEP' && (
+                        <SvgXml
+                          width={32}
+                          height={32}
+                          xml={svgXml.status.sleep}
+                        />
+                      )}
+                      {item.status == 'WORK' && (
+                        <SvgXml
+                          width={32}
+                          height={32}
+                          xml={svgXml.status.work}
+                        />
+                      )}
+                      {item.status == 'STUDY' && (
+                        <SvgXml
+                          width={32}
+                          height={32}
+                          xml={svgXml.status.study}
+                        />
+                      )}
+                      {item.status == 'MOVIE' && (
+                        <SvgXml
+                          width={32}
+                          height={32}
+                          xml={svgXml.status.movie}
+                        />
+                      )}
+                      {item.status == 'MOVE' && (
+                        <SvgXml
+                          width={32}
+                          height={32}
+                          xml={svgXml.status.move}
+                        />
+                      )}
+                      {item.status == 'DANCE' && (
+                        <SvgXml
+                          width={32}
+                          height={32}
+                          xml={svgXml.status.dance}
+                        />
+                      )}
+                      {item.status == 'READ' && (
+                        <SvgXml
+                          width={32}
+                          height={32}
+                          xml={svgXml.status.read}
+                        />
+                      )}
+                      {item.status == 'WALK' && (
+                        <SvgXml
+                          width={32}
+                          height={32}
+                          xml={svgXml.status.walk}
+                        />
+                      )}
+                      {item.status == 'TRAVEL' && (
+                        <SvgXml
+                          width={32}
+                          height={32}
+                          xml={svgXml.status.travel}
+                        />
+                      )}
+                    </Pressable>
+                  )}
                   <View style={styles.notisTextView}>
-                    <Text style={!item.notificationType.includes('MESSAGE') ? styles.notisText : [styles.notisText, {marginVertical:10}]}>{item.content.replace('\n', '')}</Text>
+                    <Text
+                      style={
+                        !item.notificationType.includes('MESSAGE')
+                          ? styles.notisText
+                          : [styles.notisText, {marginVertical: 10}]
+                      }>
+                      {item.content.replace('\n', '')}
+                    </Text>
                   </View>
                 </View>
-                {item.notificationType == 'CREATE_FRIENDSHIP_REQUEST' && <Pressable style={styles.notisCheckBtn} onPress={()=>{getFriendMsg(item.redirectTargetId); setmodalData(item.content); setmodalDataId(item.redirectTargetId);}}>
-                  <Text style={styles.notisCheckBtnTxt}>보기</Text>
-                </Pressable>}
-                <Pressable style={styles.xBtn} onPress={()=>deleteNotis(item.notificationId)}>
-                  <SvgXml width={16} height={16} xml={svgXml.icon.notisX}/>
+                {item.notificationType == 'CREATE_FRIENDSHIP_REQUEST' && (
+                  <Pressable
+                    style={styles.notisCheckBtn}
+                    onPress={() => {
+                      getFriendMsg(item.redirectTargetId);
+                      setmodalData(item.content);
+                      setmodalDataId(item.redirectTargetId);
+                    }}>
+                    <Text style={styles.notisCheckBtnTxt}>보기</Text>
+                  </Pressable>
+                )}
+                <Pressable
+                  style={styles.xBtn}
+                  onPress={() => deleteNotis(item.notificationId)}>
+                  <SvgXml width={16} height={16} xml={svgXml.icon.notisX} />
                 </Pressable>
               </Pressable>
             );
           }}
-        />}
-        <Modal isVisible={showModal} onBackButtonPress={()=>(setShowModal(false))} backdropColor='#222222' backdropOpacity={0.5}>
-          <Pressable style={styles.modalBGView} onPress={()=>{setShowModal(false)}}>
-            <Pressable style={styles.modalView} onPress={(e)=>e.stopPropagation()}>
-              <Text style={styles.modalTitleTxt}>친구 요청 메시지</Text>
+        />
+      )}
+      <Modal
+        isVisible={showModal}
+        onBackButtonPress={() => setShowModal(false)}
+        backdropColor="#222222"
+        backdropOpacity={0.5}>
+        <Pressable
+          style={styles.modalBGView}
+          onPress={() => {
+            setShowModal(false);
+          }}>
+          <Pressable
+            style={styles.modalView}
+            onPress={e => e.stopPropagation()}>
+            <Text style={styles.modalTitleTxt}>친구 요청 메시지</Text>
             <View style={styles.changeView}>
-              <Text style={friendMsg.trim() == "" ?  [styles.nameChangeTxtInput, {color:'#848484'}] : styles.nameChangeTxtInput}>{friendMsg.trim() == "" ? "우리 친구해요!" : friendMsg}</Text>
+              <Text
+                style={
+                  friendMsg.trim() == ''
+                    ? [styles.nameChangeTxtInput, {color: '#848484'}]
+                    : styles.nameChangeTxtInput
+                }>
+                {friendMsg.trim() == '' ? '우리 친구해요!' : friendMsg}
+              </Text>
             </View>
             <View style={styles.modalBtnView}>
-              <Pressable style={styles.btnWhite} onPress={()=>{setShowModal(false); setmodalData('');}}>
+              <Pressable
+                style={styles.btnWhite}
+                onPress={() => {
+                  setShowModal(false);
+                  setmodalData('');
+                }}>
                 <Text style={styles.btnWhiteTxt}>닫기</Text>
               </Pressable>
-              <Pressable style={styles.btnYellow} onPress={()=>{approveFriendship(modalDataId); setShowModal(false); setmodalData(''); setmodalDataId(-1);}}>
+              <Pressable
+                style={styles.btnYellow}
+                onPress={() => {
+                  approveFriendship(modalDataId);
+                  setShowModal(false);
+                  setmodalData('');
+                  setmodalDataId(-1);
+                }}>
                 <Text style={styles.btnYellowTxt}>수락하기</Text>
               </Pressable>
             </View>
           </Pressable>
         </Pressable>
       </Modal>
-      {popup && <ToastScreen
-        height = {21}
-        marginBottom={48}
-        onClose={()=>setPopup(false)}
-        message={`삭제된 글이에요.`}
-      />}
+      {popup && (
+        <ToastScreen
+          height={21}
+          marginBottom={48}
+          onClose={() => setPopup(false)}
+          message={`삭제된 글이에요.`}
+        />
+      )}
     </View>
   );
 }
@@ -280,211 +493,211 @@ const styles = StyleSheet.create({
   entire: {
     flex: 1,
     alignItems: 'center',
-    justifyContent:'center',
-    backgroundColor:'#202020'
-  },
-  notisHeader:{
-    width:'100%',
-    flexDirection:'row',
-    justifyContent:'flex-end',
-    alignItems:'center',
-    paddingRight:16,
-    height:40,
-    backgroundColor:'#333333'
-  },
-  notisHeaderTxt:{
-    color:'#F0F0F0',
-    fontWeight:'500',
-    fontSize:12,
-    marginRight:3
-  },
-  toggleView:{
-    width:48,
-    height:20,
-    borderRadius:10,
-    paddingHorizontal:2,
-    paddingVertical:3,
-    flexDirection:'row',
-    justifyContent:'center',
-    alignItems:'center',
-  },
-  toggleActiveTxt:{
-    color:'#FFFFFF',
-    fontSize:12,
-    fontWeight:'500',
-    marginLeft:6,
-    marginRight:4,
-    top:-2
-  },
-  toggleActiveCircle:{
-    width:16,
-    height:16,
-    borderRadius:8,
-    backgroundColor:'#FFFFFF',
-  },
-  toggleInactiveTxt:{
-    color:'#FFFFFF',
-    fontSize:12,
-    fontWeight:'500',
-    marginLeft:6,
-    marginRight:6,
-    top:-2
-  },
-  toggleInactiveCircle:{
-    width:16,
-    height:16,
-    borderRadius:8,
-    left: 3,
-    backgroundColor:'#FFFFFF',
-  },
-  empty:{
-    flex:1, 
-    width:'100%',
-    justifyContent:'center',
-    alignItems:'center',
-  },
-  emptyTxt:{
-    color:'#888888',
-    fontSize:12,
-    fontWeight:'500',
-    textAlign:'center',
-    justifyContent:'center',
-    alignItems:'center',
-    marginBottom:40,
-  },
-  notisEntire:{
-    width:'100%',
-  },
-  eachNotis:{
-    width:'100%',
-    flexDirection:'row',
-    flex:1,
-    backgroundColor:'#FFFFFF',
-    paddingHorizontal:16,
-    alignItems:'center',
-    justifyContent:'space-between',
-    borderBottomWidth:1,
-    borderBottomColor:'#F7F7F7'
-  },
-  notisView:{
-    flexGrow:1,
-    flexDirection:'row',
-    alignItems:'center',
-    flex:1,
-  },
-  notisProfile:{
-    marginVertical:12,
-    marginRight:10,
-  },
-  notisTextView:{
-    justifyContent:'center',
-    flexShrink:1,
-    paddingVertical:11,
-  },
-  notisText:{
-    color:'#222222',
-    fontWeight:'400',
-    fontSize:14,
-    textAlignVertical:'center',
-    flex:1
-  },
-  notisCheckBtn:{
-    width:84,
-    height:32,
-    alignItems:'center',
-    justifyContent:'center',
-    backgroundColor:'#FFB443',
-    borderRadius:10,
-    marginLeft:12,
-    marginVertical:12
-  },
-  notisCheckBtnTxt:{
-    fontSize:15,
-    fontWeight:'600',
-    color:'#FFFFFF'
-  },
-  xBtn:{
-    marginLeft:10
-  },
-  btnWhite:{
-    height: 44,
-    flex:1,
     justifyContent: 'center',
-    alignItems:'center',
+    backgroundColor: '#202020',
+  },
+  notisHeader: {
+    width: '100%',
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+    paddingRight: 16,
+    height: 40,
+    backgroundColor: '#333333',
+  },
+  notisHeaderTxt: {
+    color: '#F0F0F0',
+    fontWeight: '500',
+    fontSize: 12,
+    marginRight: 3,
+  },
+  toggleView: {
+    width: 48,
+    height: 20,
+    borderRadius: 10,
+    paddingHorizontal: 2,
+    paddingVertical: 3,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  toggleActiveTxt: {
+    color: '#FFFFFF',
+    fontSize: 12,
+    fontWeight: '500',
+    marginLeft: 6,
+    marginRight: 4,
+    top: -2,
+  },
+  toggleActiveCircle: {
+    width: 16,
+    height: 16,
+    borderRadius: 8,
+    backgroundColor: '#FFFFFF',
+  },
+  toggleInactiveTxt: {
+    color: '#FFFFFF',
+    fontSize: 12,
+    fontWeight: '500',
+    marginLeft: 6,
+    marginRight: 6,
+    top: -2,
+  },
+  toggleInactiveCircle: {
+    width: 16,
+    height: 16,
+    borderRadius: 8,
+    left: 3,
+    backgroundColor: '#FFFFFF',
+  },
+  empty: {
+    flex: 1,
+    width: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  emptyTxt: {
+    color: '#888888',
+    fontSize: 12,
+    fontWeight: '500',
+    textAlign: 'center',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 40,
+  },
+  notisEntire: {
+    width: '100%',
+  },
+  eachNotis: {
+    width: '100%',
+    flexDirection: 'row',
+    flex: 1,
+    backgroundColor: '#FFFFFF',
+    paddingHorizontal: 16,
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    borderBottomWidth: 1,
+    borderBottomColor: '#F7F7F7',
+  },
+  notisView: {
+    flexGrow: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+  },
+  notisProfile: {
+    marginVertical: 12,
+    marginRight: 10,
+  },
+  notisTextView: {
+    justifyContent: 'center',
+    flexShrink: 1,
+    paddingVertical: 11,
+  },
+  notisText: {
+    color: '#222222',
+    fontWeight: '400',
+    fontSize: 14,
+    textAlignVertical: 'center',
+    flex: 1,
+  },
+  notisCheckBtn: {
+    width: 84,
+    height: 32,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#FFB443',
+    borderRadius: 10,
+    marginLeft: 12,
+    marginVertical: 12,
+  },
+  notisCheckBtnTxt: {
+    fontSize: 15,
+    fontWeight: '600',
+    color: '#FFFFFF',
+  },
+  xBtn: {
+    marginLeft: 10,
+  },
+  btnWhite: {
+    height: 44,
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
     borderRadius: 10,
     borderWidth: 1,
     borderColor: '#FFB443',
     backgroundColor: '#FFFFFF',
     marginHorizontal: 4,
   },
-  btnYellow:{
+  btnYellow: {
     height: 44,
-    flex:1,
+    flex: 1,
     justifyContent: 'center',
-    alignItems:'center',
+    alignItems: 'center',
     borderRadius: 10,
     borderWidth: 1,
     borderColor: '#FFB443',
     backgroundColor: '#FFB443',
     marginHorizontal: 4,
   },
-  btnWhiteTxt:{
-    color:'#FFB443',
-    fontSize:15,
-    fontWeight:'600'
+  btnWhiteTxt: {
+    color: '#FFB443',
+    fontSize: 15,
+    fontWeight: '600',
   },
-  btnYellowTxt:{
-    color:'#FFFFFF',
-    fontSize:15,
-    fontWeight:'600'
+  btnYellowTxt: {
+    color: '#FFFFFF',
+    fontSize: 15,
+    fontWeight: '600',
   },
-  modalBGView:{
-    width:"100%", 
-    flex:1,
-    justifyContent:'center',
-    alignItems:'center',
-    paddingHorizontal:36,
+  modalBGView: {
+    width: '100%',
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 36,
   },
-  modalView:{
+  modalView: {
     backgroundColor: '#FFFFFF',
     borderRadius: 10,
     justifyContent: 'center',
-    alignItems:'center',
+    alignItems: 'center',
     paddingTop: 30,
     paddingHorizontal: 16,
     paddingBottom: 24,
   },
-  modalTitleTxt:{
-    color:'#222222',
-    fontSize:15,
-    fontWeight:'600',
-    marginBottom:10
+  modalTitleTxt: {
+    color: '#222222',
+    fontSize: 15,
+    fontWeight: '600',
+    marginBottom: 10,
   },
-  modalContentTxt:{
+  modalContentTxt: {
     color: '#848484',
     fontSize: 13,
     fontWeight: '400',
     textAlign: 'center',
     // marginBottom: 12
   },
-  changeView:{
-    width:'100%',
-    flexDirection:'row',
+  changeView: {
+    width: '100%',
+    flexDirection: 'row',
   },
-  modalBtnView:{
-    flexDirection:'row',
-    width:'100%',
+  modalBtnView: {
+    flexDirection: 'row',
+    width: '100%',
   },
-  nameChangeTxtInput:{
-    width:'100%',
-    fontSize:15,
-    fontWeight:'400',
-    color:'#222222',
+  nameChangeTxtInput: {
+    width: '100%',
+    fontSize: 15,
+    fontWeight: '400',
+    color: '#222222',
     borderRadius: 5,
-    backgroundColor:'#F7F7F7',
-    paddingVertical:10,
-    paddingHorizontal:10,
-    marginBottom:20,
-    marginTop:10,
+    backgroundColor: '#F7F7F7',
+    paddingVertical: 10,
+    paddingHorizontal: 10,
+    marginBottom: 20,
+    marginTop: 10,
   },
 });

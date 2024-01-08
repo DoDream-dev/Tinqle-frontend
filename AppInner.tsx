@@ -1,15 +1,11 @@
 import React, {useEffect, useState} from 'react';
 import {
-  Pressable,
-  View,
-  Alert,
   Platform,
   KeyboardAvoidingView,
   Keyboard,
   TouchableWithoutFeedback,
 } from 'react-native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-
 import {
   NativeStackNavigationProp,
   createNativeStackNavigator,
@@ -34,7 +30,6 @@ import AntDesign from 'react-native-vector-icons/AntDesign';
 import Feather from 'react-native-vector-icons/Feather';
 import SplashScreen from 'react-native-splash-screen';
 import useAxiosInterceptor from './src/hooks/useAxiosInterceptor';
-
 import {SvgXml} from 'react-native-svg';
 import {svgXml} from './assets/image/svgXml';
 import messaging from '@react-native-firebase/messaging';
@@ -82,9 +77,11 @@ export default function AppInner() {
   const isLoggedIn = useSelector(
     (state: RootState) => !!state.user.accessToken,
   );
+
   useEffect(() => {
     SplashScreen.hide();
   }, []);
+
   useEffect(() => {
     const getRefreshTokenAgain = async () => {
       try {
