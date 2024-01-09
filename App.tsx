@@ -128,8 +128,8 @@ export default function App() {
       playSound: true,
     };
 
-    if (Platform.OS === 'android') {
-      console.log('1. [onNotification] notify.body :', notify);
+    if (Platform.OS === 'android' && notify !== undefined) {
+      // console.log('1. [onNotification] notify.body :', notify);
       // console.log('1. [onNotification] notify.body :', notify.body);
       localNotificationService.showNotification(
         0,
@@ -157,7 +157,7 @@ export default function App() {
 
   const onOpenNotification = (notify: any) => {
     //앱 켜진 상태에서 알림 받았을 때 하는 일
-    console.log('### 앱 켜졌을 때 알림 도착:', notify);
+    console.log('앱 켜졌을 때 알림 도착:', notify);
     showNotiInApp(notify);
 
     // if (Platform.OS === 'ios') {
