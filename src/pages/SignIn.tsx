@@ -10,6 +10,7 @@ import {
   Modal as M,
   TextInput,
   Linking,
+  Platform,
 } from 'react-native';
 import * as KakaoLogin from '@react-native-seoul/kakao-login';
 import {useAppDispatch} from '../store';
@@ -112,6 +113,28 @@ export default function SignIn() {
         console.log('회원가입 진행');
         setSignUp(errorResponse?.data.data.signToken);
       }
+    }
+  };
+
+  const LoginWithApple = async () => {
+    console.log('Apple 로그인 시도 중');
+    // return; //미작성 코드
+    try {
+      // const res = await axios.post(`${Config.API_URL}/auth/login`, {
+      //   oauthAccessToken: '',
+      //   authorizationCode: userInfo.serverAuthCode,
+      //   socialType: 'GOOGLE',
+      //   fcmToken: fcm,
+      // });
+      // console.log(res.data)
+      // Login(res.data.data.refreshToken, res.data.data.accessToken);
+    } catch (error) {
+      // console.log(error);
+      // const errorResponse = (error as AxiosError<{message: string}>).response;
+      // if (errorResponse?.data.statusCode == 1030) {
+      //   console.log('회원가입 진행');
+      //   setSignUp(errorResponse?.data.data.signToken);
+      // }
     }
   };
 
@@ -226,6 +249,26 @@ export default function SignIn() {
         <Text style={styles.logoTxtMain}>tincle</Text>
       </View>
       <View style={styles.loginView}>
+        {Platform.OS == 'ios' ? (
+          <Pressable style={styles.loginBtnApple} onPress={LoginWithApple}>
+            <Shadow
+              distance={5}
+              startColor="#00000009"
+              style={{flex: 1, alignSelf: 'stretch', borderRadius: 5}}
+              stretch={true}
+              containerStyle={{marginHorizontal: 0}}>
+              <View style={[styles.forshadow, {width: windowWidth - 32}]}>
+                <SvgXml
+                  width={24}
+                  height={24}
+                  xml={svgXml.logo.apple}
+                  style={styles.logoApple}
+                />
+                <Text style={styles.loginBtnTxtApple}>Apple로 계속하기</Text>
+              </View>
+            </Shadow>
+          </Pressable>
+        ) : null}
         <Pressable style={styles.loginBtnGoogle} onPress={LoginWithGoogle}>
           <Shadow
             distance={5}
@@ -827,7 +870,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#ffffff',
   },
   logoView: {
-    flex: 5,
+    flex: 10,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -842,7 +885,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   loginView: {
-    flex: 1,
+    flex: Platform.OS === 'ios' ? 3 : 2,
     width: '100%',
     justifyContent: 'center',
     alignItems: 'center',
@@ -866,6 +909,16 @@ const styles = StyleSheet.create({
     width: '100%',
     borderRadius: 5,
   },
+  loginBtnApple: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    flexDirection: 'row',
+    marginBottom: 10,
+    backgroundColor: '#000000',
+    width: '100%',
+    borderRadius: 5,
+  },
   loginBtnKakao: {
     flex: 1,
     justifyContent: 'center',
@@ -881,12 +934,20 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     fontSize: 15,
   },
+  loginBtnTxtApple: {
+    color: '#FFFFFF',
+    fontWeight: '500',
+    fontSize: 15,
+  },
   loginBtnTxtKakao: {
     color: '#181600',
     fontWeight: '500',
     fontSize: 15,
   },
   logoGoogle: {
+    marginRight: 4,
+  },
+  logoApple: {
     marginRight: 4,
   },
   logoKakao: {
