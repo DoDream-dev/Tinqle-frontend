@@ -143,10 +143,14 @@ export default function App() {
 
   const showNotiInApp = async (notify: {
     body: String;
+    message: String;
     title: String;
     link: String;
+    data: {link: String};
   }) => {
-    const data = {body: notify.body, title: notify.title, link: notify.link};
+    const body = Platform.OS === 'ios' ? notify.body : notify.message;
+    const deeplink = Platform.OS === 'ios' ? notify.link : notify.data.link;
+    const data = {body: body, title: notify.title, link: deeplink};
     setNotiData(data);
     setIsNotification(true);
   };
@@ -202,17 +206,24 @@ export default function App() {
 
   return (
     <Provider store={store}>
-      <NotificationComponent
-        title={notiData.title}
-        message={notiData.body}
-        link={notiData.link}
-      />
       {Platform.OS === 'ios' ? (
-        <NavigationContainer>
-          <AppInner />
-        </NavigationContainer>
+        <>
+          <NotificationComponent
+            title={notiData.title}
+            message={notiData.body}
+            link={notiData.link}
+          />
+          <NavigationContainer>
+            <AppInner />
+          </NavigationContainer>
+        </>
       ) : (
         <SafeAreaProvider>
+          <NotificationComponent
+            title={notiData.title}
+            message={notiData.body}
+            link={notiData.link}
+          />
           <NavigationContainer>
             <AppInner />
           </NavigationContainer>
@@ -225,7 +236,7 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     position: 'absolute',
-    top: 40,
+    top: Platform.OS === 'ios' ? 40 : 10,
     left: 0,
     right: 0,
     zIndex: 100,
