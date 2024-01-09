@@ -375,8 +375,12 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
             );
             console.log(response.status);
           }}
-          style={{height: 500, width: 500, backgroundColor: 'blue'}}>
-        </Pressable> */}
+          style={{
+            height: 100,
+            width: 500,
+            backgroundColor: 'blue',
+          }}
+        /> */}
         <FlatList
           data={feedData}
           style={[styles.feedList]}
