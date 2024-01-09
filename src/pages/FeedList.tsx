@@ -366,6 +366,17 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
   return (
     <View style={{flex: 1, alignItems: 'center', backgroundColor: '#202020'}}>
       <View style={[styles.entire]}>
+        {/* <Pressable
+          onPress={async () => {
+            console.log('refresh');
+            const response = await axios.post(
+              `${Config.API_URL}/test/push/self`,
+              {},
+            );
+            console.log(response.status);
+          }}
+          style={{height: 500, width: 500, backgroundColor: 'blue'}}>
+        </Pressable> */}
         <FlatList
           data={feedData}
           style={[styles.feedList]}
