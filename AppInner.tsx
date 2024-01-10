@@ -5,19 +5,10 @@ import {
   Keyboard,
   TouchableWithoutFeedback,
 } from 'react-native';
-import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {
   NativeStackNavigationProp,
   createNativeStackNavigator,
 } from '@react-navigation/native-stack';
-import FeedList from './src/pages/FeedList';
-import FeedDetail from './src/pages/FeedDetail';
-import MyProfile from './src/pages/MyProfile';
-// import MyFriendList from "./src/pages/MyFriendList";
-import SearchFriends from './src/pages/SearchFriends';
-import NoteBox from './src/pages/NoteBox';
-// import Setting from "./src/pages/Setting";
-import Notis from './src/pages/Notis';
 import SignIn from './src/pages/SignIn';
 import {useAppDispatch} from './src/store';
 import {RootState} from './src/store/reducer';
@@ -26,16 +17,33 @@ import EncryptedStorage from 'react-native-encrypted-storage';
 import axios, {AxiosError} from 'axios';
 import Config from 'react-native-config';
 import userSlice from './src/slices/user';
-import AntDesign from 'react-native-vector-icons/AntDesign';
-import Feather from 'react-native-vector-icons/Feather';
 import SplashScreen from 'react-native-splash-screen';
 import useAxiosInterceptor from './src/hooks/useAxiosInterceptor';
-import {SvgXml} from 'react-native-svg';
-import {svgXml} from './assets/image/svgXml';
-import messaging from '@react-native-firebase/messaging';
-import FeedNavigation from './src/navigations/FeedNavigation';
-import NoteNavigation from './src/navigations/NoteNavigation';
 import {Safe} from './src/components/Safe';
+import EnlargeImage from './src/pages/EnlargeImage';
+import TabNavigation from './src/navigations/TabNavigation';
+import {NativeStackScreenProps} from '@react-navigation/native-stack';
+
+const SignInScreen = () => {
+  return (
+    <Safe color="white">
+      <SignIn />
+    </Safe>
+  );
+};
+
+type EnlargeImageProps = NativeStackScreenProps<
+  RootStackParamList,
+  'EnlargeImage'
+>;
+
+const EnlargeImageScreen = ({navigation, route}: EnlargeImageProps) => {
+  return (
+    <Safe color="#F7F7F7">
+      <EnlargeImage navigation={navigation} route={route} />
+    </Safe>
+  );
+};
 
 export type RootStackParamList = {
   FeedList: undefined;
@@ -47,30 +55,14 @@ export type RootStackParamList = {
   // Setting: undefined;
   Notis: undefined;
   SignIn: undefined;
-  EnlargeImage: undefined;
+  EnlargeImage: {imageUrl: string};
+  TabNavigation: undefined;
 };
 
 export type RootStackNavigationProp =
   NativeStackNavigationProp<RootStackParamList>;
 
-const screenoptions = () => {
-  return {
-    tabBarStyle: {
-      height: 48,
-      backgroundColor: '#202020',
-      borderTopWidth: 0,
-      elevation: 0,
-    },
-    tabBarHideOnKeyboard: true,
-    tabBarActiveTintColor: '#A55FFF',
-    tabBarInactiveTintColor: '#F0F0F0',
-    tabBarLabelStyle: {fontSize: 11, paddingBottom: 10},
-    tabBarShadowVisible: false,
-  };
-};
-
 const Stack = createNativeStackNavigator<RootStackParamList>();
-const Tab = createBottomTabNavigator();
 
 export default function AppInner() {
   useAxiosInterceptor();
@@ -138,88 +130,37 @@ export default function AppInner() {
   }, []);
 
   return isLoggedIn ? (
-    <Safe color="#202020">
-      <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-        <KeyboardAvoidingView
-          behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-          style={{flex: 1}}>
-          <Tab.Navigator
-            initialRouteName="FeedNavigation"
-            screenOptions={screenoptions}>
-            <Tab.Screen
-              name="FeedNavigation"
-              component={FeedNavigation}
-              options={{
-                headerShown: false,
-                tabBarLabel: 'Feed',
-                // tabBarIcon:
-              }}
-            />
-            <Tab.Screen
-              name="SearchFriends"
-              component={SearchFriends}
-              options={{
-                title: '친구',
-                headerShown: true,
-                headerTitleAlign: 'center',
-                headerTitleStyle: {
-                  color: '#F0F0F0',
-                  fontSize: 15,
-                  fontWeight: '600',
-                },
-                headerStyle: {
-                  backgroundColor: '#202020',
-                },
-                headerShadowVisible: false,
-                tabBarLabel: 'Friend',
-                // tabBarIcon:
-              }}
-            />
-            <Tab.Screen
-              name="NoteNavigation"
-              component={NoteNavigation}
-              options={{
-                title: '1:1대화',
-                headerShown: false,
-                tabBarLabel: 'Note',
-                // tabBarIcon:
-              }}
-            />
-            <Tab.Screen
-              name="MyProfile"
-              component={MyProfile}
-              options={{
-                title: '프로필',
-                headerShown: true,
-                headerTitleAlign: 'center',
-                headerTitleStyle: {
-                  color: '#F0F0F0',
-                  fontSize: 15,
-                  fontWeight: '600',
-                },
-                headerStyle: {
-                  backgroundColor: '#202020',
-                },
-                headerShadowVisible: false,
-                tabBarLabel: 'Profile',
-                // tabBarIcon:
-              }}
-            />
-          </Tab.Navigator>
-        </KeyboardAvoidingView>
-      </TouchableWithoutFeedback>
-    </Safe>
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        style={{height: '100%'}}>
+        <Stack.Navigator>
+          <Stack.Screen
+            name="TabNavigation"
+            component={TabNavigation}
+            options={() => ({
+              headerShown: false,
+            })}
+          />
+          <Stack.Screen
+            name="EnlargeImage"
+            component={EnlargeImageScreen}
+            options={{
+              headerShown: false,
+            }}
+          />
+        </Stack.Navigator>
+      </KeyboardAvoidingView>
+    </TouchableWithoutFeedback>
   ) : (
-    <Safe>
-      <Stack.Navigator>
-        <Stack.Screen
-          name="SignIn"
-          component={SignIn}
-          options={() => ({
-            headerShown: false,
-          })}
-        />
-      </Stack.Navigator>
-    </Safe>
+    <Stack.Navigator>
+      <Stack.Screen
+        name="SignIn"
+        component={SignInScreen}
+        options={() => ({
+          headerShown: false,
+        })}
+      />
+    </Stack.Navigator>
   );
 }

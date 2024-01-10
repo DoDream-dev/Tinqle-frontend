@@ -14,7 +14,7 @@ type EnlargeImageProps = NativeStackScreenProps<
 export default function EnlargeImage({navigation, route}: EnlargeImageProps) {
   useFocusEffect(
     useCallback(() => {
-      console.log('EnlargeImage focus');
+      console.log('EnlargeImage focus', route.params);
     }, []),
   );
 
@@ -28,7 +28,7 @@ export default function EnlargeImage({navigation, route}: EnlargeImageProps) {
         <Feather name="x" size={24} color={'#222222'} />
       </AnimatedButton>
       <View style={styles.empty}>
-        <Text style={styles.emptyTxt}>알림을 다 읽었어요</Text>
+        <Text style={styles.emptyTxt}>{'route.params'}</Text>
       </View>
     </View>
   );
