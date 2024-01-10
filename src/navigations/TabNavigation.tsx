@@ -27,7 +27,7 @@ export type RootStackNavigationProp =
 const screenoptions = () => {
   return {
     tabBarStyle: {
-      height: 48,
+      height: 58,
       backgroundColor: '#202020',
       borderTopWidth: 0,
       elevation: 0,
