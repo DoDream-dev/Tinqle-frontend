@@ -368,12 +368,14 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
       <View style={[styles.entire]}>
         {/* <Pressable
           onPress={async () => {
-            console.log('refresh');
-            const response = await axios.post(
-              `${Config.API_URL}/test/push/self`,
-              {},
-            );
-            console.log(response.status);
+            console.log('pressed!');
+
+            //알림확인
+            // const response = await axios.post(
+            //   `${Config.API_URL}/test/push/self`,
+            //   {},
+            // );
+            // console.log(response.status);
           }}
           style={{
             height: 100,
