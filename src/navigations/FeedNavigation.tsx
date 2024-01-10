@@ -12,13 +12,11 @@ import AntDesign from 'react-native-vector-icons/AntDesign';
 import FeedList from '../pages/FeedList';
 import FeedDetail from '../pages/FeedDetail';
 import Notis from '../pages/Notis';
-import EnlargeImage from '../pages/EnlargeImage';
 
 export type FeedStackParamList = {
   FeedList: undefined;
   FeedDetail: undefined;
   Notis: undefined;
-  EnlargeImage: undefined;
 };
 
 export type FeedStackNavigationProps =
@@ -81,14 +79,6 @@ export default function FeedNavigation() {
             </Pressable>
           ),
         })}
-      />
-      <Stack.Screen
-        name="EnlargeImage"
-        component={EnlargeImage}
-        options={{
-          headerShown: false,
-          tabBarVisible: false,
-        }}
       />
     </Stack.Navigator>
   );

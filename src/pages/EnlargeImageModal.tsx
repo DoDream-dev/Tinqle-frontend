@@ -31,7 +31,11 @@ type EnlargeImageProps = NativeStackScreenProps<
   'EnlargeImage'
 >;
 
-export default function EnlargeImage({navigation, route}: EnlargeImageProps) {
+//모달로 변경 필요
+export default function EnlargeImageModal({
+  navigation,
+  route,
+}: EnlargeImageProps) {
   const dispatch = useAppDispatch();
   const [isEnabled, setIsEnabled] = useState(true);
   const [noNotis, setNoNotis] = useState(false);

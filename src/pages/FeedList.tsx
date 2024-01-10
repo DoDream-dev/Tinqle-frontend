@@ -366,11 +366,9 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
   return (
     <View style={{flex: 1, alignItems: 'center', backgroundColor: '#202020'}}>
       <View style={[styles.entire]}>
-        <Pressable
+        {/* <Pressable
           onPress={async () => {
             console.log('pressed!');
-
-            navigation.navigate('EnlargeImage', {imageUrl: 'urlurl'});
 
             //알림확인
             // const response = await axios.post(
@@ -384,7 +382,7 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
             width: 500,
             backgroundColor: 'blue',
           }}
-        />
+        /> */}
         <FlatList
           data={feedData}
           style={[styles.feedList]}

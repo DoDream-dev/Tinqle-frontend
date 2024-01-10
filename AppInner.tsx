@@ -47,7 +47,6 @@ export type RootStackParamList = {
   // Setting: undefined;
   Notis: undefined;
   SignIn: undefined;
-  EnlargeImage: undefined;
 };
 
 export type RootStackNavigationProp =
