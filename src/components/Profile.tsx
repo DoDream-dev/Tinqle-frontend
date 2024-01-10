@@ -45,9 +45,9 @@ export default function Profile(props:ProfileProps){
           {status == 'travel' && <SvgXml width={90} height={90} xml={svgXml.status.travel} />}
         </Pressable> */}
         {profileImage == null 
-        ? <SvgXml width={90} height={90} xml={svgXml.profile.null} />
+        ? <SvgXml width={120} height={120} xml={svgXml.profile.null} />
         : <Image
-          source={{uri:profileImage}} style={{width:90, height:90, borderRadius:45}}
+          source={{uri:profileImage}} style={{width:120, height:120, borderRadius:45}}
         />}
       </View>
       <View style={styles.nameView}>
@@ -63,7 +63,7 @@ export default function Profile(props:ProfileProps){
 
 const styles = StyleSheet.create({
   entire:{
-    alignItems:'center'
+    alignItems:'center',
   },
   statusView:{
     width: 120,

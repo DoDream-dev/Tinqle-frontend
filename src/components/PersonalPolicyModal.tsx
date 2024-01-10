@@ -143,13 +143,13 @@ export default function PersonalPolicyModal(props: PolicyProps) {
           </View>
           <View style={{height: 40}}></View>
         </ScrollView>
-        <AnimatedButton
+        {/* <AnimatedButton
           onPress={() => {
             setPolicy('');
           }}
           style={styles.closeButton}>
           <MaterialIcons name="close" size={40} color={'#848484'} />
-        </AnimatedButton>
+        </AnimatedButton> */}
       </Safe>
     </Modal>
   );
@@ -160,10 +160,10 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: 16,
     paddingVertical: 20,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#202020',
   },
   policyheader: {
-    color: '#222222',
+    color: '#F0F0F0',
     fontSize: 18,
     fontWeight: '600',
   },
@@ -172,24 +172,14 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   policyHead: {
-    color: '#222222',
+    color: '#F0F0F0',
     fontSize: 15,
     fontWeight: '500',
   },
   policyBody: {
     marginTop: 6,
-    color: '#222222',
+    color: '#F0F0F0',
     fontSize: 13,
     fontWeight: '400',
-  },
-  closeButton: {
-    position: 'absolute',
-    right: 15,
-    bottom: 40,
-    zIndex: 10,
-    backgroundColor: '#E6E4F2',
-    borderRadius: 10,
-    width: 40,
-    height: 40,
   },
 });

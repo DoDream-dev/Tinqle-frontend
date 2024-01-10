@@ -1,5 +1,5 @@
 import React, { useState, useRef } from "react";
-import { StyleSheet, Text, Pressable, View, Keyboard, TextInput, Dimensions } from "react-native";
+import { StyleSheet, Text, Pressable, View, Keyboard, TextInput, Dimensions, useWindowDimensions } from "react-native";
 import axios, { AxiosError } from 'axios';
 import Modal from'react-native-modal';
 import Config from 'react-native-config';
@@ -8,10 +8,12 @@ import _ from 'lodash';
 
 
 import { throttleTime } from '../hooks/Throttle';
+import ToastScreen from "./ToastScreen";
 
 type ProfileProps = {
   showWhoseModal:number;
   setShowWhoseModal:React.Dispatch<React.SetStateAction<number>>;
+  setDeleteFriend:React.Dispatch<React.SetStateAction<number>>;
 }
 export default function FriendProfileModal(props:ProfileProps){
   const showWhoseModal = props.showWhoseModal;
@@ -23,14 +25,17 @@ export default function FriendProfileModal(props:ProfileProps){
   const [status, setStatus] = useState('');
   const [name, setName] = useState('');
   const [profileImg, setProfileImg] = useState(null);
+  const setDeleteFriend = props.setDeleteFriend;
+  const [whatAreYouDoing, setWhatAreYouDoing] = useState(false);
 
   const inp1 = useRef();
 
 
   const getProfile = async () => {
     try {
+        {/* 여기에 friendshipId 필요 */}
       const response = await axios.get(`${Config.API_URL}/accounts/${showWhoseModal}/profile`,);
-      // console.log(response.data.data)
+      console.log(response.data.data)
       setName(response.data.data.nickname);
       setChangeNameVal(response.data.data.nickname);
       setStatus(response.data.data.status.toLowerCase());
@@ -83,9 +88,10 @@ export default function FriendProfileModal(props:ProfileProps){
         />
       </View>
       <View style={styles.btnView}>
-        <Pressable style={styles.btn}><Text style={styles.btnTxt}>지금 뭐해?</Text></Pressable>
+        {/* 여기에 friendshipId 필요 */}
+        <Pressable style={styles.btnGray} onPress={()=>{setDeleteFriend(-1); setShowWhoseModal(0)}}><Text style={styles.btnTxt}>친구 삭제하기</Text></Pressable>
         <View style={{width:8}}></View>
-        <Pressable style={styles.btnGray}><Text style={styles.btnTxt}>친구 삭제하기</Text></Pressable>
+        <Pressable style={styles.btn} onPress={()=>setWhatAreYouDoing(true)}><Text style={styles.btnTxt}>지금 뭐해?</Text></Pressable>
       </View>
       <Modal isVisible={chageName} onBackButtonPress={()=>setChangeName(false)} avoidKeyboard={true} backdropColor='#222222' backdropOpacity={0.5}>
         <Pressable style={styles.modalBGView} onPress={()=>{setChangeName(false); Keyboard.dismiss();}}>
@@ -123,6 +129,17 @@ export default function FriendProfileModal(props:ProfileProps){
           </Pressable>
         </Pressable>
       </Modal>
+      
+      <View style={{bottom:-(useWindowDimensions().height/2-310/2), alignItems:'center'}}>
+        {whatAreYouDoing && (
+          <ToastScreen
+            height={21}
+            marginBottom={48}
+            onClose={() => setWhatAreYouDoing(false)}
+            message={`${name}님에게 지금 뭐해?를 보냈어요.`}
+          />
+        )}
+      </View>
     </Modal>
   );
 
@@ -200,9 +217,9 @@ const styles = StyleSheet.create({
     width:'100%',
     fontSize:15,
     fontWeight:'400',
-    color:'#222222',
+    color:'#F0F0F0',
     borderRadius: 5,
-    backgroundColor:'#F7F7F7',
+    backgroundColor:'#202020',
     height:40,
     paddingHorizontal:10,
     marginBottom:20,
@@ -214,9 +231,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems:'center',
     borderRadius: 10,
-    borderWidth: 1,
-    borderColor: '#A55FFF',
-    backgroundColor: '#F0F0F0',
+    // borderWidth: 1,
+    // borderColor: '#A55FFF',
+    backgroundColor: '#888888',
     marginHorizontal: 4,
   },
   btnYellow:{
@@ -225,13 +242,13 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems:'center',
     borderRadius: 10,
-    borderWidth: 1,
-    borderColor: '#A55FFF',
+    // borderWidth: 1,
+    // borderColor: '#A55FFF',
     backgroundColor: '#A55FFF',
     marginHorizontal: 4,
   },
   btnWhiteTxt:{
-    color:'#A55FFF',
+    color:'#F0F0F0',
     fontSize:15,
     fontWeight:'600'
   },
