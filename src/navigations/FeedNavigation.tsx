@@ -27,6 +27,7 @@ export type FeedStackNavigationProps =
 const Stack = createNativeStackNavigator<FeedStackParamList>();
 
 export default function FeedNavigation({navigation, route}) {
+  //
   React.useLayoutEffect(() => {
     const routeName = getFocusedRouteNameFromRoute(route);
     if (routeName === 'EnlargeImage') {
@@ -113,7 +114,6 @@ export default function FeedNavigation({navigation, route}) {
         component={EnlargeImage}
         options={{
           headerShown: false,
-          tabBarStyle: {display: 'none'},
         }}
       />
     </Stack.Navigator>
