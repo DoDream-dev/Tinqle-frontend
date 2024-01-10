@@ -102,6 +102,7 @@ class FCMService {
       // console.log('%%%createNotificationListeners : ', remoteMessage);
       if (remoteMessage) {
         const notification = remoteMessage.notification;
+        // console.log('%%%createNotificationListeners : ', notification);
         onOpenNotification(notification);
       }
 
@@ -127,6 +128,13 @@ class FCMService {
           notification = remoteMessage.data.notification;
         } else {
           notification = remoteMessage.notification;
+        }
+
+        // console.log('1, #####', remoteMessage);
+        //ios 인앱 오류로 인한 수정
+        if (Platform.OS === 'ios') {
+          const data = remoteMessage.data;
+          onOpenNotification(data);
         }
 
         onNotification(notification);
