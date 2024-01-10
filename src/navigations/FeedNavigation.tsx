@@ -8,7 +8,7 @@ import {
 import {SvgXml} from 'react-native-svg';
 import {svgXml} from '../../assets/image/svgXml';
 import AntDesign from 'react-native-vector-icons/AntDesign';
-
+import {getFocusedRouteNameFromRoute} from '@react-navigation/native';
 import FeedList from '../pages/FeedList';
 import FeedDetail from '../pages/FeedDetail';
 import Notis from '../pages/Notis';
@@ -26,7 +26,33 @@ export type FeedStackNavigationProps =
 
 const Stack = createNativeStackNavigator<FeedStackParamList>();
 
-export default function FeedNavigation() {
+export default function FeedNavigation({navigation, route}) {
+  React.useLayoutEffect(() => {
+    const routeName = getFocusedRouteNameFromRoute(route);
+    if (routeName === 'EnlargeImage') {
+      //MyPage이외의 화면에 대해 tabBar none을 설정한다.
+      navigation.setOptions({
+        tabBarStyle: {
+          display: 'none',
+          height: 48,
+          backgroundColor: '#202020',
+          borderTopWidth: 0,
+          elevation: 0,
+        },
+      });
+    } else {
+      navigation.setOptions({
+        tabBarStyle: {
+          display: undefined,
+          height: 48,
+          backgroundColor: '#202020',
+          borderTopWidth: 0,
+          elevation: 0,
+        },
+      });
+    }
+  }, [navigation, route]);
+
   return (
     <Stack.Navigator>
       <Stack.Screen
@@ -87,7 +113,7 @@ export default function FeedNavigation() {
         component={EnlargeImage}
         options={{
           headerShown: false,
-          tabBarVisible: false,
+          tabBarStyle: {display: 'none'},
         }}
       />
     </Stack.Navigator>

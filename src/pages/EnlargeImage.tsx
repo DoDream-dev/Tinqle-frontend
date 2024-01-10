@@ -460,12 +460,10 @@ export default function EnlargeImage({navigation, route}: EnlargeImageProps) {
 
 const styles = StyleSheet.create({
   entire: {
-    // flex: 1,
-    height: 2000,
-    width: '100%',
+    flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: 'red',
+    backgroundColor: '#202020',
   },
   notisHeader: {
     width: '100%',
