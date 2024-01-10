@@ -117,7 +117,7 @@ export default function SignIn() {
   };
 
   const LoginWithApple = async () => {
-    console.log('Apple 로그인 시도 중');
+    console.log('Apple 로그인 시도 중 // 아직 미구현!');
     // return; //미작성 코드
     try {
       // const res = await axios.post(`${Config.API_URL}/auth/login`, {
