@@ -148,9 +148,11 @@ export default function Content(props: ContentProps) {
           />} */}
           {imageURL.flatMap(f => (!!f ? [f] : [])).length != 0 && (
             <ImageModal
-              swipeToDismiss={false}
+              swipeToDismiss={true}
               resizeMode="contain"
+              // resizeMode="cover"
               imageBackgroundColor="transparent"
+              overlayBackgroundColor="#202020"
               style={{
                 width: windowWidth - 100,
                 height: windowWidth - 100,

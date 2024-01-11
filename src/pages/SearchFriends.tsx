@@ -25,6 +25,7 @@ import {svgXml} from '../../assets/image/svgXml';
 import userSlice from '../slices/user';
 import FriendProfileModal from '../components/FriendProfileModal';
 import {Dimensions} from 'react-native';
+import ImageModal from 'react-native-image-modal';
 
 type friendListItemProps = {
   item: {
@@ -268,9 +269,16 @@ export default function SearchFriends() {
                 {item.profileImageUrl == null ? (
                   <SvgXml width={32} height={32} xml={svgXml.profile.null} />
                 ) : (
-                  <Image
-                    source={{uri: item.profileImageUrl}}
+                  <ImageModal
+                    swipeToDismiss={true}
+                    resizeMode="contain"
+                    // resizeMode="cover"
+                    imageBackgroundColor="transparent"
+                    overlayBackgroundColor="#202020"
                     style={{width: 32, height: 32, borderRadius: 16}}
+                    source={{
+                      uri: item.profileImageUrl,
+                    }}
                   />
                 )}
               </Pressable>

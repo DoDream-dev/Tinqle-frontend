@@ -1,16 +1,18 @@
-import React, { useState } from "react";
-import { StyleSheet, Text, Pressable, View, Image } from "react-native";
+import React, {useState} from 'react';
+import {StyleSheet, Text, Pressable, View, Image} from 'react-native';
 import MaterialCommunity from 'react-native-vector-icons/MaterialCommunityIcons';
-import { svgXml } from '../../assets/image/svgXml';
-import { SvgXml } from 'react-native-svg'
+import {svgXml} from '../../assets/image/svgXml';
+import {SvgXml} from 'react-native-svg';
+import ImageModal from 'react-native-image-modal';
+
 type ProfileProps = {
-  status:string;
-  name:string;
-  profileImg:string | null;
-  restatusModal:React.Dispatch<React.SetStateAction<boolean>>;
-  renameModal:React.Dispatch<React.SetStateAction<boolean>>;
-}
-export default function Profile(props:ProfileProps){
+  status: string;
+  name: string;
+  profileImg: string | null;
+  restatusModal: React.Dispatch<React.SetStateAction<boolean>>;
+  renameModal: React.Dispatch<React.SetStateAction<boolean>>;
+};
+export default function Profile(props: ProfileProps) {
   const status = props.status;
   const profileImage = props.profileImg;
   const name = props.name;
@@ -44,55 +46,71 @@ export default function Profile(props:ProfileProps){
           {status == 'walk' && <SvgXml width={90} height={90} xml={svgXml.status.walk} />}
           {status == 'travel' && <SvgXml width={90} height={90} xml={svgXml.status.travel} />}
         </Pressable> */}
-        {profileImage == null 
-        ? <SvgXml width={90} height={90} xml={svgXml.profile.null} />
-        : <Image
-          source={{uri:profileImage}} style={{width:90, height:90, borderRadius:45}}
-        />}
+        {profileImage == null ? (
+          <SvgXml width={90} height={90} xml={svgXml.profile.null} />
+        ) : (
+          <ImageModal
+            swipeToDismiss={true}
+            resizeMode="contain"
+            // resizeMode="cover"
+            imageBackgroundColor="transparent"
+            overlayBackgroundColor="#202020"
+            style={{width: 90, height: 90, borderRadius: 45}}
+            source={{
+              uri: profileImage,
+            }}
+          />
+        )}
       </View>
       <View style={styles.nameView}>
-        <Text style={styles.nameTxt} onPress={()=>renameModal(true)}>{name}</Text>
-        <Pressable style={styles.changeNameBtn} onPress={()=>renameModal(true)}>
-          <MaterialCommunity name='pencil-outline' size={14} color={'#888888'} />
+        <Text style={styles.nameTxt} onPress={() => renameModal(true)}>
+          {name}
+        </Text>
+        <Pressable
+          style={styles.changeNameBtn}
+          onPress={() => renameModal(true)}>
+          <MaterialCommunity
+            name="pencil-outline"
+            size={14}
+            color={'#888888'}
+          />
         </Pressable>
       </View>
     </View>
   );
-
 }
 
 const styles = StyleSheet.create({
-  entire:{
-    alignItems:'center'
+  entire: {
+    alignItems: 'center',
   },
-  statusView:{
+  statusView: {
     width: 120,
     height: 120,
     justifyContent: 'center',
     alignItems: 'center',
   },
-  statusBtn:{
-    flex:1,
+  statusBtn: {
+    flex: 1,
     justifyContent: 'center',
-    alignItems:'center',
-    backgroundColor:'#F7F7F7',
+    alignItems: 'center',
+    backgroundColor: '#F7F7F7',
     width: '100%',
     borderRadius: 30,
   },
-  nameView:{
+  nameView: {
     flexDirection: 'row',
-    marginTop:16,
-    marginBottom:8,
-    justifyContent:'center',
-    alignItems:'baseline',
+    marginTop: 16,
+    marginBottom: 8,
+    justifyContent: 'center',
+    alignItems: 'baseline',
   },
-  nameTxt:{
-    color:'#F0F0F0',
+  nameTxt: {
+    color: '#F0F0F0',
     fontWeight: '600',
-    fontSize:22,
-    marginRight:2,
-    marginLeft:16
+    fontSize: 22,
+    marginRight: 2,
+    marginLeft: 16,
   },
-  changeNameBtn:{
-  },
-})
+  changeNameBtn: {},
+});
