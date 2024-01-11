@@ -30,6 +30,7 @@ import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {RootStackParamList} from '../../AppInner';
 import {Safe} from '../components/Safe';
+import {appleAuth} from '@invertase/react-native-apple-authentication';
 
 export default function SignIn() {
   const navigation =
@@ -120,16 +121,22 @@ export default function SignIn() {
     console.log('Apple 로그인 시도 중 // 아직 미구현!');
     // return; //미작성 코드
     try {
-      // const res = await axios.post(`${Config.API_URL}/auth/login`, {
-      //   oauthAccessToken: '',
-      //   authorizationCode: userInfo.serverAuthCode,
-      //   socialType: 'GOOGLE',
-      //   fcmToken: fcm,
-      // });
-      // console.log(res.data)
-      // Login(res.data.data.refreshToken, res.data.data.accessToken);
+      const appleAuthRequestResponse = await appleAuth.performRequest({
+        requestedOperation: appleAuth.Operation.LOGIN,
+        requestedScopes: [appleAuth.Scope.EMAIL, appleAuth.Scope.FULL_NAME],
+      });
+
+      // Ensure Apple returned a user identityToken
+      if (!appleAuthRequestResponse.identityToken) {
+        throw 'Apple Sign-In failed - no identify token returned';
+      }
+
+      const {identityToken, nonce} = appleAuthRequestResponse;
+      console.log('res : ', appleAuthRequestResponse);
+      console.log('identityToken: ', identityToken);
+      console.log('nonce: ', nonce);
     } catch (error) {
-      // console.log(error);
+      console.log('에러났으', error);
       // const errorResponse = (error as AxiosError<{message: string}>).response;
       // if (errorResponse?.data.statusCode == 1030) {
       //   console.log('회원가입 진행');

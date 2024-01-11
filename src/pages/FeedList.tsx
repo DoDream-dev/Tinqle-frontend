@@ -32,6 +32,7 @@ import {useSelector} from 'react-redux';
 import ToastScreen from '../components/ToastScreen';
 import userSlice from '../slices/user';
 import EncryptedStorage from 'react-native-encrypted-storage/lib/typescript/EncryptedStorage';
+import jwtDecode from 'jwt-decode';
 
 type FeedListScreenProps = NativeStackScreenProps<
   RootStackParamList,
@@ -366,9 +367,13 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
   return (
     <View style={{flex: 1, alignItems: 'center', backgroundColor: '#202020'}}>
       <View style={[styles.entire]}>
-        {/* <Pressable
+        <Pressable
           onPress={async () => {
             console.log('pressed!');
+            const token =
+              'eyJraWQiOiJsVkhkT3g4bHRSIiwiYWxnIjoiUlMyNTYifQ.eyJpc3MiOiJodHRwczovL2FwcGxlaWQuYXBwbGUuY29tIiwiYXVkIjoib3JnLnJlYWN0anMubmF0aXZlLmV4YW1wbGUudGlucWxlIiwiZXhwIjoxNzA1MDQyMTIyLCJpYXQiOjE3MDQ5NTU3MjIsInN1YiI6IjAwMDcyNC40YzE3ZTE5MTU3Yjk0ZTUzYmRhNWRhYmIwZGE0YmFlMS4wNjQ0Iiwibm9uY2UiOiIxZTU5Mzk5MzY0NTMyN2IzNzc0YmE2ZDJjYmI4OTZjYjg2MjcxNDBiYjljNjFlZTIwZmNmYWVmOGY0ZjQxNDNmIiwiY19oYXNoIjoiUEpuUE1fdlltZFZwZmMxbWUzUHVEUSIsImVtYWlsIjoic2pzam1pbmUxQG5hdmVyLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjoidHJ1ZSIsImF1dGhfdGltZSI6MTcwNDk1NTcyMiwibm9uY2Vfc3VwcG9ydGVkIjp0cnVlfQ.VDk_XyBwMsBf6SSDk2m7UFy25SKLRmirj41Yc8G1qf45zKALAK3IibKi-KUgFAjer-rw49zY30GsA2d-M47mbcBnQd0Y7DdTVLGnVgRp9vj-Kt3n2GCEPb6r6Fs51-LU-Ps4c_dv9hXepuM0-YhLoRALd7zZsM8rKn7G2MPapV2IokneqhL-7XhoBJJ3OI9xaCDgfyHNvTYVL9iH9qmX0Dqsmm-LQg-s3K9I9xabgtOf8ta3odENqu965kjwbsTiMakwTTmtnpI3STCTkuqiBkI5ZoZK_UVD8JCxP8shsbHy8MvZqYetwoB-BwjKV_yjWEoLhtraoLPEL0qXP5ASBA';
+            const decodedToken = jwtDecode(token);
+            console.log(decodedToken);
 
             //알림확인
             // const response = await axios.post(
@@ -382,7 +387,7 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
             width: 500,
             backgroundColor: 'blue',
           }}
-        /> */}
+        />
         <FlatList
           data={feedData}
           style={[styles.feedList]}

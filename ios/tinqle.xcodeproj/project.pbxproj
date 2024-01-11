@@ -59,6 +59,7 @@
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = tinqle/main.m; sourceTree = "<group>"; };
 		56A8F85B389C8610BBBD92A5 /* Pods-tinqle-tinqleTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-tinqle-tinqleTests.release.xcconfig"; path = "Target Support Files/Pods-tinqle-tinqleTests/Pods-tinqle-tinqleTests.release.xcconfig"; sourceTree = "<group>"; };
 		57172BC12B42D138001FE7D9 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		572775A22B4FBC450042FB70 /* tinqleRelease.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = tinqleRelease.entitlements; path = tinqle/tinqleRelease.entitlements; sourceTree = "<group>"; };
 		575EEFB12B43B76500CB6F23 /* tinqle.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = tinqle.entitlements; path = tinqle/tinqle.entitlements; sourceTree = "<group>"; };
 		57C0035D2B4A7C9000301BE4 /* MaterialIcons.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = MaterialIcons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/MaterialIcons.ttf"; sourceTree = "<group>"; };
 		57C0035E2B4A7C9000301BE4 /* Fontisto.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = Fontisto.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Fontisto.ttf"; sourceTree = "<group>"; };
@@ -130,6 +131,7 @@
 		13B07FAE1A68108700A75B9A /* tinqle */ = {
 			isa = PBXGroup;
 			children = (
+				572775A22B4FBC450042FB70 /* tinqleRelease.entitlements */,
 				57C0035C2B4A7C3B00301BE4 /* Fonts */,
 				575EEFB12B43B76500CB6F23 /* tinqle.entitlements */,
 				57172BC12B42D138001FE7D9 /* GoogleService-Info.plist */,
@@ -627,7 +629,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
-				CODE_SIGN_ENTITLEMENTS = tinqle/tinqle.entitlements;
+				CODE_SIGN_ENTITLEMENTS = tinqle/tinqleRelease.entitlements;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = B4BSCLJVA5;
 				INFOPLIST_FILE = tinqle/Info.plist;

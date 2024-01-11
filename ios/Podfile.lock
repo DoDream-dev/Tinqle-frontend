@@ -665,6 +665,8 @@ PODS:
     - React-logger (= 0.72.4)
     - React-perflogger (= 0.72.4)
   - RecaptchaInterop (100.0.0)
+  - RNAppleAuthentication (2.3.0):
+    - React-Core
   - RNCClipboard (1.11.2):
     - React-Core
   - RNCPushNotificationIOS (1.11.0):
@@ -794,6 +796,7 @@ DEPENDENCIES:
   - React-runtimescheduler (from `../node_modules/react-native/ReactCommon/react/renderer/runtimescheduler`)
   - React-utils (from `../node_modules/react-native/ReactCommon/react/utils`)
   - ReactCommon/turbomodule/core (from `../node_modules/react-native/ReactCommon`)
+  - "RNAppleAuthentication (from `../node_modules/@invertase/react-native-apple-authentication`)"
   - "RNCClipboard (from `../node_modules/@react-native-clipboard/clipboard`)"
   - "RNCPushNotificationIOS (from `../node_modules/@react-native-community/push-notification-ios`)"
   - RNFastImage (from `../node_modules/react-native-fast-image`)
@@ -942,6 +945,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/react/utils"
   ReactCommon:
     :path: "../node_modules/react-native/ReactCommon"
+  RNAppleAuthentication:
+    :path: "../node_modules/@invertase/react-native-apple-authentication"
   RNCClipboard:
     :path: "../node_modules/@react-native-clipboard/clipboard"
   RNCPushNotificationIOS:
@@ -1050,6 +1055,7 @@ SPEC CHECKSUMS:
   React-utils: b79f2411931f9d3ea5781404dcbb2fa8a837e13a
   ReactCommon: 4b2bdcb50a3543e1c2b2849ad44533686610826d
   RecaptchaInterop: 7d1a4a01a6b2cb1610a47ef3f85f0c411434cb21
+  RNAppleAuthentication: e99eaf3c4c01ad8ecb6125dd6f0cfd98871685b5
   RNCClipboard: 3f0451a8100393908bea5c5c5b16f96d45f30bfc
   RNCPushNotificationIOS: 64218f3c776c03d7408284a819b2abfda1834bc8
   RNFastImage: 5c9c9fed9c076e521b3f509fe79e790418a544e8
