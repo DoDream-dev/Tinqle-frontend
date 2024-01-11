@@ -9,6 +9,7 @@ type ProfileProps = {
   profileImg:string | null;
   restatusModal:React.Dispatch<React.SetStateAction<boolean>>;
   renameModal:React.Dispatch<React.SetStateAction<boolean>>;
+  friendshipRelation:string;
 }
 export default function Profile(props:ProfileProps){
   const status = props.status;
@@ -16,6 +17,7 @@ export default function Profile(props:ProfileProps){
   const name = props.name;
   const restatusModal = props.restatusModal;
   const renameModal = props.renameModal;
+  const friendshipRelation = props.friendshipRelation;
   const imsi = true; // 상태변화없나?
 
   // const [chageName, setChangeName] = useState(false);
@@ -52,9 +54,9 @@ export default function Profile(props:ProfileProps){
       </View>
       <View style={styles.nameView}>
         <Text style={styles.nameTxt} onPress={()=>renameModal(true)}>{name}</Text>
-        <Pressable style={styles.changeNameBtn} onPress={()=>renameModal(true)}>
+        {(friendshipRelation == 'true' || friendshipRelation == 'me') && <Pressable style={styles.changeNameBtn} onPress={()=>renameModal(true)}>
           <MaterialCommunity name='pencil-outline' size={14} color={'#888888'} />
-        </Pressable>
+        </Pressable>}
       </View>
     </View>
   );

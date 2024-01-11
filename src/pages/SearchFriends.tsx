@@ -231,7 +231,7 @@ export default function SearchFriends() {
       );
       // console.log(response.data)
       // popup: 이도님께 친구 요청을 보냈어요!
-      // setWhichPopup('send');
+      setWhichPopup('deleted');
       // setPopupName(name);
       setDeleteFriend(-1);
       setReset(!reset);
@@ -304,7 +304,10 @@ export default function SearchFriends() {
               style={[
                 styles.friendView,
                 {width: (Dimensions.get('window').width - 40) / 2},
-              ]}>
+              ]}
+              onPress={() => {
+                setShowWhoseModal(item.accountId);
+              }}>
               <Pressable
                 style={styles.friendProfileImg}>
                 {item.profileImageUrl == null ? (
@@ -329,7 +332,10 @@ export default function SearchFriends() {
               style={[
                 styles.friendView,
                 {width: (Dimensions.get('window').width - 40) / 2},
-              ]}>
+              ]}
+              onPress={() => {
+                setShowWhoseModal(item.accountId);
+              }}>
               <Pressable
                 style={styles.friendProfileImg}>
                 {item.profileImageUrl == null ? (
@@ -570,7 +576,7 @@ export default function SearchFriends() {
             setWhichPopup('');
             setPopupName('');
           }}
-          message={`${popupName}님께 친구 요청을 보냈어요!`}
+          message={`${popupName}님에게 친구 요청을 보냈어요!`}
         />
       )}
       {whichPopup === 'Me' && (
@@ -587,6 +593,14 @@ export default function SearchFriends() {
           marginBottom={48}
           onClose={() => setWhichPopup('')}
           message="이미 친구 요청을 보냈어요!"
+        />
+      )}
+      {whichPopup === 'deleted' && (
+        <ToastScreen
+          height={21}
+          marginBottom={48}
+          onClose={() => setWhichPopup('')}
+          message="친구를 삭제했어요."
         />
       )}
     </Pressable>

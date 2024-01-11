@@ -245,6 +245,7 @@ export default function MyProfile() {
       console.log(errorResponse.data)
     }
   };
+  
 
   return (
     <ScrollView style={styles.entire}>
@@ -255,6 +256,7 @@ export default function MyProfile() {
           restatusModal={setChangeStatus}
           renameModal={setChangeName}
           profileImg={profileImg}
+          friendshipRelation='me'
         />
         <Pressable style={styles.addProfileImgBtn} onPress={()=>console.log('profileImg select')}>
           <SvgXml width={24} height={24} xml={svgXml.icon.photo} />
@@ -508,8 +510,8 @@ const styles = StyleSheet.create({
   },
   addProfileImgBtn:{
     position:'absolute',
-    top: 116,
-    left:208,
+    top: 131,
+    left:223,
     backgroundColor:'#101010',
     borderRadius:15,
     padding:3
