@@ -1,6 +1,3 @@
-/* eslint-disable react-native/no-inline-styles */
-// @ts-ignore
-import {SliderBox} from 'react-native-image-slider-box';
 import React, {useState} from 'react';
 import {
   StyleSheet,
@@ -16,8 +13,7 @@ import {useNavigation} from '@react-navigation/native';
 import {svgXml} from '../../assets/image/svgXml';
 import {SvgXml} from 'react-native-svg';
 import FriendProfileModal from './FriendProfileModal';
-import AnimatedButton from './AnimatedButton';
-import EnlargeImageModal from './EnlargeImageModal';
+import ImageModal from 'react-native-image-modal';
 
 type ContentProps = {
   nickname: string;
@@ -52,10 +48,6 @@ export default function Content(props: ContentProps) {
   const profileImg = props.profileImg;
   const showWhoseModal = props.showWhoseModal;
   const setShowWhoseModal = props.setShowWhoseModal;
-
-  const [enlargeImageModalVisible, setEnlargeImageModalVisible] =
-    useState(false);
-  const [modalImage, setModalImage] = useState('');
 
   return (
     <View style={styles.entire}>
@@ -155,20 +147,18 @@ export default function Content(props: ContentProps) {
             parentWidth={283}
           />} */}
           {imageURL.flatMap(f => (!!f ? [f] : [])).length != 0 && (
-            <AnimatedButton
-              onPress={() => {
-                setModalImage(imageURL[0] ? imageURL[0] : '');
-                setEnlargeImageModalVisible(true);
-              }}>
-              <Image
-                source={{uri: imageURL[0]}}
-                style={{
-                  width: windowWidth - 100,
-                  height: windowWidth - 100,
-                  marginTop: 5,
-                }}
-              />
-            </AnimatedButton>
+            <ImageModal
+              swipeToDismiss={false}
+              resizeMode="contain"
+              imageBackgroundColor="transparent"
+              style={{
+                width: windowWidth - 100,
+                height: windowWidth - 100,
+              }}
+              source={{
+                uri: imageURL[0] ?? undefined,
+              }}
+            />
           )}
         </View>
         {cmt && (
@@ -180,11 +170,6 @@ export default function Content(props: ContentProps) {
       <FriendProfileModal
         showWhoseModal={showWhoseModal}
         setShowWhoseModal={setShowWhoseModal}
-      />
-      <EnlargeImageModal
-        imageUrl={modalImage}
-        showModal={enlargeImageModalVisible}
-        onCloseModal={setEnlargeImageModalVisible}
       />
     </View>
   );
