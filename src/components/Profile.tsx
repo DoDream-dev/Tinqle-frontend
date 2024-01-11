@@ -49,17 +49,19 @@ export default function Profile(props: ProfileProps) {
         {profileImage == null ? (
           <SvgXml width={90} height={90} xml={svgXml.profile.null} />
         ) : (
-          <ImageModal
-            swipeToDismiss={true}
-            resizeMode="contain"
-            // resizeMode="cover"
-            imageBackgroundColor="transparent"
-            overlayBackgroundColor="#202020"
-            style={{width: 90, height: 90, borderRadius: 45}}
-            source={{
-              uri: profileImage,
-            }}
-          />
+          <View style={{width: 90, height: 90, borderRadius: 45}}>
+            <ImageModal
+              swipeToDismiss={true}
+              resizeMode="contain"
+              // resizeMode="cover"
+              imageBackgroundColor="transparent"
+              overlayBackgroundColor="#202020"
+              style={{width: 90, height: 90, borderRadius: 45}}
+              source={{
+                uri: profileImage,
+              }}
+            />
+          </View>
         )}
       </View>
       <View style={styles.nameView}>
