@@ -14,7 +14,7 @@ import Config from 'react-native-config';
 import {useSelector} from 'react-redux';
 import {RootState} from '../store/reducer';
 import Clipboard from '@react-native-clipboard/clipboard';
-import Icon from 'react-native-vector-icons/FontAwesome6';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import {useAppDispatch} from '../store';
 import ToastScreen from '../components/ToastScreen';
 import Modal from 'react-native-modal';
@@ -230,7 +230,7 @@ export default function SearchFriends() {
                 <Pressable
                   onPress={() => setSearchCode('')}
                   style={styles.clearBtn}>
-                  <Icon name="circle-xmark" size={20} color={'#F0F0F0'} />
+                  <MaterialIcons name="close" size={20} color={'#888888'} />
                 </Pressable>
               )}
             </View>
