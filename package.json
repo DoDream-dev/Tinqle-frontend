@@ -11,6 +11,7 @@
     "bundle": "react-native bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle"
   },
   "dependencies": {
+    "@invertase/react-native-apple-authentication": "^2.3.0",
     "@react-native-clipboard/clipboard": "^1.11.2",
     "@react-native-community/push-notification-ios": "^1.11.0",
     "@react-native-firebase/app": "^18.7.3",
