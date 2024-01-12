@@ -111,7 +111,7 @@ export default function SearchFriends() {
       }
     };
     getFriendship();
-  }, [isLast, showWhoseModal, reset]);
+  }, [isLast, reset]);
 
   const getFriendProfile = _.throttle(async () => {
     try {
