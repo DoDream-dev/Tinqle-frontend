@@ -42,6 +42,7 @@
     "react-native-screens": "^3.25.0",
     "react-native-shadow-2": "^7.0.8",
     "react-native-splash-screen": "^3.3.0",
+    "react-native-status-bar-height": "^2.6.0",
     "react-native-svg": "^13.14.0",
     "react-native-swipe-gestures": "^1.0.5",
     "react-native-switch-selector": "^2.3.0",
