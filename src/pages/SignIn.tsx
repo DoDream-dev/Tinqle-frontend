@@ -118,23 +118,21 @@ export default function SignIn() {
   };
 
   const LoginWithApple = async () => {
-    console.log('Apple 로그인 시도 중 // 아직 미구현!');
+    console.log('Apple 로그인 시도 중 // 아직 미구현! - 데이터만 확인');
     // return; //미작성 코드
     try {
-      const appleAuthRequestResponse = await appleAuth.performRequest({
-        requestedOperation: appleAuth.Operation.LOGIN,
-        requestedScopes: [appleAuth.Scope.EMAIL, appleAuth.Scope.FULL_NAME],
-      });
-
-      // Ensure Apple returned a user identityToken
-      if (!appleAuthRequestResponse.identityToken) {
-        throw 'Apple Sign-In failed - no identify token returned';
-      }
-
-      const {identityToken, nonce} = appleAuthRequestResponse;
-      console.log('res : ', appleAuthRequestResponse);
-      console.log('identityToken: ', identityToken);
-      console.log('nonce: ', nonce);
+      // const appleAuthRequestResponse = await appleAuth.performRequest({
+      //   requestedOperation: appleAuth.Operation.LOGIN,
+      //   requestedScopes: [appleAuth.Scope.EMAIL, appleAuth.Scope.FULL_NAME],
+      // });
+      // // Ensure Apple returned a user identityToken
+      // if (!appleAuthRequestResponse.identityToken) {
+      //   throw 'Apple Sign-In failed - no identify token returned';
+      // }
+      // const {identityToken, nonce} = appleAuthRequestResponse;
+      // console.log('res : ', appleAuthRequestResponse);
+      // console.log('identityToken: ', identityToken);
+      // console.log('nonce: ', nonce);
     } catch (error) {
       console.log('에러났으', error);
       // const errorResponse = (error as AxiosError<{message: string}>).response;
