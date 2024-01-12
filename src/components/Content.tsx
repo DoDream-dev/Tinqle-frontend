@@ -156,6 +156,7 @@ export default function Content(props: ContentProps) {
               style={{
                 width: windowWidth - 100,
                 height: windowWidth - 100,
+                marginTop: 8,
               }}
               source={{
                 uri: imageURL[0] ?? undefined,
