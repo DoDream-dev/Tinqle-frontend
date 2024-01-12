@@ -213,6 +213,7 @@ export default function Notis({navigation}: NotisScreenProps) {
   return (
     <View style={styles.entire}>
       <View style={styles.notisHeader}>
+        {/* {console.log('##', notisData)} */}
         <Text style={styles.notisHeaderTxt}>푸시알림</Text>
         <Pressable
           onPress={() => setIsEnabled(!isEnabled)}

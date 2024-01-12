@@ -59,6 +59,9 @@ export default function FeedNavigation() {
               <AntDesign name="arrowleft" size={24} color={'#848484'} />
             </Pressable>
           ),
+          headerStyle: {
+            backgroundColor: '#202020',
+          },
         })}
       />
       <Stack.Screen
@@ -78,6 +81,9 @@ export default function FeedNavigation() {
               <AntDesign name="arrowleft" size={24} color={'#848484'} />
             </Pressable>
           ),
+          headerStyle: {
+            backgroundColor: '#202020',
+          },
         })}
       />
     </Stack.Navigator>
