@@ -1,5 +1,5 @@
 import React, { useState, useRef } from "react";
-import { StyleSheet, Text, Pressable, View, Keyboard, TextInput, Dimensions } from "react-native";
+import { StyleSheet, Text, Pressable, View, Keyboard, TextInput, Dimensions, useWindowDimensions } from "react-native";
 import axios, { AxiosError } from 'axios';
 import Modal from'react-native-modal';
 import Config from 'react-native-config';
@@ -8,10 +8,12 @@ import _ from 'lodash';
 
 
 import { throttleTime } from '../hooks/Throttle';
+import ToastScreen from "./ToastScreen";
 
 type ProfileProps = {
   showWhoseModal:number;
   setShowWhoseModal:React.Dispatch<React.SetStateAction<number>>;
+  setDeleteFriend:React.Dispatch<React.SetStateAction<number>>;
 }
 export default function FriendProfileModal(props:ProfileProps){
   const showWhoseModal = props.showWhoseModal;
@@ -22,19 +24,26 @@ export default function FriendProfileModal(props:ProfileProps){
   const [chageNameVal, setChangeNameVal] = useState('');
   const [status, setStatus] = useState('');
   const [name, setName] = useState('');
+  const [friendshipRelation, setFriendshipRelation] = useState('');
+  const [friendshipId, setFriendshipId] = useState(-1);
   const [profileImg, setProfileImg] = useState(null);
+  const setDeleteFriend = props.setDeleteFriend;
+  const [whichPopup, setWhichPopup] = useState('');
 
   const inp1 = useRef();
 
 
   const getProfile = async () => {
     try {
+        {/* 여기에 friendshipId 필요 */}
       const response = await axios.get(`${Config.API_URL}/accounts/${showWhoseModal}/profile`,);
-      // console.log(response.data.data)
+      console.log(response.data.data)
       setName(response.data.data.nickname);
       setChangeNameVal(response.data.data.nickname);
       setStatus(response.data.data.status.toLowerCase());
       setProfileImg(response.data.data.profileImageUrl);
+      setFriendshipRelation(response.data.data.friendshipRelation);
+      // setFriendshipId(response.data.data.friendshipId);
       
     } catch (error) {
       const errorResponse = (error as AxiosError<{message: string}>).response;
@@ -61,6 +70,32 @@ export default function FriendProfileModal(props:ProfileProps){
       console.log(errorResponse.data);
     }
   }, throttleTime);
+
+  const askFriend = _.throttle(async (accountId:number, name:string, profileImageUrl:string) => {
+    try {
+      const response = await axios.post(
+        `${Config.API_URL}/friendships/request`,
+        {
+          accountTargetId: accountId,
+          message: "",
+        },
+      );
+      // console.log(response.data)
+      // popup: 이도님께 친구 요청을 보냈어요!
+      setWhichPopup('askFriend');
+    } catch (error) {
+      const errorResponse = (error as AxiosError<{message: string}>).response;
+      console.log(errorResponse.data);
+      // if (errorResponse?.data.statusCode == 1000) {
+      //   // if (await refreshOrNot()) setReset(!reset);
+      // }
+      // if (errorResponse?.data.statusCode == 3010) {
+      //   setWhichPopup('requested');
+      //   setOtherUser({accountId:-1, nickname:'', isFriend:0});
+      //   setMessage('');
+      // }
+    }
+  }, throttleTime);
   
   return (
   <Modal isVisible={showWhoseModal != 0 && showWhoseModal != undefined}
@@ -80,12 +115,16 @@ export default function FriendProfileModal(props:ProfileProps){
           profileImg={profileImg}
           renameModal={setChangeName}
           restatusModal={setChangeStatus}
+          friendshipRelation={friendshipRelation}
         />
       </View>
       <View style={styles.btnView}>
-        <Pressable style={styles.btn}><Text style={styles.btnTxt}>지금 뭐해?</Text></Pressable>
-        <View style={{width:8}}></View>
-        <Pressable style={styles.btnGray}><Text style={styles.btnTxt}>친구 삭제하기</Text></Pressable>
+        {/* 여기에 friendshipId 필요 */}
+        {friendshipRelation == 'true' && <Pressable style={styles.btnGray} onPress={()=>{setDeleteFriend(true); setShowWhoseModal(0)}}><Text style={styles.btnTxt}>친구 삭제하기</Text></Pressable>}
+        {friendshipRelation == 'true' && <View style={{width:8}}></View>}
+        {friendshipRelation == 'true' && <Pressable style={styles.btn} onPress={()=>setWhichPopup('whatAreYouDoing')}><Text style={styles.btnTxt}>지금 뭐해?</Text></Pressable>}
+        {friendshipRelation == 'false' && <Pressable style={styles.btn} onPress={()=>askFriend(showWhoseModal, name, profileImg)}><Text style={styles.btnTxt}>친구 요청하기</Text></Pressable>}
+        {friendshipRelation == 'waiting' && <Pressable style={styles.btnGray}><Text style={styles.btnTxt}>친구 요청하기</Text></Pressable>}
       </View>
       <Modal isVisible={chageName} onBackButtonPress={()=>setChangeName(false)} avoidKeyboard={true} backdropColor='#222222' backdropOpacity={0.5}>
         <Pressable style={styles.modalBGView} onPress={()=>{setChangeName(false); Keyboard.dismiss();}}>
@@ -123,6 +162,25 @@ export default function FriendProfileModal(props:ProfileProps){
           </Pressable>
         </Pressable>
       </Modal>
+      
+      <View style={{bottom:-(useWindowDimensions().height/2-310/2), alignItems:'center'}}>
+        {whichPopup == 'whatAreYouDoing' && (
+          <ToastScreen
+            height={21}
+            marginBottom={48}
+            onClose={() => setWhichPopup('')}
+            message={`${name}님에게 지금 뭐해?를 보냈어요.`}
+          />
+        )}
+        {whichPopup == 'askFriend' && (
+          <ToastScreen
+            height={21}
+            marginBottom={48}
+            onClose={() => setWhichPopup('')}
+            message={`${name}님에게 친구 요청을 보냈어요!`}
+          />
+        )}
+      </View>
     </Modal>
   );
 
@@ -200,9 +258,9 @@ const styles = StyleSheet.create({
     width:'100%',
     fontSize:15,
     fontWeight:'400',
-    color:'#222222',
+    color:'#F0F0F0',
     borderRadius: 5,
-    backgroundColor:'#F7F7F7',
+    backgroundColor:'#202020',
     height:40,
     paddingHorizontal:10,
     marginBottom:20,
@@ -214,9 +272,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems:'center',
     borderRadius: 10,
-    borderWidth: 1,
-    borderColor: '#A55FFF',
-    backgroundColor: '#F0F0F0',
+    // borderWidth: 1,
+    // borderColor: '#A55FFF',
+    backgroundColor: '#888888',
     marginHorizontal: 4,
   },
   btnYellow:{
@@ -225,13 +283,13 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems:'center',
     borderRadius: 10,
-    borderWidth: 1,
-    borderColor: '#A55FFF',
+    // borderWidth: 1,
+    // borderColor: '#A55FFF',
     backgroundColor: '#A55FFF',
     marginHorizontal: 4,
   },
   btnWhiteTxt:{
-    color:'#A55FFF',
+    color:'#F0F0F0',
     fontSize:15,
     fontWeight:'600'
   },

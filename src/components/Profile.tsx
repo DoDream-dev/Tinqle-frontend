@@ -6,18 +6,20 @@ import {SvgXml} from 'react-native-svg';
 import ImageModal from 'react-native-image-modal';
 
 type ProfileProps = {
-  status: string;
-  name: string;
-  profileImg: string | null;
-  restatusModal: React.Dispatch<React.SetStateAction<boolean>>;
-  renameModal: React.Dispatch<React.SetStateAction<boolean>>;
-};
-export default function Profile(props: ProfileProps) {
+  status:string;
+  name:string;
+  profileImg:string | null;
+  restatusModal:React.Dispatch<React.SetStateAction<boolean>>;
+  renameModal:React.Dispatch<React.SetStateAction<boolean>>;
+  friendshipRelation:string;
+}
+export default function Profile(props:ProfileProps){
   const status = props.status;
   const profileImage = props.profileImg;
   const name = props.name;
   const restatusModal = props.restatusModal;
   const renameModal = props.renameModal;
+  const friendshipRelation = props.friendshipRelation;
   const imsi = true; // 상태변화없나?
 
   // const [chageName, setChangeName] = useState(false);
@@ -47,9 +49,9 @@ export default function Profile(props: ProfileProps) {
           {status == 'travel' && <SvgXml width={90} height={90} xml={svgXml.status.travel} />}
         </Pressable> */}
         {profileImage == null ? (
-          <SvgXml width={90} height={90} xml={svgXml.profile.null} />
+          <SvgXml width={120} height={120} xml={svgXml.profile.null} />
         ) : (
-          <View style={{width: 90, height: 90, borderRadius: 45}}>
+          <View style={{width: 120, height: 120, borderRadius: 45}}>
             <ImageModal
               swipeToDismiss={true}
               resizeMode="contain"
@@ -65,26 +67,18 @@ export default function Profile(props: ProfileProps) {
         )}
       </View>
       <View style={styles.nameView}>
-        <Text style={styles.nameTxt} onPress={() => renameModal(true)}>
-          {name}
-        </Text>
-        <Pressable
-          style={styles.changeNameBtn}
-          onPress={() => renameModal(true)}>
-          <MaterialCommunity
-            name="pencil-outline"
-            size={14}
-            color={'#888888'}
-          />
-        </Pressable>
+        <Text style={styles.nameTxt} onPress={()=>renameModal(true)}>{name}</Text>
+        {(friendshipRelation == 'true' || friendshipRelation == 'me') && <Pressable style={styles.changeNameBtn} onPress={()=>renameModal(true)}>
+          <MaterialCommunity name='pencil-outline' size={14} color={'#888888'} />
+        </Pressable>}
       </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  entire: {
-    alignItems: 'center',
+  entire:{
+    alignItems:'center',
   },
   statusView: {
     width: 120,
