@@ -10,6 +10,7 @@ import {
   Modal as M,
   TextInput,
   FlatList,
+  KeyboardAvoidingView,
 } from 'react-native';
 import {RootStackParamList} from '../../AppInner';
 import Feed from '../components/Feed';
@@ -28,6 +29,8 @@ import _ from 'lodash';
 import {useAppDispatch} from '../store';
 import userSlice from '../slices/user';
 import {Safe, StatusBarHeight} from '../components/Safe';
+import {useHeaderHeight} from '@react-navigation/elements';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
 
 type FeedDetailScreenProps = NativeStackScreenProps<
   RootStackParamList,
@@ -457,219 +460,228 @@ export default function FeedDetail({navigation, route}: FeedDetailScreenProps) {
   }, [writeChildCmt]);
 
   return (
-    <View style={styles.entire}>
-      <View style={styles.commentView}>
-        <FlatList
-          refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-          }
-          data={cmtData}
-          style={styles.cmtList}
-          onEndReached={onEndReached}
-          onEndReachedThreshold={0.4}
-          ListHeaderComponent={
-            <View>
-              <View style={styles.feedView}>
-                <Feed
-                  mine={feedData.isAuthor}
-                  detail={true}
-                  commentCnt={feedData.commentCount}
-                  createdAt={feedData.createdAt}
-                  content={feedData.content}
-                  emoticons={feedData.emoticons}
-                  nickname={feedData.friendNickname}
-                  status={feedData.status}
-                  accountId={feedData.accountId}
-                  imageURL={feedData.feedImageUrls}
-                  press={pressEmoticon}
-                  feedId={feedData.feedId}
-                  whoReact={whoReact}
-                  profileImg={feedData.profileImageUrl}
-                  showWhoseModal={showWhoseModal}
-                  setShowWhoseModal={setShowWhoseModal}
-                />
+    <KeyboardAvoidingView
+      style={[{flex: 1}]}
+      behavior="padding"
+      keyboardVerticalOffset={105}>
+      <View style={styles.entire}>
+        <View style={styles.commentView}>
+          <FlatList
+            refreshControl={
+              <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+            }
+            data={cmtData}
+            style={styles.cmtList}
+            onEndReached={onEndReached}
+            onEndReachedThreshold={0.4}
+            ListHeaderComponent={
+              <View>
+                <View style={styles.feedView}>
+                  <Feed
+                    mine={feedData.isAuthor}
+                    detail={true}
+                    commentCnt={feedData.commentCount}
+                    createdAt={feedData.createdAt}
+                    content={feedData.content}
+                    emoticons={feedData.emoticons}
+                    nickname={feedData.friendNickname}
+                    status={feedData.status}
+                    accountId={feedData.accountId}
+                    imageURL={feedData.feedImageUrls}
+                    press={pressEmoticon}
+                    feedId={feedData.feedId}
+                    whoReact={whoReact}
+                    profileImg={feedData.profileImageUrl}
+                    showWhoseModal={showWhoseModal}
+                    setShowWhoseModal={setShowWhoseModal}
+                  />
+                </View>
+                <View style={styles.commentHeader}>
+                  <SvgXml
+                    width={16}
+                    height={14}
+                    xml={svgXml.icon.commentIcon}
+                  />
+                  <Text style={styles.commentHeaderTxt}>
+                    댓글 {feedData.commentCount}개
+                  </Text>
+                </View>
               </View>
-              <View style={styles.commentHeader}>
-                <SvgXml width={16} height={14} xml={svgXml.icon.commentIcon} />
-                <Text style={styles.commentHeaderTxt}>
-                  댓글 {feedData.commentCount}개
+            }
+            renderItem={({item}: itemProps) => {
+              const childData = item.childCommentCardList;
+              return (
+                <Pressable
+                  style={
+                    writeChildCmt == item.commentId
+                      ? {
+                          borderBottomWidth: 1,
+                          borderColor: '#ECECEC',
+                          backgroundColor: '#FFB4431A',
+                        }
+                      : {borderBottomWidth: 1, borderColor: '#ECECEC'}
+                  }>
+                  <Content
+                    nickname={item.friendNickname}
+                    status={item.status}
+                    content={item.content}
+                    createdAt={item.createAt}
+                    accountId={item.accountId}
+                    mine={item.isAuthor}
+                    imageURL={[null]}
+                    detail={true}
+                    cmt={true}
+                    child={setWriteChildCmt}
+                    cmtId={item.commentId}
+                    profileImg={item.profileImageUrl}
+                    showWhoseModal={showWhoseModal}
+                    setShowWhoseModal={setShowWhoseModal}
+                  />
+                  {item.childCount != 0 && (
+                    <View style={{backgroundColor: 'white'}}>
+                      <FlatList
+                        data={childData}
+                        // style={{borderTopWidth:1, borderTopColor:'#ECECEC',}}
+                        renderItem={({item}) => {
+                          return (
+                            <View style={styles.childCmt}>
+                              <Content
+                                nickname={item.friendNickname}
+                                status={item.status}
+                                content={item.content}
+                                createdAt={item.createAt}
+                                accountId={item.accountId}
+                                mine={item.isAuthor}
+                                imageURL={[null]}
+                                detail={true}
+                                cmt={false}
+                                child={setWriteChildCmt}
+                                cmtId={item.commentId}
+                                profileImg={item.profileImageUrl}
+                                showWhoseModal={showWhoseModal}
+                                setShowWhoseModal={setShowWhoseModal}
+                              />
+                            </View>
+                          );
+                        }}
+                      />
+                    </View>
+                  )}
+                </Pressable>
+              );
+            }}
+          />
+        </View>
+        <View style={{height: Math.min(80, Math.max(45, KBsize))}}></View>
+        <View style={styles.newCmtView}>
+          <TextInput
+            placeholder={placeholder}
+            placeholderTextColor={'#848484'}
+            style={[
+              styles.newCmtTxtInput,
+              {height: Math.min(80, Math.max(35, KBsize))},
+            ]}
+            onBlur={() => setWriteChildCmt(-1)}
+            onChangeText={(text: string) => {
+              setCmtContent(text);
+            }}
+            blurOnSubmit={false}
+            maxLength={200}
+            value={cmtContent}
+            onSubmitEditing={() => sendNewCmt()}
+            multiline={true}
+            autoCapitalize="none"
+            autoComplete="off"
+            autoCorrect={false}
+            onContentSizeChange={e => {
+              setKBsize(e.nativeEvent.contentSize.height);
+            }}
+            ref={inputRef}
+            // numberOfLines={4}
+          />
+          <Pressable
+            style={
+              cmtContent.trim() == ''
+                ? styles.sendNewCmt
+                : styles.sendNewCmtActivated
+            }
+            disabled={cmtContent.trim() == ''}
+            onPress={writeChildCmt == -1 ? sendNewCmt : sendNewChildCmt}>
+            <Feather name="check" size={24} style={{color: 'white'}} />
+          </Pressable>
+        </View>
+        <M visible={deleteModal} transparent={true}>
+          <Safe>
+            <Pressable onPress={() => setDeleteModal(false)} style={{flex: 1}}>
+              <View style={styles.popup}>
+                <Shadow distance={10} startColor="#00000008">
+                  <Pressable onPress={deleteFeed} style={styles.deleteFeed}>
+                    <Text style={styles.deleteFeedTxt}>삭제하기</Text>
+                  </Pressable>
+                </Shadow>
+              </View>
+            </Pressable>
+          </Safe>
+        </M>
+        <Modal
+          isVisible={showBottomSheet}
+          onBackButtonPress={() => setShowBottomSheet(false)}
+          backdropColor="#222222"
+          backdropOpacity={0.5}
+          onSwipeComplete={() => setShowBottomSheet(false)}
+          swipeDirection={'down'}
+          style={{justifyContent: 'flex-end', margin: 0}}>
+          <Pressable
+            style={styles.modalBGView}
+            onPress={() => setShowBottomSheet(false)}>
+            <Pressable
+              style={styles.modalView}
+              onPress={e => e.stopPropagation()}>
+              <View style={styles.whoReacted}>
+                <SvgXml width={22} height={22} xml={svgXml.emoticon.heart} />
+                <Text style={styles.emoticonTxt}>
+                  {EmoticonList.heartEmoticonNicknameList.join(' ') == ''
+                    ? '-'
+                    : EmoticonList.heartEmoticonNicknameList
+                        .join(', ')
+                        .replace(/ /g, '\u00A0')}
                 </Text>
               </View>
-            </View>
-          }
-          renderItem={({item}: itemProps) => {
-            const childData = item.childCommentCardList;
-            return (
-              <Pressable
-                style={
-                  writeChildCmt == item.commentId
-                    ? {
-                        borderBottomWidth: 1,
-                        borderColor: '#ECECEC',
-                        backgroundColor: '#FFB4431A',
-                      }
-                    : {borderBottomWidth: 1, borderColor: '#ECECEC'}
-                }>
-                <Content
-                  nickname={item.friendNickname}
-                  status={item.status}
-                  content={item.content}
-                  createdAt={item.createAt}
-                  accountId={item.accountId}
-                  mine={item.isAuthor}
-                  imageURL={[null]}
-                  detail={true}
-                  cmt={true}
-                  child={setWriteChildCmt}
-                  cmtId={item.commentId}
-                  profileImg={item.profileImageUrl}
-                  showWhoseModal={showWhoseModal}
-                  setShowWhoseModal={setShowWhoseModal}
-                />
-                {item.childCount != 0 && (
-                  <View style={{backgroundColor: 'white'}}>
-                    <FlatList
-                      data={childData}
-                      // style={{borderTopWidth:1, borderTopColor:'#ECECEC',}}
-                      renderItem={({item}) => {
-                        return (
-                          <View style={styles.childCmt}>
-                            <Content
-                              nickname={item.friendNickname}
-                              status={item.status}
-                              content={item.content}
-                              createdAt={item.createAt}
-                              accountId={item.accountId}
-                              mine={item.isAuthor}
-                              imageURL={[null]}
-                              detail={true}
-                              cmt={false}
-                              child={setWriteChildCmt}
-                              cmtId={item.commentId}
-                              profileImg={item.profileImageUrl}
-                              showWhoseModal={showWhoseModal}
-                              setShowWhoseModal={setShowWhoseModal}
-                            />
-                          </View>
-                        );
-                      }}
-                    />
-                  </View>
-                )}
-              </Pressable>
-            );
-          }}
-        />
-      </View>
-      <View style={{height: Math.min(80, Math.max(45, KBsize))}}></View>
-      <View style={styles.newCmtView}>
-        <TextInput
-          placeholder={placeholder}
-          placeholderTextColor={'#848484'}
-          style={[
-            styles.newCmtTxtInput,
-            {height: Math.min(80, Math.max(35, KBsize))},
-          ]}
-          onBlur={() => setWriteChildCmt(-1)}
-          onChangeText={(text: string) => {
-            setCmtContent(text);
-          }}
-          blurOnSubmit={false}
-          maxLength={200}
-          value={cmtContent}
-          onSubmitEditing={() => sendNewCmt()}
-          multiline={true}
-          autoCapitalize="none"
-          autoComplete="off"
-          autoCorrect={false}
-          onContentSizeChange={e => {
-            setKBsize(e.nativeEvent.contentSize.height);
-          }}
-          ref={inputRef}
-          // numberOfLines={4}
-        />
-        <Pressable
-          style={
-            cmtContent.trim() == ''
-              ? styles.sendNewCmt
-              : styles.sendNewCmtActivated
-          }
-          disabled={cmtContent.trim() == ''}
-          onPress={writeChildCmt == -1 ? sendNewCmt : sendNewChildCmt}>
-          <Feather name="check" size={24} style={{color: 'white'}} />
-        </Pressable>
-      </View>
-      <M visible={deleteModal} transparent={true}>
-        <Safe>
-          <Pressable onPress={() => setDeleteModal(false)} style={{flex: 1}}>
-            <View style={styles.popup}>
-              <Shadow distance={10} startColor="#00000008">
-                <Pressable onPress={deleteFeed} style={styles.deleteFeed}>
-                  <Text style={styles.deleteFeedTxt}>삭제하기</Text>
-                </Pressable>
-              </Shadow>
-            </View>
+              <View style={styles.whoReacted}>
+                <SvgXml width={22} height={22} xml={svgXml.emoticon.smile} />
+                <Text style={styles.emoticonTxt}>
+                  {EmoticonList.smileEmoticonNicknameList.join(' ') == ''
+                    ? '-'
+                    : EmoticonList.smileEmoticonNicknameList
+                        .join(', ')
+                        .replace(/ /g, '\u00A0')}
+                </Text>
+              </View>
+              <View style={styles.whoReacted}>
+                <SvgXml width={22} height={22} xml={svgXml.emoticon.sad} />
+                <Text style={styles.emoticonTxt}>
+                  {EmoticonList.sadEmoticonNicknameList.join(' ') == ''
+                    ? '-'
+                    : EmoticonList.sadEmoticonNicknameList
+                        .join(', ')
+                        .replace(/ /g, '\u00A0')}
+                </Text>
+              </View>
+              <View style={styles.whoReacted}>
+                <SvgXml width={22} height={22} xml={svgXml.emoticon.surprise} />
+                <Text style={styles.emoticonTxt}>
+                  {EmoticonList.surpriseEmoticonNicknameList.join(' ') == ''
+                    ? '-'
+                    : EmoticonList.surpriseEmoticonNicknameList
+                        .join(', ')
+                        .replace(/ /g, '\u00A0')}
+                </Text>
+              </View>
+            </Pressable>
           </Pressable>
-        </Safe>
-      </M>
-      <Modal
-        isVisible={showBottomSheet}
-        onBackButtonPress={() => setShowBottomSheet(false)}
-        backdropColor="#222222"
-        backdropOpacity={0.5}
-        onSwipeComplete={() => setShowBottomSheet(false)}
-        swipeDirection={'down'}
-        style={{justifyContent: 'flex-end', margin: 0}}>
-        <Pressable
-          style={styles.modalBGView}
-          onPress={() => setShowBottomSheet(false)}>
-          <Pressable
-            style={styles.modalView}
-            onPress={e => e.stopPropagation()}>
-            <View style={styles.whoReacted}>
-              <SvgXml width={22} height={22} xml={svgXml.emoticon.heart} />
-              <Text style={styles.emoticonTxt}>
-                {EmoticonList.heartEmoticonNicknameList.join(' ') == ''
-                  ? '-'
-                  : EmoticonList.heartEmoticonNicknameList
-                      .join(', ')
-                      .replace(/ /g, '\u00A0')}
-              </Text>
-            </View>
-            <View style={styles.whoReacted}>
-              <SvgXml width={22} height={22} xml={svgXml.emoticon.smile} />
-              <Text style={styles.emoticonTxt}>
-                {EmoticonList.smileEmoticonNicknameList.join(' ') == ''
-                  ? '-'
-                  : EmoticonList.smileEmoticonNicknameList
-                      .join(', ')
-                      .replace(/ /g, '\u00A0')}
-              </Text>
-            </View>
-            <View style={styles.whoReacted}>
-              <SvgXml width={22} height={22} xml={svgXml.emoticon.sad} />
-              <Text style={styles.emoticonTxt}>
-                {EmoticonList.sadEmoticonNicknameList.join(' ') == ''
-                  ? '-'
-                  : EmoticonList.sadEmoticonNicknameList
-                      .join(', ')
-                      .replace(/ /g, '\u00A0')}
-              </Text>
-            </View>
-            <View style={styles.whoReacted}>
-              <SvgXml width={22} height={22} xml={svgXml.emoticon.surprise} />
-              <Text style={styles.emoticonTxt}>
-                {EmoticonList.surpriseEmoticonNicknameList.join(' ') == ''
-                  ? '-'
-                  : EmoticonList.surpriseEmoticonNicknameList
-                      .join(', ')
-                      .replace(/ /g, '\u00A0')}
-              </Text>
-            </View>
-          </Pressable>
-        </Pressable>
-      </Modal>
-    </View>
+        </Modal>
+      </View>
+    </KeyboardAvoidingView>
   );
 }
 
@@ -764,6 +776,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     backgroundColor: '#F7F7F7',
     width: '100%',
+    height: 50,
     position: 'absolute',
     bottom: 0,
     justifyContent: 'space-between',
