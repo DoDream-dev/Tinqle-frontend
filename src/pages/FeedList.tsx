@@ -10,10 +10,9 @@ import {
   TextInput,
   Dimensions,
   RefreshControl,
+  KeyboardAvoidingView,
   Keyboard,
   TouchableWithoutFeedback,
-  KeyboardAvoidingView,
-  Platform,
 } from 'react-native';
 import {RootStackParamList} from '../../AppInner';
 import Feed from '../components/Feed';
@@ -364,9 +363,15 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
   };
 
   return (
-    <View style={{flex: 1, alignItems: 'center', backgroundColor: '#202020'}}>
-      <View style={[styles.entire]}>
-        {/* <Pressable
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+      <KeyboardAvoidingView
+        style={[{flex: 1, backgroundColor: '#202020'}]}
+        behavior="padding"
+        keyboardVerticalOffset={105}>
+        <View
+          style={{flex: 1, alignItems: 'center', backgroundColor: '#202020'}}>
+          <View style={[styles.entire]}>
+            {/* <Pressable
           onPress={async () => {
             console.log('pressed!');
 
@@ -383,224 +388,233 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
             backgroundColor: 'blue',
           }}
         /> */}
-        <FlatList
-          data={feedData}
-          style={[styles.feedList]}
-          onEndReached={onEndReached}
-          onEndReachedThreshold={0.4}
-          ListHeaderComponent={
-            <View>
-              <Text style={styles.noFeedTxt}>
-                지금 떠오르는 생각을 적어보세요!
-              </Text>
-            </View>
-          }
-          ListHeaderComponentStyle={
-            feedData.length === 0
-              ? [styles.noFeedView, {height: windowHeight - 200}]
-              : {height: 0, width: 0}
-          }
-          refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-          }
-          // onStartReached={()=>{
-          //   if (first) scroll(feedData.length - 1)
-          //   else {
-          //     onEndReached();
-          //   }
-          // }}
-          // onStartReachedThreshold={0.4}
-          keyboardShouldPersistTaps={'always'}
-          inverted={true}
-          ref={flatRef}
-          ListFooterComponent={<View style={{height: 10}}></View>}
-          // getItemLayout={(data, index) => ({
-          //   length:100,
-          //   offset:20000*index,
-          //   index,
-          // })}
-          // onLayout={()=>scrollToEnd()}
-          renderItem={({item}: itemProps) => {
-            return (
-              <Pressable
-                style={styles.feed}
-                onPress={() =>
-                  navigation.navigate('FeedDetail', {feedId: item.feedId})
-                }>
-                <Feed
-                  mine={item.isAuthor}
-                  detail={false}
-                  commentCnt={item.commentCount}
-                  createdAt={item.createdAt}
-                  content={item.content}
-                  emoticons={item.emoticons}
-                  nickname={item.friendNickname}
-                  status={item.status}
-                  accountId={item.accountId}
-                  imageURL={item.feedImageUrls}
-                  press={pressEmoticon}
-                  feedId={item.feedId}
-                  whoReact={whoReact}
-                  profileImg={item.profileImageUrl}
-                  showWhoseModal={showWhoseModal}
-                  setShowWhoseModal={setShowWhoseModal}
-                />
-              </Pressable>
-            );
-          }}
-        />
-      </View>
-      <View style={[styles.newFeedAll, {width: windowWidth}]}>
-        {selectImg && (
-          <View style={[styles.newFeedImgView, {width: windowWidth}]}>
-            <Pressable
-              onPress={() => {
-                setSelectImg(false);
-                setImgData({uri: '', type: ''});
-                setUploadImage(undefined);
-              }}>
-              <Image source={{uri: imgData.uri}} style={styles.newFeedImg} />
-              <SvgXml
-                width={18}
-                height={18}
-                xml={svgXml.icon.imageX}
-                style={styles.xBtn}
-              />
-            </Pressable>
+            <FlatList
+              data={feedData}
+              style={[styles.feedList]}
+              onEndReached={onEndReached}
+              onEndReachedThreshold={0.4}
+              ListHeaderComponent={
+                <View>
+                  <Text style={styles.noFeedTxt}>
+                    지금 떠오르는 생각을 적어보세요!
+                  </Text>
+                </View>
+              }
+              ListHeaderComponentStyle={
+                feedData.length === 0
+                  ? [styles.noFeedView, {height: windowHeight - 200}]
+                  : {height: 0, width: 0}
+              }
+              refreshControl={
+                <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+              }
+              // onStartReached={()=>{
+              //   if (first) scroll(feedData.length - 1)
+              //   else {
+              //     onEndReached();
+              //   }
+              // }}
+              // onStartReachedThreshold={0.4}
+              keyboardShouldPersistTaps={'always'}
+              inverted={true}
+              ref={flatRef}
+              ListFooterComponent={<View style={{height: 10}}></View>}
+              // getItemLayout={(data, index) => ({
+              //   length:100,
+              //   offset:20000*index,
+              //   index,
+              // })}
+              // onLayout={()=>scrollToEnd()}
+              renderItem={({item}: itemProps) => {
+                return (
+                  <Pressable
+                    style={styles.feed}
+                    onPress={() =>
+                      navigation.navigate('FeedDetail', {feedId: item.feedId})
+                    }>
+                    <Feed
+                      mine={item.isAuthor}
+                      detail={false}
+                      commentCnt={item.commentCount}
+                      createdAt={item.createdAt}
+                      content={item.content}
+                      emoticons={item.emoticons}
+                      nickname={item.friendNickname}
+                      status={item.status}
+                      accountId={item.accountId}
+                      imageURL={item.feedImageUrls}
+                      press={pressEmoticon}
+                      feedId={item.feedId}
+                      whoReact={whoReact}
+                      profileImg={item.profileImageUrl}
+                      showWhoseModal={showWhoseModal}
+                      setShowWhoseModal={setShowWhoseModal}
+                    />
+                  </Pressable>
+                );
+              }}
+            />
           </View>
-        )}
-        <View style={styles.newFeedView}>
-          <Pressable
-            style={styles.addPhoto}
-            onPress={() =>
-              ImagePicker.openPicker({
-                multiple: false,
-                mediaType: 'photo',
-                // cropping:true,
-              }).then(image => {
-                // console.log(image)
-                let name = image.path.split('/');
-                const imageFormData = new FormData();
-                let file = {
-                  uri: image.path,
-                  type: image.mime,
-                  name: name[name.length - 1],
-                };
-                imageFormData.append('file', file);
-                // console.log(file)
-                setImgData({
-                  uri: image.path,
-                  type: image.mime,
-                });
-                setSelectImg(true);
-                imageFormData.append('type', 'feed');
-                setUploadImage(imageFormData);
-              })
-            }>
-            <SvgXml width={24} height={24} xml={svgXml.icon.addphoto} />
-          </Pressable>
-          <TextInput
-            placeholder={placeholder}
-            placeholderTextColor={'#848484'}
-            style={[
-              styles.newFeedTxtInput,
-              {height: Math.min(80, Math.max(35, KBsize))},
-            ]}
-            onFocus={() => setPlaceholder('')}
-            onBlur={() => setPlaceholder('지금 기분이 어때요?')}
-            onChangeText={(text: string) => {
-              setFeedContent(text);
-            }}
-            blurOnSubmit={false}
-            maxLength={500}
-            value={feedContent}
-            onSubmitEditing={sendNewFeed}
-            multiline={true}
-            autoCapitalize="none"
-            autoComplete="off"
-            autoCorrect={false}
-            onContentSizeChange={e => {
-              setKBsize(e.nativeEvent.contentSize.height);
-            }}
-          />
-          <Pressable
-            style={
-              feedContent.trim() == '' && !selectImg
-                ? styles.sendNewFeed
-                : styles.sendNewFeedActivated
-            }
-            disabled={feedContent.trim() == '' && !selectImg}
-            onPress={sendNewFeed}>
-            <Feather name="check" size={24} style={{color: 'white'}} />
-          </Pressable>
+          <View style={[styles.newFeedAll, {width: windowWidth}]}>
+            {selectImg && (
+              <View style={[styles.newFeedImgView, {width: windowWidth}]}>
+                <Pressable
+                  onPress={() => {
+                    setSelectImg(false);
+                    setImgData({uri: '', type: ''});
+                    setUploadImage(undefined);
+                  }}>
+                  <Image
+                    source={{uri: imgData.uri}}
+                    style={styles.newFeedImg}
+                  />
+                  <SvgXml
+                    width={18}
+                    height={18}
+                    xml={svgXml.icon.imageX}
+                    style={styles.xBtn}
+                  />
+                </Pressable>
+              </View>
+            )}
+            <View style={styles.newFeedView}>
+              <Pressable
+                style={styles.addPhoto}
+                onPress={() =>
+                  ImagePicker.openPicker({
+                    multiple: false,
+                    mediaType: 'photo',
+                    // cropping:true,
+                  }).then(image => {
+                    // console.log(image)
+                    let name = image.path.split('/');
+                    const imageFormData = new FormData();
+                    let file = {
+                      uri: image.path,
+                      type: image.mime,
+                      name: name[name.length - 1],
+                    };
+                    imageFormData.append('file', file);
+                    // console.log(file)
+                    setImgData({
+                      uri: image.path,
+                      type: image.mime,
+                    });
+                    setSelectImg(true);
+                    imageFormData.append('type', 'feed');
+                    setUploadImage(imageFormData);
+                  })
+                }>
+                <SvgXml width={24} height={24} xml={svgXml.icon.addphoto} />
+              </Pressable>
+              <TextInput
+                placeholder={placeholder}
+                placeholderTextColor={'#848484'}
+                style={[
+                  styles.newFeedTxtInput,
+                  {height: Math.min(80, Math.max(35, KBsize))},
+                ]}
+                onFocus={() => setPlaceholder('')}
+                onBlur={() => setPlaceholder('지금 기분이 어때요?')}
+                onChangeText={(text: string) => {
+                  setFeedContent(text);
+                }}
+                blurOnSubmit={false}
+                maxLength={500}
+                value={feedContent}
+                onSubmitEditing={sendNewFeed}
+                multiline={true}
+                autoCapitalize="none"
+                autoComplete="off"
+                autoCorrect={false}
+                onContentSizeChange={e => {
+                  setKBsize(e.nativeEvent.contentSize.height);
+                }}
+              />
+              <Pressable
+                style={
+                  feedContent.trim() == '' && !selectImg
+                    ? styles.sendNewFeed
+                    : styles.sendNewFeedActivated
+                }
+                disabled={feedContent.trim() == '' && !selectImg}
+                onPress={sendNewFeed}>
+                <Feather name="check" size={24} style={{color: 'white'}} />
+              </Pressable>
+            </View>
+          </View>
+          <Modal
+            isVisible={showBottomSheet}
+            onBackButtonPress={() => setShowBottomSheet(false)}
+            backdropColor="#222222"
+            backdropOpacity={0.5}
+            onSwipeComplete={() => setShowBottomSheet(false)}
+            swipeDirection={'down'}
+            style={{justifyContent: 'flex-end', margin: 0}}>
+            <Pressable
+              style={styles.modalBGView}
+              onPress={() => setShowBottomSheet(false)}>
+              <Pressable
+                style={styles.modalView}
+                onPress={e => e.stopPropagation()}>
+                <View style={styles.whoReacted}>
+                  <SvgXml width={22} height={22} xml={svgXml.emoticon.heart} />
+                  <Text style={styles.emoticonTxt}>
+                    {EmoticonList.heartEmoticonNicknameList.join(' ') == ''
+                      ? '-'
+                      : EmoticonList.heartEmoticonNicknameList
+                          .join(', ')
+                          .replace(/ /g, '\u00A0')}
+                  </Text>
+                </View>
+                <View style={styles.whoReacted}>
+                  <SvgXml width={22} height={22} xml={svgXml.emoticon.smile} />
+                  <Text style={styles.emoticonTxt}>
+                    {EmoticonList.smileEmoticonNicknameList.join(' ') == ''
+                      ? '-'
+                      : EmoticonList.smileEmoticonNicknameList
+                          .join(', ')
+                          .replace(/ /g, '\u00A0')}
+                  </Text>
+                </View>
+                <View style={styles.whoReacted}>
+                  <SvgXml width={22} height={22} xml={svgXml.emoticon.sad} />
+                  <Text style={styles.emoticonTxt}>
+                    {EmoticonList.sadEmoticonNicknameList.join(' ') == ''
+                      ? '-'
+                      : EmoticonList.sadEmoticonNicknameList
+                          .join(', ')
+                          .replace(/ /g, '\u00A0')}
+                  </Text>
+                </View>
+                <View style={styles.whoReacted}>
+                  <SvgXml
+                    width={22}
+                    height={22}
+                    xml={svgXml.emoticon.surprise}
+                  />
+                  <Text style={styles.emoticonTxt}>
+                    {EmoticonList.surpriseEmoticonNicknameList.join(' ') == ''
+                      ? '-'
+                      : EmoticonList.surpriseEmoticonNicknameList
+                          .join(', ')
+                          .replace(/ /g, '\u00A0')}
+                  </Text>
+                </View>
+              </Pressable>
+            </Pressable>
+          </Modal>
+          {deleted && (
+            <ToastScreen
+              height={21}
+              marginBottom={48}
+              onClose={() => setDeleted()}
+              message="삭제된 글이에요."
+            />
+          )}
         </View>
-      </View>
-      <Modal
-        isVisible={showBottomSheet}
-        onBackButtonPress={() => setShowBottomSheet(false)}
-        backdropColor="#222222"
-        backdropOpacity={0.5}
-        onSwipeComplete={() => setShowBottomSheet(false)}
-        swipeDirection={'down'}
-        style={{justifyContent: 'flex-end', margin: 0}}>
-        <Pressable
-          style={styles.modalBGView}
-          onPress={() => setShowBottomSheet(false)}>
-          <Pressable
-            style={styles.modalView}
-            onPress={e => e.stopPropagation()}>
-            <View style={styles.whoReacted}>
-              <SvgXml width={22} height={22} xml={svgXml.emoticon.heart} />
-              <Text style={styles.emoticonTxt}>
-                {EmoticonList.heartEmoticonNicknameList.join(' ') == ''
-                  ? '-'
-                  : EmoticonList.heartEmoticonNicknameList
-                      .join(', ')
-                      .replace(/ /g, '\u00A0')}
-              </Text>
-            </View>
-            <View style={styles.whoReacted}>
-              <SvgXml width={22} height={22} xml={svgXml.emoticon.smile} />
-              <Text style={styles.emoticonTxt}>
-                {EmoticonList.smileEmoticonNicknameList.join(' ') == ''
-                  ? '-'
-                  : EmoticonList.smileEmoticonNicknameList
-                      .join(', ')
-                      .replace(/ /g, '\u00A0')}
-              </Text>
-            </View>
-            <View style={styles.whoReacted}>
-              <SvgXml width={22} height={22} xml={svgXml.emoticon.sad} />
-              <Text style={styles.emoticonTxt}>
-                {EmoticonList.sadEmoticonNicknameList.join(' ') == ''
-                  ? '-'
-                  : EmoticonList.sadEmoticonNicknameList
-                      .join(', ')
-                      .replace(/ /g, '\u00A0')}
-              </Text>
-            </View>
-            <View style={styles.whoReacted}>
-              <SvgXml width={22} height={22} xml={svgXml.emoticon.surprise} />
-              <Text style={styles.emoticonTxt}>
-                {EmoticonList.surpriseEmoticonNicknameList.join(' ') == ''
-                  ? '-'
-                  : EmoticonList.surpriseEmoticonNicknameList
-                      .join(', ')
-                      .replace(/ /g, '\u00A0')}
-              </Text>
-            </View>
-          </Pressable>
-        </Pressable>
-      </Modal>
-      {deleted && (
-        <ToastScreen
-          height={21}
-          marginBottom={48}
-          onClose={() => setDeleted()}
-          message="삭제된 글이에요."
-        />
-      )}
-    </View>
+      </KeyboardAvoidingView>
+    </TouchableWithoutFeedback>
   );
 }
 
