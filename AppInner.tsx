@@ -151,7 +151,9 @@ export default function AppInner() {
               options={{
                 headerShown: false,
                 tabBarLabel: 'Feed',
-                // tabBarIcon:
+                tabBarShowLabel:false,
+                tabBarIcon: ((props:{focused:boolean, color:string, size:number}) => <SvgXml fill={props.focused ? '#A55FFF' : '#888888'} width={28} height={28} xml={svgXml.bottomTab.feed} />)
+
               }}
             />
             <Tab.Screen
@@ -170,11 +172,13 @@ export default function AppInner() {
                   backgroundColor: '#202020',
                 },
                 headerShadowVisible: false,
+                tabBarShowLabel:false,
                 tabBarLabel: 'Friend',
-                // tabBarIcon:
+                tabBarIcon: ((props:{focused:boolean, color:string, size:number}) => <SvgXml fill={props.focused ? '#A55FFF' : '#888888'} width={28} height={28} xml={svgXml.bottomTab.friend} />)
+
               }}
             />
-            <Tab.Screen
+            {/* <Tab.Screen
               name="NoteNavigation"
               component={NoteNavigation}
               options={{
@@ -183,7 +187,7 @@ export default function AppInner() {
                 tabBarLabel: 'Note',
                 // tabBarIcon:
               }}
-            />
+            /> */}
             <Tab.Screen
               name="MyProfile"
               component={MyProfile}
@@ -201,7 +205,9 @@ export default function AppInner() {
                 },
                 headerShadowVisible: false,
                 tabBarLabel: 'Profile',
-                // tabBarIcon:
+                tabBarShowLabel:false,
+                tabBarIcon: ((props:{focused:boolean, color:string, size:number}) => <SvgXml fill={props.focused ? '#A55FFF' : '#888888'} width={28} height={28} xml={svgXml.bottomTab.profile} />)
+
               }}
             />
           </Tab.Navigator>

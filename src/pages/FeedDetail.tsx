@@ -28,6 +28,7 @@ import _ from 'lodash';
 import {useAppDispatch} from '../store';
 import userSlice from '../slices/user';
 import {Safe, StatusBarHeight} from '../components/Safe';
+import ToastScreen from '../components/ToastScreen';
 
 type FeedDetailScreenProps = NativeStackScreenProps<
   RootStackParamList,
@@ -99,9 +100,10 @@ export default function FeedDetail({navigation, route}: FeedDetailScreenProps) {
   const [cmtContent, setCmtContent] = useState('');
   const [isLast, setIsLast] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [placeholder, setPlaceholder] = useState('댓글을 적어주세요');
+  const [placeholder, setPlaceholder] = useState('댓글을 적어주세요.');
   const [cursorId, setCursorId] = useState(0);
   const [showWhoseModal, setShowWhoseModal] = useState(0);
+  const [whichPopup, setWhichPopup] = useState('');
 
   useFocusEffect(
     useCallback(() => {
@@ -200,9 +202,10 @@ export default function FeedDetail({navigation, route}: FeedDetailScreenProps) {
     );
     if (feedData.isAuthor) {
       navigation.setOptions({
+        headerStyle: {backgroundColor:'#333333'},
         headerRight: () => (
           <Pressable onPress={() => setDeleteModal(true)}>
-            <Feather name="more-vertical" size={24} color={'#848484'} />
+            <Feather name="more-vertical" size={24} color={'#888888'} />
           </Pressable>
         ),
       });
@@ -324,6 +327,7 @@ export default function FeedDetail({navigation, route}: FeedDetailScreenProps) {
       setCmtContent('');
       setRefresh(!refresh);
       setIsLast(false);
+      setKBsize(0);
       // console.log(throttleTime)
     } catch (error) {
       const errorResponse = (error as AxiosError<{message: string}>).response;
@@ -449,10 +453,10 @@ export default function FeedDetail({navigation, route}: FeedDetailScreenProps) {
   const [writeChildCmt, setWriteChildCmt] = useState(-1);
   useEffect(() => {
     if (writeChildCmt != -1) {
-      setPlaceholder('대댓글을 적어주세요');
+      setPlaceholder('대댓글을 적어주세요.');
       inputRef.current.focus();
     } else {
-      setPlaceholder('댓글을 적어주세요');
+      setPlaceholder('댓글을 적어주세요.');
     }
   }, [writeChildCmt]);
 
@@ -487,6 +491,7 @@ export default function FeedDetail({navigation, route}: FeedDetailScreenProps) {
                   profileImg={feedData.profileImageUrl}
                   showWhoseModal={showWhoseModal}
                   setShowWhoseModal={setShowWhoseModal}
+                  setWhichPopup={setWhichPopup}
                 />
               </View>
               <View style={styles.commentHeader}>
@@ -505,10 +510,10 @@ export default function FeedDetail({navigation, route}: FeedDetailScreenProps) {
                   writeChildCmt == item.commentId
                     ? {
                         borderBottomWidth: 1,
-                        borderColor: '#ECECEC',
+                        borderColor: '#202020',
                         backgroundColor: '#FFB4431A',
                       }
-                    : {borderBottomWidth: 1, borderColor: '#ECECEC'}
+                    : {borderBottomWidth: 1, borderColor: '#202020'}
                 }>
                 <Content
                   nickname={item.friendNickname}
@@ -525,6 +530,7 @@ export default function FeedDetail({navigation, route}: FeedDetailScreenProps) {
                   profileImg={item.profileImageUrl}
                   showWhoseModal={showWhoseModal}
                   setShowWhoseModal={setShowWhoseModal}
+                  setWhichPopup={setWhichPopup}
                 />
                 {item.childCount != 0 && (
                   <View style={{backgroundColor: 'white'}}>
@@ -549,6 +555,7 @@ export default function FeedDetail({navigation, route}: FeedDetailScreenProps) {
                               profileImg={item.profileImageUrl}
                               showWhoseModal={showWhoseModal}
                               setShowWhoseModal={setShowWhoseModal}
+                              setWhichPopup={setWhichPopup}
                             />
                           </View>
                         );
@@ -669,6 +676,14 @@ export default function FeedDetail({navigation, route}: FeedDetailScreenProps) {
           </Pressable>
         </Pressable>
       </Modal>
+      {whichPopup === 'deletedFriend' && (
+        <ToastScreen
+          height={21}
+          marginBottom={48}
+          onClose={() => setWhichPopup('')}
+          message="친구를 삭제했어요."
+        />
+      )}
     </View>
   );
 }
@@ -677,7 +692,7 @@ const styles = StyleSheet.create({
   entire: {
     flex: 1,
     alignItems: 'center',
-    backgroundColor: '#202020',
+    backgroundColor: '#333333',
   },
   feedView: {
     paddingHorizontal: 6,
@@ -695,7 +710,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     width: '100%',
     height: 36,
-    borderColor: '#ECECEC',
+    borderColor: '#202020',
     borderTopWidth: 1,
     borderBottomWidth: 1,
     paddingLeft: 15,
@@ -712,25 +727,25 @@ const styles = StyleSheet.create({
   },
   childCmt: {
     borderTopWidth: 1,
-    borderTopColor: '#ECECEC',
+    borderTopColor: '#202020',
     paddingLeft: 40,
-    backgroundColor: '#202020',
+    backgroundColor: '#333333',
   },
   popup: {
     position: 'absolute',
     right: 55,
-    top: 0,
+    top: 20,
   },
   deleteFeed: {
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#202020',
     paddingHorizontal: 18,
     paddingVertical: 13,
     borderRadius: 5,
   },
   deleteFeedTxt: {
-    color: '#222222',
+    color: '#888888',
     fontWeight: '400',
     fontSize: 15,
   },
@@ -762,20 +777,20 @@ const styles = StyleSheet.create({
   },
   newCmtView: {
     flexDirection: 'row',
-    backgroundColor: '#F7F7F7',
+    backgroundColor: '#202020',
     width: '100%',
     position: 'absolute',
     bottom: 0,
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingLeft: 16,
+    paddingLeft: 8,
   },
   newCmtTxtInput: {
-    color: '#222222',
+    color: '#888888',
     fontSize: 15,
     fontWeight: '400',
     flex: 1,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#333333',
     marginVertical: 6,
     marginRight: 4,
     borderRadius: 10,
@@ -784,14 +799,14 @@ const styles = StyleSheet.create({
     // maxHeight:'4vh'
   },
   sendNewCmt: {
-    backgroundColor: '#B7B7B7',
+    backgroundColor: '#888888',
     justifyContent: 'center',
     alignItems: 'center',
     width: 48,
     height: '100%',
   },
   sendNewCmtActivated: {
-    backgroundColor: '#FFB443',
+    backgroundColor: '#A55FFF',
     justifyContent: 'center',
     alignItems: 'center',
     width: 48,

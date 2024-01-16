@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect, useCallback } from "react";
 import { StyleSheet, Text, Pressable, View, Keyboard, TextInput, Dimensions, useWindowDimensions } from "react-native";
 import axios, { AxiosError } from 'axios';
 import Modal from'react-native-modal';
@@ -32,18 +32,21 @@ export default function FriendProfileModal(props:ProfileProps){
 
   const inp1 = useRef();
 
+  useEffect(() => {
+    getProfile();
+  }, [friendshipRelation])
 
   const getProfile = async () => {
     try {
-        {/* 여기에 friendshipId 필요 */}
       const response = await axios.get(`${Config.API_URL}/accounts/${showWhoseModal}/profile`,);
+      {/* 여기에 friendshipId 필요 */}
       console.log(response.data.data)
       setName(response.data.data.nickname);
       setChangeNameVal(response.data.data.nickname);
       setStatus(response.data.data.status.toLowerCase());
       setProfileImg(response.data.data.profileImageUrl);
       setFriendshipRelation(response.data.data.friendshipRelation);
-      // setFriendshipId(response.data.data.friendshipId);
+      setFriendshipId(response.data.data.friendshipId);
       
     } catch (error) {
       const errorResponse = (error as AxiosError<{message: string}>).response;
@@ -71,31 +74,35 @@ export default function FriendProfileModal(props:ProfileProps){
     }
   }, throttleTime);
 
-  const askFriend = _.throttle(async (accountId:number, name:string, profileImageUrl:string) => {
-    try {
-      const response = await axios.post(
-        `${Config.API_URL}/friendships/request`,
-        {
-          accountTargetId: accountId,
-          message: "",
-        },
-      );
-      // console.log(response.data)
-      // popup: 이도님께 친구 요청을 보냈어요!
-      setWhichPopup('askFriend');
-    } catch (error) {
-      const errorResponse = (error as AxiosError<{message: string}>).response;
-      console.log(errorResponse.data);
-      // if (errorResponse?.data.statusCode == 1000) {
-      //   // if (await refreshOrNot()) setReset(!reset);
-      // }
-      // if (errorResponse?.data.statusCode == 3010) {
-      //   setWhichPopup('requested');
-      //   setOtherUser({accountId:-1, nickname:'', isFriend:0});
-      //   setMessage('');
-      // }
-    }
-  }, throttleTime);
+  const askFriend = useCallback((accountId:number, name:string, profileImageUrl:string) => {
+    const ask = _.throttle(async () => {
+      try {
+        const response = await axios.post(
+          `${Config.API_URL}/friendships/request`,
+          {
+            accountTargetId: accountId,
+            message: "",
+          },
+        );
+        // console.log(response.data)
+        // popup: 이도님께 친구 요청을 보냈어요!
+        setWhichPopup('askFriend');
+        setFriendshipRelation('waiiting');
+      } catch (error) {
+        const errorResponse = (error as AxiosError<{message: string}>).response;
+        console.log(errorResponse.data);
+        // if (errorResponse?.data.statusCode == 1000) {
+        //   // if (await refreshOrNot()) setReset(!reset);
+        // }
+        // if (errorResponse?.data.statusCode == 3010) {
+        //   setWhichPopup('requested');
+        //   setOtherUser({accountId:-1, nickname:'', isFriend:0});
+        //   setMessage('');
+        // }
+      }
+    }, throttleTime);
+    ask();
+  }, [friendshipId]);
   
   return (
   <Modal isVisible={showWhoseModal != 0 && showWhoseModal != undefined}
@@ -104,6 +111,7 @@ export default function FriendProfileModal(props:ProfileProps){
     onBackdropPress={()=>setShowWhoseModal(0)}
     // coverScreen={false}
     onBackButtonPress={()=>setShowWhoseModal(0)}
+    onModalHide={()=>{setWhichPopup('')}}
     style={[styles.entire, {marginVertical:(Dimensions.get('screen').height - 400)/2}]}>
       {/* <Pressable style={styles.xBtn} onPress={()=>setShowWhoseModal(0)}>
         <Text style={styles.btnTxt}>x</Text>
@@ -120,11 +128,14 @@ export default function FriendProfileModal(props:ProfileProps){
       </View>
       <View style={styles.btnView}>
         {/* 여기에 friendshipId 필요 */}
-        {friendshipRelation == 'true' && <Pressable style={styles.btnGray} onPress={()=>{setDeleteFriend(true); setShowWhoseModal(0)}}><Text style={styles.btnTxt}>친구 삭제하기</Text></Pressable>}
+        {friendshipRelation == 'true' && <Pressable style={styles.btnGray} onPress={()=>{setDeleteFriend(friendshipId); setShowWhoseModal(0)}}><Text style={styles.btnTxt}>친구 삭제하기</Text></Pressable>}
         {friendshipRelation == 'true' && <View style={{width:8}}></View>}
         {friendshipRelation == 'true' && <Pressable style={styles.btn} onPress={()=>setWhichPopup('whatAreYouDoing')}><Text style={styles.btnTxt}>지금 뭐해?</Text></Pressable>}
         {friendshipRelation == 'false' && <Pressable style={styles.btn} onPress={()=>askFriend(showWhoseModal, name, profileImg)}><Text style={styles.btnTxt}>친구 요청하기</Text></Pressable>}
-        {friendshipRelation == 'waiting' && <Pressable style={styles.btnGray}><Text style={styles.btnTxt}>친구 요청하기</Text></Pressable>}
+        {friendshipRelation == 'waiting' && <Pressable style={styles.btnGray}><Text style={styles.btnTxt}>친구 요청됨</Text></Pressable>}
+        {friendshipRelation == '수락 대기중' && <Pressable style={styles.btnGray}><Text style={styles.btnTxt}>친구 요청 거절하기</Text></Pressable>}
+        {friendshipRelation == '수락 대기중' && <View style={{width:8}}></View>}
+        {friendshipRelation == '수락 대기중' && <Pressable style={styles.btn}><Text style={styles.btnTxt}>친구 요청 수락하기</Text></Pressable>}
       </View>
       <Modal isVisible={chageName} onBackButtonPress={()=>setChangeName(false)} avoidKeyboard={true} backdropColor='#222222' backdropOpacity={0.5}>
         <Pressable style={styles.modalBGView} onPress={()=>{setChangeName(false); Keyboard.dismiss();}}>

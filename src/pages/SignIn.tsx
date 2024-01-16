@@ -228,7 +228,7 @@ export default function SignIn() {
   }, []);
 
   const checkDuplicate = async () => {
-    const reg = new RegExp(`^[a-zA-Z0-9]{4,12}$`);
+    const reg = new RegExp(`^[a-z0-9]{4,12}$`);
     if (!reg.test(id)) {
       setDuplicate('NO');
     } else {

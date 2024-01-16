@@ -113,19 +113,30 @@ export default function SearchFriends() {
     getFriendship();
   }, [isLast, reset]);
 
+  useEffect(()=>{
+    getFriendProfile();
+  }, [showWhoseModal]);
+
   const getFriendProfile = _.throttle(async () => {
     try {
       const response = await axios.get(
         `${Config.API_URL}/accounts/search/code/${searchCode}`,
       );
       // let friendData;
+      console.log(response.data)
       if (response.data.data.friendshipRelation === 'me') {
         setWhichPopup('Me');
         setOtherUser({accountId: -1, nickname: '', isFriend: 0});
       }
       else {
         if (response.data.data.friendshipRelation == "true") {
-          // setFriendData([])
+          setFriendData([{
+            accountId:response.data.data.accountId,
+            friendNickname:response.data.data.nickname,
+            friendshipId:0,
+            status:response.data.data.status,
+            profileImageUrl:response.data.data.profileImageUrl
+          }]);
         } else if (response.data.data.friendshipRelation == "waiting") {
           setFriendData([{
             accountId:response.data.data.accountId,
@@ -221,7 +232,8 @@ export default function SearchFriends() {
     setTimeout(() => {
       setRefreshing(false);
     }, 1000);
-    setReset(!reset)
+    setReset(!reset);
+    setSearchCode('');
   };
 
   const deleteFriends = async () => {
@@ -272,7 +284,7 @@ export default function SearchFriends() {
               />
               {(!placeholder || searchCode) && (
                 <Pressable
-                  onPress={() => setSearchCode('')}
+                  onPress={() => {setSearchCode(''); setReset(!reset);}}
                   style={styles.clearBtn}>
                   <SvgXml 
                     width={20}

@@ -307,9 +307,9 @@ export default function MyProfile() {
         )}>
           <Text style={styles.settingBtnTxt}>의견 남기기</Text>
         </Pressable>
-        <Pressable style={styles.settingBtn} onPress={()=>{console.log('change id')}}>
+        {/* <Pressable style={styles.settingBtn} onPress={()=>{console.log('change id')}}>
           <Text style={styles.settingBtnTxt}>내 아이디 변경하기</Text>
-        </Pressable>
+        </Pressable> */}
         <Pressable style={styles.settingBtn} onPress={()=>{setPolicy('service')}}>
           <Text style={styles.settingBtnTxt}>서비스 이용약관</Text>
         </Pressable>

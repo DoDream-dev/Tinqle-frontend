@@ -6,6 +6,7 @@ import {
   Image,
   Pressable,
   Dimensions,
+  useWindowDimensions,
 } from 'react-native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {RootStackParamList} from '../../AppInner';
@@ -14,6 +15,10 @@ import {svgXml} from '../../assets/image/svgXml';
 import {SvgXml} from 'react-native-svg';
 import FriendProfileModal from './FriendProfileModal';
 import ImageModal from 'react-native-image-modal';
+import ToastScreen from './ToastScreen';
+import Modal from 'react-native-modal';
+import axios, { AxiosError } from 'axios';
+import Config from 'react-native-config';
 
 type ContentProps = {
   nickname: string;
@@ -30,6 +35,7 @@ type ContentProps = {
   profileImg: string | null;
   showWhoseModal: number;
   setShowWhoseModal: React.Dispatch<React.SetStateAction<number>>;
+  setWhichPopup: React.Dispatch<React.SetStateAction<string>>;
 };
 
 export default function Content(props: ContentProps) {
@@ -48,6 +54,27 @@ export default function Content(props: ContentProps) {
   const profileImg = props.profileImg;
   const showWhoseModal = props.showWhoseModal;
   const setShowWhoseModal = props.setShowWhoseModal;
+  const [deleteFriend, setDeleteFriend] = useState(-1);
+  const setWhichPopup = props.setWhichPopup;
+
+  const deleteFriends = async () => {
+    try {
+      console.log(deleteFriend)
+      const response = await axios.delete(
+        `${Config.API_URL}/friendships/${deleteFriend}`,
+      );
+      // console.log(response.data)
+      // popup: 이도님께 친구 요청을 보냈어요!
+      setWhichPopup('deletedFriend');
+      // setPopupName(name);
+      setDeleteFriend(-1);
+      // setReset(!reset);
+      console.log(response.data);
+    } catch (error) {
+      const errorResponse = (error as AxiosError<{message: string}>).response;
+      console.log(errorResponse.data);
+    }
+  }
 
   return (
     <View style={styles.entire}>
@@ -83,58 +110,58 @@ export default function Content(props: ContentProps) {
             }}>
             <Text style={styles.nickname}>{nickname}</Text>
             {status == 'smile'.toUpperCase() && (
-              <SvgXml width={16} height={16} xml={svgXml.status.smile} />
+              <SvgXml width={18} height={18} xml={svgXml.status.smile} />
             )}
             {status == 'happy'.toUpperCase() && (
-              <SvgXml width={16} height={16} xml={svgXml.status.happy} />
+              <SvgXml width={18} height={18} xml={svgXml.status.happy} />
             )}
             {status == 'sad'.toUpperCase() && (
-              <SvgXml width={16} height={16} xml={svgXml.status.sad} />
+              <SvgXml width={18} height={18} xml={svgXml.status.sad} />
             )}
             {status == 'mad'.toUpperCase() && (
-              <SvgXml width={16} height={16} xml={svgXml.status.mad} />
+              <SvgXml width={18} height={18} xml={svgXml.status.mad} />
             )}
             {status == 'exhausted'.toUpperCase() && (
-              <SvgXml width={16} height={16} xml={svgXml.status.exhauseted} />
+              <SvgXml width={18} height={18} xml={svgXml.status.exhauseted} />
             )}
             {status == 'coffee'.toUpperCase() && (
-              <SvgXml width={16} height={16} xml={svgXml.status.coffee} />
+              <SvgXml width={18} height={18} xml={svgXml.status.coffee} />
             )}
             {status == 'meal'.toUpperCase() && (
-              <SvgXml width={16} height={16} xml={svgXml.status.meal} />
+              <SvgXml width={18} height={18} xml={svgXml.status.meal} />
             )}
             {status == 'alcohol'.toUpperCase() && (
-              <SvgXml width={16} height={16} xml={svgXml.status.alcohol} />
+              <SvgXml width={18} height={18} xml={svgXml.status.alcohol} />
             )}
             {status == 'chicken'.toUpperCase() && (
-              <SvgXml width={16} height={16} xml={svgXml.status.chicken} />
+              <SvgXml width={18} height={18} xml={svgXml.status.chicken} />
             )}
             {status == 'sleep'.toUpperCase() && (
-              <SvgXml width={16} height={16} xml={svgXml.status.sleep} />
+              <SvgXml width={18} height={18} xml={svgXml.status.sleep} />
             )}
             {status == 'work'.toUpperCase() && (
-              <SvgXml width={16} height={16} xml={svgXml.status.work} />
+              <SvgXml width={18} height={18} xml={svgXml.status.work} />
             )}
             {status == 'study'.toUpperCase() && (
-              <SvgXml width={16} height={16} xml={svgXml.status.study} />
+              <SvgXml width={18} height={18} xml={svgXml.status.study} />
             )}
             {status == 'movie'.toUpperCase() && (
-              <SvgXml width={16} height={16} xml={svgXml.status.movie} />
+              <SvgXml width={18} height={18} xml={svgXml.status.movie} />
             )}
             {status == 'move'.toUpperCase() && (
-              <SvgXml width={16} height={16} xml={svgXml.status.move} />
+              <SvgXml width={18} height={18} xml={svgXml.status.move} />
             )}
             {status == 'dance'.toUpperCase() && (
-              <SvgXml width={16} height={16} xml={svgXml.status.dance} />
+              <SvgXml width={18} height={18} xml={svgXml.status.dance} />
             )}
             {status == 'read'.toUpperCase() && (
-              <SvgXml width={16} height={16} xml={svgXml.status.read} />
+              <SvgXml width={18} height={18} xml={svgXml.status.read} />
             )}
             {status == 'walk'.toUpperCase() && (
-              <SvgXml width={16} height={16} xml={svgXml.status.walk} />
+              <SvgXml width={18} height={18} xml={svgXml.status.walk} />
             )}
             {status == 'travel'.toUpperCase() && (
-              <SvgXml width={16} height={16} xml={svgXml.status.travel} />
+              <SvgXml width={18} height={18} xml={svgXml.status.travel} />
             )}
           </Pressable>
           <Text style={styles.createdAt}>{createdAt}</Text>
@@ -173,7 +200,39 @@ export default function Content(props: ContentProps) {
       <FriendProfileModal
         showWhoseModal={showWhoseModal}
         setShowWhoseModal={setShowWhoseModal}
+        setDeleteFriend={setDeleteFriend}
       />
+      <Modal isVisible={deleteFriend != -1}
+        // onModalWillShow={getProfile}
+        hasBackdrop={true}
+        onBackdropPress={()=>setDeleteFriend(-1)}
+        // coverScreen={false}
+        onBackButtonPress={()=>setDeleteFriend(-1)}
+        // backdropColor='#222222' backdropOpacity={0.5}
+        // style={[styles.entire, {marginVertical:(Dimensions.get('screen').height - 400)/2}]}
+        >
+        {/* <View style={styles.modalBGView}>   */}
+          <View style={styles.modalView}>
+            <Text style={styles.modalTitleTxt}>친구를 삭제하시겠어요?</Text>
+            <Text style={styles.modalContentTxt}>상대방에게 알림이 가지 않으니 안심하세요.</Text>
+            <View style={styles.btnView}>
+              <Pressable style={styles.btnGray} onPress={()=>{setDeleteFriend(-1);}}><Text style={styles.btnTxt}>취소</Text></Pressable>
+              <View style={{width:8}}></View>
+              <Pressable style={styles.btn} onPress={()=>{deleteFriends()}}><Text style={styles.btnTxt}>네, 삭제할게요.</Text></Pressable>
+            </View>
+          </View>
+        {/* </View> */}
+      </Modal>
+      {/* <View style={{bottom:0, alignItems:'center', backgroundColor:'red', width:'100%', position:'absolute', height:100}}>
+        {whichPopup === 'deleted' && (
+          <ToastScreen
+            height={21}
+            marginBottom={48}
+            onClose={() => setWhichPopup('')}
+            message="친구를 삭제했어요."
+          />
+        )}
+      </View> */}
     </View>
   );
 }
@@ -235,5 +294,54 @@ const styles = StyleSheet.create({
     color: '#848484',
     fontSize: 12,
     fontWeight: '500',
+  },
+  modalView:{
+    backgroundColor: '#333333',
+    borderRadius: 10,
+    justifyContent: 'center',
+    alignItems:'center',
+    paddingTop: 30,
+    paddingHorizontal: 16,
+    paddingBottom: 24,
+  },
+  modalTitleTxt:{
+    color:'#F0F0F0',
+    fontSize:15,
+    fontWeight:'600',
+    marginBottom:10
+  },
+  modalContentTxt:{
+    color:'#F0F0F0',
+    fontSize:15,
+    fontWeight:'400',
+    marginBottom:10,
+    marginTop:10
+  },
+  btn:{
+    flex:1,
+    justifyContent:'center',
+    alignItems:'center',
+    borderRadius:5,
+    paddingVertical:13,
+    backgroundColor:'#A55FFF',
+  },
+  btnGray:{
+    flex:1,
+    justifyContent:'center',
+    alignItems:'center',
+    borderRadius:5,
+    paddingVertical:13,
+    backgroundColor:'#888888',
+  },
+  btnTxt:{
+    color:'#F0F0F0',
+    fontSize:15,
+    fontWeight:'600'
+  },
+  btnView:{
+    flexDirection:'row',
+    justifyContent:'space-between',
+    paddingHorizontal: 17,
+    marginTop:16,
   },
 });
