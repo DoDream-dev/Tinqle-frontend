@@ -1,3 +1,4 @@
+/* eslint-disable react-native/no-inline-styles */
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import React, {useEffect, useState, useCallback, useRef} from 'react';
 import {
@@ -63,6 +64,7 @@ type itemProps = {
       },
     ];
   };
+  index: number;
 };
 
 export default function FeedDetail({navigation, route}: FeedDetailScreenProps) {
@@ -460,6 +462,8 @@ export default function FeedDetail({navigation, route}: FeedDetailScreenProps) {
     }
   }, [writeChildCmt]);
 
+  const flatListRef = useRef(null);
+
   return (
     <KeyboardAvoidingView
       style={[{flex: 1}]}
@@ -468,6 +472,7 @@ export default function FeedDetail({navigation, route}: FeedDetailScreenProps) {
       <View style={styles.entire}>
         <View style={styles.commentView}>
           <FlatList
+            ref={flatListRef}
             refreshControl={
               <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
             }
@@ -509,12 +514,12 @@ export default function FeedDetail({navigation, route}: FeedDetailScreenProps) {
                 </View>
               </View>
             }
-            renderItem={({item}: itemProps) => {
+            renderItem={({item, index}: itemProps) => {
               const childData = item.childCommentCardList;
               return (
                 <Pressable
                   style={
-                    writeChildCmt == item.commentId
+                    writeChildCmt == index
                       ? {
                           borderBottomWidth: 1,
                           borderColor: '#ECECEC',
@@ -537,13 +542,14 @@ export default function FeedDetail({navigation, route}: FeedDetailScreenProps) {
                     profileImg={item.profileImageUrl}
                     showWhoseModal={showWhoseModal}
                     setShowWhoseModal={setShowWhoseModal}
+                    index={index}
                   />
                   {item.childCount != 0 && (
                     <View style={{backgroundColor: 'white'}}>
                       <FlatList
                         data={childData}
                         // style={{borderTopWidth:1, borderTopColor:'#ECECEC',}}
-                        renderItem={({item}) => {
+                        renderItem={({item, index}) => {
                           return (
                             <View style={styles.childCmt}>
                               <Content
@@ -561,6 +567,7 @@ export default function FeedDetail({navigation, route}: FeedDetailScreenProps) {
                                 profileImg={item.profileImageUrl}
                                 showWhoseModal={showWhoseModal}
                                 setShowWhoseModal={setShowWhoseModal}
+                                index={index}
                               />
                             </View>
                           );
@@ -573,9 +580,28 @@ export default function FeedDetail({navigation, route}: FeedDetailScreenProps) {
             }}
           />
         </View>
-        <View style={{height: Math.min(80, Math.max(45, KBsize))}}></View>
+        <View style={{height: Math.min(80, Math.max(45, KBsize))}} />
+
         <View style={styles.newCmtView}>
           <TextInput
+            onFocus={() => {
+              if (writeChildCmt === -1) {
+                return;
+              }
+
+              const delayedScroll = () => {
+                flatListRef.current.scrollToIndex({
+                  index: writeChildCmt,
+                  animated: true,
+                });
+              };
+
+              // Wait for 1 second (1000 milliseconds) and then execute the scroll
+              const timeoutId = setTimeout(delayedScroll, 100);
+
+              // Cleanup the timeout to avoid memory leaks
+              return () => clearTimeout(timeoutId);
+            }}
             placeholder={placeholder}
             placeholderTextColor={'#848484'}
             style={[

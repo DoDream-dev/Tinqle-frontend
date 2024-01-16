@@ -30,6 +30,7 @@ type ContentProps = {
   profileImg: string | null;
   showWhoseModal: number;
   setShowWhoseModal: React.Dispatch<React.SetStateAction<number>>;
+  index: number;
 };
 
 export default function Content(props: ContentProps) {
@@ -42,6 +43,7 @@ export default function Content(props: ContentProps) {
   const cmt = props.cmt;
   const child = props.child;
   const cmtId = props.cmtId;
+  const index = props.index;
   const windowWidth = Dimensions.get('screen').width;
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
@@ -165,7 +167,7 @@ export default function Content(props: ContentProps) {
           )}
         </View>
         {cmt && (
-          <Pressable style={styles.recomment} onPress={() => child(cmtId)}>
+          <Pressable style={styles.recomment} onPress={() => child(index)}>
             <Text style={styles.recommentTxt}>대댓글 쓰기</Text>
           </Pressable>
         )}
