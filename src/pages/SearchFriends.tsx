@@ -88,7 +88,7 @@ export default function SearchFriends() {
           `${Config.API_URL}/friendships/manage`,
         );
         setIsLast(response.data.data.last);
-        console.log(response.data.data)
+        console.log(response.data.data);
         if (response.data.data.content.length == 0) setFriendData([]);
         else {
           setFriendData(response.data.data.content);
@@ -122,28 +122,31 @@ export default function SearchFriends() {
       if (response.data.data.friendshipRelation === 'me') {
         setWhichPopup('Me');
         setOtherUser({accountId: -1, nickname: '', isFriend: 0});
-      }
-      else {
-        if (response.data.data.friendshipRelation == "true") {
+      } else {
+        if (response.data.data.friendshipRelation == 'true') {
           // setFriendData([])
-        } else if (response.data.data.friendshipRelation == "waiting") {
-          setFriendData([{
-            accountId:response.data.data.accountId,
-            friendNickname:response.data.data.nickname,
-            friendshipId:-2,
-            status:"",
-            profileImageUrl:response.data.data.profileImageUrl
-          }]);
+        } else if (response.data.data.friendshipRelation == 'waiting') {
+          setFriendData([
+            {
+              accountId: response.data.data.accountId,
+              friendNickname: response.data.data.nickname,
+              friendshipId: -2,
+              status: '',
+              profileImageUrl: response.data.data.profileImageUrl,
+            },
+          ]);
         } else {
-          setFriendData([{
-            accountId:response.data.data.accountId,
-            friendNickname:response.data.data.nickname,
-            friendshipId:-1,
-            status:"",
-            profileImageUrl:response.data.data.profileImageUrl
-          }]);
+          setFriendData([
+            {
+              accountId: response.data.data.accountId,
+              friendNickname: response.data.data.nickname,
+              friendshipId: -1,
+              status: '',
+              profileImageUrl: response.data.data.profileImageUrl,
+            },
+          ]);
         }
-        
+
         console.log(response.data.data);
       }
     } catch (error) {
@@ -154,39 +157,44 @@ export default function SearchFriends() {
       }
     }
   }, throttleTime);
-  const askFriend = _.throttle(async (accountId:number, name:string, profileImageUrl:string) => {
-    try {
-      const response = await axios.post(
-        `${Config.API_URL}/friendships/request`,
-        {
-          accountTargetId: accountId,
-          message: "",
-        },
-      );
-      // console.log(response.data)
-      // popup: 이도님께 친구 요청을 보냈어요!
-      setWhichPopup('send');
-      setPopupName(name);
-      setFriendData([{
-        accountId:accountId,
-        friendNickname:name,
-        friendshipId:-2,
-        status:"",
-        profileImageUrl:profileImageUrl,
-      }]);
-    } catch (error) {
-      const errorResponse = (error as AxiosError<{message: string}>).response;
-      console.log(errorResponse.data);
-      // if (errorResponse?.data.statusCode == 1000) {
-      //   // if (await refreshOrNot()) setReset(!reset);
-      // }
-      // if (errorResponse?.data.statusCode == 3010) {
-      //   setWhichPopup('requested');
-      //   setOtherUser({accountId:-1, nickname:'', isFriend:0});
-      //   setMessage('');
-      // }
-    }
-  }, throttleTime);
+  const askFriend = _.throttle(
+    async (accountId: number, name: string, profileImageUrl: string) => {
+      try {
+        const response = await axios.post(
+          `${Config.API_URL}/friendships/request`,
+          {
+            accountTargetId: accountId,
+            message: '',
+          },
+        );
+        // console.log(response.data)
+        // popup: 이도님께 친구 요청을 보냈어요!
+        setWhichPopup('send');
+        setPopupName(name);
+        setFriendData([
+          {
+            accountId: accountId,
+            friendNickname: name,
+            friendshipId: -2,
+            status: '',
+            profileImageUrl: profileImageUrl,
+          },
+        ]);
+      } catch (error) {
+        const errorResponse = (error as AxiosError<{message: string}>).response;
+        console.log(errorResponse.data);
+        // if (errorResponse?.data.statusCode == 1000) {
+        //   // if (await refreshOrNot()) setReset(!reset);
+        // }
+        // if (errorResponse?.data.statusCode == 3010) {
+        //   setWhichPopup('requested');
+        //   setOtherUser({accountId:-1, nickname:'', isFriend:0});
+        //   setMessage('');
+        // }
+      }
+    },
+    throttleTime,
+  );
   const getData = async () => {
     if (!isLast) {
       setLoading(true);
@@ -221,12 +229,12 @@ export default function SearchFriends() {
     setTimeout(() => {
       setRefreshing(false);
     }, 1000);
-    setReset(!reset)
+    setReset(!reset);
   };
 
   const deleteFriends = async () => {
     try {
-      console.log(deleteFriend)
+      console.log(deleteFriend);
       const response = await axios.delete(
         `${Config.API_URL}/friendships/${deleteFriend}`,
       );
@@ -241,7 +249,7 @@ export default function SearchFriends() {
       const errorResponse = (error as AxiosError<{message: string}>).response;
       console.log(errorResponse.data);
     }
-  }
+  };
 
   return (
     <Pressable style={styles.entire} onPress={Keyboard.dismiss}>
@@ -274,11 +282,7 @@ export default function SearchFriends() {
                 <Pressable
                   onPress={() => setSearchCode('')}
                   style={styles.clearBtn}>
-                  <SvgXml 
-                    width={20}
-                    height={20}
-                    xml={svgXml.icon.textInputX}
-                  />
+                  <SvgXml width={20} height={20} xml={svgXml.icon.textInputX} />
                 </Pressable>
               )}
             </View>
@@ -300,62 +304,70 @@ export default function SearchFriends() {
         keyExtractor={(item, index) => index}
         numColumns={2}
         renderItem={({item}: friendListItemProps) => {
-          if (item.friendshipId == -1) return (
-            <Pressable
-              style={[
-                styles.friendView,
-                {width: (Dimensions.get('window').width - 40) / 2},
-              ]}
-              onPress={() => {
-                setShowWhoseModal(item.accountId);
-              }}>
+          if (item.friendshipId == -1)
+            return (
               <Pressable
-                style={styles.friendProfileImg}>
-                {item.profileImageUrl == null ? (
-                  <SvgXml width={32} height={32} xml={svgXml.profile.null} />
-                ) : (
-                  <Image
-                    source={{uri: item.profileImageUrl}}
-                    style={{width: 32, height: 32, borderRadius: 16}}
-                  />
-                )}
+                style={[
+                  styles.friendView,
+                  {width: (Dimensions.get('window').width - 40) / 2},
+                ]}
+                onPress={() => {
+                  setShowWhoseModal(item.accountId);
+                }}>
+                <Pressable style={styles.friendProfileImg}>
+                  {item.profileImageUrl == null ? (
+                    <SvgXml width={32} height={32} xml={svgXml.profile.null} />
+                  ) : (
+                    <Image
+                      source={{uri: item.profileImageUrl}}
+                      style={{width: 32, height: 32, borderRadius: 16}}
+                    />
+                  )}
+                </Pressable>
+                <View style={styles.friendmiddle}>
+                  <Text style={styles.friendName}>{item.friendNickname}</Text>
+                </View>
+                <Pressable
+                  style={styles.nonFriendProfileStatus}
+                  onPress={() => {
+                    askFriend(
+                      item.accountId,
+                      item.friendNickname,
+                      item.profileImageUrl,
+                    );
+                  }}>
+                  <SvgXml width={24} height={24} xml={svgXml.icon.addfriend} />
+                </Pressable>
               </Pressable>
-              <View style={styles.friendmiddle}>
-                <Text style={styles.friendName}>{item.friendNickname}</Text>
-              </View>
-              <Pressable style={styles.nonFriendProfileStatus} onPress={()=>{askFriend(item.accountId, item.friendNickname, item.profileImageUrl);}}>
-                <SvgXml width={24} height={24} xml={svgXml.icon.addfriend} />
-              </Pressable>
-            </Pressable>
-          );
-          if (item.friendshipId == -2) return (
-            <Pressable
-              style={[
-                styles.friendView,
-                {width: (Dimensions.get('window').width - 40) / 2},
-              ]}
-              onPress={() => {
-                setShowWhoseModal(item.accountId);
-              }}>
+            );
+          if (item.friendshipId == -2)
+            return (
               <Pressable
-                style={styles.friendProfileImg}>
-                {item.profileImageUrl == null ? (
-                  <SvgXml width={32} height={32} xml={svgXml.profile.null} />
-                ) : (
-                  <Image
-                    source={{uri: item.profileImageUrl}}
-                    style={{width: 32, height: 32, borderRadius: 16}}
-                  />
-                )}
+                style={[
+                  styles.friendView,
+                  {width: (Dimensions.get('window').width - 40) / 2},
+                ]}
+                onPress={() => {
+                  setShowWhoseModal(item.accountId);
+                }}>
+                <Pressable style={styles.friendProfileImg}>
+                  {item.profileImageUrl == null ? (
+                    <SvgXml width={32} height={32} xml={svgXml.profile.null} />
+                  ) : (
+                    <Image
+                      source={{uri: item.profileImageUrl}}
+                      style={{width: 32, height: 32, borderRadius: 16}}
+                    />
+                  )}
+                </Pressable>
+                <View style={styles.friendmiddle}>
+                  <Text style={styles.friendName}>{item.friendNickname}</Text>
+                </View>
+                <Pressable style={styles.waitingFriendProfileStatus}>
+                  <SvgXml width={24} height={24} xml={svgXml.icon.sendfriend} />
+                </Pressable>
               </Pressable>
-              <View style={styles.friendmiddle}>
-                <Text style={styles.friendName}>{item.friendNickname}</Text>
-              </View>
-              <Pressable style={styles.waitingFriendProfileStatus}>
-                <SvgXml width={24} height={24} xml={svgXml.icon.sendfriend} />
-              </Pressable>
-            </Pressable>
-          );
+            );
           return (
             <Pressable
               style={[
@@ -378,7 +390,7 @@ export default function SearchFriends() {
                     resizeMode="contain"
                     // resizeMode="cover"
                     imageBackgroundColor="transparent"
-                    overlayBackgroundColor="#202020"
+                    overlayBackgroundColor="rgba(32, 32, 32, 0.9)"
                     style={{width: 32, height: 32, borderRadius: 16}}
                     source={{
                       uri: item.profileImageUrl,
@@ -461,25 +473,40 @@ export default function SearchFriends() {
         setShowWhoseModal={setShowWhoseModal}
         setDeleteFriend={setDeleteFriend}
       />
-      <Modal isVisible={deleteFriend != -1}
+      <Modal
+        isVisible={deleteFriend != -1}
         // onModalWillShow={getProfile}
         hasBackdrop={true}
-        onBackdropPress={()=>setDeleteFriend(-1)}
+        onBackdropPress={() => setDeleteFriend(-1)}
         // coverScreen={false}
-        onBackButtonPress={()=>setDeleteFriend(-1)}
+        onBackButtonPress={() => setDeleteFriend(-1)}
         // backdropColor='#222222' backdropOpacity={0.5}
         // style={[styles.entire, {marginVertical:(Dimensions.get('screen').height - 400)/2}]}
-        >
+      >
         {/* <View style={styles.modalBGView}>   */}
-          <View style={styles.modalView}>
-            <Text style={styles.modalTitleTxt}>친구를 삭제하시겠어요?</Text>
-            <Text style={styles.modalContentTxt}>상대방에게 알림이 가지 않으니 안심하세요.</Text>
-            <View style={styles.btnView}>
-              <Pressable style={styles.btnGray} onPress={()=>{setDeleteFriend(-1);}}><Text style={styles.btnTxt}>취소</Text></Pressable>
-              <View style={{width:8}}></View>
-              <Pressable style={styles.btn} onPress={()=>{deleteFriends()}}><Text style={styles.btnTxt}>네, 삭제할게요.</Text></Pressable>
-            </View>
+        <View style={styles.modalView}>
+          <Text style={styles.modalTitleTxt}>친구를 삭제하시겠어요?</Text>
+          <Text style={styles.modalContentTxt}>
+            상대방에게 알림이 가지 않으니 안심하세요.
+          </Text>
+          <View style={styles.btnView}>
+            <Pressable
+              style={styles.btnGray}
+              onPress={() => {
+                setDeleteFriend(-1);
+              }}>
+              <Text style={styles.btnTxt}>취소</Text>
+            </Pressable>
+            <View style={{width: 8}}></View>
+            <Pressable
+              style={styles.btn}
+              onPress={() => {
+                deleteFriends();
+              }}>
+              <Text style={styles.btnTxt}>네, 삭제할게요.</Text>
+            </Pressable>
           </View>
+        </View>
         {/* </View> */}
       </Modal>
       {/* <Modal
@@ -697,21 +724,21 @@ const styles = StyleSheet.create({
   },
   nonFriendProfileStatus: {
     marginVertical: 7,
-    backgroundColor:'#A55FFF',
-    width:40,
-    height:40,
-    borderRadius:5,
-    justifyContent:'center',
-    alignItems:'center'
+    backgroundColor: '#A55FFF',
+    width: 40,
+    height: 40,
+    borderRadius: 5,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   waitingFriendProfileStatus: {
     marginVertical: 7,
-    backgroundColor:'#888888',
-    width:40,
-    height:40,
-    borderRadius:5,
-    justifyContent:'center',
-    alignItems:'center'
+    backgroundColor: '#888888',
+    width: 40,
+    height: 40,
+    borderRadius: 5,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   friendName: {
     color: '#F0F0F0',
@@ -725,48 +752,48 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 36,
   },
-  modalView:{
+  modalView: {
     backgroundColor: '#333333',
     borderRadius: 10,
     justifyContent: 'center',
-    alignItems:'center',
+    alignItems: 'center',
     paddingTop: 30,
     paddingHorizontal: 16,
     paddingBottom: 24,
   },
-  modalTitleTxt:{
-    color:'#F0F0F0',
-    fontSize:15,
-    fontWeight:'600',
-    marginBottom:10
+  modalTitleTxt: {
+    color: '#F0F0F0',
+    fontSize: 15,
+    fontWeight: '600',
+    marginBottom: 10,
   },
-  modalContentTxt:{
-    color:'#F0F0F0',
-    fontSize:15,
-    fontWeight:'400',
-    marginBottom:10,
-    marginTop:10
+  modalContentTxt: {
+    color: '#F0F0F0',
+    fontSize: 15,
+    fontWeight: '400',
+    marginBottom: 10,
+    marginTop: 10,
   },
-  btn:{
-    flex:1,
-    justifyContent:'center',
-    alignItems:'center',
-    borderRadius:5,
-    paddingVertical:13,
-    backgroundColor:'#A55FFF',
+  btn: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 5,
+    paddingVertical: 13,
+    backgroundColor: '#A55FFF',
   },
-  btnGray:{
-    flex:1,
-    justifyContent:'center',
-    alignItems:'center',
-    borderRadius:5,
-    paddingVertical:13,
-    backgroundColor:'#888888',
+  btnGray: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 5,
+    paddingVertical: 13,
+    backgroundColor: '#888888',
   },
-  btnTxt:{
-    color:'#F0F0F0',
-    fontSize:15,
-    fontWeight:'600'
+  btnTxt: {
+    color: '#F0F0F0',
+    fontSize: 15,
+    fontWeight: '600',
   },
   commentInput: {
     backgroundColor: '#F7F7F7',
@@ -792,11 +819,11 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginBottom: 12,
   },
-  btnView:{
-    flexDirection:'row',
-    justifyContent:'space-between',
+  btnView: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     paddingHorizontal: 17,
-    marginTop:16,
+    marginTop: 16,
   },
   btnViewFriend: {
     flexDirection: 'row',

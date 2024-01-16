@@ -154,7 +154,7 @@ export default function Content(props: ContentProps) {
               resizeMode="contain"
               // resizeMode="cover"
               imageBackgroundColor="transparent"
-              overlayBackgroundColor="#202020"
+              overlayBackgroundColor="rgba(32, 32, 32, 0.9)"
               style={{
                 width: windowWidth - 100,
                 height: windowWidth - 100,
