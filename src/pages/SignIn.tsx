@@ -123,18 +123,18 @@ export default function SignIn() {
     console.log('Apple 로그인 시도 중 // 아직 미구현! - 데이터만 확인');
     // return; //미작성 코드
     try {
-      // const appleAuthRequestResponse = await appleAuth.performRequest({
-      //   requestedOperation: appleAuth.Operation.LOGIN,
-      //   requestedScopes: [appleAuth.Scope.EMAIL, appleAuth.Scope.FULL_NAME],
-      // });
-      // // Ensure Apple returned a user identityToken
-      // if (!appleAuthRequestResponse.identityToken) {
-      //   throw 'Apple Sign-In failed - no identify token returned';
-      // }
-      // const {identityToken, nonce} = appleAuthRequestResponse;
-      // console.log('res : ', appleAuthRequestResponse);
-      // console.log('identityToken: ', identityToken);
-      // console.log('nonce: ', nonce);
+      const appleAuthRequestResponse = await appleAuth.performRequest({
+        requestedOperation: appleAuth.Operation.LOGIN,
+        requestedScopes: [appleAuth.Scope.EMAIL, appleAuth.Scope.FULL_NAME],
+      });
+      // Ensure Apple returned a user identityToken
+      if (!appleAuthRequestResponse.identityToken) {
+        throw 'Apple Sign-In failed - no identify token returned';
+      }
+      const {identityToken, nonce} = appleAuthRequestResponse;
+      console.log('res : ', appleAuthRequestResponse);
+      console.log('identityToken: ', identityToken);
+      console.log('nonce: ', nonce);
     } catch (error) {
       console.log('에러났으', error);
       // const errorResponse = (error as AxiosError<{message: string}>).response;
@@ -313,11 +313,13 @@ export default function SignIn() {
           </Shadow>
         </Pressable>
       </View>
-      <M
-        visible={settingID}
+      <Modal
+        isVisible={settingID}
         // onBackButtonPress={()=>setSettingID(false)}
         // hasBackdrop={false}
-        onRequestClose={()=>setSettingID(false)}
+        animationIn="fadeIn" // Set the animation type to fade-in
+        animationInTiming={600}
+        onDismiss={() => setSettingID(false)}
         style={{margin: 0}}>
         <Pressable
           onPress={() => setSettingID(false)}
@@ -385,8 +387,13 @@ export default function SignIn() {
             </Pressable>
           </Pressable>
         </Pressable>
-      </M>
+      </Modal>
       <Modal
+        onDismiss={() => {
+          if (serviceP && personalP && ageP) {
+            setSettingID(true);
+          }
+        }}
         isVisible={signup != ''}
         onSwipeComplete={() => setSignUp('')}
         swipeDirection={'down'}
@@ -544,7 +551,7 @@ export default function SignIn() {
                   disabled={!(serviceP && personalP && ageP)}
                   // onPress={()=>{Signup(signup); setSignUp('');}}
                   onPress={() => {
-                    setSettingID(true);
+                    setSignUp('');
                   }}>
                   <Text style={styles.sendTxt}>시작하기</Text>
                 </Pressable>
