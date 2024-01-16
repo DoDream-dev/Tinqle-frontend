@@ -156,10 +156,11 @@ export default function FriendProfileModal(props:ProfileProps){
               />
             </View>
             <View style={styles.modalBtnView}>
-              <Pressable style={styles.btnWhite} onPress={()=>{setChangeName(false); setChangeNameVal(name);}}>
-                <Text style={styles.btnWhiteTxt}>취소</Text>
+              <Pressable style={styles.btnGray} onPress={()=>{setChangeName(false); setChangeNameVal(name);}}>
+                <Text style={styles.btnTxt}>취소</Text>
               </Pressable>
-              <Pressable style={styles.btnYellow} disabled={chageNameVal.trim() == ''} onPress={()=>{
+              <View style={{width:8}}></View>
+              <Pressable style={styles.btn} disabled={chageNameVal.trim() == ''} onPress={()=>{
                 if (chageNameVal != '') {
                   if (chageNameVal == name) {setChangeName(false);}
                   else {
@@ -167,7 +168,7 @@ export default function FriendProfileModal(props:ProfileProps){
                   }
                 }
               }}>
-                <Text style={styles.btnYellowTxt}>완료</Text>
+                <Text style={styles.btnTxt}>완료</Text>
               </Pressable>
             </View>
           </Pressable>
@@ -276,37 +277,5 @@ const styles = StyleSheet.create({
     paddingHorizontal:10,
     marginBottom:20,
     marginTop:10,
-  },
-  btnWhite:{
-    height: 44,
-    flex:1,
-    justifyContent: 'center',
-    alignItems:'center',
-    borderRadius: 10,
-    // borderWidth: 1,
-    // borderColor: '#A55FFF',
-    backgroundColor: '#888888',
-    marginHorizontal: 4,
-  },
-  btnYellow:{
-    height: 44,
-    flex:1,
-    justifyContent: 'center',
-    alignItems:'center',
-    borderRadius: 10,
-    // borderWidth: 1,
-    // borderColor: '#A55FFF',
-    backgroundColor: '#A55FFF',
-    marginHorizontal: 4,
-  },
-  btnWhiteTxt:{
-    color:'#F0F0F0',
-    fontSize:15,
-    fontWeight:'600'
-  },
-  btnYellowTxt:{
-    color:'#F0F0F0',
-    fontSize:15,
-    fontWeight:'600'
   },
 })
