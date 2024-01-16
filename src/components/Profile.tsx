@@ -53,9 +53,10 @@ export default function Profile(props: ProfileProps) {
         ) : (
           <View style={{width: 120, height: 120, borderRadius: 60}}>
             <ImageModal
+              modalImageResizeMode="contain"
               swipeToDismiss={true}
-              resizeMode="contain"
-              // resizeMode="cover"
+              // resizeMode="contain"
+              resizeMode="cover"
               imageBackgroundColor="transparent"
               overlayBackgroundColor="rgba(32, 32, 32, 0.9)"
               style={{width: 120, height: 120, borderRadius: 60}}
