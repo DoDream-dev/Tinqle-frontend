@@ -11,6 +11,7 @@ import {
   TextInput,
   FlatList,
   KeyboardAvoidingView,
+  Platform,
 } from 'react-native';
 import {RootStackParamList} from '../../AppInner';
 import Feed from '../components/Feed';
@@ -462,7 +463,7 @@ export default function FeedDetail({navigation, route}: FeedDetailScreenProps) {
   return (
     <KeyboardAvoidingView
       style={[{flex: 1}]}
-      behavior="padding"
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       keyboardVerticalOffset={105}>
       <View style={styles.entire}>
         <View style={styles.commentView}>

@@ -13,6 +13,7 @@ import {
   KeyboardAvoidingView,
   Keyboard,
   TouchableWithoutFeedback,
+  Platform,
 } from 'react-native';
 import {RootStackParamList} from '../../AppInner';
 import Feed from '../components/Feed';
@@ -366,7 +367,7 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
       <KeyboardAvoidingView
         style={[{flex: 1, backgroundColor: '#202020'}]}
-        behavior="padding"
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         keyboardVerticalOffset={105}>
         <View
           style={{flex: 1, alignItems: 'center', backgroundColor: '#202020'}}>
