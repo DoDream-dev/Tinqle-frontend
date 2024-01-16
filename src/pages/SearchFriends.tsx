@@ -377,11 +377,8 @@ export default function SearchFriends() {
               onPress={() => {
                 setShowWhoseModal(item.accountId);
               }}>
-              <Pressable
-                style={styles.friendProfileImg}
-                onPress={() => {
-                  setShowWhoseModal(item.accountId);
-                }}>
+              <View
+                style={styles.friendProfileImg}>
                 {item.profileImageUrl == null ? (
                   <SvgXml width={32} height={32} xml={svgXml.profile.null} />
                 ) : (
@@ -397,11 +394,11 @@ export default function SearchFriends() {
                     }}
                   />
                 )}
-              </Pressable>
+              </View>
               <View style={styles.friendmiddle}>
                 <Text style={styles.friendName}>{item.friendNickname}</Text>
               </View>
-              <Pressable style={styles.friendProfileStatus}>
+              <View style={styles.friendProfileStatus}>
                 {item.status == 'smile'.toUpperCase() && (
                   <SvgXml width={40} height={40} xml={svgXml.status.smile} />
                 )}
@@ -460,7 +457,7 @@ export default function SearchFriends() {
                 {item.status == 'travel'.toUpperCase() && (
                   <SvgXml width={40} height={40} xml={svgXml.status.travel} />
                 )}
-              </Pressable>
+              </View>
               {/* <Pressable style={styles.deleteBtn}>
                 <Text style={styles.deleteBtnTxt}>삭제</Text>
               </Pressable> */}
