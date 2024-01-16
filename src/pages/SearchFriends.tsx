@@ -387,8 +387,9 @@ export default function SearchFriends() {
                 ) : (
                   <ImageModal
                     swipeToDismiss={true}
-                    resizeMode="contain"
-                    // resizeMode="cover"
+                    // resizeMode="contain"
+                    resizeMode="cover"
+                    modalImageResizeMode="contain"
                     imageBackgroundColor="transparent"
                     overlayBackgroundColor="rgba(32, 32, 32, 0.9)"
                     style={{width: 32, height: 32, borderRadius: 16}}

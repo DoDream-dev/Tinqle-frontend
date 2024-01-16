@@ -151,6 +151,7 @@ export default function Content(props: ContentProps) {
           {imageURL.flatMap(f => (!!f ? [f] : [])).length != 0 && (
             <ImageModal
               swipeToDismiss={true}
+              modalImageResizeMode="contain"
               resizeMode="contain"
               // resizeMode="cover"
               imageBackgroundColor="transparent"

@@ -1,38 +1,46 @@
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { View, Text, StyleSheet, Pressable, TextInput, Keyboard, Linking, ScrollView } from 'react-native';
-import Modal from'react-native-modal';
+import {NativeStackScreenProps} from '@react-navigation/native-stack';
+import React, {useState, useEffect, useRef, useCallback} from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  Pressable,
+  TextInput,
+  Keyboard,
+  Linking,
+  ScrollView,
+} from 'react-native';
+import Modal from 'react-native-modal';
 import ToastScreen from '../components/ToastScreen';
-import { RootStackParamList } from '../../AppInner';
-import axios, { AxiosError } from 'axios';
+import {RootStackParamList} from '../../AppInner';
+import axios, {AxiosError} from 'axios';
 import Config from 'react-native-config';
-import { useFocusEffect } from '@react-navigation/native';
-import { svgXml } from '../../assets/image/svgXml';
-import { SvgXml } from 'react-native-svg';
+import {useFocusEffect} from '@react-navigation/native';
+import {svgXml} from '../../assets/image/svgXml';
+import {SvgXml} from 'react-native-svg';
 import _ from 'lodash';
-import { throttleTime, throttleTimeEmoticon } from '../hooks/Throttle';
+import {throttleTime, throttleTimeEmoticon} from '../hooks/Throttle';
 import userSlice from '../slices/user';
 import Clipboard from '@react-native-clipboard/clipboard';
-import { useAppDispatch } from '../store';
-import { version } from "../../package.json"
-
-import EncryptedStorage from "react-native-encrypted-storage";
+import {useAppDispatch} from '../store';
+import {version} from '../../package.json';
+import ImagePicker from 'react-native-image-crop-picker';
+import EncryptedStorage from 'react-native-encrypted-storage';
 import Profile from '../components/Profile';
 import ServicePolicyModal from '../components/ServicePolicyModal';
 import PersonalPolicyModal from '../components/PersonalPolicyModal';
-
 
 // type ProfileScreenProps = NativeStackScreenProps<RootStackParamList, 'Profile'>;
 
 export default function MyProfile() {
   // const whose = route.params.whose;
   // const acId = route.params.accountId;
-  
+
   // const [whoseProfile, setWhoseProfile] = useState(route.params.whose);
   // const [alreadyRequestFriend, setAlreadyRequestFriend] = useState(-1);
   const [myCode, setMyCode] = useState('');
   // const [accountId, setAcoountId] = useState(route.params.accountId);
-  
+
   // modal or not
   const [chageName, setChangeName] = useState(false);
   const [changeStatus, setChangeStatus] = useState(false);
@@ -42,22 +50,22 @@ export default function MyProfile() {
   const [writeNote, setWriteNote] = useState(false);
   const [askFriendMsg, setAskFriendMsg] = useState(false);
   const [popup, setPopup] = useState(false);
-  
+
   // input value
   const [chageNameVal, setChangeNameVal] = useState('');
   const [writeNoteVal, setwriteNoteVal] = useState('');
   const [askFriendMsgVal, setAskFriendMsgVal] = useState('');
-  
+
   // original value
   const [status, setStatus] = useState('');
   const [name, setName] = useState('');
   const [profileImg, setProfileImg] = useState(null);
-  
+
   const inp1 = useRef();
   const inp2 = useRef();
 
   const dispatch = useAppDispatch();
-  
+
   useEffect(() => {
     // if (whoseProfile == 0) {
     const getMyProfile = async () => {
@@ -74,7 +82,7 @@ export default function MyProfile() {
         if (errorResponse?.data.status == 500) {
           dispatch(
             userSlice.actions.setToken({
-              accessToken:'',
+              accessToken: '',
             }),
           );
         }
@@ -86,11 +94,11 @@ export default function MyProfile() {
         setMyCode(response.data.data.code);
       } catch (error) {
         const errorResponse = (error as AxiosError<{message: string}>).response;
-        console.log(errorResponse.data)
+        console.log(errorResponse.data);
         if (errorResponse?.data.status == 500) {
           dispatch(
             userSlice.actions.setToken({
-              accessToken:'',
+              accessToken: '',
             }),
           );
         }
@@ -137,11 +145,14 @@ export default function MyProfile() {
   //   },[whose, acId, status])
   // );
 
-  const postStatus = _.throttle(async (stat:string) => {
-    if (stat == status) {return;}
-    else {
+  const postStatus = _.throttle(async (stat: string) => {
+    if (stat == status) {
+      return;
+    } else {
       try {
-        const response = await axios.put(`${Config.API_URL}/accounts/me/status/${stat.toUpperCase()}`);
+        const response = await axios.put(
+          `${Config.API_URL}/accounts/me/status/${stat.toUpperCase()}`,
+        );
         setStatus(response.data.status);
         // console.log(response.data)
       } catch (error) {
@@ -151,14 +162,17 @@ export default function MyProfile() {
     }
   }, throttleTimeEmoticon);
 
-  const rename =  _.throttle(async (text:string) => {
+  const rename = _.throttle(async (text: string) => {
     if (text === name) {
       setChangeName(false);
       setChangeNameVal(text);
       return;
     }
     try {
-      const response = await axios.put(`${Config.API_URL}/accounts/me/nickname`, {nickname:text},);
+      const response = await axios.put(
+        `${Config.API_URL}/accounts/me/nickname`,
+        {nickname: text},
+      );
       setName(response.data.data.nickname);
       setChangeNameVal(response.data.data.nickname);
       setChangeName(false);
@@ -200,16 +214,18 @@ export default function MyProfile() {
   //   }
   // }, throttleTime);
 
-  useEffect(()=>{
-    if (chageName) {inp1.current.focus();}
-  }, [chageName])
+  useEffect(() => {
+    if (chageName) {
+      inp1.current.focus();
+    }
+  }, [chageName]);
 
   const LogOut = async () => {
     try {
-        const response = await axios.post(`${Config.API_URL}/auth/logout`,);
-        // console.log(response.data);
+      const response = await axios.post(`${Config.API_URL}/auth/logout`);
+      // console.log(response.data);
       if (response.data.data.isLogout) {
-        await EncryptedStorage.removeItem('refreshToken')
+        await EncryptedStorage.removeItem('refreshToken');
         dispatch(
           userSlice.actions.setToken({
             accessToken: '',
@@ -219,11 +235,11 @@ export default function MyProfile() {
       }
     } catch (error) {
       const errorResponse = (error as AxiosError<{message: string}>).response;
-      console.log(errorResponse.data)
+      console.log(errorResponse.data);
       if (errorResponse?.data.status == 500) {
         dispatch(
           userSlice.actions.setToken({
-            accessToken:'',
+            accessToken: '',
           }),
         );
       }
@@ -232,9 +248,9 @@ export default function MyProfile() {
 
   const revoke = async () => {
     try {
-      const response = await axios.post(`${Config.API_URL}/accounts/revoke`,);
+      const response = await axios.post(`${Config.API_URL}/accounts/revoke`);
       console.log(response.data);
-      await EncryptedStorage.removeItem('refreshToken')
+      await EncryptedStorage.removeItem('refreshToken');
       dispatch(
         userSlice.actions.setToken({
           accessToken: '',
@@ -242,33 +258,95 @@ export default function MyProfile() {
       );
     } catch (error) {
       const errorResponse = (error as AxiosError<{message: string}>).response;
-      console.log(errorResponse.data)
+      console.log(errorResponse.data);
     }
   };
-  
+
+  const uploadProfileImage = async () => {
+    ImagePicker.openPicker({
+      cropperCircleOverlay: true,
+      multiple: false,
+      mediaType: 'photo',
+      cropping: true,
+      width: 1000, // Adjust this value
+      height: 1000,
+    })
+      .then(image => {
+        console.log('##', image);
+        let name = image.path.split('/');
+        const imageFormData = new FormData();
+        let file = {
+          uri: image.path,
+          type: image.mime,
+          name: name[name.length - 1],
+        };
+        imageFormData.append('file', file);
+        imageFormData.append('type', 'account');
+
+        return imageFormData;
+      })
+      .then(async imageFormData => {
+        const response = await axios.post(
+          `${Config.API_URL}/images/single`,
+          imageFormData,
+          {
+            headers: {'Content-Type': 'multipart/form-data'},
+            transformRequest: (data, headers) => {
+              return data;
+            },
+          },
+        );
+
+        return response.data.data.files[0].fileUrl;
+      })
+      .then(async url => {
+        const response = await axios.post(
+          `${Config.API_URL}/accounts/me/image`,
+          {
+            profileImageUrl: url,
+            headers: {'Content-Type': 'multipart/form-data'},
+            transformRequest: (data, headers) => {
+              return data;
+            },
+          },
+        );
+
+        // console.log(response.data.data.profileImageUrl);
+        setProfileImg(response.data.data.profileImageUrl);
+      });
+  };
 
   return (
     <ScrollView style={styles.entire}>
       <View style={styles.profileView}>
-        <Profile 
+        <Profile
           status={status}
           name={name}
           restatusModal={setChangeStatus}
           renameModal={setChangeName}
           profileImg={profileImg}
-          friendshipRelation='me'
+          friendshipRelation="me"
         />
-        <Pressable style={styles.addProfileImgBtn} onPress={()=>console.log('profileImg select')}>
+        <Pressable
+          style={styles.addProfileImgBtn}
+          onPress={async () => {
+            await uploadProfileImage();
+          }}>
           <SvgXml width={24} height={24} xml={svgXml.icon.photo} />
         </Pressable>
         <View style={styles.myCodeView}>
-            <Pressable style={styles.myCodeBtn} onPress={()=>Clipboard.setString(myCode)}>
-              <Text style={styles.myCodeTxt}>
-                내 아이디: {myCode}
-              </Text>
-              <SvgXml width="15" height="15" xml={svgXml.icon.copyIcon} style={styles.copyIcon}/>
-            </Pressable>
-          </View>
+          <Pressable
+            style={styles.myCodeBtn}
+            onPress={() => Clipboard.setString(myCode)}>
+            <Text style={styles.myCodeTxt}>내 아이디: {myCode}</Text>
+            <SvgXml
+              width="15"
+              height="15"
+              xml={svgXml.icon.copyIcon}
+              style={styles.copyIcon}
+            />
+          </Pressable>
+        </View>
         {/* {whoseProfile == 0 && <View style={styles.btnView}>
           <Pressable style={styles.btnWhite} onPress={()=>navigation.navigate('MyFriendList')}>
             <Text style={styles.btnWhiteTxt}>친구 관리</Text>
@@ -297,23 +375,43 @@ export default function MyProfile() {
       </View>
 
       <View style={styles.settingView}>
-        <Pressable style={styles.settingBtn} onPress={()=>Linking.openURL(
-          'https://understood-blender-196.notion.site/ef94bd7843e94cc0ab57521878b482e0?pvs=4'
-        )}>
+        <Pressable
+          style={styles.settingBtn}
+          onPress={() =>
+            Linking.openURL(
+              'https://understood-blender-196.notion.site/ef94bd7843e94cc0ab57521878b482e0?pvs=4',
+            )
+          }>
           <Text style={styles.settingBtnTxt}>공지사항</Text>
         </Pressable>
-        <Pressable style={styles.settingBtn} onPress={()=>Linking.openURL(
-          'https://docs.google.com/forms/d/e/1FAIpQLSeAsQ-hqAzVdrgmIS5re1MEP_yjxWwhXtg_RT9qKgW9HyBbZQ/viewform?usp=sf_link'
-        )}>
+        <Pressable
+          style={styles.settingBtn}
+          onPress={() =>
+            Linking.openURL(
+              'https://docs.google.com/forms/d/e/1FAIpQLSeAsQ-hqAzVdrgmIS5re1MEP_yjxWwhXtg_RT9qKgW9HyBbZQ/viewform?usp=sf_link',
+            )
+          }>
           <Text style={styles.settingBtnTxt}>의견 남기기</Text>
         </Pressable>
-        <Pressable style={styles.settingBtn} onPress={()=>{console.log('change id')}}>
+        <Pressable
+          style={styles.settingBtn}
+          onPress={() => {
+            console.log('change id');
+          }}>
           <Text style={styles.settingBtnTxt}>내 아이디 변경하기</Text>
         </Pressable>
-        <Pressable style={styles.settingBtn} onPress={()=>{setPolicy('service')}}>
+        <Pressable
+          style={styles.settingBtn}
+          onPress={() => {
+            setPolicy('service');
+          }}>
           <Text style={styles.settingBtnTxt}>서비스 이용약관</Text>
         </Pressable>
-        <Pressable style={styles.settingBtn} onPress={()=>{setPolicy('personal')}}>
+        <Pressable
+          style={styles.settingBtn}
+          onPress={() => {
+            setPolicy('personal');
+          }}>
           <Text style={styles.settingBtnTxt}>개인정보 처리방침</Text>
         </Pressable>
         <Pressable style={styles.settingBtn} onPress={LogOut}>
@@ -322,47 +420,76 @@ export default function MyProfile() {
         <Pressable style={styles.settingBtn} onPress={revoke}>
           <Text style={styles.settingBtnTxt}>계정 삭제</Text>
         </Pressable>
-        <Pressable style={[styles.settingBtn, {flexDirection:'row', justifyContent:'space-between'}]}>
+        <Pressable
+          style={[
+            styles.settingBtn,
+            {flexDirection: 'row', justifyContent: 'space-between'},
+          ]}>
           <Text style={styles.settingBtnTxt}>앱 버전</Text>
-          <Text style={[styles.settingBtnTxt, {color:'#888888'}]}>{version}</Text>
+          <Text style={[styles.settingBtnTxt, {color: '#888888'}]}>
+            {version}
+          </Text>
         </Pressable>
       </View>
 
       {/* modal for policy */}
       <ServicePolicyModal policy={policy} setPolicy={setPolicy} />
       <PersonalPolicyModal policy={policy} setPolicy={setPolicy} />
-      
+
       {/* modal for changing name */}
-      <Modal isVisible={chageName} onBackButtonPress={()=>setChangeName(false)} avoidKeyboard={true} backdropColor='#222222' backdropOpacity={0.5}>
-        <Pressable style={styles.modalBGView} onPress={()=>{setChangeName(false); Keyboard.dismiss();}}>
-          <Pressable style={styles.modalView} onPress={(e)=>e.stopPropagation()}>
+      <Modal
+        isVisible={chageName}
+        onBackButtonPress={() => setChangeName(false)}
+        avoidKeyboard={true}
+        backdropColor="#222222"
+        backdropOpacity={0.5}>
+        <Pressable
+          style={styles.modalBGView}
+          onPress={() => {
+            setChangeName(false);
+            Keyboard.dismiss();
+          }}>
+          <Pressable
+            style={styles.modalView}
+            onPress={e => e.stopPropagation()}>
             <Text style={styles.modalTitleTxt}>내 이름 바꾸기</Text>
             <View style={styles.changeView}>
-              <TextInput 
+              <TextInput
                 ref={inp1}
                 style={styles.nameChangeTxtInput}
-                onChangeText={(text:string)=>{setChangeNameVal(text)}}
+                onChangeText={(text: string) => {
+                  setChangeNameVal(text);
+                }}
                 blurOnSubmit={true}
                 maxLength={10}
                 value={chageNameVal}
                 autoFocus={true}
-                onSubmitEditing={()=>{
+                onSubmitEditing={() => {
                   rename(chageNameVal.trim());
                 }}
               />
             </View>
             <View style={styles.modalBtnView}>
-              <Pressable style={styles.btnWhite} onPress={()=>{setChangeName(false); setChangeNameVal(name);}}>
+              <Pressable
+                style={styles.btnWhite}
+                onPress={() => {
+                  setChangeName(false);
+                  setChangeNameVal(name);
+                }}>
                 <Text style={styles.btnWhiteTxt}>취소</Text>
               </Pressable>
-              <Pressable style={styles.btnYellow} disabled={chageNameVal.trim() == ''} onPress={()=>{
-                if (chageNameVal != '') {
-                  if (chageNameVal == name) {setChangeName(false);}
-                  else {
-                    rename(chageNameVal.trim());
+              <Pressable
+                style={styles.btnYellow}
+                disabled={chageNameVal.trim() == ''}
+                onPress={() => {
+                  if (chageNameVal != '') {
+                    if (chageNameVal == name) {
+                      setChangeName(false);
+                    } else {
+                      rename(chageNameVal.trim());
+                    }
                   }
-                }
-              }}>
+                }}>
                 <Text style={styles.btnYellowTxt}>완료</Text>
               </Pressable>
             </View>
@@ -370,7 +497,6 @@ export default function MyProfile() {
         </Pressable>
       </Modal>
 
-      
       {/* modal for changin status */}
       {/* <Modal isVisible={changeStatus} backdropColor='#222222' backdropOpacity={0.5} onBackButtonPress={()=>setChangeStatus(false)}>
         <Pressable style={styles.modalBGView} onPress={()=>{Keyboard.dismiss(); setChangeStatus(false);}}>
@@ -493,208 +619,207 @@ export default function MyProfile() {
 }
 
 const styles = StyleSheet.create({
-  entire:{
+  entire: {
     flex: 1,
     // alignItems: 'center',
     paddingTop: 10,
     paddingHorizontal: 16,
-    backgroundColor:'#202020',
+    backgroundColor: '#202020',
   },
-  profileView:{
+  profileView: {
     width: '100%',
-    backgroundColor:'#333333',
-    paddingVertical:40,
-    alignItems:'center',
-    borderRadius:10,
-    position:'relative'
+    backgroundColor: '#333333',
+    paddingVertical: 40,
+    alignItems: 'center',
+    borderRadius: 10,
+    position: 'relative',
   },
-  addProfileImgBtn:{
-    position:'absolute',
+  addProfileImgBtn: {
+    position: 'absolute',
     top: 131,
-    left:223,
-    backgroundColor:'#101010',
-    borderRadius:15,
-    padding:3
+    left: 223,
+    backgroundColor: '#101010',
+    borderRadius: 15,
+    padding: 3,
   },
-  myCodeView:{},
-  myCodeTxt:{
+  myCodeView: {},
+  myCodeTxt: {
     color: '#848484',
     fontSize: 13,
-    fontWeight: '500'
+    fontWeight: '500',
   },
-  myCodeBtn:{
+  myCodeBtn: {
     flexDirection: 'row',
   },
-  copyIcon:{
+  copyIcon: {
     marginLeft: 4,
     height: 14,
     top: 1,
   },
-  btnView:{
+  btnView: {
     flexDirection: 'row',
     justifyContent: 'center',
     paddingHorizontal: 44,
   },
-  btnWhite:{
+  btnWhite: {
     height: 44,
-    flex:1,
+    flex: 1,
     justifyContent: 'center',
-    alignItems:'center',
+    alignItems: 'center',
     borderRadius: 10,
     borderWidth: 1,
     borderColor: '#A55FFF',
     backgroundColor: '#F0F0F0',
     marginHorizontal: 4,
   },
-  btnYellow:{
+  btnYellow: {
     height: 44,
-    flex:1,
+    flex: 1,
     justifyContent: 'center',
-    alignItems:'center',
+    alignItems: 'center',
     borderRadius: 10,
     borderWidth: 1,
     borderColor: '#A55FFF',
     backgroundColor: '#A55FFF',
     marginHorizontal: 4,
   },
-  btnYellowBig:{
+  btnYellowBig: {
     height: 44,
-    flex:1.8,
+    flex: 1.8,
     justifyContent: 'center',
-    alignItems:'center',
+    alignItems: 'center',
     borderRadius: 10,
     borderWidth: 1,
     borderColor: '#A55FFF',
     backgroundColor: '#A55FFF',
     marginHorizontal: 4,
   },
-  btnWhiteTxt:{
-    color:'#A55FFF',
-    fontSize:15,
-    fontWeight:'600'
+  btnWhiteTxt: {
+    color: '#A55FFF',
+    fontSize: 15,
+    fontWeight: '600',
   },
-  btnYellowTxt:{
-    color:'#F0F0F0',
-    fontSize:15,
-    fontWeight:'600'
+  btnYellowTxt: {
+    color: '#F0F0F0',
+    fontSize: 15,
+    fontWeight: '600',
   },
-  modalBGView:{
-    width:"100%", 
-    flex:1,
-    justifyContent:'center',
-    alignItems:'center',
-    paddingHorizontal:36,
+  modalBGView: {
+    width: '100%',
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 36,
   },
-  modalView:{
+  modalView: {
     backgroundColor: '#333333',
     borderRadius: 10,
     justifyContent: 'center',
-    alignItems:'center',
+    alignItems: 'center',
     paddingTop: 30,
     paddingHorizontal: 16,
     paddingBottom: 24,
   },
-  modalView2:{
+  modalView2: {
     backgroundColor: '#FFFFFF',
     borderRadius: 10,
-    width:303,
+    width: 303,
     height: 580,
     marginHorizontal: 36,
     justifyContent: 'space-between',
-    alignItems:'center',
+    alignItems: 'center',
     padding: 20,
-    flexWrap:'wrap',
-    flexDirection:'row'
+    flexWrap: 'wrap',
+    flexDirection: 'row',
   },
-  statusSelect:{
+  statusSelect: {
     borderRadius: 30,
-    width:80,
-    height:80,
-    backgroundColor:'#F7F7F7',
+    width: 80,
+    height: 80,
+    backgroundColor: '#F7F7F7',
     marginBottom: 12,
-    justifyContent:'center',
-    alignItems:'center',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
-  statusSelected:{
+  statusSelected: {
     borderRadius: 30,
-    width:80,
-    height:80,
-    backgroundColor:'#FFB443',
+    width: 80,
+    height: 80,
+    backgroundColor: '#FFB443',
     marginBottom: 12,
-    justifyContent:'center',
-    alignItems:'center',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
-  modalTitleTxt:{
-    color:'#F0F0F0',
-    fontSize:15,
-    fontWeight:'600',
-    marginBottom:10
+  modalTitleTxt: {
+    color: '#F0F0F0',
+    fontSize: 15,
+    fontWeight: '600',
+    marginBottom: 10,
   },
-  modalContentTxt:{
+  modalContentTxt: {
     color: '#848484',
     fontSize: 13,
     fontWeight: '400',
     textAlign: 'center',
     // marginBottom: 12
   },
-  changeView:{
-    width:'100%',
-    flexDirection:'row',
+  changeView: {
+    width: '100%',
+    flexDirection: 'row',
   },
-  modalBtnView:{
-    flexDirection:'row',
-    width:'100%',
-  },
-  nameChangeTxtInput:{
-    width:'100%',
-    fontSize:15,
-    fontWeight:'400',
-    color:'#222222',
-    borderRadius: 5,
-    backgroundColor:'#F7F7F7',
-    height:40,
-    paddingHorizontal:10,
-    marginBottom:20,
-    marginTop:10,
-  },
-  noteTxtInput:{
-    width:'100%',
-    fontSize:15,
-    fontWeight:'400',
-    color:'#222222',
-    borderRadius: 5,
-    backgroundColor:'#F7F7F7',
-    height:120,
-    marginTop:10,
-    paddingHorizontal:10,
-    marginBottom:20,
-    textAlignVertical:'top'
-  },
-  askFriendMsgInput:{
-    width:'100%',
-    fontSize:15,
-    fontWeight:'400',
-    color:'#222222',
-    borderRadius: 5,
-    backgroundColor:'#F7F7F7',
-    height:56,
-    paddingHorizontal:10,
-    marginTop:10,
-    marginBottom:20,
-    textAlignVertical:'top'
-  },
-  settingView:{
-    paddingVertical:20,
+  modalBtnView: {
+    flexDirection: 'row',
     width: '100%',
   },
-  settingBtn:{
-    width:'100%',
-    paddingVertical:10,
+  nameChangeTxtInput: {
+    width: '100%',
+    fontSize: 15,
+    fontWeight: '400',
+    color: '#222222',
+    borderRadius: 5,
+    backgroundColor: '#F7F7F7',
+    height: 40,
+    paddingHorizontal: 10,
+    marginBottom: 20,
+    marginTop: 10,
   },
-  settingBtnTxt:{
-    color:'#F0F0F0',
-    fontWeight:'600',
-    fontSize:15
+  noteTxtInput: {
+    width: '100%',
+    fontSize: 15,
+    fontWeight: '400',
+    color: '#222222',
+    borderRadius: 5,
+    backgroundColor: '#F7F7F7',
+    height: 120,
+    marginTop: 10,
+    paddingHorizontal: 10,
+    marginBottom: 20,
+    textAlignVertical: 'top',
   },
-  
+  askFriendMsgInput: {
+    width: '100%',
+    fontSize: 15,
+    fontWeight: '400',
+    color: '#222222',
+    borderRadius: 5,
+    backgroundColor: '#F7F7F7',
+    height: 56,
+    paddingHorizontal: 10,
+    marginTop: 10,
+    marginBottom: 20,
+    textAlignVertical: 'top',
+  },
+  settingView: {
+    paddingVertical: 20,
+    width: '100%',
+  },
+  settingBtn: {
+    width: '100%',
+    paddingVertical: 10,
+  },
+  settingBtnTxt: {
+    color: '#F0F0F0',
+    fontWeight: '600',
+    fontSize: 15,
+  },
 });
