@@ -195,7 +195,11 @@ export default function Content(props: ContentProps) {
           )}
         </View>
         {cmt && (
-          <Pressable style={styles.recomment} onPress={() => child(index)}>
+          <Pressable
+            style={styles.recomment}
+            onPress={() => {
+              child(index);
+            }}>
             <Text style={styles.recommentTxt}>대댓글 쓰기</Text>
           </Pressable>
         )}

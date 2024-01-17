@@ -361,9 +361,11 @@ export default function FeedDetail({navigation, route}: FeedDetailScreenProps) {
   }, throttleTime);
 
   const sendNewChildCmt = _.throttle(async () => {
+    const replyId = cmtData[writeChildCmt].commentId;
+
     try {
       const response = await axios.post(
-        `${Config.API_URL}/feeds/${feedData.feedId}/comments/${writeChildCmt}/children`,
+        `${Config.API_URL}/feeds/${feedData.feedId}/comments/${replyId}/children`,
         {content: cmtContent},
       );
       // console.log(response.data.data);
