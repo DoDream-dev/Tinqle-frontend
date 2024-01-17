@@ -1,9 +1,10 @@
 import React from 'react';
-import {StyleSheet, Text, ScrollView, View} from 'react-native';
+import {StyleSheet, Text, ScrollView, View, Platform} from 'react-native';
 import Modal from 'react-native-modal';
 import {Safe} from './Safe';
 import AnimatedButton from '../components/AnimatedButton';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import GestureRecognizer, {swipeDirections} from 'react-native-swipe-gestures';
 
 type PolicyProps = {
   policy: string;
@@ -14,13 +15,20 @@ export default function ServicePolicyModal(props: PolicyProps) {
   const policy = props.policy;
   const setPolicy = props.setPolicy;
 
-  return (
+  const config = {
+    velocityThreshold: 0.1,
+    directionalOffsetThreshold: 20,
+  };
+
+  const item = (
     <Modal
       isVisible={policy == 'service'}
       hasBackdrop={false}
       onBackButtonPress={() => setPolicy('')}
+      animationOut="slideOutRight"
+      animationIn="slideInRight"
       style={{margin: 0}}>
-      <Safe color="white">
+      <Safe color="#202020">
         <ScrollView style={styles.policyentire}>
           <Text style={styles.policyheader}>서비스 이용약관</Text>
           <View style={styles.policyBox}>
@@ -195,17 +203,32 @@ export default function ServicePolicyModal(props: PolicyProps) {
             </Text>
           </View>
           <View style={{height: 40}}></View>
+          {/* <AnimatedButton
+        onPress={() => {
+          setPolicy('');
+        }}
+        style={styles.closeButton}>
+        <MaterialIcons name="close" size={40} color={'#848484'} />
+      </AnimatedButton> */}
         </ScrollView>
-        {/* <AnimatedButton
-          onPress={() => {
-            setPolicy('');
-          }}
-          style={styles.closeButton}>
-          <MaterialIcons name="close" size={40} color={'#848484'} />
-        </AnimatedButton> */}
       </Safe>
     </Modal>
   );
+
+  if (Platform.OS === 'ios') {
+    return (
+      <GestureRecognizer
+        onSwipeRight={() => {
+          // console.log('swipe');
+          setPolicy('');
+        }}
+        config={config}>
+        {item}
+      </GestureRecognizer>
+    );
+  } else {
+    return item;
+  }
 }
 
 const styles = StyleSheet.create({
@@ -234,5 +257,15 @@ const styles = StyleSheet.create({
     color: '#F0F0F0',
     fontSize: 13,
     fontWeight: '400',
+  },
+  closeButton: {
+    position: 'absolute',
+    right: 15,
+    bottom: 40,
+    zIndex: 10,
+    backgroundColor: '#E6E4F2',
+    borderRadius: 10,
+    width: 40,
+    height: 40,
   },
 });

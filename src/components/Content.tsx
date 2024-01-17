@@ -30,6 +30,7 @@ type ContentProps = {
   profileImg: string | null;
   showWhoseModal: number;
   setShowWhoseModal: React.Dispatch<React.SetStateAction<number>>;
+  index: number;
 };
 
 export default function Content(props: ContentProps) {
@@ -42,6 +43,7 @@ export default function Content(props: ContentProps) {
   const cmt = props.cmt;
   const child = props.child;
   const cmtId = props.cmtId;
+  const index = props.index;
   const windowWidth = Dimensions.get('screen').width;
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
@@ -149,10 +151,11 @@ export default function Content(props: ContentProps) {
           {imageURL.flatMap(f => (!!f ? [f] : [])).length != 0 && (
             <ImageModal
               swipeToDismiss={true}
+              modalImageResizeMode="contain"
               resizeMode="contain"
               // resizeMode="cover"
               imageBackgroundColor="transparent"
-              overlayBackgroundColor="#202020"
+              overlayBackgroundColor="rgba(32, 32, 32, 0.9)"
               style={{
                 width: windowWidth - 100,
                 height: windowWidth - 100,
@@ -165,7 +168,7 @@ export default function Content(props: ContentProps) {
           )}
         </View>
         {cmt && (
-          <Pressable style={styles.recomment} onPress={() => child(cmtId)}>
+          <Pressable style={styles.recomment} onPress={() => child(index)}>
             <Text style={styles.recommentTxt}>대댓글 쓰기</Text>
           </Pressable>
         )}
