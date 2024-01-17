@@ -30,6 +30,7 @@ type FeedProps = {
   profileImg: string | null;
   showWhoseModal: number;
   setShowWhoseModal: React.Dispatch<React.SetStateAction<number>>;
+  setWhichPopup: React.Dispatch<React.SetStateAction<string>>;
   // heartEmoticonNicknameList:string[];
   // smileEmoticonNicknameList:string[];
   // sadEmoticonNicknameList:string[];
@@ -50,6 +51,7 @@ export default function Feed(props: FeedProps) {
   const [a, setA] = useState(-1);
   const showWhoseModal = props.showWhoseModal;
   const setShowWhoseModal = props.setShowWhoseModal;
+  const setWhichPopup = props.setWhichPopup;
 
   return (
     <View style={styles.entire}>
@@ -68,6 +70,7 @@ export default function Feed(props: FeedProps) {
         profileImg={profileImg}
         showWhoseModal={showWhoseModal}
         setShowWhoseModal={setShowWhoseModal}
+        setWhichPopup={setWhichPopup}
       />
       <ContentFeedBottom
         mine={mine}

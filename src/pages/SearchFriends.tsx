@@ -113,28 +113,38 @@ export default function SearchFriends() {
     getFriendship();
   }, [isLast, reset]);
 
+  useEffect(()=>{
+    getFriendProfile();
+  }, [showWhoseModal]);
+
   const getFriendProfile = _.throttle(async () => {
     try {
       const response = await axios.get(
         `${Config.API_URL}/accounts/search/code/${searchCode}`,
       );
       // let friendData;
+      console.log(response.data)
       if (response.data.data.friendshipRelation === 'me') {
         setWhichPopup('Me');
         setOtherUser({accountId: -1, nickname: '', isFriend: 0});
-      } else {
-        if (response.data.data.friendshipRelation == 'true') {
-          // setFriendData([])
-        } else if (response.data.data.friendshipRelation == 'waiting') {
-          setFriendData([
-            {
-              accountId: response.data.data.accountId,
-              friendNickname: response.data.data.nickname,
-              friendshipId: -2,
-              status: '',
-              profileImageUrl: response.data.data.profileImageUrl,
-            },
-          ]);
+      }
+      else {
+        if (response.data.data.friendshipRelation == "true") {
+          setFriendData([{
+            accountId:response.data.data.accountId,
+            friendNickname:response.data.data.nickname,
+            friendshipId:0,
+            status:response.data.data.status,
+            profileImageUrl:response.data.data.profileImageUrl
+          }]);
+        } else if (response.data.data.friendshipRelation == "waiting") {
+          setFriendData([{
+            accountId:response.data.data.accountId,
+            friendNickname:response.data.data.nickname,
+            friendshipId:-2,
+            status:"",
+            profileImageUrl:response.data.data.profileImageUrl
+          }]);
         } else {
           setFriendData([
             {
@@ -230,6 +240,7 @@ export default function SearchFriends() {
       setRefreshing(false);
     }, 1000);
     setReset(!reset);
+    setSearchCode('');
   };
 
   const deleteFriends = async () => {
@@ -280,7 +291,7 @@ export default function SearchFriends() {
               />
               {(!placeholder || searchCode) && (
                 <Pressable
-                  onPress={() => setSearchCode('')}
+                  onPress={() => {setSearchCode(''); setReset(!reset);}}
                   style={styles.clearBtn}>
                   <SvgXml width={20} height={20} xml={svgXml.icon.textInputX} />
                 </Pressable>
@@ -377,11 +388,8 @@ export default function SearchFriends() {
               onPress={() => {
                 setShowWhoseModal(item.accountId);
               }}>
-              <Pressable
-                style={styles.friendProfileImg}
-                onPress={() => {
-                  setShowWhoseModal(item.accountId);
-                }}>
+              <View
+                style={styles.friendProfileImg}>
                 {item.profileImageUrl == null ? (
                   <SvgXml width={32} height={32} xml={svgXml.profile.null} />
                 ) : (
@@ -398,11 +406,11 @@ export default function SearchFriends() {
                     }}
                   />
                 )}
-              </Pressable>
+              </View>
               <View style={styles.friendmiddle}>
                 <Text style={styles.friendName}>{item.friendNickname}</Text>
               </View>
-              <Pressable style={styles.friendProfileStatus}>
+              <View style={styles.friendProfileStatus}>
                 {item.status == 'smile'.toUpperCase() && (
                   <SvgXml width={40} height={40} xml={svgXml.status.smile} />
                 )}
@@ -461,7 +469,7 @@ export default function SearchFriends() {
                 {item.status == 'travel'.toUpperCase() && (
                   <SvgXml width={40} height={40} xml={svgXml.status.travel} />
                 )}
-              </Pressable>
+              </View>
               {/* <Pressable style={styles.deleteBtn}>
                 <Text style={styles.deleteBtnTxt}>삭제</Text>
               </Pressable> */}

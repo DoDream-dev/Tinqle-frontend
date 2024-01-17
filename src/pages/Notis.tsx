@@ -11,6 +11,7 @@ import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {RootStackParamList} from '../../AppInner';
 import {useAppDispatch} from '../store';
 import userSlice from '../slices/user';
+import FriendProfileModal from '../components/FriendProfileModal';
 
 type itemProps = {
   item: {
@@ -43,12 +44,15 @@ export default function Notis({navigation}: NotisScreenProps) {
   const [isLast, setIsLast] = useState(false);
   const [cursorId, setCursorId] = useState(0);
   const [loading, setLoading] = useState(false);
-  const [showModal, setShowModal] = useState(false);
-  const [modalData, setmodalData] = useState('');
-  const [friendMsg, setFriendMsg] = useState('');
-  const [modalDataId, setmodalDataId] = useState(-1);
+  // const [showModal, setShowModal] = useState(false);
+  // const [modalData, setmodalData] = useState('');
+  // const [friendMsg, setFriendMsg] = useState('');
+  // const [modalDataId, setmodalDataId] = useState(-1);
+  const [showProfileModal, setShowProfileModal] = useState(0);
+  const [deleteFriend, setDeleteFriend] = useState(-1);
   const [refresh, setRefresh] = useState(false);
-  const [popup, setPopup] = useState(false);
+  const [popup, setPopup] = useState('');
+  const [popupName, setPopupName] = useState('');
   const [notisData, setNotisData] = useState([
     //   {
     //   notificationId:6,
@@ -79,7 +83,7 @@ export default function Notis({navigation}: NotisScreenProps) {
           const response = await axios.get(
             `${Config.API_URL}/notifications/accounts/me`,
           );
-          // console.log(response.data.data)
+          console.log(response.data.data)
           if (response.data.data.content.length == 0) setNoNotis(true);
           else {
             setIsLast(response.data.data.last);
@@ -158,12 +162,15 @@ export default function Notis({navigation}: NotisScreenProps) {
     }
   };
 
-  const approveFriendship = async (friendshipRequestId: number) => {
+  const approveFriendship = async (friendshipRequestId: number, accountId:number, name:string) => {
     try {
       const response = await axios.post(
         `${Config.API_URL}/friendships/request/${friendshipRequestId}/approval`,
       );
-      // console.log(response.data);
+      console.log(response.data);
+      setPopupName(name);
+      setPopup('getFriend');
+      setShowProfileModal(accountId);
     } catch (error) {
       const errorResponse = (error as AxiosError<{message: string}>).response;
       console.log(errorResponse.data);
@@ -174,25 +181,25 @@ export default function Notis({navigation}: NotisScreenProps) {
     navigation.navigate('FeedDetail', {feedId: feedId});
   };
 
-  const getFriendMsg = useCallback(
-    (friendshipRequestId: number) => {
-      const getMSG = async () => {
-        try {
-          const response = await axios.get(
-            `${Config.API_URL}/friendships/request/${friendshipRequestId}/message`,
-          );
-          setFriendMsg(response.data.data.message);
-          setShowModal(true);
-        } catch (error) {
-          const errorResponse = (error as AxiosError<{message: string}>)
-            .response;
-          console.log(errorResponse.data);
-        }
-      };
-      getMSG();
-    },
-    [friendMsg],
-  );
+  // const getFriendMsg = useCallback(
+  //   (friendshipRequestId: number) => {
+  //     const getMSG = async () => {
+  //       try {
+  //         const response = await axios.get(
+  //           `${Config.API_URL}/friendships/request/${friendshipRequestId}/message`,
+  //         );
+  //         setFriendMsg(response.data.data.message);
+  //         setShowModal(true);
+  //       } catch (error) {
+  //         const errorResponse = (error as AxiosError<{message: string}>)
+  //           .response;
+  //         console.log(errorResponse.data);
+  //       }
+  //     };
+  //     getMSG();
+  //   },
+  //   [friendMsg],
+  // );
 
   const isDeleted = async (feedId: number) => {
     try {
@@ -209,6 +216,25 @@ export default function Notis({navigation}: NotisScreenProps) {
       console.log(errorResponse.data);
     }
   };
+
+  const deleteFriends = async () => {
+    try {
+      console.log(deleteFriend)
+      const response = await axios.delete(
+        `${Config.API_URL}/friendships/${deleteFriend}`,
+      );
+      // console.log(response.data)
+      // popup: 이도님께 친구 요청을 보냈어요!
+      setPopup('deletedFriend');
+      // setPopupName(name);
+      setDeleteFriend(-1);
+      setRefresh(!refresh);
+      console.log(response.data);
+    } catch (error) {
+      const errorResponse = (error as AxiosError<{message: string}>).response;
+      console.log(errorResponse.data);
+    }
+  }
 
   return (
     <View style={styles.entire}>
@@ -247,29 +273,35 @@ export default function Notis({navigation}: NotisScreenProps) {
                 onPress={async () => {
                   if (item.notificationType.includes('FEED')) {
                     if (await isDeleted(item.redirectTargetId)) {
-                      setPopup(true);
+                      setPopup('deleted');
                       deleteNotis(item.notificationId);
                     } else goToFeed(item.redirectTargetId);
                   } else if (
                     item.notificationType == 'APPROVE_FRIENDSHIP_REQUEST'
                   ) {
-                    navigation.navigate('Profile', {
-                      whose: 1,
-                      accountId: item.accountId,
-                    });
-                  } else if (item.notificationType.includes('MESSAGE')) {
-                    navigation.navigate('NoteBox');
+                    // navigation.navigate('Profile', {
+                    //   whose: 1,
+                    //   accountId: item.accountId,
+                    // });
+                    
+                    setShowProfileModal(item.accountId);
+                  } else if (item.notificationType == 'CREATE_FRIENDSHIP_REQUEST') {
+                    setShowProfileModal(item.accountId);
                   }
+                  // else if (item.notificationType.includes('MESSAGE')) {
+                  //   navigation.navigate('NoteBox');
+                  // }
                 }}>
                 <View style={styles.notisView}>
                   {!item.notificationType.includes('MESSAGE') && (
                     <Pressable
                       style={styles.notisProfile}
                       onPress={() => {
-                        navigation.navigate('Profile', {
-                          whose: 1,
-                          accountId: item.accountId,
-                        });
+                        // navigation.navigate('Profile', {
+                        //   whose: 1,
+                        //   accountId: item.accountId,
+                        // });
+                        setShowProfileModal(item.accountId);
                       }}>
                       {item.status == 'SMILE' && (
                         <SvgXml
@@ -414,11 +446,12 @@ export default function Notis({navigation}: NotisScreenProps) {
                   <Pressable
                     style={styles.notisCheckBtn}
                     onPress={() => {
-                      getFriendMsg(item.redirectTargetId);
-                      setmodalData(item.content);
-                      setmodalDataId(item.redirectTargetId);
+                      approveFriendship(item.redirectTargetId, item.accountId, item.friendNickname);
+                      // getFriendMsg(item.redirectTargetId);
+                      // setmodalData(item.content);
+                      // setmodalDataId(item.redirectTargetId);
                     }}>
-                    <Text style={styles.notisCheckBtnTxt}>보기</Text>
+                    <Text style={styles.notisCheckBtnTxt}>수락하기</Text>
                   </Pressable>
                 )}
                 <Pressable
@@ -431,7 +464,29 @@ export default function Notis({navigation}: NotisScreenProps) {
           }}
         />
       )}
-      <Modal
+      <FriendProfileModal showWhoseModal={showProfileModal} setShowWhoseModal={setShowProfileModal} setDeleteFriend={setDeleteFriend} />
+      <Modal isVisible={deleteFriend != -1}
+        // onModalWillShow={getProfile}
+        hasBackdrop={true}
+        onBackdropPress={()=>setDeleteFriend(-1)}
+        // coverScreen={false}
+        onBackButtonPress={()=>setDeleteFriend(-1)}
+        // backdropColor='#222222' backdropOpacity={0.5}
+        // style={[styles.entire, {marginVertical:(Dimensions.get('screen').height - 400)/2}]}
+        >
+        {/* <View style={styles.modalBGView}>   */}
+          <View style={styles.modalView}>
+            <Text style={styles.modalTitleTxt}>친구를 삭제하시겠어요?</Text>
+            <Text style={styles.modalContentTxt}>상대방에게 알림이 가지 않으니 안심하세요.</Text>
+            <View style={styles.btnView}>
+              <Pressable style={styles.btnGray} onPress={()=>{setDeleteFriend(-1);}}><Text style={styles.btnTxt}>취소</Text></Pressable>
+              <View style={{width:8}}></View>
+              <Pressable style={styles.btn} onPress={()=>{deleteFriends()}}><Text style={styles.btnTxt}>네, 삭제할게요.</Text></Pressable>
+            </View>
+          </View>
+        {/* </View> */}
+      </Modal>
+      {/* <Modal
         isVisible={showModal}
         onBackButtonPress={() => setShowModal(false)}
         backdropColor="#222222"
@@ -477,13 +532,29 @@ export default function Notis({navigation}: NotisScreenProps) {
             </View>
           </Pressable>
         </Pressable>
-      </Modal>
-      {popup && (
+      </Modal> */}
+      {popup == 'deleted' && (
         <ToastScreen
           height={21}
           marginBottom={48}
-          onClose={() => setPopup(false)}
+          onClose={() => setPopup('')}
           message={`삭제된 글이에요.`}
+        />
+      )}
+      {popup == 'getFriend' && (
+        <ToastScreen
+          height={21}
+          marginBottom={48}
+          onClose={() => setPopup('')}
+          message={`${popupName}님과 친구가 되었어요.`}
+        />
+      )}
+      {popup === 'deletedFriend' && (
+        <ToastScreen
+          height={21}
+          marginBottom={48}
+          onClose={() => setPopup('')}
+          message="친구를 삭제했어요."
         />
       )}
     </View>
@@ -607,7 +678,7 @@ const styles = StyleSheet.create({
     height: 32,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#FFB443',
+    backgroundColor: '#A55FFF',
     borderRadius: 10,
     marginLeft: 12,
     marginVertical: 12,
@@ -660,7 +731,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 36,
   },
   modalView: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#333333',
     borderRadius: 10,
     justifyContent: 'center',
     alignItems: 'center',
@@ -668,18 +739,18 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingBottom: 24,
   },
-  modalTitleTxt: {
-    color: '#222222',
-    fontSize: 15,
-    fontWeight: '600',
-    marginBottom: 10,
+  modalTitleTxt:{
+    color:'#F0F0F0',
+    fontSize:15,
+    fontWeight:'600',
+    marginBottom:10
   },
-  modalContentTxt: {
-    color: '#848484',
-    fontSize: 13,
-    fontWeight: '400',
-    textAlign: 'center',
-    // marginBottom: 12
+  modalContentTxt:{
+    color:'#F0F0F0',
+    fontSize:15,
+    fontWeight:'400',
+    marginBottom:10,
+    marginTop:10
   },
   changeView: {
     width: '100%',
@@ -700,5 +771,32 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     marginBottom: 20,
     marginTop: 10,
+  },
+  btnView:{
+    flexDirection:'row',
+    justifyContent:'space-between',
+    paddingHorizontal: 17,
+    marginTop:16,
+  },
+  btn:{
+    flex:1,
+    justifyContent:'center',
+    alignItems:'center',
+    borderRadius:5,
+    paddingVertical:13,
+    backgroundColor:'#A55FFF',
+  },
+  btnGray:{
+    flex:1,
+    justifyContent:'center',
+    alignItems:'center',
+    borderRadius:5,
+    paddingVertical:13,
+    backgroundColor:'#888888',
+  },
+  btnTxt:{
+    color:'#F0F0F0',
+    fontSize:15,
+    fontWeight:'600'
   },
 });

@@ -31,6 +31,7 @@ import _ from 'lodash';
 import {useAppDispatch} from '../store';
 import userSlice from '../slices/user';
 import {Safe, StatusBarHeight} from '../components/Safe';
+import ToastScreen from '../components/ToastScreen';
 import {useHeaderHeight} from '@react-navigation/elements';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 
@@ -105,9 +106,10 @@ export default function FeedDetail({navigation, route}: FeedDetailScreenProps) {
   const [cmtContent, setCmtContent] = useState('');
   const [isLast, setIsLast] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [placeholder, setPlaceholder] = useState('댓글을 적어주세요');
+  const [placeholder, setPlaceholder] = useState('댓글을 적어주세요.');
   const [cursorId, setCursorId] = useState(0);
   const [showWhoseModal, setShowWhoseModal] = useState(0);
+  const [whichPopup, setWhichPopup] = useState('');
 
   useFocusEffect(
     useCallback(() => {
@@ -206,9 +208,10 @@ export default function FeedDetail({navigation, route}: FeedDetailScreenProps) {
     );
     if (feedData.isAuthor) {
       navigation.setOptions({
+        headerStyle: {backgroundColor:'#333333'},
         headerRight: () => (
           <Pressable onPress={() => setDeleteModal(true)}>
-            <Feather name="more-vertical" size={24} color={'#848484'} />
+            <Feather name="more-vertical" size={24} color={'#888888'} />
           </Pressable>
         ),
       });
@@ -330,6 +333,7 @@ export default function FeedDetail({navigation, route}: FeedDetailScreenProps) {
       setCmtContent('');
       setRefresh(!refresh);
       setIsLast(false);
+      setKBsize(0);
       // console.log(throttleTime)
     } catch (error) {
       const errorResponse = (error as AxiosError<{message: string}>).response;
@@ -455,195 +459,174 @@ export default function FeedDetail({navigation, route}: FeedDetailScreenProps) {
   const [writeChildCmt, setWriteChildCmt] = useState(-1);
   useEffect(() => {
     if (writeChildCmt != -1) {
-      setPlaceholder('대댓글을 적어주세요');
+      setPlaceholder('대댓글을 적어주세요.');
       inputRef.current.focus();
     } else {
-      setPlaceholder('댓글을 적어주세요');
+      setPlaceholder('댓글을 적어주세요.');
     }
   }, [writeChildCmt]);
 
   const flatListRef = useRef(null);
 
   return (
-    <KeyboardAvoidingView
+      <KeyboardAvoidingView
       style={[{flex: 1}]}
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       keyboardVerticalOffset={105}>
-      <View style={styles.entire}>
-        <View style={styles.commentView}>
-          <FlatList
-            ref={flatListRef}
-            refreshControl={
-              <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-            }
-            data={cmtData}
-            style={styles.cmtList}
-            onEndReached={onEndReached}
-            onEndReachedThreshold={0.4}
-            ListHeaderComponent={
-              <View>
-                <View style={styles.feedView}>
-                  <Feed
-                    mine={feedData.isAuthor}
-                    detail={true}
-                    commentCnt={feedData.commentCount}
-                    createdAt={feedData.createdAt}
-                    content={feedData.content}
-                    emoticons={feedData.emoticons}
-                    nickname={feedData.friendNickname}
-                    status={feedData.status}
-                    accountId={feedData.accountId}
-                    imageURL={feedData.feedImageUrls}
-                    press={pressEmoticon}
-                    feedId={feedData.feedId}
-                    whoReact={whoReact}
-                    profileImg={feedData.profileImageUrl}
-                    showWhoseModal={showWhoseModal}
-                    setShowWhoseModal={setShowWhoseModal}
-                  />
-                </View>
-                <View style={styles.commentHeader}>
-                  <SvgXml
-                    width={16}
-                    height={14}
-                    xml={svgXml.icon.commentIcon}
-                  />
-                  <Text style={styles.commentHeaderTxt}>
-                    댓글 {feedData.commentCount}개
-                  </Text>
-                </View>
+      <View style={styles.commentView}>
+        <FlatList
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }
+          data={cmtData}
+          style={styles.cmtList}
+          onEndReached={onEndReached}
+          onEndReachedThreshold={0.4}
+          ListHeaderComponent={
+            <View>
+              <View style={styles.feedView}>
+                <Feed
+                  mine={feedData.isAuthor}
+                  detail={true}
+                  commentCnt={feedData.commentCount}
+                  createdAt={feedData.createdAt}
+                  content={feedData.content}
+                  emoticons={feedData.emoticons}
+                  nickname={feedData.friendNickname}
+                  status={feedData.status}
+                  accountId={feedData.accountId}
+                  imageURL={feedData.feedImageUrls}
+                  press={pressEmoticon}
+                  feedId={feedData.feedId}
+                  whoReact={whoReact}
+                  profileImg={feedData.profileImageUrl}
+                  showWhoseModal={showWhoseModal}
+                  setShowWhoseModal={setShowWhoseModal}
+                  setWhichPopup={setWhichPopup}
+                />
+    <View style={styles.entire}>
               </View>
-            }
-            renderItem={({item, index}: itemProps) => {
-              const childData = item.childCommentCardList;
-              return (
-                <Pressable
-                  style={
-                    writeChildCmt == index
-                      ? {
-                          borderBottomWidth: 1,
-                          borderColor: '#ECECEC',
-                          backgroundColor: '#FFB4431A',
-                        }
-                      : {borderBottomWidth: 1, borderColor: '#ECECEC'}
-                  }>
-                  <Content
-                    nickname={item.friendNickname}
-                    status={item.status}
-                    content={item.content}
-                    createdAt={item.createAt}
-                    accountId={item.accountId}
-                    mine={item.isAuthor}
-                    imageURL={[null]}
-                    detail={true}
-                    cmt={true}
-                    child={setWriteChildCmt}
-                    cmtId={item.commentId}
-                    profileImg={item.profileImageUrl}
-                    showWhoseModal={showWhoseModal}
-                    setShowWhoseModal={setShowWhoseModal}
-                    index={index}
-                  />
-                  {item.childCount != 0 && (
-                    <View style={{backgroundColor: 'white'}}>
-                      <FlatList
-                        data={childData}
-                        // style={{borderTopWidth:1, borderTopColor:'#ECECEC',}}
-                        renderItem={({item, index}) => {
-                          return (
-                            <View style={styles.childCmt}>
-                              <Content
-                                nickname={item.friendNickname}
-                                status={item.status}
-                                content={item.content}
-                                createdAt={item.createAt}
-                                accountId={item.accountId}
-                                mine={item.isAuthor}
-                                imageURL={[null]}
-                                detail={true}
-                                cmt={false}
-                                child={setWriteChildCmt}
-                                cmtId={item.commentId}
-                                profileImg={item.profileImageUrl}
-                                showWhoseModal={showWhoseModal}
-                                setShowWhoseModal={setShowWhoseModal}
-                                index={index}
-                              />
-                            </View>
-                          );
-                        }}
-                      />
-                    </View>
-                  )}
-                </Pressable>
-              );
-            }}
-          />
-        </View>
-        <View style={{height: Math.min(80, Math.max(45, KBsize))}} />
-
-        <View style={styles.newCmtView}>
-          <TextInput
-            onFocus={() => {
-              if (writeChildCmt === -1) {
-                return;
-              }
-
-              const delayedScroll = () => {
-                flatListRef.current.scrollToIndex({
-                  index: writeChildCmt,
-                  animated: true,
-                });
-              };
-
-              // Wait for 1 second (1000 milliseconds) and then execute the scroll
-              const timeoutId = setTimeout(delayedScroll, 100);
-
-              // Cleanup the timeout to avoid memory leaks
-              return () => clearTimeout(timeoutId);
-            }}
-            placeholder={placeholder}
-            placeholderTextColor={'#848484'}
-            style={[
-              styles.newCmtTxtInput,
-              {height: Math.min(80, Math.max(35, KBsize))},
-            ]}
-            onBlur={() => setWriteChildCmt(-1)}
-            onChangeText={(text: string) => {
-              setCmtContent(text);
-            }}
-            blurOnSubmit={false}
-            maxLength={200}
-            value={cmtContent}
-            onSubmitEditing={() => sendNewCmt()}
-            multiline={true}
-            autoCapitalize="none"
-            autoComplete="off"
-            autoCorrect={false}
-            onContentSizeChange={e => {
-              setKBsize(e.nativeEvent.contentSize.height);
-            }}
-            ref={inputRef}
-            // numberOfLines={4}
-          />
-          <Pressable
-            style={
-              cmtContent.trim() == ''
-                ? styles.sendNewCmt
-                : styles.sendNewCmtActivated
-            }
-            disabled={cmtContent.trim() == ''}
-            onPress={writeChildCmt == -1 ? sendNewCmt : sendNewChildCmt}>
-            <Feather name="check" size={24} style={{color: 'white'}} />
-          </Pressable>
-        </View>
-        <M visible={deleteModal} transparent={true}>
-          <Safe>
-            <Pressable onPress={() => setDeleteModal(false)} style={{flex: 1}}>
-              <View style={styles.popup}>
-                <Shadow distance={10} startColor="#00000008">
-                  <Pressable onPress={deleteFeed} style={styles.deleteFeed}>
-                    <Text style={styles.deleteFeedTxt}>삭제하기</Text>
+              <View style={styles.commentHeader}>
+                <SvgXml width={16} height={14} xml={svgXml.icon.commentIcon} />
+                <Text style={styles.commentHeaderTxt}>
+                  댓글 {feedData.commentCount}개
+                </Text>
+              </View>
+            </View>
+          }
+          renderItem={({item}: itemProps) => {
+            const childData = item.childCommentCardList;
+            return (
+              <Pressable
+                style={
+                  writeChildCmt == item.commentId
+                    ? {
+                        borderBottomWidth: 1,
+                        borderColor: '#202020',
+                        backgroundColor: '#FFB4431A',
+                      }
+                    : {borderBottomWidth: 1, borderColor: '#202020'}
+                }>
+                <Content
+                  nickname={item.friendNickname}
+                  status={item.status}
+                  content={item.content}
+                  createdAt={item.createAt}
+                  accountId={item.accountId}
+                  mine={item.isAuthor}
+                  imageURL={[null]}
+                  detail={true}
+                  cmt={true}
+                  child={setWriteChildCmt}
+                  cmtId={item.commentId}
+                  profileImg={item.profileImageUrl}
+                  showWhoseModal={showWhoseModal}
+                  setShowWhoseModal={setShowWhoseModal}
+                  setWhichPopup={setWhichPopup}
+                  index={index}
+                />
+                {item.childCount != 0 && (
+                  <View style={{backgroundColor: 'white'}}>
+                    <FlatList
+                      data={childData}
+                      // style={{borderTopWidth:1, borderTopColor:'#ECECEC',}}
+                      renderItem={({item}) => {
+                        return (
+                          <View style={styles.childCmt}>
+                            <Content
+                              nickname={item.friendNickname}
+                              status={item.status}
+                              content={item.content}
+                              createdAt={item.createAt}
+                              accountId={item.accountId}
+                              mine={item.isAuthor}
+                              imageURL={[null]}
+                              detail={true}
+                              cmt={false}
+                              child={setWriteChildCmt}
+                              cmtId={item.commentId}
+                              profileImg={item.profileImageUrl}
+                              showWhoseModal={showWhoseModal}
+                              setShowWhoseModal={setShowWhoseModal}
+                              setWhichPopup={setWhichPopup}
+                              index={index}
+                            />
+                          </View>
+                        );
+                      }}
+                    />
+                  </View>
+                )}
+              </Pressable>
+            );
+          }}
+        />
+      </View>
+      <View style={{height: Math.min(80, Math.max(45, KBsize))}}></View>
+      <View style={styles.newCmtView}>
+        <TextInput
+          placeholder={placeholder}
+          placeholderTextColor={'#848484'}
+          style={[
+            styles.newCmtTxtInput,
+            {height: Math.min(80, Math.max(35, KBsize))},
+          ]}
+          onBlur={() => setWriteChildCmt(-1)}
+          onChangeText={(text: string) => {
+            setCmtContent(text);
+          }}
+          blurOnSubmit={false}
+          maxLength={200}
+          value={cmtContent}
+          onSubmitEditing={() => sendNewCmt()}
+          multiline={true}
+          autoCapitalize="none"
+          autoComplete="off"
+          autoCorrect={false}
+          onContentSizeChange={e => {
+            setKBsize(e.nativeEvent.contentSize.height);
+          }}
+          ref={inputRef}
+          // numberOfLines={4}
+        />
+        <Pressable
+          style={
+            cmtContent.trim() == ''
+              ? styles.sendNewCmt
+              : styles.sendNewCmtActivated
+          }
+          disabled={cmtContent.trim() == ''}
+          onPress={writeChildCmt == -1 ? sendNewCmt : sendNewChildCmt}>
+          <Feather name="check" size={24} style={{color: 'white'}} />
+        </Pressable>
+      </View>
+      <M visible={deleteModal} transparent={true}>
+        <Safe>
+          <Pressable onPress={() => setDeleteModal(false)} style={{flex: 1}}>
+            <View style={styles.popup}>
+              <Shadow distance={10} startColor="#00000008">
+                <Pressable onPress={deleteFeed} style={styles.deleteFeed}>
+                  <Text style={styles.deleteFeedTxt}>삭제하기</Text>
                   </Pressable>
                 </Shadow>
               </View>
@@ -706,8 +689,17 @@ export default function FeedDetail({navigation, route}: FeedDetailScreenProps) {
               </View>
             </Pressable>
           </Pressable>
-        </Modal>
-      </View>
+        </Pressable>
+      </Modal>
+      {whichPopup === 'deletedFriend' && (
+        <ToastScreen
+          height={21}
+          marginBottom={48}
+          onClose={() => setWhichPopup('')}
+          message="친구를 삭제했어요."
+        />
+      )}
+    </View>
     </KeyboardAvoidingView>
   );
 }
@@ -716,7 +708,7 @@ const styles = StyleSheet.create({
   entire: {
     flex: 1,
     alignItems: 'center',
-    backgroundColor: '#202020',
+    backgroundColor: '#333333',
   },
   feedView: {
     paddingHorizontal: 6,
@@ -734,7 +726,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     width: '100%',
     height: 36,
-    borderColor: '#ECECEC',
+    borderColor: '#202020',
     borderTopWidth: 1,
     borderBottomWidth: 1,
     paddingLeft: 15,
@@ -751,25 +743,25 @@ const styles = StyleSheet.create({
   },
   childCmt: {
     borderTopWidth: 1,
-    borderTopColor: '#ECECEC',
+    borderTopColor: '#202020',
     paddingLeft: 40,
-    backgroundColor: '#202020',
+    backgroundColor: '#333333',
   },
   popup: {
     position: 'absolute',
     right: 55,
-    top: 0,
+    top: 20,
   },
   deleteFeed: {
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#202020',
     paddingHorizontal: 18,
     paddingVertical: 13,
     borderRadius: 5,
   },
   deleteFeedTxt: {
-    color: '#222222',
+    color: '#888888',
     fontWeight: '400',
     fontSize: 15,
   },
@@ -801,21 +793,21 @@ const styles = StyleSheet.create({
   },
   newCmtView: {
     flexDirection: 'row',
-    backgroundColor: '#F7F7F7',
+    backgroundColor: '#202020',
     width: '100%',
     height: 50,
     position: 'absolute',
     bottom: 0,
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingLeft: 16,
+    paddingLeft: 8,
   },
   newCmtTxtInput: {
-    color: '#222222',
+    color: '#888888',
     fontSize: 15,
     fontWeight: '400',
     flex: 1,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#333333',
     marginVertical: 6,
     marginRight: 4,
     borderRadius: 10,
@@ -824,14 +816,14 @@ const styles = StyleSheet.create({
     // maxHeight:'4vh'
   },
   sendNewCmt: {
-    backgroundColor: '#B7B7B7',
+    backgroundColor: '#888888',
     justifyContent: 'center',
     alignItems: 'center',
     width: 48,
     height: '100%',
   },
   sendNewCmtActivated: {
-    backgroundColor: '#FFB443',
+    backgroundColor: '#A55FFF',
     justifyContent: 'center',
     alignItems: 'center',
     width: 48,

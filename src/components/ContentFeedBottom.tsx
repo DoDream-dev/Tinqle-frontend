@@ -37,7 +37,7 @@ export default function ContentFeedBottom(props:ContentFeedBottomProps){
   return (
     <View style={detail ? styles.entireDetail : styles.entire}>
       {!detail && <View style={styles.feedListCommentView}>
-        <SvgXml width={16} height={14} xml={svgXml.icon.commentIcon} />
+        <SvgXml width={20} height={20} xml={svgXml.icon.commentIcon} />
         <Text style={styles.feedListCommentTxt}>{commentCnt}</Text>
       </View>}
       <View style={styles.emoticonView}>
@@ -56,7 +56,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginLeft: 44,
   },
   entireDetail:{
     flexDirection: 'row',
@@ -67,12 +66,16 @@ const styles = StyleSheet.create({
   },
   feedListCommentView:{
     flexDirection: 'row',
-    marginLeft: 5,
-    alignItems:'center'
+    alignItems:'center',
+    backgroundColor:'#202020',
+    paddingLeft:4,
+    paddingRight:6,
+    paddingVertical:4,
+    borderRadius:20
   },
   feedListCommentTxt:{
-    color: '#848484',
-    fontSize: 12,
+    color: '#888888',
+    fontSize: 13,
     fontWeight: '500',
     marginLeft: 2
   },
@@ -80,12 +83,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   reactedPeopleBtn:{
-    backgroundColor: '#F7F7F7',
+    backgroundColor: '#202020',
     height: 28,
     borderRadius: 20,
     paddingHorizontal: 4,
     justifyContent: 'center',
     alignItems: 'center',
-    marginRight: 5
+    // marginRight: 16
   }
 })

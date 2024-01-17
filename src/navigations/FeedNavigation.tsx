@@ -8,6 +8,7 @@ import {
 import {SvgXml} from 'react-native-svg';
 import {svgXml} from '../../assets/image/svgXml';
 import AntDesign from 'react-native-vector-icons/AntDesign';
+// import from url('https://fonts.googleapis.com/css2?family=Oswald:wght@700&display=swap');
 
 import FeedList from '../pages/FeedList';
 import FeedDetail from '../pages/FeedDetail';
