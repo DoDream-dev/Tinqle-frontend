@@ -774,7 +774,7 @@ const styles = StyleSheet.create({
   popup: {
     position: 'absolute',
     right: 55,
-    top: 20,
+    top: Platform.OS === 'ios' ? 1 : 20,
   },
   deleteFeed: {
     justifyContent: 'center',
