@@ -398,7 +398,11 @@ export default function MyProfile() {
         {/* <Pressable style={styles.settingBtn} onPress={()=>{console.log('change id')}}>
           <Text style={styles.settingBtnTxt}>내 아이디 변경하기</Text>
         </Pressable> */}
-        <Pressable style={styles.settingBtn} onPress={()=>{setPolicy('service')}}>
+        <Pressable
+          style={styles.settingBtn}
+          onPress={() => {
+            setPolicy('service');
+          }}>
           <Text style={styles.settingBtnTxt}>서비스 이용약관</Text>
         </Pressable>
         <Pressable
@@ -411,7 +415,9 @@ export default function MyProfile() {
         <Pressable style={styles.settingBtn} onPress={LogOut}>
           <Text style={styles.settingBtnTxt}>로그아웃</Text>
         </Pressable>
-        <Pressable style={styles.settingBtn} onPress={()=>setDeleteAccount(true)}>
+        <Pressable
+          style={styles.settingBtn}
+          onPress={() => setDeleteAccount(true)}>
           <Text style={styles.settingBtnTxt}>계정 삭제</Text>
         </Pressable>
         <Pressable
@@ -464,37 +470,64 @@ export default function MyProfile() {
               />
             </View>
             <View style={styles.modalBtnView}>
-              <Pressable style={styles.btnGray} onPress={()=>{setChangeName(false); setChangeNameVal(name);}}>
+              <Pressable
+                style={styles.btnGray}
+                onPress={() => {
+                  setChangeName(false);
+                  setChangeNameVal(name);
+                }}>
                 <Text style={styles.btnTxt}>취소</Text>
               </Pressable>
-              <View style={{width:8}}></View>
-              <Pressable style={styles.btn} disabled={chageNameVal.trim() == ''} onPress={()=>{
-                if (chageNameVal != '') {
-                  if (chageNameVal == name) {setChangeName(false);}
-                  else {
-                    rename(chageNameVal.trim());
+              <View style={{width: 8}}></View>
+              <Pressable
+                style={styles.btn}
+                disabled={chageNameVal.trim() == ''}
+                onPress={() => {
+                  if (chageNameVal != '') {
+                    if (chageNameVal == name) {
+                      setChangeName(false);
+                    } else {
+                      rename(chageNameVal.trim());
+                    }
                   }
-                }
-              }}>
+                }}>
                 <Text style={styles.btnTxt}>완료</Text>
               </Pressable>
             </View>
           </Pressable>
         </Pressable>
       </Modal>
-      <Modal isVisible={deleteAccount} onBackButtonPress={()=>setDeleteAccount(false)} avoidKeyboard={true} backdropColor='#222222' backdropOpacity={0.5}>
-        <Pressable style={styles.modalBGView} onPress={()=>{setDeleteAccount(false); Keyboard.dismiss();}}>
-          <Pressable style={styles.modalView} onPress={(e)=>e.stopPropagation()}>
+      <Modal
+        isVisible={deleteAccount}
+        onBackButtonPress={() => setDeleteAccount(false)}
+        avoidKeyboard={true}
+        backdropColor="#222222"
+        backdropOpacity={0.5}>
+        <Pressable
+          style={styles.modalBGView}
+          onPress={() => {
+            setDeleteAccount(false);
+            Keyboard.dismiss();
+          }}>
+          <Pressable
+            style={styles.modalView}
+            onPress={e => e.stopPropagation()}>
             <Text style={styles.modalTitleTxt}>계정을 삭제하시겠어요?</Text>
             <Text style={styles.modalContentTxt}>떠나신다니 아쉬워요.</Text>
             <View style={styles.modalBtnView}>
-              <Pressable style={styles.btnGray} onPress={()=>{setDeleteAccount(false);}}>
+              <Pressable
+                style={styles.btnGray}
+                onPress={() => {
+                  setDeleteAccount(false);
+                }}>
                 <Text style={styles.btnTxt}>취소</Text>
               </Pressable>
-              <View style={{width:8}}></View>
-              <Pressable style={styles.btn} onPress={()=>{
-                revoke();
-              }}>
+              <View style={{width: 8}}></View>
+              <Pressable
+                style={styles.btn}
+                onPress={() => {
+                  revoke();
+                }}>
                 <Text style={styles.btnTxt}>네, 삭제할게요.</Text>
               </Pressable>
             </View>
@@ -661,26 +694,26 @@ const styles = StyleSheet.create({
     height: 14,
     top: 1,
   },
-  btn:{
-    flex:1,
-    justifyContent:'center',
-    alignItems:'center',
-    borderRadius:5,
-    paddingVertical:13,
-    backgroundColor:'#A55FFF',
+  btn: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 5,
+    paddingVertical: 13,
+    backgroundColor: '#A55FFF',
   },
-  btnGray:{
-    flex:1,
-    justifyContent:'center',
-    alignItems:'center',
-    borderRadius:5,
-    paddingVertical:13,
-    backgroundColor:'#888888',
+  btnGray: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 5,
+    paddingVertical: 13,
+    backgroundColor: '#888888',
   },
-  btnTxt:{
-    color:'#F0F0F0',
-    fontSize:15,
-    fontWeight:'600'
+  btnTxt: {
+    color: '#F0F0F0',
+    fontSize: 15,
+    fontWeight: '600',
   },
   modalBGView: {
     width: '100%',
@@ -698,13 +731,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingBottom: 24,
   },
-  modalTitleTxt:{
-    color:'#F0F0F0',
-    fontSize:15,
-    fontWeight:'600',
-    marginBottom:10
+  modalTitleTxt: {
+    color: '#F0F0F0',
+    fontSize: 15,
+    fontWeight: '600',
+    marginBottom: 10,
   },
-  modalView2:{
+  modalView2: {
     backgroundColor: '#FFFFFF',
     borderRadius: 10,
     width: 303,
@@ -734,32 +767,32 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  modalContentTxt:{
-    color:'#F0F0F0',
-    fontSize:15,
-    fontWeight:'400',
-    marginBottom:20,
-    marginTop:10
+  modalContentTxt: {
+    color: '#F0F0F0',
+    fontSize: 15,
+    fontWeight: '400',
+    marginBottom: 20,
+    marginTop: 10,
   },
-  changeView:{
-    width:'100%',
-    flexDirection:'row',
+  changeView: {
+    width: '100%',
+    flexDirection: 'row',
   },
   modalBtnView: {
     flexDirection: 'row',
     width: '100%',
   },
-  nameChangeTxtInput:{
-    width:'100%',
-    fontSize:15,
-    fontWeight:'400',
-    color:'#F0F0F0',
+  nameChangeTxtInput: {
+    width: '100%',
+    fontSize: 15,
+    fontWeight: '400',
+    color: '#F0F0F0',
     borderRadius: 5,
-    backgroundColor:'#202020',
-    height:40,
-    paddingHorizontal:10,
-    marginBottom:20,
-    marginTop:10,
+    backgroundColor: '#202020',
+    height: 40,
+    paddingHorizontal: 10,
+    marginBottom: 20,
+    marginTop: 10,
   },
   noteTxtInput: {
     width: '100%',
