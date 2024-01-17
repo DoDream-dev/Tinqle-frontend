@@ -498,90 +498,91 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
               </View>
             )}
             <View style={styles.newFeedView}>
-          <Pressable style={{width:48, height:48, justifyContent:'center', alignItems:'center'}} onPress={()=>setChangeStatus(true)}>
-            {status == 'smile' && <SvgXml width={32} height={32} xml={svgXml.status.smile}/>}
-            {status == 'happy' && <SvgXml width={32} height={32} xml={svgXml.status.happy}/>}
-            {status == 'sad' && <SvgXml width={32} height={32} xml={svgXml.status.sad}/>}
-            {status == 'mad' && <SvgXml width={32} height={32} xml={svgXml.status.mad}/>}
-            {status == 'exhausted' && <SvgXml width={32} height={32} xml={svgXml.status.exhauseted}/>}
-            {status == 'coffee' && <SvgXml width={32} height={32} xml={svgXml.status.coffee}/>}
-            {status == 'meal' && <SvgXml width={32} height={32} xml={svgXml.status.meal}/>}
-            {status == 'alcohol' && <SvgXml width={32} height={32} xml={svgXml.status.alcohol}/>}
-            {status == 'chicken' && <SvgXml width={32} height={32} xml={svgXml.status.chicken}/>}
-            {status == 'sleep' && <SvgXml width={32} height={32} xml={svgXml.status.sleep}/>}
-            {status == 'work' && <SvgXml width={32} height={32} xml={svgXml.status.work}/>}
-            {status == 'study' && <SvgXml width={32} height={32} xml={svgXml.status.study}/>}
-            {status == 'movie' && <SvgXml width={32} height={32} xml={svgXml.status.movie}/>}
-            {status == 'move' && <SvgXml width={32} height={32} xml={svgXml.status.move}/>}
-            {status == 'dance' && <SvgXml width={32} height={32} xml={svgXml.status.dance}/>}
-            {status == 'read' && <SvgXml width={32} height={32} xml={svgXml.status.read}/>}
-            {status == 'walk' && <SvgXml width={32} height={32} xml={svgXml.status.walk}/>}
-            {status == 'travel' && <SvgXml width={32} height={32} xml={svgXml.status.travel}/>}
-          </Pressable>
-          <TextInput
-            placeholder={placeholder}
-            placeholderTextColor={'#848484'}
-            style={[
-              styles.newFeedTxtInput,
-              {height: Math.min(80, Math.max(40, KBsize))},
-            ]}
-            onFocus={() => setPlaceholder('')}
-            onBlur={() => setPlaceholder('지금 기분이 어때요?')}
-            onChangeText={(text: string) => {
-              setFeedContent(text);
-            }}
-            blurOnSubmit={false}
-            maxLength={500}
-            value={feedContent}
-            onSubmitEditing={sendNewFeed}
-            multiline={true}
-            autoCapitalize="none"
-            autoComplete="off"
-            autoCorrect={false}
-            onContentSizeChange={e => {
-              setKBsize(e.nativeEvent.contentSize.height);
-            }}
-          />
-          <Pressable
-            style={styles.addPhoto}
-            onPress={() =>
-              ImagePicker.openPicker({
-                multiple: false,
-                mediaType: 'photo',
-                // cropping:true,
-              }).then(image => {
-                // console.log(image)
-                let name = image.path.split('/');
-                const imageFormData = new FormData();
-                let file = {
-                  uri: image.path,
-                  type: image.mime,
-                  name: name[name.length - 1],
-                };
-                imageFormData.append('file', file);
-                // console.log(file)
-                setImgData({
-                  uri: image.path,
-                  type: image.mime,
-                });
-                setSelectImg(true);
-                imageFormData.append('type', 'feed');
-                setUploadImage(imageFormData);
-              })
-            }>
-            <SvgXml width={24} height={24} xml={svgXml.icon.addphoto} />
-          </Pressable>
-          <Pressable
-            style={
-              feedContent.trim() == '' && !selectImg
-                ? styles.sendNewFeed
-                : styles.sendNewFeedActivated
-            }
-            disabled={feedContent.trim() == '' && !selectImg}
-            onPress={sendNewFeed}>
-            <Feather name="check" size={24} style={{color: 'white'}} />
-          </Pressable>
-          </View>
+              <Pressable style={{width:48, height:48, justifyContent:'center', alignItems:'center'}} onPress={()=>setChangeStatus(true)}>
+                {status == 'smile' && <SvgXml width={32} height={32} xml={svgXml.status.smile}/>}
+                {status == 'happy' && <SvgXml width={32} height={32} xml={svgXml.status.happy}/>}
+                {status == 'sad' && <SvgXml width={32} height={32} xml={svgXml.status.sad}/>}
+                {status == 'mad' && <SvgXml width={32} height={32} xml={svgXml.status.mad}/>}
+                {status == 'exhausted' && <SvgXml width={32} height={32} xml={svgXml.status.exhauseted}/>}
+                {status == 'coffee' && <SvgXml width={32} height={32} xml={svgXml.status.coffee}/>}
+                {status == 'meal' && <SvgXml width={32} height={32} xml={svgXml.status.meal}/>}
+                {status == 'alcohol' && <SvgXml width={32} height={32} xml={svgXml.status.alcohol}/>}
+                {status == 'chicken' && <SvgXml width={32} height={32} xml={svgXml.status.chicken}/>}
+                {status == 'sleep' && <SvgXml width={32} height={32} xml={svgXml.status.sleep}/>}
+                {status == 'work' && <SvgXml width={32} height={32} xml={svgXml.status.work}/>}
+                {status == 'study' && <SvgXml width={32} height={32} xml={svgXml.status.study}/>}
+                {status == 'movie' && <SvgXml width={32} height={32} xml={svgXml.status.movie}/>}
+                {status == 'move' && <SvgXml width={32} height={32} xml={svgXml.status.move}/>}
+                {status == 'dance' && <SvgXml width={32} height={32} xml={svgXml.status.dance}/>}
+                {status == 'read' && <SvgXml width={32} height={32} xml={svgXml.status.read}/>}
+                {status == 'walk' && <SvgXml width={32} height={32} xml={svgXml.status.walk}/>}
+                {status == 'travel' && <SvgXml width={32} height={32} xml={svgXml.status.travel}/>}
+              </Pressable>
+              <TextInput
+                placeholder={placeholder}
+                placeholderTextColor={'#848484'}
+                style={[
+                  styles.newFeedTxtInput,
+                  {height: Math.min(80, Math.max(40, KBsize))},
+                ]}
+                onFocus={() => setPlaceholder('')}
+                onBlur={() => setPlaceholder('지금 기분이 어때요?')}
+                onChangeText={(text: string) => {
+                  setFeedContent(text);
+                }}
+                blurOnSubmit={false}
+                maxLength={500}
+                value={feedContent}
+                onSubmitEditing={sendNewFeed}
+                multiline={true}
+                autoCapitalize="none"
+                autoComplete="off"
+                autoCorrect={false}
+                onContentSizeChange={e => {
+                  setKBsize(e.nativeEvent.contentSize.height);
+                }}
+              />
+              <Pressable
+                style={styles.addPhoto}
+                onPress={() =>
+                  ImagePicker.openPicker({
+                    multiple: false,
+                    mediaType: 'photo',
+                    // cropping:true,
+                  }).then(image => {
+                    // console.log(image)
+                    let name = image.path.split('/');
+                    const imageFormData = new FormData();
+                    let file = {
+                      uri: image.path,
+                      type: image.mime,
+                      name: name[name.length - 1],
+                    };
+                    imageFormData.append('file', file);
+                    // console.log(file)
+                    setImgData({
+                      uri: image.path,
+                      type: image.mime,
+                    });
+                    setSelectImg(true);
+                    imageFormData.append('type', 'feed');
+                    setUploadImage(imageFormData);
+                  })
+                }>
+                <SvgXml width={24} height={24} xml={svgXml.icon.addphoto} />
+              </Pressable>
+              <Pressable
+                style={
+                  feedContent.trim() == '' && !selectImg
+                    ? styles.sendNewFeed
+                    : styles.sendNewFeedActivated
+                }
+                disabled={feedContent.trim() == '' && !selectImg}
+                onPress={sendNewFeed}>
+                <Feather name="check" size={24} style={{color: 'white'}} />
+              </Pressable>
+            </View>
+            </View>
           <Modal
             isVisible={showBottomSheet}
             onBackButtonPress={() => setShowBottomSheet(false)}

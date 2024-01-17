@@ -473,11 +473,13 @@ export default function FeedDetail({navigation, route}: FeedDetailScreenProps) {
       style={[{flex: 1}]}
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       keyboardVerticalOffset={105}>
+        <View style={styles.entire}>
       <View style={styles.commentView}>
         <FlatList
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
           }
+          ref={flatListRef}
           data={cmtData}
           style={styles.cmtList}
           onEndReached={onEndReached}
@@ -504,7 +506,7 @@ export default function FeedDetail({navigation, route}: FeedDetailScreenProps) {
                   setShowWhoseModal={setShowWhoseModal}
                   setWhichPopup={setWhichPopup}
                 />
-    <View style={styles.entire}>
+    
               </View>
               <View style={styles.commentHeader}>
                 <SvgXml width={16} height={14} xml={svgXml.icon.commentIcon} />
@@ -514,12 +516,12 @@ export default function FeedDetail({navigation, route}: FeedDetailScreenProps) {
               </View>
             </View>
           }
-          renderItem={({item}: itemProps) => {
+          renderItem={({item, index}: itemProps) => {
             const childData = item.childCommentCardList;
             return (
               <Pressable
                 style={
-                  writeChildCmt == item.commentId
+                  writeChildCmt == index
                     ? {
                         borderBottomWidth: 1,
                         borderColor: '#202020',
@@ -550,7 +552,7 @@ export default function FeedDetail({navigation, route}: FeedDetailScreenProps) {
                     <FlatList
                       data={childData}
                       // style={{borderTopWidth:1, borderTopColor:'#ECECEC',}}
-                      renderItem={({item}) => {
+                      renderItem={({item, index}) => {
                         return (
                           <View style={styles.childCmt}>
                             <Content
@@ -582,9 +584,27 @@ export default function FeedDetail({navigation, route}: FeedDetailScreenProps) {
           }}
         />
       </View>
-      <View style={{height: Math.min(80, Math.max(45, KBsize))}}></View>
+      <View style={{height: Math.min(80, Math.max(45, KBsize))}} />
       <View style={styles.newCmtView}>
         <TextInput
+          onFocus={() => {
+            if (writeChildCmt === -1) {
+              return;
+            }
+
+            const delayedScroll = () => {
+              flatListRef.current.scrollToIndex({
+                index: writeChildCmt,
+                animated: true,
+              });
+            };
+
+            // Wait for 1 second (1000 milliseconds) and then execute the scroll
+            const timeoutId = setTimeout(delayedScroll, 100);
+
+            // Cleanup the timeout to avoid memory leaks
+            return () => clearTimeout(timeoutId);
+          }}
           placeholder={placeholder}
           placeholderTextColor={'#848484'}
           style={[
@@ -689,7 +709,6 @@ export default function FeedDetail({navigation, route}: FeedDetailScreenProps) {
               </View>
             </Pressable>
           </Pressable>
-        </Pressable>
       </Modal>
       {whichPopup === 'deletedFriend' && (
         <ToastScreen
