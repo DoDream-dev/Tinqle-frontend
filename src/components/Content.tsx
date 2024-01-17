@@ -17,7 +17,7 @@ import FriendProfileModal from './FriendProfileModal';
 import ImageModal from 'react-native-image-modal';
 import ToastScreen from './ToastScreen';
 import Modal from 'react-native-modal';
-import axios, { AxiosError } from 'axios';
+import axios, {AxiosError} from 'axios';
 import Config from 'react-native-config';
 
 type ContentProps = {
@@ -61,7 +61,7 @@ export default function Content(props: ContentProps) {
 
   const deleteFriends = async () => {
     try {
-      console.log(deleteFriend)
+      console.log(deleteFriend);
       const response = await axios.delete(
         `${Config.API_URL}/friendships/${deleteFriend}`,
       );
@@ -76,7 +76,7 @@ export default function Content(props: ContentProps) {
       const errorResponse = (error as AxiosError<{message: string}>).response;
       console.log(errorResponse.data);
     }
-  }
+  };
 
   return (
     <View style={styles.entire}>
@@ -205,25 +205,40 @@ export default function Content(props: ContentProps) {
         setShowWhoseModal={setShowWhoseModal}
         setDeleteFriend={setDeleteFriend}
       />
-      <Modal isVisible={deleteFriend != -1}
+      <Modal
+        isVisible={deleteFriend != -1}
         // onModalWillShow={getProfile}
         hasBackdrop={true}
-        onBackdropPress={()=>setDeleteFriend(-1)}
+        onBackdropPress={() => setDeleteFriend(-1)}
         // coverScreen={false}
-        onBackButtonPress={()=>setDeleteFriend(-1)}
+        onBackButtonPress={() => setDeleteFriend(-1)}
         // backdropColor='#222222' backdropOpacity={0.5}
         // style={[styles.entire, {marginVertical:(Dimensions.get('screen').height - 400)/2}]}
-        >
+      >
         {/* <View style={styles.modalBGView}>   */}
-          <View style={styles.modalView}>
-            <Text style={styles.modalTitleTxt}>친구를 삭제하시겠어요?</Text>
-            <Text style={styles.modalContentTxt}>상대방에게 알림이 가지 않으니 안심하세요.</Text>
-            <View style={styles.btnView}>
-              <Pressable style={styles.btnGray} onPress={()=>{setDeleteFriend(-1);}}><Text style={styles.btnTxt}>취소</Text></Pressable>
-              <View style={{width:8}}></View>
-              <Pressable style={styles.btn} onPress={()=>{deleteFriends()}}><Text style={styles.btnTxt}>네, 삭제할게요.</Text></Pressable>
-            </View>
+        <View style={styles.modalView}>
+          <Text style={styles.modalTitleTxt}>친구를 삭제하시겠어요?</Text>
+          <Text style={styles.modalContentTxt}>
+            상대방에게 알림이 가지 않으니 안심하세요.
+          </Text>
+          <View style={styles.btnView}>
+            <Pressable
+              style={styles.btnGray}
+              onPress={() => {
+                setDeleteFriend(-1);
+              }}>
+              <Text style={styles.btnTxt}>취소</Text>
+            </Pressable>
+            <View style={{width: 8}}></View>
+            <Pressable
+              style={styles.btn}
+              onPress={() => {
+                deleteFriends();
+              }}>
+              <Text style={styles.btnTxt}>네, 삭제할게요.</Text>
+            </Pressable>
           </View>
+        </View>
         {/* </View> */}
       </Modal>
       {/* <View style={{bottom:0, alignItems:'center', backgroundColor:'red', width:'100%', position:'absolute', height:100}}>
@@ -298,53 +313,53 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: '500',
   },
-  modalView:{
+  modalView: {
     backgroundColor: '#333333',
     borderRadius: 10,
     justifyContent: 'center',
-    alignItems:'center',
+    alignItems: 'center',
     paddingTop: 30,
     paddingHorizontal: 16,
     paddingBottom: 24,
   },
-  modalTitleTxt:{
-    color:'#F0F0F0',
-    fontSize:15,
-    fontWeight:'600',
-    marginBottom:10
+  modalTitleTxt: {
+    color: '#F0F0F0',
+    fontSize: 15,
+    fontWeight: '600',
+    marginBottom: 10,
   },
-  modalContentTxt:{
-    color:'#F0F0F0',
-    fontSize:15,
-    fontWeight:'400',
-    marginBottom:10,
-    marginTop:10
+  modalContentTxt: {
+    color: '#F0F0F0',
+    fontSize: 15,
+    fontWeight: '400',
+    marginBottom: 10,
+    marginTop: 10,
   },
-  btn:{
-    flex:1,
-    justifyContent:'center',
-    alignItems:'center',
-    borderRadius:5,
-    paddingVertical:13,
-    backgroundColor:'#A55FFF',
+  btn: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 5,
+    paddingVertical: 13,
+    backgroundColor: '#A55FFF',
   },
-  btnGray:{
-    flex:1,
-    justifyContent:'center',
-    alignItems:'center',
-    borderRadius:5,
-    paddingVertical:13,
-    backgroundColor:'#888888',
+  btnGray: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 5,
+    paddingVertical: 13,
+    backgroundColor: '#888888',
   },
-  btnTxt:{
-    color:'#F0F0F0',
-    fontSize:15,
-    fontWeight:'600'
+  btnTxt: {
+    color: '#F0F0F0',
+    fontSize: 15,
+    fontWeight: '600',
   },
-  btnView:{
-    flexDirection:'row',
-    justifyContent:'space-between',
+  btnView: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     paddingHorizontal: 17,
-    marginTop:16,
+    marginTop: 16,
   },
 });

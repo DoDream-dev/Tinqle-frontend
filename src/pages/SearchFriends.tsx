@@ -113,7 +113,7 @@ export default function SearchFriends() {
     getFriendship();
   }, [isLast, reset]);
 
-  useEffect(()=>{
+  useEffect(() => {
     getFriendProfile();
   }, [showWhoseModal]);
 
@@ -123,28 +123,31 @@ export default function SearchFriends() {
         `${Config.API_URL}/accounts/search/code/${searchCode}`,
       );
       // let friendData;
-      console.log(response.data)
+      console.log(response.data);
       if (response.data.data.friendshipRelation === 'me') {
         setWhichPopup('Me');
         setOtherUser({accountId: -1, nickname: '', isFriend: 0});
-      }
-      else {
-        if (response.data.data.friendshipRelation == "true") {
-          setFriendData([{
-            accountId:response.data.data.accountId,
-            friendNickname:response.data.data.nickname,
-            friendshipId:0,
-            status:response.data.data.status,
-            profileImageUrl:response.data.data.profileImageUrl
-          }]);
-        } else if (response.data.data.friendshipRelation == "waiting") {
-          setFriendData([{
-            accountId:response.data.data.accountId,
-            friendNickname:response.data.data.nickname,
-            friendshipId:-2,
-            status:"",
-            profileImageUrl:response.data.data.profileImageUrl
-          }]);
+      } else {
+        if (response.data.data.friendshipRelation == 'true') {
+          setFriendData([
+            {
+              accountId: response.data.data.accountId,
+              friendNickname: response.data.data.nickname,
+              friendshipId: 0,
+              status: response.data.data.status,
+              profileImageUrl: response.data.data.profileImageUrl,
+            },
+          ]);
+        } else if (response.data.data.friendshipRelation == 'waiting') {
+          setFriendData([
+            {
+              accountId: response.data.data.accountId,
+              friendNickname: response.data.data.nickname,
+              friendshipId: -2,
+              status: '',
+              profileImageUrl: response.data.data.profileImageUrl,
+            },
+          ]);
         } else {
           setFriendData([
             {
@@ -291,7 +294,10 @@ export default function SearchFriends() {
               />
               {(!placeholder || searchCode) && (
                 <Pressable
-                  onPress={() => {setSearchCode(''); setReset(!reset);}}
+                  onPress={() => {
+                    setSearchCode('');
+                    setReset(!reset);
+                  }}
                   style={styles.clearBtn}>
                   <SvgXml width={20} height={20} xml={svgXml.icon.textInputX} />
                 </Pressable>
@@ -388,8 +394,7 @@ export default function SearchFriends() {
               onPress={() => {
                 setShowWhoseModal(item.accountId);
               }}>
-              <View
-                style={styles.friendProfileImg}>
+              <View style={styles.friendProfileImg}>
                 {item.profileImageUrl == null ? (
                   <SvgXml width={32} height={32} xml={svgXml.profile.null} />
                 ) : (
