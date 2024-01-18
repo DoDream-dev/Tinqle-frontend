@@ -589,7 +589,7 @@ export default function FeedDetail({navigation, route}: FeedDetailScreenProps) {
             }}
           />
         </View>
-        <View style={{height: Math.min(80, Math.max(45, KBsize))}} />
+        <View style={{height: Math.max(60, KBsize + 10)}} />
         <View style={styles.newCmtView}>
           <View style={styles.newFeedTxtInputContain}>
             <TextInput
