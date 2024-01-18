@@ -102,16 +102,17 @@ export default function Content(props: ContentProps) {
           </Pressable>
         </View>
         <View style={styles.contentView}>
-          <Pressable
-            style={styles.txtNickname}
-            onPress={() => {
-              if (props.mine) {
-                navigation.navigate('MyProfile');
-              } else {
-                setShowWhoseModal(accountId);
-              }
-            }}>
-            <Text style={styles.nickname}>{nickname}</Text>
+          <View style={styles.txtNickname}>
+            <Pressable
+              onPress={() => {
+                if (props.mine) {
+                  navigation.navigate('MyProfile');
+                } else {
+                  setShowWhoseModal(accountId);
+                }
+              }}>
+              <Text style={styles.nickname}>{nickname}</Text>
+            </Pressable>
             {status == 'smile'.toUpperCase() && (
               <SvgXml width={18} height={18} xml={svgXml.status.smile} />
             )}
@@ -166,7 +167,7 @@ export default function Content(props: ContentProps) {
             {status == 'travel'.toUpperCase() && (
               <SvgXml width={18} height={18} xml={svgXml.status.travel} />
             )}
-          </Pressable>
+          </View>
           <Text style={styles.createdAt}>{createdAt}</Text>
         </View>
       </View>
@@ -291,8 +292,8 @@ const styles = StyleSheet.create({
     // flexDirection: 'row',
     // justifyContent: 'space-between',
   },
-
   txtNickname: {
+    // backgroundColor: 'blue',
     flexDirection: 'row',
     alignItems: 'center',
   },
