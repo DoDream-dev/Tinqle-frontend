@@ -8,6 +8,7 @@ import {
   TextInput,
   Dimensions,
   useWindowDimensions,
+  Platform,
 } from 'react-native';
 import axios, {AxiosError} from 'axios';
 import Modal from 'react-native-modal';
@@ -152,154 +153,163 @@ export default function FriendProfileModal(props: ProfileProps) {
       }}
       style={[
         styles.entire,
-        {marginVertical: (Dimensions.get('screen').height - 400) / 2},
+        {
+          marginVertical: (Dimensions.get('screen').height - 400) / 2,
+        },
       ]}>
       {/* <Pressable style={styles.xBtn} onPress={()=>setShowWhoseModal(0)}>
         <Text style={styles.btnTxt}>x</Text>
       </Pressable> */}
-      <View style={styles.profileView}>
-        <Profile
-          name={name}
-          status={status}
-          profileImg={profileImg}
-          renameModal={setChangeName}
-          restatusModal={setChangeStatus}
-          friendshipRelation={friendshipRelation}
-        />
-      </View>
-      <View style={styles.btnView}>
-        {/* 여기에 friendshipId 필요 */}
-        {friendshipRelation == 'true' && (
-          <Pressable
-            style={styles.btnGray}
-            onPress={() => {
-              setDeleteFriend(friendshipId);
-              setShowWhoseModal(0);
-            }}>
-            <Text style={styles.btnTxt}>친구 삭제하기</Text>
-          </Pressable>
-        )}
-        {friendshipRelation == 'true' && <View style={{width: 8}}></View>}
-        {friendshipRelation == 'true' && (
-          <AnimatedButton
-            style={styles.btn}
-            onPress={async () => {
-              console.log(showWhoseModal);
-              await sendWhatAreYouDoing();
-              // setWhichPopup('whatAreYouDoing')
-            }}>
-            <Text style={styles.btnTxt}>지금 뭐해?</Text>
-          </AnimatedButton>
-        )}
-        {friendshipRelation == 'false' && (
-          <Pressable
-            style={styles.btn}
-            onPress={() => askFriend(showWhoseModal, name, profileImg)}>
-            <Text style={styles.btnTxt}>친구 요청하기</Text>
-          </Pressable>
-        )}
-        {friendshipRelation == 'waiting' && (
-          <Pressable style={styles.btnGray}>
-            <Text style={styles.btnTxt}>친구 요청됨</Text>
-          </Pressable>
-        )}
-        {friendshipRelation == '수락 대기중' && (
-          <Pressable style={styles.btnGray}>
-            <Text style={styles.btnTxt}>친구 요청 거절하기</Text>
-          </Pressable>
-        )}
-        {friendshipRelation == '수락 대기중' && (
-          <View style={{width: 8}}></View>
-        )}
-        {friendshipRelation == '수락 대기중' && (
-          <Pressable style={styles.btn}>
-            <Text style={styles.btnTxt}>친구 요청 수락하기</Text>
-          </Pressable>
-        )}
-      </View>
-      <Modal
-        isVisible={chageName}
-        onBackButtonPress={() => setChangeName(false)}
-        avoidKeyboard={true}
-        backdropColor="#222222"
-        backdropOpacity={0.5}>
-        <Pressable
-          style={styles.modalBGView}
-          onPress={() => {
-            setChangeName(false);
-            Keyboard.dismiss();
+      <Pressable onPress={() => {}}>
+        <View style={styles.profileView}>
+          <Profile
+            name={name}
+            status={status}
+            profileImg={profileImg}
+            renameModal={setChangeName}
+            restatusModal={setChangeStatus}
+            friendshipRelation={friendshipRelation}
+          />
+        </View>
+        <View style={styles.btnView}>
+          {/* 여기에 friendshipId 필요 */}
+          {friendshipRelation == 'true' && (
+            <Pressable
+              style={styles.btnGray}
+              onPress={() => {
+                setDeleteFriend(friendshipId);
+                setShowWhoseModal(0);
+              }}>
+              <Text style={styles.btnTxt}>친구 삭제하기</Text>
+            </Pressable>
+          )}
+          {friendshipRelation == 'true' && <View style={{width: 8}}></View>}
+          {friendshipRelation == 'true' && (
+            <AnimatedButton
+              style={styles.btn}
+              onPress={async () => {
+                console.log(showWhoseModal);
+                await sendWhatAreYouDoing();
+                // setWhichPopup('whatAreYouDoing')
+              }}>
+              <Text style={styles.btnTxt}>지금 뭐해?</Text>
+            </AnimatedButton>
+          )}
+          {friendshipRelation == 'false' && (
+            <Pressable
+              style={styles.btn}
+              onPress={() => askFriend(showWhoseModal, name, profileImg)}>
+              <Text style={styles.btnTxt}>친구 요청하기</Text>
+            </Pressable>
+          )}
+          {friendshipRelation == 'waiting' && (
+            <Pressable style={styles.btnGray}>
+              <Text style={styles.btnTxt}>친구 요청됨</Text>
+            </Pressable>
+          )}
+          {friendshipRelation == '수락 대기중' && (
+            <Pressable style={styles.btnGray}>
+              <Text style={styles.btnTxt}>친구 요청 거절하기</Text>
+            </Pressable>
+          )}
+          {friendshipRelation == '수락 대기중' && (
+            <View style={{width: 8}}></View>
+          )}
+          {friendshipRelation == '수락 대기중' && (
+            <Pressable style={styles.btn}>
+              <Text style={styles.btnTxt}>친구 요청 수락하기</Text>
+            </Pressable>
+          )}
+        </View>
+        <Modal
+          isVisible={chageName}
+          onBackButtonPress={() => setChangeName(false)}
+          avoidKeyboard={true}
+          backdropColor="#222222"
+          backdropOpacity={0.5}
+          onModalShow={() => {
+            if (Platform.OS === 'android') {
+              inp1.current.focus();
+            }
           }}>
           <Pressable
-            style={styles.modalView}
-            onPress={e => e.stopPropagation()}>
-            <Text style={styles.modalTitleTxt}>친구 이름 바꾸기</Text>
-            <View style={styles.changeView}>
-              <TextInput
-                ref={inp1}
-                style={styles.nameChangeTxtInput}
-                onChangeText={(text: string) => {
-                  setChangeNameVal(text);
-                }}
-                blurOnSubmit={true}
-                maxLength={15}
-                value={chageNameVal}
-                autoFocus={true}
-                onSubmitEditing={() => {
-                  rename(chageNameVal.trim(), showWhoseModal);
-                }}
-              />
-            </View>
-            <View style={styles.modalBtnView}>
-              <Pressable
-                style={styles.btnGray}
-                onPress={() => {
-                  setChangeName(false);
-                  setChangeNameVal(name);
-                }}>
-                <Text style={styles.btnTxt}>취소</Text>
-              </Pressable>
-              <View style={{width: 8}}></View>
-              <Pressable
-                style={styles.btn}
-                disabled={chageNameVal.trim() == ''}
-                onPress={() => {
-                  if (chageNameVal != '') {
-                    if (chageNameVal == name) {
-                      setChangeName(false);
-                    } else {
-                      rename(chageNameVal.trim(), showWhoseModal);
+            style={styles.modalBGView}
+            onPress={() => {
+              setChangeName(false);
+              Keyboard.dismiss();
+            }}>
+            <Pressable
+              style={styles.modalView}
+              onPress={e => e.stopPropagation()}>
+              <Text style={styles.modalTitleTxt}>친구 이름 바꾸기</Text>
+              <View style={styles.changeView}>
+                <TextInput
+                  ref={inp1}
+                  style={styles.nameChangeTxtInput}
+                  onChangeText={(text: string) => {
+                    setChangeNameVal(text);
+                  }}
+                  blurOnSubmit={true}
+                  maxLength={15}
+                  value={chageNameVal}
+                  autoFocus={Platform.OS === 'ios' ? true : false}
+                  onSubmitEditing={() => {
+                    rename(chageNameVal.trim(), showWhoseModal);
+                  }}
+                />
+              </View>
+              <View style={styles.modalBtnView}>
+                <Pressable
+                  style={styles.btnGray}
+                  onPress={() => {
+                    setChangeName(false);
+                    setChangeNameVal(name);
+                  }}>
+                  <Text style={styles.btnTxt}>취소</Text>
+                </Pressable>
+                <View style={{width: 8}}></View>
+                <Pressable
+                  style={styles.btn}
+                  disabled={chageNameVal.trim() == ''}
+                  onPress={() => {
+                    if (chageNameVal != '') {
+                      if (chageNameVal == name) {
+                        setChangeName(false);
+                      } else {
+                        rename(chageNameVal.trim(), showWhoseModal);
+                      }
                     }
-                  }
-                }}>
-                <Text style={styles.btnTxt}>완료</Text>
-              </Pressable>
-            </View>
+                  }}>
+                  <Text style={styles.btnTxt}>완료</Text>
+                </Pressable>
+              </View>
+            </Pressable>
           </Pressable>
-        </Pressable>
-      </Modal>
+        </Modal>
 
-      <View
-        style={{
-          bottom: -(useWindowDimensions().height / 2 - 310 / 2),
-          alignItems: 'center',
-        }}>
-        {whichPopup == 'whatAreYouDoing' && (
-          <ToastScreen
-            height={21}
-            marginBottom={48}
-            onClose={() => setWhichPopup('')}
-            message={`${name}님에게 지금 뭐해?를 보냈어요.`}
-          />
-        )}
-        {whichPopup == 'askFriend' && (
-          <ToastScreen
-            height={21}
-            marginBottom={48}
-            onClose={() => setWhichPopup('')}
-            message={`${name}님에게 친구 요청을 보냈어요!`}
-          />
-        )}
-      </View>
+        <View
+          style={{
+            bottom: -(useWindowDimensions().height / 2 - 310 / 2),
+            alignItems: 'center',
+          }}>
+          {whichPopup == 'whatAreYouDoing' && (
+            <ToastScreen
+              height={21}
+              marginBottom={48}
+              onClose={() => setWhichPopup('')}
+              message={`${name}님에게 지금 뭐해?를 보냈어요.`}
+            />
+          )}
+          {whichPopup == 'askFriend' && (
+            <ToastScreen
+              height={21}
+              marginBottom={48}
+              onClose={() => setWhichPopup('')}
+              message={`${name}님에게 친구 요청을 보냈어요!`}
+            />
+          )}
+        </View>
+      </Pressable>
     </Modal>
   );
 }
@@ -309,6 +319,7 @@ const styles = StyleSheet.create({
     position: 'relative',
     marginHorizontal: 36,
     backgroundColor: '#333333',
+    // backgroundColor: 'blue',
     justifyContent: 'center',
     borderRadius: 10,
   },
