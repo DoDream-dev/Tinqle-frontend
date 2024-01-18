@@ -26,6 +26,7 @@ export default function FriendProfileModal(props:ProfileProps){
   const [name, setName] = useState('');
   const [friendshipRelation, setFriendshipRelation] = useState('');
   const [friendshipId, setFriendshipId] = useState(-1);
+  const [friendshipRequestId, setFriendshipRequestId] = useState(0);
   const [profileImg, setProfileImg] = useState(null);
   const setDeleteFriend = props.setDeleteFriend;
   const [whichPopup, setWhichPopup] = useState('');
@@ -47,6 +48,7 @@ export default function FriendProfileModal(props:ProfileProps){
       setProfileImg(response.data.data.profileImageUrl);
       setFriendshipRelation(response.data.data.friendshipRelation);
       setFriendshipId(response.data.data.friendshipId);
+      setFriendshipRequestId(response.data.data.friendshipRequestId);
       
     } catch (error) {
       const errorResponse = (error as AxiosError<{message: string}>).response;
@@ -74,7 +76,7 @@ export default function FriendProfileModal(props:ProfileProps){
     }
   }, throttleTime);
 
-  const askFriend = useCallback((accountId:number, name:string, profileImageUrl:string) => {
+  const askFriend = useCallback((accountId:number, name:string, profileImageUrl:string|null) => {
     const ask = _.throttle(async () => {
       try {
         const response = await axios.post(
@@ -103,6 +105,20 @@ export default function FriendProfileModal(props:ProfileProps){
     }, throttleTime);
     ask();
   }, [friendshipId]);
+
+  const approveFriendship = async (friendshipRequestId: number) => {
+    try {
+      const response = await axios.post(
+        `${Config.API_URL}/friendships/request/${friendshipRequestId}/approval`,
+      );
+      console.log(response.data);
+      setWhichPopup('getFriend');
+      setFriendshipRelation('true');
+    } catch (error) {
+      const errorResponse = (error as AxiosError<{message: string}>).response;
+      console.log(errorResponse.data);
+    }
+  };
   
   return (
   <Modal isVisible={showWhoseModal != 0 && showWhoseModal != undefined}
@@ -133,9 +149,7 @@ export default function FriendProfileModal(props:ProfileProps){
         {friendshipRelation == 'true' && <Pressable style={styles.btn} onPress={()=>setWhichPopup('whatAreYouDoing')}><Text style={styles.btnTxt}>지금 뭐해?</Text></Pressable>}
         {friendshipRelation == 'false' && <Pressable style={styles.btn} onPress={()=>askFriend(showWhoseModal, name, profileImg)}><Text style={styles.btnTxt}>친구 요청하기</Text></Pressable>}
         {friendshipRelation == 'waiting' && <Pressable style={styles.btnGray}><Text style={styles.btnTxt}>친구 요청됨</Text></Pressable>}
-        {friendshipRelation == '수락 대기중' && <Pressable style={styles.btnGray}><Text style={styles.btnTxt}>친구 요청 거절하기</Text></Pressable>}
-        {friendshipRelation == '수락 대기중' && <View style={{width:8}}></View>}
-        {friendshipRelation == '수락 대기중' && <Pressable style={styles.btn}><Text style={styles.btnTxt}>친구 요청 수락하기</Text></Pressable>}
+        {friendshipRelation == 'request' && <Pressable style={styles.btn} onPress={()=>approveFriendship(friendshipRequestId)}><Text style={styles.btnTxt}>친구 요청 수락하기</Text></Pressable>}
       </View>
       <Modal isVisible={chageName} onBackButtonPress={()=>setChangeName(false)} avoidKeyboard={true} backdropColor='#222222' backdropOpacity={0.5}>
         <Pressable style={styles.modalBGView} onPress={()=>{setChangeName(false); Keyboard.dismiss();}}>
@@ -192,6 +206,14 @@ export default function FriendProfileModal(props:ProfileProps){
             message={`${name}님에게 친구 요청을 보냈어요!`}
           />
         )}
+        {whichPopup == 'getFriend' && (
+        <ToastScreen
+          height={21}
+          marginBottom={48}
+          onClose={() => setWhichPopup('')}
+          message={`${name}님과 친구가 되었어요.`}
+        />
+      )}
       </View>
     </Modal>
   );

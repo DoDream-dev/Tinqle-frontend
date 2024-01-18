@@ -41,7 +41,7 @@ export default function SearchFriends() {
   const dispatch = useAppDispatch();
 
   const [myCode, setMyCode] = useState('');
-  const [placeholder, setPlaceholder] = useState('이름, 아이디로 친구 찾기');
+  const [placeholder, setPlaceholder] = useState('아이디로 친구 찾기');
   const [searchCode, setSearchCode] = useState('');
   const [message, setMessage] = useState('');
   const [otherUser, setOtherUser] = useState({
