@@ -591,49 +591,52 @@ export default function FeedDetail({navigation, route}: FeedDetailScreenProps) {
         </View>
         <View style={{height: Math.min(80, Math.max(45, KBsize))}} />
         <View style={styles.newCmtView}>
-          <TextInput
-            onFocus={() => {
-              if (writeChildCmt === -1) {
-                return;
-              }
+          <View style={styles.newFeedTxtInputContain}>
+            <TextInput
+              onFocus={() => {
+                if (writeChildCmt === -1) {
+                  return;
+                }
 
-              const delayedScroll = () => {
-                flatListRef.current.scrollToIndex({
-                  index: writeChildCmt,
-                  animated: true,
-                });
-              };
+                const delayedScroll = () => {
+                  flatListRef.current.scrollToIndex({
+                    index: writeChildCmt,
+                    animated: true,
+                  });
+                };
 
-              // Wait for 1 second (1000 milliseconds) and then execute the scroll
-              const timeoutId = setTimeout(delayedScroll, 100);
+                // Wait for 1 second (1000 milliseconds) and then execute the scroll
+                const timeoutId = setTimeout(delayedScroll, 100);
 
-              // Cleanup the timeout to avoid memory leaks
-              return () => clearTimeout(timeoutId);
-            }}
-            placeholder={placeholder}
-            placeholderTextColor={'#848484'}
-            style={[
-              styles.newCmtTxtInput,
-              {height: Math.min(80, Math.max(35, KBsize))},
-            ]}
-            onBlur={() => setWriteChildCmt(-1)}
-            onChangeText={(text: string) => {
-              setCmtContent(text);
-            }}
-            blurOnSubmit={false}
-            maxLength={200}
-            value={cmtContent}
-            onSubmitEditing={() => sendNewCmt()}
-            multiline={true}
-            autoCapitalize="none"
-            autoComplete="off"
-            autoCorrect={false}
-            onContentSizeChange={e => {
-              setKBsize(e.nativeEvent.contentSize.height);
-            }}
-            ref={inputRef}
-            // numberOfLines={4}
-          />
+                // Cleanup the timeout to avoid memory leaks
+                return () => clearTimeout(timeoutId);
+              }}
+              placeholder={placeholder}
+              placeholderTextColor={'#848484'}
+              style={[
+                styles.newCmtTxtInput,
+                // {height: Math.min(80, Math.max(35, KBsize))},
+              ]}
+              onBlur={() => setWriteChildCmt(-1)}
+              onChangeText={(text: string) => {
+                setCmtContent(text);
+              }}
+              blurOnSubmit={false}
+              maxLength={200}
+              value={cmtContent}
+              onSubmitEditing={() => sendNewCmt()}
+              multiline={true}
+              textAlignVertical="center"
+              autoCapitalize="none"
+              autoComplete="off"
+              autoCorrect={false}
+              onContentSizeChange={e => {
+                setKBsize(e.nativeEvent.contentSize.height);
+              }}
+              ref={inputRef}
+              // numberOfLines={4}
+            />
+          </View>
           <Pressable
             style={
               cmtContent.trim() == ''
@@ -822,23 +825,37 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     backgroundColor: '#202020',
     width: '100%',
-    height: 50,
+    // height: 50,
+    minHeight: 50,
     position: 'absolute',
     bottom: 0,
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingLeft: 8,
   },
-  newCmtTxtInput: {
+  newFeedTxtInputContain: {
     color: '#888888',
     fontSize: 15,
     fontWeight: '400',
     flex: 1,
     backgroundColor: '#333333',
+    // backgroundColor: 'red',
     marginVertical: 6,
     marginRight: 4,
     borderRadius: 10,
     paddingVertical: 3,
+    // minHeight: 0,
+  },
+  newCmtTxtInput: {
+    color: '#888888',
+    fontSize: 15,
+    fontWeight: '400',
+    flex: 1,
+    // backgroundColor: '#333333',
+    // marginVertical: 6,
+    // marginRight: 4,
+    // borderRadius: 10,
+    // paddingVertical: 3,
     paddingHorizontal: 10,
     // maxHeight:'4vh'
   },
