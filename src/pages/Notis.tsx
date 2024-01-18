@@ -298,7 +298,10 @@ export default function Notis({navigation}: NotisScreenProps) {
                     item.notificationType == 'CREATE_FRIENDSHIP_REQUEST'
                   ) {
                     setShowProfileModal(item.accountId);
+                  } else if (item.notificationType == 'SEND_KNOCK') {
+                    navigation.navigate('FeedList');
                   }
+
                   // else if (item.notificationType.includes('MESSAGE')) {
                   //   navigation.navigate('NoteBox');
                   // }
@@ -453,7 +456,7 @@ export default function Notis({navigation}: NotisScreenProps) {
                     </Text>
                   </View>
                 </View>
-                {item.notificationType == 'CREATE_FRIENDSHIP_REQUEST' && (
+                {item.notificationType === 'CREATE_FRIENDSHIP_REQUEST' ? (
                   <Pressable
                     style={styles.notisCheckBtn}
                     onPress={() => {
@@ -468,7 +471,15 @@ export default function Notis({navigation}: NotisScreenProps) {
                     }}>
                     <Text style={styles.notisCheckBtnTxt}>수락하기</Text>
                   </Pressable>
-                )}
+                ) : item.notificationType === 'SEND_KNOCK' ? (
+                  <Pressable
+                    style={styles.notisCheckBtn}
+                    onPress={() => {
+                      console.log('글쓰기');
+                    }}>
+                    <Text style={styles.notisCheckBtnTxt}>글쓰기</Text>
+                  </Pressable>
+                ) : null}
                 <Pressable
                   style={styles.xBtn}
                   onPress={() => deleteNotis(item.notificationId)}>
