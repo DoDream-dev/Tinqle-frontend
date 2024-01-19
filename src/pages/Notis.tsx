@@ -7,6 +7,7 @@ import {
   FlatList,
   Linking,
   Platform,
+  PermissionsAndroid,
 } from 'react-native';
 import {SvgXml} from 'react-native-svg';
 import {svgXml} from '../../assets/image/svgXml';
@@ -267,18 +268,34 @@ export default function Notis({}: NotisScreenProps) {
         navigation.goBack();
       } else {
         console.log('안드로이드');
-        const permissionStatus = await request(
-          PERMISSIONS.ANDROID.NOTIFICATIONS,
-        );
-        console.log(permissionStatus);
 
-        //실제 기기 확인 필요
-        if (permissionStatus === 'granted') {
-          setIsEnabled(true);
-        } else if (permissionStatus === 'unavailable') {
-          Linking.openSettings();
-          navigation.goBack();
-        }
+        PermissionsAndroid.check('android.permission.POST_NOTIFICATIONS').then(
+          async response => {
+            // console.log('###', response);
+            if (!response) {
+              await PermissionsAndroid.request(
+                'android.permission.POST_NOTIFICATIONS',
+                {
+                  title: '팅클 알림 설정',
+                  message: '팅클에서 소식을 받으려면 알림을 허용해주세요.',
+                  buttonNeutral: '다음에 설정',
+                  buttonNegative: '취소',
+                  buttonPositive: '확인',
+                },
+              ).then(response_2 => {
+                console.log('###', response_2);
+                if (response_2 === 'never_ask_again') {
+                  // 다시 보지 않음 이면 설정으로 이동
+                  Linking.openSettings();
+                  navigation.goBack();
+                } else if (response_2 === 'granted') {
+                  // 팝업에서 허용을 누르면
+                  setIsEnabled(true);
+                }
+              });
+            }
+          },
+        );
       }
     }
   };
@@ -295,14 +312,6 @@ export default function Notis({}: NotisScreenProps) {
 
   return (
     <View style={styles.entire}>
-      <Pressable
-        style={{width: '100%', height: 40, backgroundColor: 'blue'}}
-        onPress={async () => {
-          // Linking.openSettings();
-          await checkNotiPermission();
-        }}
-      />
-
       <View style={styles.notisHeader}>
         {/* {console.log('##', notisData)} */}
         <Text style={styles.notisHeaderTxt}>푸시알림</Text>
