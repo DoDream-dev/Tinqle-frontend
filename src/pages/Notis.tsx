@@ -192,7 +192,7 @@ export default function Notis({}: NotisScreenProps) {
       console.log(response.data);
       setPopupName(name);
       setPopup('getFriend');
-      setShowProfileModal(accountId);
+      // setShowProfileModal(accountId);
     } catch (error) {
       const errorResponse = (error as AxiosError<{message: string}>).response;
       console.log(errorResponse.data);
@@ -544,13 +544,14 @@ export default function Notis({}: NotisScreenProps) {
                     <Text style={styles.notisCheckBtnTxt}>수락하기</Text>
                   </Pressable>
                 ) : item.notificationType === 'SEND_KNOCK' ? (
-                  <Pressable
-                    style={styles.notisCheckBtn}
-                    onPress={() => {
-                      console.log('글쓰기');
-                    }}>
-                    <Text style={styles.notisCheckBtnTxt}>글쓰기</Text>
-                  </Pressable>
+                  // <Pressable
+                  //   style={styles.notisCheckBtn}
+                  //   onPress={() => {
+                  //     console.log('글쓰기');
+                  //   }}>
+                  //   <Text style={styles.notisCheckBtnTxt}>글쓰기</Text>
+                  // </Pressable>
+                  null
                 ) : null}
                 <Pressable
                   style={styles.xBtn}

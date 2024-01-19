@@ -215,44 +215,30 @@ export default function FriendProfileModal(props: ProfileProps) {
               />
             </View>
             <View style={styles.modalBtnView}>
-              <Pressable style={styles.btnGray} onPress={()=>{setChangeName(false); setChangeNameVal(name);}}>
+              <Pressable
+                style={styles.btnGray}
+                onPress={() => {
+                  setChangeName(false);
+                  setChangeNameVal(name);
+                }}>
                 <Text style={styles.btnTxt}>취소</Text>
               </Pressable>
-              <View style={{width:8}}></View>
-              <Pressable style={styles.btn} disabled={chageNameVal.trim() == ''} onPress={()=>{
-                if (chageNameVal != '') {
-                  if (chageNameVal == name) {setChangeName(false);}
-                  else {
-                    rename(chageNameVal.trim(), showWhoseModal);
-                  }}
-                />
-              </View>
-              <View style={styles.modalBtnView}>
-                <Pressable
-                  style={styles.btnGray}
-                  onPress={() => {
-                    setChangeName(false);
-                    setChangeNameVal(name);
-                  }}>
-                  <Text style={styles.btnTxt}>취소</Text>
-                </Pressable>
-                <View style={{width: 8}}></View>
-                <Pressable
-                  style={styles.btn}
-                  disabled={chageNameVal.trim() == ''}
-                  onPress={() => {
-                    if (chageNameVal != '') {
-                      if (chageNameVal == name) {
-                        setChangeName(false);
-                      } else {
-                        rename(chageNameVal.trim(), showWhoseModal);
-                      }
+              <View style={{width: 8}}></View>
+              <Pressable
+                style={styles.btn}
+                disabled={chageNameVal.trim() == ''}
+                onPress={() => {
+                  if (chageNameVal != '') {
+                    if (chageNameVal == name) {
+                      setChangeName(false);
+                    } else {
+                      rename(chageNameVal.trim(), showWhoseModal);
                     }
-                  }}>
-                  <Text style={styles.btnTxt}>완료</Text>
-                </Pressable>
-              </View>
-            </Pressable>
+                  }
+                }}>
+                <Text style={styles.btnTxt}>완료</Text>
+              </Pressable>
+            </View>
           </Pressable>
         </Pressable>
       </Modal>

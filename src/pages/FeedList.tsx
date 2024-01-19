@@ -500,6 +500,7 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
                 </Pressable>
               </View>
             )}
+            <View style={{height: Math.max(60, KBsize + 10)}} />
             <View style={styles.newFeedView}>
               <Pressable
                 style={{
@@ -571,10 +572,10 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
               <View style={[styles.newFeedTxtInputContain]}>
                 <TextInput
                   placeholder={placeholder}
-                  placeholderTextColor={'#848484'}
+                  placeholderTextColor={'#888888'}
                   style={[
                     styles.newFeedTxtInput,
-                    // {height: Math.min(80, Math.max(40, KBsize))},
+                    {height: Math.min(80, Math.max(40, KBsize))},
                   ]}
                   onFocus={() => setPlaceholder('')}
                   onBlur={() => setPlaceholder('지금 기분이 어때요?')}
@@ -996,7 +997,7 @@ const styles = StyleSheet.create({
   },
   newFeedImgView: {
     paddingVertical: 12,
-    backgroundColor: 'rgba(34, 34, 34, 0.5)',
+    backgroundColor: 'rgba(16, 16, 16, 0.90)',
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -1019,31 +1020,26 @@ const styles = StyleSheet.create({
     position: 'relative',
   },
   addPhoto: {
-    // marginLeft: 12,
-    // marginRight: 8,
     position: 'absolute',
     top: 0,
     bottom: 0,
     justifyContent: 'center',
-    left: 56,
+    left: 58,
   },
   newFeedTxtInputContain: {
-    color: '#888888',
-    fontSize: 15,
-    fontWeight: '400',
     flex: 1,
     backgroundColor: '#333333',
     // backgroundColor: 'red',
     marginVertical: 6,
     marginRight: 4,
     borderRadius: 10,
-    paddingVertical: 3,
+    // paddingVertical: 3,
     paddingRight: 10,
     paddingLeft: 40,
     // maxHeight:'4vh'
   },
   newFeedTxtInput: {
-    color: '#888888',
+    color: '#F0F0F0',
     fontSize: 15,
     fontWeight: '400',
     flex: 1,
@@ -1080,7 +1076,7 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 20,
     paddingHorizontal: 16,
     paddingVertical: 16,
-    backgroundColor: 'white',
+    backgroundColor: '#333333',
     // elevation: 10,
   },
   modalView2: {
@@ -1121,7 +1117,7 @@ const styles = StyleSheet.create({
     flexShrink: 1,
   },
   emoticonTxt: {
-    color: '#222222',
+    color: '#F0F0F0',
     fontWeight: '400',
     fontSize: 15,
     paddingLeft: 8,

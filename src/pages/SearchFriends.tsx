@@ -148,6 +148,16 @@ export default function SearchFriends() {
               profileImageUrl: response.data.data.profileImageUrl,
             },
           ]);
+        } else if (response.data.data.friendshipRelation == 'request') {
+          setFriendData([
+            {
+              accountId: response.data.data.accountId,
+              friendNickname: response.data.data.nickname,
+              friendshipId: -3,
+              status: '',
+              profileImageUrl: response.data.data.profileImageUrl,
+            },
+          ]);
         } else {
           setFriendData([
             {
@@ -385,6 +395,34 @@ export default function SearchFriends() {
                 </Pressable>
               </Pressable>
             );
+          if (item.friendshipId == -3)
+            return (
+              <Pressable
+              style={[
+                styles.friendView,
+                {width: (Dimensions.get('window').width - 40) / 2},
+              ]}
+              onPress={() => {
+                setShowWhoseModal(item.accountId);
+              }}>
+              <Pressable style={styles.friendProfileImg}>
+                {item.profileImageUrl == null ? (
+                  <SvgXml width={32} height={32} xml={svgXml.profile.null} />
+                ) : (
+                  <Image
+                    source={{uri: item.profileImageUrl}}
+                    style={{width: 32, height: 32, borderRadius: 16}}
+                  />
+                )}
+              </Pressable>
+              <View style={styles.friendmiddle}>
+                <Text style={styles.friendName}>{item.friendNickname}</Text>
+              </View>
+              <Pressable style={styles.requestFriendProfileStatus}>
+                <SvgXml width={24} height={24} xml={svgXml.icon.requestfriend} />
+              </Pressable>
+            </Pressable>
+          );
           return (
             <Pressable
               style={[
@@ -748,6 +786,15 @@ const styles = StyleSheet.create({
   waitingFriendProfileStatus: {
     marginVertical: 7,
     backgroundColor: '#888888',
+    width: 40,
+    height: 40,
+    borderRadius: 5,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  requestFriendProfileStatus: {
+    marginVertical: 7,
+    backgroundColor: '#A55FFF',
     width: 40,
     height: 40,
     borderRadius: 5,

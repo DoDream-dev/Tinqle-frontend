@@ -615,7 +615,7 @@ export default function FeedDetail({navigation, route}: FeedDetailScreenProps) {
               placeholderTextColor={'#848484'}
               style={[
                 styles.newCmtTxtInput,
-                // {height: Math.min(80, Math.max(35, KBsize))},
+                {height: Math.min(80, Math.max(35, KBsize))},
               ]}
               onBlur={() => setWriteChildCmt(-1)}
               onChangeText={(text: string) => {
@@ -804,7 +804,7 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 20,
     paddingHorizontal: 16,
     paddingVertical: 16,
-    backgroundColor: 'white',
+    backgroundColor: '#333333',
     // elevation: 10,
   },
   whoReacted: {
@@ -815,7 +815,7 @@ const styles = StyleSheet.create({
     flexShrink: 1,
   },
   emoticonTxt: {
-    color: '#222222',
+    color: '#F0F0F0',
     fontWeight: '400',
     fontSize: 15,
     paddingLeft: 8,
@@ -843,7 +843,7 @@ const styles = StyleSheet.create({
     marginVertical: 6,
     marginRight: 4,
     borderRadius: 10,
-    paddingVertical: 3,
+    // paddingVertical: 3,
     // minHeight: 0,
   },
   newCmtTxtInput: {

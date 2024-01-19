@@ -60,7 +60,7 @@ const screenoptions = () => {
       borderTopWidth: 0,
       elevation: 0,
     },
-    tabBarHideOnKeyboard: false,
+    tabBarHideOnKeyboard: true,
     tabBarActiveTintColor: '#A55FFF',
     tabBarInactiveTintColor: '#F0F0F0',
     tabBarLabelStyle: {fontSize: 11, paddingBottom: 10},
