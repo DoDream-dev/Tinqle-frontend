@@ -1,5 +1,14 @@
 import React, {useState, useCallback} from 'react';
-import {View, Text, StyleSheet, Pressable, FlatList} from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  Pressable,
+  FlatList,
+  Linking,
+  Platform,
+  PermissionsAndroid,
+} from 'react-native';
 import {SvgXml} from 'react-native-svg';
 import {svgXml} from '../../assets/image/svgXml';
 import axios, {AxiosError} from 'axios';
@@ -12,6 +21,10 @@ import {RootStackParamList} from '../../AppInner';
 import {useAppDispatch} from '../store';
 import userSlice from '../slices/user';
 import FriendProfileModal from '../components/FriendProfileModal';
+import messaging from '@react-native-firebase/messaging';
+import {checkNotifications} from 'react-native-permissions';
+import {useNavigation} from '@react-navigation/native';
+import {request, PERMISSIONS} from 'react-native-permissions';
 
 type itemProps = {
   item: {
@@ -37,7 +50,9 @@ type itemProps = {
 
 type NotisScreenProps = NativeStackScreenProps<RootStackParamList, 'Notis'>;
 
-export default function Notis({navigation}: NotisScreenProps) {
+export default function Notis({}: NotisScreenProps) {
+  const navigation = useNavigation();
+
   const dispatch = useAppDispatch();
   const [isEnabled, setIsEnabled] = useState(true);
   const [noNotis, setNoNotis] = useState(false);
@@ -83,7 +98,7 @@ export default function Notis({navigation}: NotisScreenProps) {
           const response = await axios.get(
             `${Config.API_URL}/notifications/accounts/me`,
           );
-          console.log(response.data.data)
+          console.log(response.data.data);
           if (response.data.data.content.length == 0) setNoNotis(true);
           else {
             setIsLast(response.data.data.last);
@@ -110,7 +125,10 @@ export default function Notis({navigation}: NotisScreenProps) {
           }
         }
       };
+
       getNotis();
+      checkNotiPermission();
+
       dispatch(
         userSlice.actions.setNotis({
           notis: false,
@@ -162,7 +180,11 @@ export default function Notis({navigation}: NotisScreenProps) {
     }
   };
 
-  const approveFriendship = async (friendshipRequestId: number, accountId:number, name:string) => {
+  const approveFriendship = async (
+    friendshipRequestId: number,
+    accountId: number,
+    name: string,
+  ) => {
     try {
       const response = await axios.post(
         `${Config.API_URL}/friendships/request/${friendshipRequestId}/approval`,
@@ -219,7 +241,7 @@ export default function Notis({navigation}: NotisScreenProps) {
 
   const deleteFriends = async () => {
     try {
-      console.log(deleteFriend)
+      console.log(deleteFriend);
       const response = await axios.delete(
         `${Config.API_URL}/friendships/${deleteFriend}`,
       );
@@ -234,7 +256,59 @@ export default function Notis({navigation}: NotisScreenProps) {
       const errorResponse = (error as AxiosError<{message: string}>).response;
       console.log(errorResponse.data);
     }
-  }
+  };
+
+  const pushNotiChange = async () => {
+    if (isEnabled) {
+      Linking.openSettings();
+      navigation.goBack();
+    } else {
+      if (Platform.OS === 'ios') {
+        Linking.openSettings();
+        navigation.goBack();
+      } else {
+        console.log('안드로이드');
+
+        PermissionsAndroid.check('android.permission.POST_NOTIFICATIONS').then(
+          async response => {
+            // console.log('###', response);
+            if (!response) {
+              await PermissionsAndroid.request(
+                'android.permission.POST_NOTIFICATIONS',
+                {
+                  title: '팅클 알림 설정',
+                  message: '팅클에서 소식을 받으려면 알림을 허용해주세요.',
+                  buttonNeutral: '다음에 설정',
+                  buttonNegative: '취소',
+                  buttonPositive: '확인',
+                },
+              ).then(response_2 => {
+                console.log('###', response_2);
+                if (response_2 === 'never_ask_again') {
+                  // 다시 보지 않음 이면 설정으로 이동
+                  Linking.openSettings();
+                  navigation.goBack();
+                } else if (response_2 === 'granted') {
+                  // 팝업에서 허용을 누르면
+                  setIsEnabled(true);
+                }
+              });
+            }
+          },
+        );
+      }
+    }
+  };
+
+  const checkNotiPermission = async () => {
+    const ret = await checkNotifications();
+    console.log(ret);
+    if (ret.status === 'granted') {
+      setIsEnabled(true);
+    } else {
+      setIsEnabled(false);
+    }
+  };
 
   return (
     <View style={styles.entire}>
@@ -242,7 +316,9 @@ export default function Notis({navigation}: NotisScreenProps) {
         {/* {console.log('##', notisData)} */}
         <Text style={styles.notisHeaderTxt}>푸시알림</Text>
         <Pressable
-          onPress={() => setIsEnabled(!isEnabled)}
+          onPress={() => {
+            pushNotiChange();
+          }}
           style={[
             styles.toggleView,
             isEnabled
@@ -260,6 +336,7 @@ export default function Notis({navigation}: NotisScreenProps) {
           <Text style={styles.emptyTxt}>알림을 다 읽었어요</Text>
         </View>
       )}
+      {/* {console.log(notisData)} */}
       {!noNotis && (
         <FlatList
           data={notisData}
@@ -269,7 +346,11 @@ export default function Notis({navigation}: NotisScreenProps) {
           renderItem={({item}: itemProps) => {
             return (
               <Pressable
-                style={styles.eachNotis}
+                style={
+                  item.isRead === false
+                    ? styles.eachNotis_notRead
+                    : styles.eachNotis
+                }
                 onPress={async () => {
                   if (item.notificationType.includes('FEED')) {
                     if (await isDeleted(item.redirectTargetId)) {
@@ -283,11 +364,16 @@ export default function Notis({navigation}: NotisScreenProps) {
                     //   whose: 1,
                     //   accountId: item.accountId,
                     // });
-                    
+
                     setShowProfileModal(item.accountId);
-                  } else if (item.notificationType == 'CREATE_FRIENDSHIP_REQUEST') {
+                  } else if (
+                    item.notificationType == 'CREATE_FRIENDSHIP_REQUEST'
+                  ) {
                     setShowProfileModal(item.accountId);
+                  } else if (item.notificationType == 'SEND_KNOCK') {
+                    navigation.navigate('FeedList');
                   }
+
                   // else if (item.notificationType.includes('MESSAGE')) {
                   //   navigation.navigate('NoteBox');
                   // }
@@ -442,18 +528,30 @@ export default function Notis({navigation}: NotisScreenProps) {
                     </Text>
                   </View>
                 </View>
-                {item.notificationType == 'CREATE_FRIENDSHIP_REQUEST' && (
+                {item.notificationType === 'CREATE_FRIENDSHIP_REQUEST' ? (
                   <Pressable
                     style={styles.notisCheckBtn}
                     onPress={() => {
-                      approveFriendship(item.redirectTargetId, item.accountId, item.friendNickname);
+                      approveFriendship(
+                        item.redirectTargetId,
+                        item.accountId,
+                        item.friendNickname,
+                      );
                       // getFriendMsg(item.redirectTargetId);
                       // setmodalData(item.content);
                       // setmodalDataId(item.redirectTargetId);
                     }}>
                     <Text style={styles.notisCheckBtnTxt}>수락하기</Text>
                   </Pressable>
-                )}
+                ) : item.notificationType === 'SEND_KNOCK' ? (
+                  <Pressable
+                    style={styles.notisCheckBtn}
+                    onPress={() => {
+                      console.log('글쓰기');
+                    }}>
+                    <Text style={styles.notisCheckBtnTxt}>글쓰기</Text>
+                  </Pressable>
+                ) : null}
                 <Pressable
                   style={styles.xBtn}
                   onPress={() => deleteNotis(item.notificationId)}>
@@ -464,26 +562,45 @@ export default function Notis({navigation}: NotisScreenProps) {
           }}
         />
       )}
-      <FriendProfileModal showWhoseModal={showProfileModal} setShowWhoseModal={setShowProfileModal} setDeleteFriend={setDeleteFriend} />
-      <Modal isVisible={deleteFriend != -1}
+      <FriendProfileModal
+        showWhoseModal={showProfileModal}
+        setShowWhoseModal={setShowProfileModal}
+        setDeleteFriend={setDeleteFriend}
+      />
+      <Modal
+        isVisible={deleteFriend != -1}
         // onModalWillShow={getProfile}
         hasBackdrop={true}
-        onBackdropPress={()=>setDeleteFriend(-1)}
+        onBackdropPress={() => setDeleteFriend(-1)}
         // coverScreen={false}
-        onBackButtonPress={()=>setDeleteFriend(-1)}
+        onBackButtonPress={() => setDeleteFriend(-1)}
         // backdropColor='#222222' backdropOpacity={0.5}
         // style={[styles.entire, {marginVertical:(Dimensions.get('screen').height - 400)/2}]}
-        >
+      >
         {/* <View style={styles.modalBGView}>   */}
-          <View style={styles.modalView}>
-            <Text style={styles.modalTitleTxt}>친구를 삭제하시겠어요?</Text>
-            <Text style={styles.modalContentTxt}>상대방에게 알림이 가지 않으니 안심하세요.</Text>
-            <View style={styles.btnView}>
-              <Pressable style={styles.btnGray} onPress={()=>{setDeleteFriend(-1);}}><Text style={styles.btnTxt}>취소</Text></Pressable>
-              <View style={{width:8}}></View>
-              <Pressable style={styles.btn} onPress={()=>{deleteFriends()}}><Text style={styles.btnTxt}>네, 삭제할게요.</Text></Pressable>
-            </View>
+        <View style={styles.modalView}>
+          <Text style={styles.modalTitleTxt}>친구를 삭제하시겠어요?</Text>
+          <Text style={styles.modalContentTxt}>
+            상대방에게 알림이 가지 않으니 안심하세요.
+          </Text>
+          <View style={styles.btnView}>
+            <Pressable
+              style={styles.btnGray}
+              onPress={() => {
+                setDeleteFriend(-1);
+              }}>
+              <Text style={styles.btnTxt}>취소</Text>
+            </Pressable>
+            <View style={{width: 8}}></View>
+            <Pressable
+              style={styles.btn}
+              onPress={() => {
+                deleteFriends();
+              }}>
+              <Text style={styles.btnTxt}>네, 삭제할게요.</Text>
+            </Pressable>
           </View>
+        </View>
         {/* </View> */}
       </Modal>
       {/* <Modal
@@ -644,17 +761,31 @@ const styles = StyleSheet.create({
     width: '100%',
     flexDirection: 'row',
     flex: 1,
-    backgroundColor: '#FFFFFF',
+    minHeight: 56,
+    backgroundColor: '#202020',
     paddingHorizontal: 16,
     alignItems: 'center',
     justifyContent: 'space-between',
     borderBottomWidth: 1,
-    borderBottomColor: '#F7F7F7',
+    borderBottomColor: '#333333',
+  },
+  eachNotis_notRead: {
+    width: '100%',
+    flexDirection: 'row',
+    flex: 1,
+    minHeight: 56,
+    backgroundColor: 'rgba(165, 95, 255, 0.3)',
+    paddingHorizontal: 16,
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    borderBottomWidth: 1,
+    borderBottomColor: '#333333',
   },
   notisView: {
     flexGrow: 1,
     flexDirection: 'row',
     alignItems: 'center',
+    // backgroundColor: 'red',
     flex: 1,
   },
   notisProfile: {
@@ -662,16 +793,18 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   notisTextView: {
+    flex: 1,
     justifyContent: 'center',
     flexShrink: 1,
     paddingVertical: 11,
+    // backgroundColor: 'red',
   },
   notisText: {
-    color: '#222222',
+    // backgroundColor: 'blue',
+    color: '#F0F0F0',
     fontWeight: '400',
-    fontSize: 14,
+    fontSize: 15,
     textAlignVertical: 'center',
-    flex: 1,
   },
   notisCheckBtn: {
     width: 84,
@@ -739,18 +872,18 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingBottom: 24,
   },
-  modalTitleTxt:{
-    color:'#F0F0F0',
-    fontSize:15,
-    fontWeight:'600',
-    marginBottom:10
+  modalTitleTxt: {
+    color: '#F0F0F0',
+    fontSize: 15,
+    fontWeight: '600',
+    marginBottom: 10,
   },
-  modalContentTxt:{
-    color:'#F0F0F0',
-    fontSize:15,
-    fontWeight:'400',
-    marginBottom:10,
-    marginTop:10
+  modalContentTxt: {
+    color: '#F0F0F0',
+    fontSize: 15,
+    fontWeight: '400',
+    marginBottom: 10,
+    marginTop: 10,
   },
   changeView: {
     width: '100%',
@@ -772,31 +905,31 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     marginTop: 10,
   },
-  btnView:{
-    flexDirection:'row',
-    justifyContent:'space-between',
+  btnView: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     paddingHorizontal: 17,
-    marginTop:16,
+    marginTop: 16,
   },
-  btn:{
-    flex:1,
-    justifyContent:'center',
-    alignItems:'center',
-    borderRadius:5,
-    paddingVertical:13,
-    backgroundColor:'#A55FFF',
+  btn: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 5,
+    paddingVertical: 13,
+    backgroundColor: '#A55FFF',
   },
-  btnGray:{
-    flex:1,
-    justifyContent:'center',
-    alignItems:'center',
-    borderRadius:5,
-    paddingVertical:13,
-    backgroundColor:'#888888',
+  btnGray: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 5,
+    paddingVertical: 13,
+    backgroundColor: '#888888',
   },
-  btnTxt:{
-    color:'#F0F0F0',
-    fontSize:15,
-    fontWeight:'600'
+  btnTxt: {
+    color: '#F0F0F0',
+    fontSize: 15,
+    fontWeight: '600',
   },
 });

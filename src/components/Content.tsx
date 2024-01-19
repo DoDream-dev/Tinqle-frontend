@@ -1,3 +1,4 @@
+/* eslint-disable react-native/no-inline-styles */
 import React, {useState} from 'react';
 import {
   StyleSheet,
@@ -20,6 +21,7 @@ import Modal from 'react-native-modal';
 import axios, {AxiosError} from 'axios';
 import Config from 'react-native-config';
 
+const windowWidth = Dimensions.get('screen').width;
 type ContentProps = {
   nickname: string;
   status: string;
@@ -50,7 +52,6 @@ export default function Content(props: ContentProps) {
   const child = props.child;
   const cmtId = props.cmtId;
   const index = props.index;
-  const windowWidth = Dimensions.get('screen').width;
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const profileImg = props.profileImg;
@@ -80,29 +81,9 @@ export default function Content(props: ContentProps) {
 
   return (
     <View style={styles.entire}>
-      <View style={styles.statusView}>
-        <Pressable
-          onPress={() => {
-            if (props.mine) {
-              navigation.navigate('MyProfile');
-            } else {
-              setShowWhoseModal(accountId);
-            }
-          }}>
-          {profileImg == null ? (
-            <SvgXml width={32} height={32} xml={svgXml.profile.null} />
-          ) : (
-            <Image
-              source={{uri: profileImg}}
-              style={{width: 32, height: 32, borderRadius: 16}}
-            />
-          )}
-        </Pressable>
-      </View>
-      <View style={styles.contentView}>
-        <View style={styles.txtView}>
+      <View style={styles.profileSection}>
+        <View style={styles.statusView}>
           <Pressable
-            style={styles.txtNickname}
             onPress={() => {
               if (props.mine) {
                 navigation.navigate('MyProfile');
@@ -110,7 +91,28 @@ export default function Content(props: ContentProps) {
                 setShowWhoseModal(accountId);
               }
             }}>
-            <Text style={styles.nickname}>{nickname}</Text>
+            {profileImg == null ? (
+              <SvgXml width={32} height={32} xml={svgXml.profile.null} />
+            ) : (
+              <Image
+                source={{uri: profileImg}}
+                style={{width: 32, height: 32, borderRadius: 16}}
+              />
+            )}
+          </Pressable>
+        </View>
+        <View style={styles.contentView}>
+          <View style={styles.txtNickname}>
+            <Pressable
+              onPress={() => {
+                if (props.mine) {
+                  navigation.navigate('MyProfile');
+                } else {
+                  setShowWhoseModal(accountId);
+                }
+              }}>
+              <Text style={styles.nickname}>{nickname}</Text>
+            </Pressable>
             {status == 'smile'.toUpperCase() && (
               <SvgXml width={18} height={18} xml={svgXml.status.smile} />
             )}
@@ -165,45 +167,53 @@ export default function Content(props: ContentProps) {
             {status == 'travel'.toUpperCase() && (
               <SvgXml width={18} height={18} xml={svgXml.status.travel} />
             )}
-          </Pressable>
+          </View>
           <Text style={styles.createdAt}>{createdAt}</Text>
         </View>
+      </View>
+
+      {content != '' && (
         <View style={styles.content}>
-          {content != '' && <Text style={styles.contentTxt}>{content}</Text>}
-          {/* {imageURL.flatMap(f => !!f ? [f] : []).length != 0 && <SliderBox 
+          <Text style={styles.contentTxt}>{content}</Text>
+        </View>
+      )}
+
+      {/* {imageURL.flatMap(f => !!f ? [f] : []).length != 0 && <SliderBox 
             images={imageURL}
             sliderBoxHeight={283}
             parentWidth={283}
           />} */}
-          {imageURL.flatMap(f => (!!f ? [f] : [])).length != 0 && (
-            <ImageModal
-              swipeToDismiss={true}
-              modalImageResizeMode="contain"
-              resizeMode="contain"
-              // resizeMode="cover"
-              imageBackgroundColor="transparent"
-              overlayBackgroundColor="rgba(32, 32, 32, 0.9)"
-              style={{
-                width: windowWidth - 100,
-                height: windowWidth - 100,
-                marginTop: 8,
-              }}
-              source={{
-                uri: imageURL[0] ?? undefined,
-              }}
-            />
-          )}
+
+      {imageURL.flatMap(f => (!!f ? [f] : [])).length != 0 && (
+        <View style={styles.imageContent}>
+          <ImageModal
+            swipeToDismiss={true}
+            modalImageResizeMode="contain"
+            resizeMode="contain"
+            // resizeMode="cover"
+            imageBackgroundColor="transparent"
+            overlayBackgroundColor="rgba(32, 32, 32, 0.9)"
+            style={{
+              width: windowWidth - 56,
+              height: windowWidth - 56,
+            }}
+            source={{
+              uri: imageURL[0] ?? undefined,
+            }}
+          />
         </View>
-        {cmt && (
-          <Pressable
-            style={styles.recomment}
-            onPress={() => {
-              child(index);
-            }}>
-            <Text style={styles.recommentTxt}>대댓글 쓰기</Text>
-          </Pressable>
-        )}
-      </View>
+      )}
+
+      {cmt && (
+        <Pressable
+          style={styles.recomment}
+          onPress={() => {
+            child(index);
+          }}>
+          <Text style={styles.recommentTxt}>대댓글 쓰기</Text>
+        </Pressable>
+      )}
+
       <FriendProfileModal
         showWhoseModal={showWhoseModal}
         setShowWhoseModal={setShowWhoseModal}
@@ -261,9 +271,12 @@ export default function Content(props: ContentProps) {
 
 const styles = StyleSheet.create({
   entire: {
-    flexDirection: 'row',
     padding: 16,
     // backgroundColor: 'red',
+  },
+  profileSection: {
+    flexDirection: 'row',
+    // backgroundColor:'blue'
   },
   entireCmt: {
     flexDirection: 'row',
@@ -276,12 +289,11 @@ const styles = StyleSheet.create({
   contentView: {
     flex: 1,
     paddingLeft: 8,
-  },
-  txtView: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    // flexDirection: 'row',
+    // justifyContent: 'space-between',
   },
   txtNickname: {
+    // backgroundColor: 'blue',
     flexDirection: 'row',
     alignItems: 'center',
   },
@@ -292,6 +304,7 @@ const styles = StyleSheet.create({
     marginRight: 3,
   },
   createdAt: {
+    marginTop: 0,
     fontWeight: '500',
     fontSize: 12,
     color: '#848484',
@@ -299,7 +312,19 @@ const styles = StyleSheet.create({
   content: {
     justifyContent: 'center',
     alignItems: 'flex-start',
-    marginTop: 4,
+    alignContent: 'center',
+    marginTop: 10,
+    // backgroundColor: 'blue',
+  },
+  imageContent: {
+    marginTop: 10,
+    flexDirection: 'row',
+    // backgroundColor: 'green',
+    justifyContent: 'center',
+    alignItems: 'center',
+    alignContent: 'center',
+    flex: 1,
+    height: windowWidth - 56,
   },
   contentTxt: {
     fontWeight: '400',

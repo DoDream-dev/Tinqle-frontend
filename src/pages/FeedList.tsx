@@ -568,30 +568,33 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
                   <SvgXml width={32} height={32} xml={svgXml.status.travel} />
                 )}
               </Pressable>
-              <TextInput
-                placeholder={placeholder}
-                placeholderTextColor={'#848484'}
-                style={[
-                  styles.newFeedTxtInput,
-                  {height: Math.min(80, Math.max(40, KBsize))},
-                ]}
-                onFocus={() => setPlaceholder('')}
-                onBlur={() => setPlaceholder('지금 기분이 어때요?')}
-                onChangeText={(text: string) => {
-                  setFeedContent(text);
-                }}
-                blurOnSubmit={false}
-                maxLength={500}
-                value={feedContent}
-                onSubmitEditing={sendNewFeed}
-                multiline={true}
-                autoCapitalize="none"
-                autoComplete="off"
-                autoCorrect={false}
-                onContentSizeChange={e => {
-                  setKBsize(e.nativeEvent.contentSize.height);
-                }}
-              />
+              <View style={[styles.newFeedTxtInputContain]}>
+                <TextInput
+                  placeholder={placeholder}
+                  placeholderTextColor={'#848484'}
+                  style={[
+                    styles.newFeedTxtInput,
+                    // {height: Math.min(80, Math.max(40, KBsize))},
+                  ]}
+                  onFocus={() => setPlaceholder('')}
+                  onBlur={() => setPlaceholder('지금 기분이 어때요?')}
+                  onChangeText={(text: string) => {
+                    setFeedContent(text);
+                  }}
+                  blurOnSubmit={false}
+                  maxLength={500}
+                  value={feedContent}
+                  onSubmitEditing={sendNewFeed}
+                  multiline={true}
+                  textAlignVertical="center"
+                  autoCapitalize="none"
+                  autoComplete="off"
+                  autoCorrect={false}
+                  onContentSizeChange={e => {
+                    setKBsize(e.nativeEvent.contentSize.height);
+                  }}
+                />
+              </View>
               <Pressable
                 style={styles.addPhoto}
                 onPress={() =>
@@ -1024,12 +1027,13 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     left: 56,
   },
-  newFeedTxtInput: {
+  newFeedTxtInputContain: {
     color: '#888888',
     fontSize: 15,
     fontWeight: '400',
     flex: 1,
     backgroundColor: '#333333',
+    // backgroundColor: 'red',
     marginVertical: 6,
     marginRight: 4,
     borderRadius: 10,
@@ -1037,6 +1041,14 @@ const styles = StyleSheet.create({
     paddingRight: 10,
     paddingLeft: 40,
     // maxHeight:'4vh'
+  },
+  newFeedTxtInput: {
+    color: '#888888',
+    fontSize: 15,
+    fontWeight: '400',
+    flex: 1,
+    // backgroundColor: '#333333',
+    // backgroundColor: 'blue',
   },
   sendNewFeed: {
     backgroundColor: '#888888',

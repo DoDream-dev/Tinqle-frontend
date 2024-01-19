@@ -699,7 +699,7 @@ PODS:
     - React-Core
     - React-RCTImage
     - TOCropViewController
-  - RNPermissions (4.0.1):
+  - RNPermissions (4.0.4):
     - React-Core
   - RNReanimated (3.6.1):
     - RCT-Folly (= 2021.07.22.00)
@@ -1064,7 +1064,7 @@ SPEC CHECKSUMS:
   RNFBMessaging: e52a76a97ec5ff75e186c150e2bfab86c9e655d1
   RNGoogleSignin: ccaa4a81582cf713eea562c5dd9dc1961a715fd0
   RNImageCropPicker: 486e2f7e2b0461ce24321f751410dce1b3b49e6d
-  RNPermissions: d87e915b77f66beb749d6ff764f6cf904cc22b1a
+  RNPermissions: 0eecd976e37581a81bccb2b37ca12d35315b5e91
   RNReanimated: fdbaa9c964bbab7fac50c90862b6cc5f041679b9
   RNScreens: 85d3880b52d34db7b8eeebe2f1a0e807c05e69fa
   RNSVG: d00c8f91c3cbf6d476451313a18f04d220d4f396

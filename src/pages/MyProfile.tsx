@@ -8,6 +8,7 @@ import {
   TextInput,
   Keyboard,
   Linking,
+  Platform,
   ScrollView,
 } from 'react-native';
 import Modal from 'react-native-modal';
@@ -215,11 +216,11 @@ export default function MyProfile() {
   //   }
   // }, throttleTime);
 
-  useEffect(() => {
-    if (chageName) {
-      inp1.current.focus();
-    }
-  }, [chageName]);
+  // useEffect(() => {
+  //   if (chageName) {
+  //     inp1.current.focus();
+  //   }
+  // }, [chageName]);
 
   const LogOut = async () => {
     try {
@@ -442,7 +443,12 @@ export default function MyProfile() {
         onBackButtonPress={() => setChangeName(false)}
         avoidKeyboard={true}
         backdropColor="#222222"
-        backdropOpacity={0.5}>
+        backdropOpacity={0.5}
+        onModalShow={() => {
+          if (Platform.OS === 'android') {
+            inp1.current.focus();
+          }
+        }}>
         <Pressable
           style={styles.modalBGView}
           onPress={() => {
@@ -463,7 +469,7 @@ export default function MyProfile() {
                 blurOnSubmit={true}
                 maxLength={10}
                 value={chageNameVal}
-                autoFocus={true}
+                autoFocus={Platform.OS === 'ios' ? true : false}
                 onSubmitEditing={() => {
                   rename(chageNameVal.trim());
                 }}

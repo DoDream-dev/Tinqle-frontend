@@ -50,6 +50,7 @@ export default function SignIn() {
   const windowWidth = Dimensions.get('window').width;
   const [fcm, setFcm] = useState('');
   const [policy, setPolicy] = useState('');
+  const [signUpToekn, setSignUpToken] = useState('');
 
   const requestUserPermissionForFCM = async () => {
     const authStatus = await messaging().requestPermission();
@@ -166,18 +167,30 @@ export default function SignIn() {
     } catch (error) {
       const errorResponse = (error as AxiosError<{message: string}>).response;
       if (errorResponse?.data.statusCode == 1030) {
-        console.log('회원가입 진행');
+        console.log('회원가입 진행', errorResponse?.data.data.signToken);
         setSignUp(errorResponse?.data.data.signToken);
+        setSignUpToken(errorResponse?.data.data.signToken);
         // Signup();
       }
     }
   };
 
   const Signup = async (signToken: string) => {
-    // console.log(serviceP, personalP, ageP, adsP, signToken, fcm);
+    console.log('signToken ', signToken);
+    console.log('serviceP ', serviceP);
+    console.log('ageP ', ageP);
+    console.log('personalP ', personalP);
+    console.log('fcm ', fcm);
+    console.log('id ', id);
+
+    let token = signToken;
+    if (token === undefined || token === '' || token == null) {
+      token = signUpToekn;
+    }
+
     try {
       const response = await axios.post(`${Config.API_URL}/auth/signup`, {
-        signToken: signToken,
+        signToken: token,
         usePolicy: serviceP,
         agePolicy: ageP,
         personalPolicy: personalP,
@@ -185,9 +198,12 @@ export default function SignIn() {
         fcmToken: fcm,
         code: id,
       });
+      console.log('회원가입 완료', response);
       // LOGIN call
       Login(response.data.data.refreshToken, response.data.data.accessToken);
       console.log('회원가입 완료');
+
+      setSignUpToken('');
     } catch (error) {
       console.log('error ', error);
       const errorResponse = (error as AxiosError<{message: string}>).response;
@@ -378,6 +394,7 @@ export default function SignIn() {
                   : styles.idModalFooterBtn
               }
               onPress={() => {
+                console.log('signup', signup);
                 Signup(signup);
                 setSignUp('');
                 setSettingID(false);
@@ -437,6 +454,14 @@ export default function SignIn() {
                     <Text style={styles.policyTxtBold}>전체 동의하기</Text>
                   </Pressable>
                 </View>
+                <Pressable onPress={() => console.log('###', signup)}>
+                  <View
+                    style={{
+                      height: 12,
+                      width: 100,
+                      backgroundColor: 'red',
+                    }}></View>
+                </Pressable>
                 <View style={styles.modalItemView}>
                   <Pressable
                     style={styles.policyBtn}
