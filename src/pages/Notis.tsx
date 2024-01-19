@@ -272,6 +272,7 @@ export default function Notis({}: NotisScreenProps) {
         );
         console.log(permissionStatus);
 
+        //실제 기기 확인 필요
         if (permissionStatus === 'granted') {
           setIsEnabled(true);
         } else if (permissionStatus === 'unavailable') {
