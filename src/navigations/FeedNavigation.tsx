@@ -72,7 +72,7 @@ export default function FeedNavigation() {
           title: '알림',
           headerTitleAlign: 'center',
           headerTitleStyle: {
-            color: '#222222',
+            color: '#F0F0F0',
             fontSize: 15,
             fontWeight: '600',
           },
