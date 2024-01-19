@@ -1,5 +1,13 @@
 import React, {useState, useCallback} from 'react';
-import {View, Text, StyleSheet, Pressable, FlatList} from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  Pressable,
+  FlatList,
+  Linking,
+  Platform,
+} from 'react-native';
 import {SvgXml} from 'react-native-svg';
 import {svgXml} from '../../assets/image/svgXml';
 import axios, {AxiosError} from 'axios';
@@ -12,6 +20,10 @@ import {RootStackParamList} from '../../AppInner';
 import {useAppDispatch} from '../store';
 import userSlice from '../slices/user';
 import FriendProfileModal from '../components/FriendProfileModal';
+import messaging from '@react-native-firebase/messaging';
+import {checkNotifications} from 'react-native-permissions';
+import {useNavigation} from '@react-navigation/native';
+import {request, PERMISSIONS} from 'react-native-permissions';
 
 type itemProps = {
   item: {
@@ -37,7 +49,9 @@ type itemProps = {
 
 type NotisScreenProps = NativeStackScreenProps<RootStackParamList, 'Notis'>;
 
-export default function Notis({navigation}: NotisScreenProps) {
+export default function Notis({}: NotisScreenProps) {
+  const navigation = useNavigation();
+
   const dispatch = useAppDispatch();
   const [isEnabled, setIsEnabled] = useState(true);
   const [noNotis, setNoNotis] = useState(false);
@@ -110,7 +124,10 @@ export default function Notis({navigation}: NotisScreenProps) {
           }
         }
       };
+
       getNotis();
+      checkNotiPermission();
+
       dispatch(
         userSlice.actions.setNotis({
           notis: false,
@@ -240,13 +257,59 @@ export default function Notis({navigation}: NotisScreenProps) {
     }
   };
 
+  const pushNotiChange = async () => {
+    if (isEnabled) {
+      Linking.openSettings();
+      navigation.goBack();
+    } else {
+      if (Platform.OS === 'ios') {
+        Linking.openSettings();
+        navigation.goBack();
+      } else {
+        console.log('안드로이드');
+        const permissionStatus = await request(
+          PERMISSIONS.ANDROID.NOTIFICATIONS,
+        );
+        console.log(permissionStatus);
+
+        //실제 기기 확인 필요
+        if (permissionStatus === 'granted') {
+          setIsEnabled(true);
+        } else if (permissionStatus === 'unavailable') {
+          Linking.openSettings();
+          navigation.goBack();
+        }
+      }
+    }
+  };
+
+  const checkNotiPermission = async () => {
+    const ret = await checkNotifications();
+    console.log(ret);
+    if (ret.status === 'granted') {
+      setIsEnabled(true);
+    } else {
+      setIsEnabled(false);
+    }
+  };
+
   return (
     <View style={styles.entire}>
+      <Pressable
+        style={{width: '100%', height: 40, backgroundColor: 'blue'}}
+        onPress={async () => {
+          // Linking.openSettings();
+          await checkNotiPermission();
+        }}
+      />
+
       <View style={styles.notisHeader}>
         {/* {console.log('##', notisData)} */}
         <Text style={styles.notisHeaderTxt}>푸시알림</Text>
         <Pressable
-          onPress={() => setIsEnabled(!isEnabled)}
+          onPress={() => {
+            pushNotiChange();
+          }}
           style={[
             styles.toggleView,
             isEnabled

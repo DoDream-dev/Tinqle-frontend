@@ -6466,10 +6466,10 @@ react-native-modal@^13.0.1:
     prop-types "^15.6.2"
     react-native-animatable "1.3.3"
 
-react-native-permissions@^4.0.1:
-  version "4.0.1"
-  resolved "https://registry.npmjs.org/react-native-permissions/-/react-native-permissions-4.0.1.tgz"
-  integrity sha512-wiC+zsVbysV2/pvrwB6sawB3Uhs1xWSfUCxRBmg3vBi7uc9egxAJZcMovSQGTzTHRrY3Lo3hyD/zHJ4xQ+fnWw==
+react-native-permissions@^4.0.4:
+  version "4.0.4"
+  resolved "https://registry.yarnpkg.com/react-native-permissions/-/react-native-permissions-4.0.4.tgz#5156d61230193c5eedd96a6e54f2a1e65d582baf"
+  integrity sha512-7xU71u1Xe239F7DCvO3rfuqthzOa52v5Nvd0OQ5OpEkL9S9UGhWMLRw0b7OC9zti846puTGJDnjy8FvXiAzgxQ==
 
 react-native-push-notification@^8.1.1:
   version "8.1.1"
