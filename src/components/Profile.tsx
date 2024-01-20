@@ -4,6 +4,9 @@ import MaterialCommunity from 'react-native-vector-icons/MaterialCommunityIcons'
 import {svgXml} from '../../assets/image/svgXml';
 import {SvgXml} from 'react-native-svg';
 import ImageModal from 'react-native-image-modal';
+import ImagePicker from 'react-native-image-crop-picker';
+import axios from 'axios';
+import Config from 'react-native-config';
 
 type ProfileProps = {
   status: string;
@@ -22,8 +25,65 @@ export default function Profile(props: ProfileProps) {
   const friendshipRelation = props.friendshipRelation;
   const imsi = true; // 상태변화없나?
 
+  const [profileImg, setProfileImg] = useState(null);
+
+
   // const [chageName, setChangeName] = useState(false);
   // const [changeStatus, setChangeStatus] = useState(false);
+
+  const uploadProfileImage = async () => {
+    ImagePicker.openPicker({
+      cropperCircleOverlay: true,
+      multiple: false,
+      mediaType: 'photo',
+      cropping: true,
+      width: 1000, // Adjust this value
+      height: 1000,
+    })
+      .then(image => {
+        console.log('##', image);
+        let name = image.path.split('/');
+        const imageFormData = new FormData();
+        let file = {
+          uri: image.path,
+          type: image.mime,
+          name: name[name.length - 1],
+        };
+        imageFormData.append('file', file);
+        imageFormData.append('type', 'account');
+
+        return imageFormData;
+      })
+      .then(async imageFormData => {
+        const response = await axios.post(
+          `${Config.API_URL}/images/single`,
+          imageFormData,
+          {
+            headers: {'Content-Type': 'multipart/form-data'},
+            transformRequest: (data, headers) => {
+              return data;
+            },
+          },
+        );
+
+        return response.data.data.files[0].fileUrl;
+      })
+      .then(async url => {
+        const response = await axios.post(
+          `${Config.API_URL}/accounts/me/image`,
+          {
+            profileImageUrl: url,
+            headers: {'Content-Type': 'multipart/form-data'},
+            transformRequest: (data, headers) => {
+              return data;
+            },
+          },
+        );
+
+        // console.log(response.data.data.profileImageUrl);
+        setProfileImg(response.data.data.profileImageUrl);
+      });
+  };
 
   return (
     <View style={styles.entire}>
@@ -66,6 +126,13 @@ export default function Profile(props: ProfileProps) {
             />
           </View>
         )}
+        {friendshipRelation == 'me' && <Pressable
+          style={styles.addProfileImgBtn}
+          onPress={async () => {
+            await uploadProfileImage();
+          }}>
+          <SvgXml width={24} height={24} xml={svgXml.icon.photo} />
+        </Pressable>}
       </View>
       <View style={styles.nameView}>
         <Text style={styles.nameTxt} onPress={() => renameModal(true)}>
@@ -96,6 +163,7 @@ const styles = StyleSheet.create({
     height: 120,
     justifyContent: 'center',
     alignItems: 'center',
+    position:'relative'
   },
   statusBtn: {
     flex: 1,
@@ -118,6 +186,16 @@ const styles = StyleSheet.create({
     fontSize: 22,
     marginRight: 2,
     marginLeft: 16,
+  },
+  addProfileImgBtn: {
+    position: 'absolute',
+    // top: 131,
+    // left: 223,
+    bottom:0,
+    right:0,
+    backgroundColor: '#101010',
+    borderRadius: 15,
+    padding: 3,
   },
   changeNameBtn: {},
 });

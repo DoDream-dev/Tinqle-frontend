@@ -25,7 +25,7 @@ import userSlice from '../slices/user';
 import Clipboard from '@react-native-clipboard/clipboard';
 import {useAppDispatch} from '../store';
 import {version} from '../../package.json';
-import ImagePicker from 'react-native-image-crop-picker';
+
 import EncryptedStorage from 'react-native-encrypted-storage';
 import Profile from '../components/Profile';
 import ServicePolicyModal from '../components/ServicePolicyModal';
@@ -265,60 +265,6 @@ export default function MyProfile() {
     }
   };
 
-  const uploadProfileImage = async () => {
-    ImagePicker.openPicker({
-      cropperCircleOverlay: true,
-      multiple: false,
-      mediaType: 'photo',
-      cropping: true,
-      width: 1000, // Adjust this value
-      height: 1000,
-    })
-      .then(image => {
-        console.log('##', image);
-        let name = image.path.split('/');
-        const imageFormData = new FormData();
-        let file = {
-          uri: image.path,
-          type: image.mime,
-          name: name[name.length - 1],
-        };
-        imageFormData.append('file', file);
-        imageFormData.append('type', 'account');
-
-        return imageFormData;
-      })
-      .then(async imageFormData => {
-        const response = await axios.post(
-          `${Config.API_URL}/images/single`,
-          imageFormData,
-          {
-            headers: {'Content-Type': 'multipart/form-data'},
-            transformRequest: (data, headers) => {
-              return data;
-            },
-          },
-        );
-
-        return response.data.data.files[0].fileUrl;
-      })
-      .then(async url => {
-        const response = await axios.post(
-          `${Config.API_URL}/accounts/me/image`,
-          {
-            profileImageUrl: url,
-            headers: {'Content-Type': 'multipart/form-data'},
-            transformRequest: (data, headers) => {
-              return data;
-            },
-          },
-        );
-
-        // console.log(response.data.data.profileImageUrl);
-        setProfileImg(response.data.data.profileImageUrl);
-      });
-  };
-
   return (
     <ScrollView style={styles.entire}>
       <View style={styles.profileView}>
@@ -330,13 +276,6 @@ export default function MyProfile() {
           profileImg={profileImg}
           friendshipRelation="me"
         />
-        <Pressable
-          style={styles.addProfileImgBtn}
-          onPress={async () => {
-            await uploadProfileImage();
-          }}>
-          <SvgXml width={24} height={24} xml={svgXml.icon.photo} />
-        </Pressable>
         <View style={styles.myCodeView}>
           <Pressable
             style={styles.myCodeBtn}
@@ -677,14 +616,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderRadius: 10,
     position: 'relative',
-  },
-  addProfileImgBtn: {
-    position: 'absolute',
-    top: 131,
-    left: 223,
-    backgroundColor: '#101010',
-    borderRadius: 15,
-    padding: 3,
   },
   myCodeView: {},
   myCodeTxt: {

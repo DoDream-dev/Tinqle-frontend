@@ -292,7 +292,7 @@ export default function SearchFriends() {
                 placeholder={placeholder}
                 style={styles.codeSearch}
                 onFocus={() => setPlaceholder('')}
-                onBlur={() => setPlaceholder('이름, 아이디로 친구 찾기')}
+                onBlur={() => setPlaceholder('아이디로 친구 찾기')}
                 onChangeText={(text: string) => {
                   setSearchCode(text);
                 }}

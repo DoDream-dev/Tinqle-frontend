@@ -454,14 +454,6 @@ export default function SignIn() {
                     <Text style={styles.policyTxtBold}>전체 동의하기</Text>
                   </Pressable>
                 </View>
-                <Pressable onPress={() => console.log('###', signup)}>
-                  <View
-                    style={{
-                      height: 12,
-                      width: 100,
-                      backgroundColor: 'red',
-                    }}></View>
-                </Pressable>
                 <View style={styles.modalItemView}>
                   <Pressable
                     style={styles.policyBtn}
