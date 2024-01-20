@@ -3,29 +3,30 @@ import {StyleSheet, Text, Pressable, View, Image} from 'react-native';
 import MaterialCommunity from 'react-native-vector-icons/MaterialCommunityIcons';
 import {svgXml} from '../../assets/image/svgXml';
 import {SvgXml} from 'react-native-svg';
+import Modal from 'react-native-modal';
 import ImageModal from 'react-native-image-modal';
 import ImagePicker from 'react-native-image-crop-picker';
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 import Config from 'react-native-config';
 
 type ProfileProps = {
   status: string;
   name: string;
   profileImg: string | null;
-  restatusModal: React.Dispatch<React.SetStateAction<boolean>>;
+  setProfileImg: React.Dispatch<React.SetStateAction<string|null>>;
   renameModal: React.Dispatch<React.SetStateAction<boolean>>;
   friendshipRelation: string;
 };
 export default function Profile(props: ProfileProps) {
   const status = props.status;
   const profileImage = props.profileImg;
+  const setProfileImg = props.setProfileImg;
   const name = props.name;
-  const restatusModal = props.restatusModal;
   const renameModal = props.renameModal;
   const friendshipRelation = props.friendshipRelation;
   const imsi = true; // 상태변화없나?
 
-  const [profileImg, setProfileImg] = useState(null);
+  const [deleteProfileImg, setDeleteProfileImg] = useState(false);
 
 
   // const [chageName, setChangeName] = useState(false);
@@ -82,7 +83,30 @@ export default function Profile(props: ProfileProps) {
 
         // console.log(response.data.data.profileImageUrl);
         setProfileImg(response.data.data.profileImageUrl);
+        setDeleteProfileImg(false);
       });
+  };
+
+  const deleteProfile = async () => {
+    try {
+      // setReset(!reset);
+      const response2 = await axios.post(
+        `${Config.API_URL}/accounts/me/image`, {
+          profileImageUrl:null,
+        }
+      )
+      const response = await axios.delete(
+        `${Config.API_URL}/images/account?fileUrls=${profileImage}`,
+      );
+      console.log(response2.data)
+      setProfileImg(response2.data.data.profileImageUrl);
+      setDeleteProfileImg(false);
+
+      // console.log('deleteimg')
+    } catch (error) {
+      const errorResponse = (error as AxiosError<{message: string}>).response;
+      console.log(errorResponse.data);
+    }
   };
 
   return (
@@ -129,7 +153,8 @@ export default function Profile(props: ProfileProps) {
         {friendshipRelation == 'me' && <Pressable
           style={styles.addProfileImgBtn}
           onPress={async () => {
-            await uploadProfileImage();
+            if (profileImage == null) await uploadProfileImage();
+            else setDeleteProfileImg(true)
           }}>
           <SvgXml width={24} height={24} xml={svgXml.icon.photo} />
         </Pressable>}
@@ -150,6 +175,27 @@ export default function Profile(props: ProfileProps) {
           </Pressable>
         )}
       </View>
+      {/* modal for deleting profileimg */}
+      <Modal
+        isVisible={deleteProfileImg}
+        onBackButtonPress={() => setDeleteProfileImg(false)}
+        backdropColor="#101010"
+        backdropOpacity={0.5}>
+        <Pressable
+          style={styles.modalBGView}
+          onPress={() => {
+            setDeleteProfileImg(false);
+          }}>
+            <View style={styles.modalView}>
+              <Pressable style={styles.modalBtn} onPress={async () => await uploadProfileImage()}>
+                <Text style={styles.modalTitleTxt}>갤러리에서 사진 선택하기</Text>
+              </Pressable>
+              <Pressable style={styles.modalBtn} onPress={()=>deleteProfile()}>
+                <Text style={styles.modalTitleTxt}>사진 삭제하기</Text>
+              </Pressable>
+            </View>
+        </Pressable>
+      </Modal>
     </View>
   );
 }
@@ -196,6 +242,28 @@ const styles = StyleSheet.create({
     backgroundColor: '#101010',
     borderRadius: 15,
     padding: 3,
+  },
+  modalBGView: {
+    width: '100%',
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 36,
+    paddingBottom:10
+  },
+  modalView: {
+    backgroundColor: '#333333',
+    borderRadius: 10,
+    width:'100%',
+    padding: 10,
+  },
+  modalBtn:{
+    margin:10
+  },
+  modalTitleTxt: {
+    color: '#F0F0F0',
+    fontSize: 15,
+    fontWeight: '600',
   },
   changeNameBtn: {},
 });

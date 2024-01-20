@@ -30,31 +30,29 @@ export default function FriendProfileModal(props: ProfileProps) {
   const setShowWhoseModal = props.setShowWhoseModal;
 
   const [chageName, setChangeName] = useState(false);
-  const [changeStatus, setChangeStatus] = useState(false);
   const [chageNameVal, setChangeNameVal] = useState('');
   const [status, setStatus] = useState('');
   const [name, setName] = useState('');
   const [friendshipRelation, setFriendshipRelation] = useState('');
   const [friendshipId, setFriendshipId] = useState(-1);
   const [friendshipRequestId, setFriendshipRequestId] = useState(0);
-  const [profileImg, setProfileImg] = useState(null);
+  const [profileImg, setProfileImg] = useState<string|null>(null);
   const setDeleteFriend = props.setDeleteFriend;
   const [whichPopup, setWhichPopup] = useState('');
 
   const inp1 = useRef();
 
   useEffect(() => {
-    getProfile();
-  }, [friendshipRelation]);
+    setTimeout(() => {
+      getProfile();
+    }, 1000);
+  }, [friendshipRelation, name]);
 
   const getProfile = async () => {
     try {
       const response = await axios.get(
         `${Config.API_URL}/accounts/${showWhoseModal}/profile`,
       );
-      {
-        /* 여기에 friendshipId 필요 */
-      }
       console.log(response.data.data);
       setName(response.data.data.nickname);
       setChangeNameVal(response.data.data.nickname);
@@ -182,8 +180,8 @@ export default function FriendProfileModal(props: ProfileProps) {
           name={name}
           status={status}
           profileImg={profileImg}
+          setProfileImg={setProfileImg}
           renameModal={setChangeName}
-          restatusModal={setChangeStatus}
           friendshipRelation={friendshipRelation}
         />
       </View>

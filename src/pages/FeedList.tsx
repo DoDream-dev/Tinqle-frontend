@@ -122,6 +122,9 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
   //     KeyboardDidHideListener.remove();
   //   };
   // }, [textinpY]);
+  // useEffect(()=>{
+  //   setChangeStatus(true);
+  // });
 
   useFocusEffect(
     useCallback(() => {
@@ -640,7 +643,7 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
           <Modal
             isVisible={showBottomSheet}
             onBackButtonPress={() => setShowBottomSheet(false)}
-            backdropColor="#222222"
+            backdropColor="#101010"
             backdropOpacity={0.5}
             onSwipeComplete={() => setShowBottomSheet(false)}
             swipeDirection={'down'}
@@ -700,7 +703,7 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
           </Modal>
           <Modal
             isVisible={changeStatus}
-            backdropColor="#222222"
+            backdropColor="#101010"
             backdropOpacity={0.5}
             onBackButtonPress={() => setChangeStatus(false)}>
             <Pressable

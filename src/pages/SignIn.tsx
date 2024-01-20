@@ -351,7 +351,7 @@ export default function SignIn() {
                 // ref={inp1}
                 onChangeText={(text: string) => {
                   setID(text);
-                  setDuplicate('YET');
+                  if (duplicate != 'YET') setDuplicate('YET');
                 }}
                 // blurOnSubmit={true}
                 maxLength={12}
@@ -568,7 +568,7 @@ export default function SignIn() {
                   disabled={!(serviceP && personalP && ageP)}
                   // onPress={()=>{Signup(signup); setSignUp('');}}
                   onPress={() => {
-                    setSignUp('');
+                    setSettingID(true);
                   }}>
                   <Text style={styles.sendTxt}>시작하기</Text>
                 </Pressable>
@@ -589,7 +589,7 @@ const styles = StyleSheet.create({
     flex: 1,
     width: '100%',
     alignItems: 'center',
-    backgroundColor: '#ffffff',
+    backgroundColor: '#202020',
   },
   logoView: {
     flex: 10,
@@ -597,12 +597,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   logoTxt: {
-    color: '#000000',
+    color: '#F0F0F0',
     fontWeight: '500',
     fontSize: 15,
   },
   logoTxtMain: {
-    color: '#FFB443',
+    color: '#A55FFF',
     fontSize: 70,
     fontWeight: 'bold',
   },
@@ -690,7 +690,7 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 30,
     borderTopRightRadius: 30,
     paddingTop: 33,
-    backgroundColor: 'white',
+    backgroundColor: '#333333',
     // elevation: 10,
   },
   modalView2: {
@@ -703,7 +703,7 @@ const styles = StyleSheet.create({
   modalAllView: {
     marginBottom: 20,
     paddingBottom: 16,
-    borderBottomColor: '#D9D9D9',
+    borderBottomColor: '#202020',
     paddingHorizontal: 16,
     borderBottomWidth: 1,
   },
@@ -782,26 +782,26 @@ const styles = StyleSheet.create({
     width: 20,
     height: 20,
     borderRadius: 20,
-    borderWidth: 2,
-    borderColor: '#848484',
+    borderWidth: 1.5,
+    borderColor: '#F0F0F0',
   },
   checkBtnSelected: {
     width: 20,
     height: 20,
     borderRadius: 20,
-    backgroundColor: '#FFB443',
+    backgroundColor: '#A55FFF',
     justifyContent: 'center',
     alignItems: 'center',
   },
   policyTxt: {
     paddingLeft: 8,
-    color: '#222222',
+    color: '#F0F0F0',
     fontWeight: '400',
     fontSize: 15,
   },
   policyTxtBold: {
     paddingLeft: 8,
-    color: '#222222',
+    color: '#F0F0F0',
     fontWeight: '500',
     fontSize: 15,
   },
@@ -810,15 +810,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   seePolicyTxt: {
-    color: '#848484',
+    color: '#888888',
     fontWeight: '500',
     fontSize: 13,
     borderBottomWidth: 1,
-    borderBottomColor: '#848484',
+    borderBottomColor: '#888888',
   },
   sendBtn: {
     width: '100%',
-    backgroundColor: '#FFB443',
+    backgroundColor: '#A55FFF',
     justifyContent: 'center',
     alignItems: 'center',
     paddingVertical: 17,
@@ -833,7 +833,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   sendTxt: {
-    color: '#222222',
+    color: '#F0F0F0',
     fontWeight: '500',
     fontSize: 15,
   },
