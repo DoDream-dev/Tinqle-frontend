@@ -664,7 +664,7 @@ export default function FeedDetail({navigation, route}: FeedDetailScreenProps) {
         <Modal
           isVisible={showBottomSheet}
           onBackButtonPress={() => setShowBottomSheet(false)}
-          backdropColor="#222222"
+          backdropColor="#101010"
           backdropOpacity={0.5}
           onSwipeComplete={() => setShowBottomSheet(false)}
           swipeDirection={'down'}

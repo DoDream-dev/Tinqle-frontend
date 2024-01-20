@@ -138,7 +138,7 @@ export default function MyProfile() {
     //   };
     //   getProfile();
     // }
-  }, [name, status]);
+  }, [name, status, profileImg]);
 
   // useFocusEffect(
   //   useCallback(()=>{
@@ -271,9 +271,9 @@ export default function MyProfile() {
         <Profile
           status={status}
           name={name}
-          restatusModal={setChangeStatus}
           renameModal={setChangeName}
           profileImg={profileImg}
+          setProfileImg={setProfileImg}
           friendshipRelation="me"
         />
         <View style={styles.myCodeView}>
@@ -381,7 +381,7 @@ export default function MyProfile() {
         isVisible={chageName}
         onBackButtonPress={() => setChangeName(false)}
         avoidKeyboard={true}
-        backdropColor="#222222"
+        backdropColor="#101010"
         backdropOpacity={0.5}
         onModalShow={() => {
           if (Platform.OS === 'android') {
@@ -446,7 +446,7 @@ export default function MyProfile() {
         isVisible={deleteAccount}
         onBackButtonPress={() => setDeleteAccount(false)}
         avoidKeyboard={true}
-        backdropColor="#222222"
+        backdropColor="#101010"
         backdropOpacity={0.5}>
         <Pressable
           style={styles.modalBGView}
