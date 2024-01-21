@@ -21,10 +21,7 @@ import {RootStackParamList} from '../../AppInner';
 import {useAppDispatch} from '../store';
 import userSlice from '../slices/user';
 import FriendProfileModal from '../components/FriendProfileModal';
-import messaging from '@react-native-firebase/messaging';
-import {checkNotifications} from 'react-native-permissions';
 import {useNavigation} from '@react-navigation/native';
-import {request, PERMISSIONS} from 'react-native-permissions';
 
 type itemProps = {
   item: {
@@ -127,7 +124,6 @@ export default function Notis({}: NotisScreenProps) {
       };
 
       getNotis();
-      checkNotiPermission();
 
       dispatch(
         userSlice.actions.setNotis({
@@ -258,79 +254,8 @@ export default function Notis({}: NotisScreenProps) {
     }
   };
 
-  const pushNotiChange = async () => {
-    if (isEnabled) {
-      Linking.openSettings();
-      navigation.goBack();
-    } else {
-      if (Platform.OS === 'ios') {
-        Linking.openSettings();
-        navigation.goBack();
-      } else {
-        console.log('안드로이드');
-
-        PermissionsAndroid.check('android.permission.POST_NOTIFICATIONS').then(
-          async response => {
-            // console.log('###', response);
-            if (!response) {
-              await PermissionsAndroid.request(
-                'android.permission.POST_NOTIFICATIONS',
-                {
-                  title: '팅클 알림 설정',
-                  message: '팅클에서 소식을 받으려면 알림을 허용해주세요.',
-                  buttonNeutral: '다음에 설정',
-                  buttonNegative: '취소',
-                  buttonPositive: '확인',
-                },
-              ).then(response_2 => {
-                console.log('###', response_2);
-                if (response_2 === 'never_ask_again') {
-                  // 다시 보지 않음 이면 설정으로 이동
-                  Linking.openSettings();
-                  navigation.goBack();
-                } else if (response_2 === 'granted') {
-                  // 팝업에서 허용을 누르면
-                  setIsEnabled(true);
-                }
-              });
-            }
-          },
-        );
-      }
-    }
-  };
-
-  const checkNotiPermission = async () => {
-    const ret = await checkNotifications();
-    console.log(ret);
-    if (ret.status === 'granted') {
-      setIsEnabled(true);
-    } else {
-      setIsEnabled(false);
-    }
-  };
-
   return (
     <View style={styles.entire}>
-      <View style={styles.notisHeader}>
-        {/* {console.log('##', notisData)} */}
-        <Text style={styles.notisHeaderTxt}>푸시알림</Text>
-        <Pressable
-          onPress={() => {
-            pushNotiChange();
-          }}
-          style={[
-            styles.toggleView,
-            isEnabled
-              ? {backgroundColor: '#A55FFF'}
-              : {backgroundColor: '#B7B7B7'},
-          ]}>
-          {isEnabled && <Text style={styles.toggleActiveTxt}>ON</Text>}
-          {isEnabled && <View style={styles.toggleActiveCircle}></View>}
-          {!isEnabled && <View style={styles.toggleInactiveCircle}></View>}
-          {!isEnabled && <Text style={styles.toggleInactiveTxt}>OFF</Text>}
-        </Pressable>
-      </View>
       {noNotis && (
         <View style={styles.empty}>
           <Text style={styles.emptyTxt}>알림을 다 읽었어요</Text>
@@ -695,45 +620,6 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     fontSize: 12,
     marginRight: 3,
-  },
-  toggleView: {
-    width: 48,
-    height: 20,
-    borderRadius: 10,
-    paddingHorizontal: 2,
-    paddingVertical: 3,
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  toggleActiveTxt: {
-    color: '#FFFFFF',
-    fontSize: 12,
-    fontWeight: '500',
-    marginLeft: 6,
-    marginRight: 4,
-    top: -2,
-  },
-  toggleActiveCircle: {
-    width: 16,
-    height: 16,
-    borderRadius: 8,
-    backgroundColor: '#FFFFFF',
-  },
-  toggleInactiveTxt: {
-    color: '#FFFFFF',
-    fontSize: 12,
-    fontWeight: '500',
-    marginLeft: 6,
-    marginRight: 6,
-    top: -2,
-  },
-  toggleInactiveCircle: {
-    width: 16,
-    height: 16,
-    borderRadius: 8,
-    left: 3,
-    backgroundColor: '#FFFFFF',
   },
   empty: {
     flex: 1,
