@@ -578,7 +578,12 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
                   placeholderTextColor={'#888888'}
                   style={[
                     styles.newFeedTxtInput,
-                    {height: Math.min(80, Math.max(40, KBsize))},
+                    {
+                      height:
+                        Platform.OS === 'android'
+                          ? Math.min(80, Math.max(40, KBsize))
+                          : undefined,
+                    },
                   ]}
                   onFocus={() => setPlaceholder('')}
                   onBlur={() => setPlaceholder('지금 기분이 어때요?')}
@@ -1036,7 +1041,7 @@ const styles = StyleSheet.create({
     marginVertical: 6,
     marginRight: 4,
     borderRadius: 10,
-    // paddingVertical: 3,
+    paddingVertical: Platform.OS === 'ios' ? 3 : 0,
     paddingRight: 10,
     paddingLeft: 40,
     // maxHeight:'4vh'

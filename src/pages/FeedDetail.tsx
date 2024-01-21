@@ -472,7 +472,7 @@ export default function FeedDetail({navigation, route}: FeedDetailScreenProps) {
 
   return (
     <KeyboardAvoidingView
-      style={[{flex: 1}]}
+      style={{flex: 1, backgroundColor: '#202020'}}
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       keyboardVerticalOffset={105}>
       <View style={styles.entire}>
@@ -615,7 +615,12 @@ export default function FeedDetail({navigation, route}: FeedDetailScreenProps) {
               placeholderTextColor={'#848484'}
               style={[
                 styles.newCmtTxtInput,
-                {height: Math.min(80, Math.max(35, KBsize))},
+                {
+                  height:
+                    Platform.OS === 'android'
+                      ? Math.min(80, Math.max(40, KBsize))
+                      : undefined,
+                },
               ]}
               onBlur={() => setWriteChildCmt(-1)}
               onChangeText={(text: string) => {
@@ -843,7 +848,7 @@ const styles = StyleSheet.create({
     marginVertical: 6,
     marginRight: 4,
     borderRadius: 10,
-    // paddingVertical: 3,
+    paddingVertical: Platform.OS === 'ios' ? 3 : 0,
     // minHeight: 0,
   },
   newCmtTxtInput: {
