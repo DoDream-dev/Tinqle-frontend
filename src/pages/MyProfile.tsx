@@ -222,6 +222,13 @@ export default function MyProfile() {
   //   }
   // }, [chageName]);
 
+  const lastFocus = () => {
+    if (Platform.OS === 'android' && inp1.current) {
+      const length = chageNameVal.length;
+      inp1.current.setSelection(length, length);
+    }
+  };
+
   const LogOut = async () => {
     try {
       const response = await axios.post(`${Config.API_URL}/auth/logout`);
@@ -412,6 +419,7 @@ export default function MyProfile() {
                 onSubmitEditing={() => {
                   rename(chageNameVal.trim());
                 }}
+                onFocus={lastFocus}
               />
             </View>
             <View style={styles.modalBtnView}>

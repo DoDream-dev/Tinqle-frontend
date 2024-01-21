@@ -6,14 +6,14 @@ import {SvgXml} from 'react-native-svg';
 import Modal from 'react-native-modal';
 import ImageModal from 'react-native-image-modal';
 import ImagePicker from 'react-native-image-crop-picker';
-import axios, { AxiosError } from 'axios';
+import axios, {AxiosError} from 'axios';
 import Config from 'react-native-config';
 
 type ProfileProps = {
   status: string;
   name: string;
   profileImg: string | null;
-  setProfileImg: React.Dispatch<React.SetStateAction<string|null>>;
+  setProfileImg: React.Dispatch<React.SetStateAction<string | null>>;
   renameModal: React.Dispatch<React.SetStateAction<boolean>>;
   friendshipRelation: string;
 };
@@ -27,7 +27,6 @@ export default function Profile(props: ProfileProps) {
   const imsi = true; // 상태변화없나?
 
   const [deleteProfileImg, setDeleteProfileImg] = useState(false);
-
 
   // const [chageName, setChangeName] = useState(false);
   // const [changeStatus, setChangeStatus] = useState(false);
@@ -91,14 +90,15 @@ export default function Profile(props: ProfileProps) {
     try {
       // setReset(!reset);
       const response2 = await axios.post(
-        `${Config.API_URL}/accounts/me/image`, {
-          profileImageUrl:null,
-        }
-      )
+        `${Config.API_URL}/accounts/me/image`,
+        {
+          profileImageUrl: null,
+        },
+      );
       const response = await axios.delete(
         `${Config.API_URL}/images/account?fileUrls=${profileImage}`,
       );
-      console.log(response2.data)
+      console.log(response2.data);
       setProfileImg(response2.data.data.profileImageUrl);
       setDeleteProfileImg(false);
 
@@ -150,14 +150,16 @@ export default function Profile(props: ProfileProps) {
             />
           </View>
         )}
-        {friendshipRelation == 'me' && <Pressable
-          style={styles.addProfileImgBtn}
-          onPress={async () => {
-            if (profileImage == null) await uploadProfileImage();
-            else setDeleteProfileImg(true)
-          }}>
-          <SvgXml width={24} height={24} xml={svgXml.icon.photo} />
-        </Pressable>}
+        {friendshipRelation == 'me' && (
+          <Pressable
+            style={styles.addProfileImgBtn}
+            onPress={async () => {
+              if (profileImage == null) await uploadProfileImage();
+              else setDeleteProfileImg(true);
+            }}>
+            <SvgXml width={24} height={24} xml={svgXml.icon.photo} />
+          </Pressable>
+        )}
       </View>
       <View style={styles.nameView}>
         <Text style={styles.nameTxt} onPress={() => renameModal(true)}>
@@ -186,14 +188,16 @@ export default function Profile(props: ProfileProps) {
           onPress={() => {
             setDeleteProfileImg(false);
           }}>
-            <View style={styles.modalView}>
-              <Pressable style={styles.modalBtn} onPress={async () => await uploadProfileImage()}>
-                <Text style={styles.modalTitleTxt}>갤러리에서 사진 선택하기</Text>
-              </Pressable>
-              <Pressable style={styles.modalBtn} onPress={()=>deleteProfile()}>
-                <Text style={styles.modalTitleTxt}>사진 삭제하기</Text>
-              </Pressable>
-            </View>
+          <View style={styles.modalView}>
+            <Pressable
+              style={styles.modalBtn}
+              onPress={async () => await uploadProfileImage()}>
+              <Text style={styles.modalTitleTxt}>갤러리에서 사진 선택하기</Text>
+            </Pressable>
+            <Pressable style={styles.modalBtn} onPress={() => deleteProfile()}>
+              <Text style={styles.modalTitleTxt}>사진 삭제하기</Text>
+            </Pressable>
+          </View>
         </Pressable>
       </Modal>
     </View>
@@ -209,7 +213,7 @@ const styles = StyleSheet.create({
     height: 120,
     justifyContent: 'center',
     alignItems: 'center',
-    position:'relative'
+    position: 'relative',
   },
   statusBtn: {
     flex: 1,
@@ -237,8 +241,8 @@ const styles = StyleSheet.create({
     position: 'absolute',
     // top: 131,
     // left: 223,
-    bottom:0,
-    right:0,
+    bottom: 0,
+    right: 0,
     backgroundColor: '#101010',
     borderRadius: 15,
     padding: 3,
@@ -249,16 +253,16 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     paddingHorizontal: 36,
-    paddingBottom:10
+    paddingBottom: 10,
   },
   modalView: {
     backgroundColor: '#333333',
     borderRadius: 10,
-    width:'100%',
+    width: '100%',
     padding: 10,
   },
-  modalBtn:{
-    margin:10
+  modalBtn: {
+    margin: 10,
   },
   modalTitleTxt: {
     color: '#F0F0F0',
