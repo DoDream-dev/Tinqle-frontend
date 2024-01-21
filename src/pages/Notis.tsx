@@ -523,36 +523,31 @@ export default function Notis({}: NotisScreenProps) {
                         !item.notificationType.includes('MESSAGE')
                           ? styles.notisText
                           : [styles.notisText, {marginVertical: 10}]
-                      }>
+                      }
+                      ellipsizeMode="tail"
+                      numberOfLines={2}>
                       {item.content.replace('\n', '')}
                     </Text>
                   </View>
                 </View>
-                {item.notificationType === 'CREATE_FRIENDSHIP_REQUEST' ? (
-                  <Pressable
-                    style={styles.notisCheckBtn}
-                    onPress={() => {
-                      approveFriendship(
-                        item.redirectTargetId,
-                        item.accountId,
-                        item.friendNickname,
-                      );
-                      // getFriendMsg(item.redirectTargetId);
-                      // setmodalData(item.content);
-                      // setmodalDataId(item.redirectTargetId);
-                    }}>
-                    <Text style={styles.notisCheckBtnTxt}>수락하기</Text>
-                  </Pressable>
-                ) : item.notificationType === 'SEND_KNOCK' ? (
-                  // <Pressable
-                  //   style={styles.notisCheckBtn}
-                  //   onPress={() => {
-                  //     console.log('글쓰기');
-                  //   }}>
-                  //   <Text style={styles.notisCheckBtnTxt}>글쓰기</Text>
-                  // </Pressable>
-                  null
-                ) : null}
+                {
+                  item.notificationType === 'CREATE_FRIENDSHIP_REQUEST' ? (
+                    <Pressable
+                      style={styles.notisCheckBtn}
+                      onPress={() => {
+                        approveFriendship(
+                          item.redirectTargetId,
+                          item.accountId,
+                          item.friendNickname,
+                        );
+                        // getFriendMsg(item.redirectTargetId);
+                        // setmodalData(item.content);
+                        // setmodalDataId(item.redirectTargetId);
+                      }}>
+                      <Text style={styles.notisCheckBtnTxt}>수락하기</Text>
+                    </Pressable>
+                  ) : item.notificationType === 'SEND_KNOCK' ? null : null // </Pressable> //   <Text style={styles.notisCheckBtnTxt}>글쓰기</Text> //   }}> //     console.log('글쓰기'); //   onPress={() => { //   style={styles.notisCheckBtn} // <Pressable
+                }
                 <Pressable
                   style={styles.xBtn}
                   onPress={() => deleteNotis(item.notificationId)}>
