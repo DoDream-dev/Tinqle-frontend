@@ -148,7 +148,18 @@ export default function AppInner() {
           options={{
             headerShown: false,
             tabBarLabel: 'Feed',
-            tabBarIcon: ((props:{focused:boolean, color:string, size:number}) => <SvgXml fill={props.focused ? '#A55FFF' : '#888888'} width={28} height={28} xml={svgXml.bottomTab.feed} />)
+            tabBarIcon: (props: {
+              focused: boolean;
+              color: string;
+              size: number;
+            }) => (
+              <SvgXml
+                fill={props.focused ? '#A55FFF' : '#888888'}
+                width={28}
+                height={28}
+                xml={svgXml.bottomTab.feed}
+              />
+            ),
           }}
         />
         <Tab.Screen
@@ -168,7 +179,18 @@ export default function AppInner() {
             },
             headerShadowVisible: false,
             tabBarLabel: 'Friend',
-            tabBarIcon: ((props:{focused:boolean, color:string, size:number}) => <SvgXml fill={props.focused ? '#A55FFF' : '#888888'} width={28} height={28} xml={svgXml.bottomTab.friend} />)
+            tabBarIcon: (props: {
+              focused: boolean;
+              color: string;
+              size: number;
+            }) => (
+              <SvgXml
+                fill={props.focused ? '#A55FFF' : '#888888'}
+                width={28}
+                height={28}
+                xml={svgXml.bottomTab.friend}
+              />
+            ),
           }}
         />
         {/* <Tab.Screen
@@ -198,13 +220,24 @@ export default function AppInner() {
             },
             headerShadowVisible: false,
             tabBarLabel: 'Profile',
-            tabBarIcon: ((props:{focused:boolean, color:string, size:number}) => <SvgXml fill={props.focused ? '#A55FFF' : '#888888'} width={28} height={28} xml={svgXml.bottomTab.profile} />)
+            tabBarIcon: (props: {
+              focused: boolean;
+              color: string;
+              size: number;
+            }) => (
+              <SvgXml
+                fill={props.focused ? '#A55FFF' : '#888888'}
+                width={28}
+                height={28}
+                xml={svgXml.bottomTab.profile}
+              />
+            ),
           }}
         />
       </Tab.Navigator>
     </Safe>
   ) : (
-    <Safe>
+    <Safe color="#202020">
       <Stack.Navigator>
         <Stack.Screen
           name="SignIn"
