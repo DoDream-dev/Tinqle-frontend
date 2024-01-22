@@ -79,6 +79,8 @@ export default function App() {
 
       console.log('type : ', type);
       console.log('redirectTargetId : ', redirectTargetId);
+
+      // navigation.navigate('FeedDetail', {feedId: '640'});
     };
 
     return isNotification ? (
