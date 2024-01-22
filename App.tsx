@@ -77,10 +77,22 @@ export default function App() {
       const type = notiData.type;
       const redirectTargetId = notiData.redirectTargetId;
 
-      console.log('type : ', type);
-      console.log('redirectTargetId : ', redirectTargetId);
+      // console.log('type : ', type);
+      // console.log('redirectTargetId : ', redirectTargetId);
 
-      // navigation.navigate('FeedDetail', {feedId: '640'});
+      if (type.includes('FEED')) {
+        navigation.navigate('FeedDetail', {feedId: redirectTargetId});
+      } else if (type == 'APPROVE_FRIENDSHIP_REQUEST') {
+        navigation.navigate('Notis');
+      } else if (type == 'CREATE_FRIENDSHIP_REQUEST') {
+        navigation.navigate('Notis');
+      } else if (type == 'SEND_KNOCK') {
+        navigation.navigate('Notis');
+      } else if (type == 'REACT_EMOTICON_ON_COMMENT') {
+        navigation.navigate('FeedDetail', {feedId: redirectTargetId});
+      } else if (type == 'CREATE_KNOCK_FEED') {
+        navigation.navigate('FeedDetail', {feedId: redirectTargetId});
+      }
     };
 
     return isNotification ? (
@@ -103,7 +115,7 @@ export default function App() {
               <Text style={styles.now}>now</Text>
             </View>
             <Text numberOfLines={2} ellipsizeMode="tail" style={styles.message}>
-              {message}
+              {message.trim()}
             </Text>
           </View>
         </AnimatedButton>
