@@ -25,20 +25,40 @@ import {useNavigation} from '@react-navigation/native';
 export type NotificationProps = {
   title: string;
   message: string;
-  link: string;
 };
 
 export default function App() {
+  const navigation = useNavigation();
   const [isNotification, setIsNotification] = useState(false);
   const [notiData, setNotiData] = useState({});
+
+  const noticeNavigation_inapp_and = (
+    type: String,
+    redirectTargetId: String,
+  ) => {
+    // console.log('type : ', type);
+    // console.log('redirectTargetId : ', redirectTargetId);
+
+    if (type.includes('FEED')) {
+      navigation.navigate('FeedDetail', {feedId: redirectTargetId});
+    } else if (type == 'APPROVE_FRIENDSHIP_REQUEST') {
+      navigation.navigate('Notis');
+    } else if (type == 'CREATE_FRIENDSHIP_REQUEST') {
+      navigation.navigate('Notis');
+    } else if (type == 'SEND_KNOCK') {
+      navigation.navigate('Notis');
+    } else if (type == 'REACT_EMOTICON_ON_COMMENT') {
+      navigation.navigate('FeedDetail', {feedId: redirectTargetId});
+    } else if (type == 'CREATE_KNOCK_FEED') {
+      navigation.navigate('FeedDetail', {feedId: redirectTargetId});
+    }
+  };
 
   //notification
   const NotificationComponent: React.FC<NotificationProps> = ({
     title,
     message,
   }) => {
-    const navigation = useNavigation();
-
     const translateY = useSharedValue(-100);
     const opacity = useSharedValue(0);
 
@@ -168,7 +188,37 @@ export default function App() {
     console.log('앱 켜졌을 때 알림 도착:', notify);
 
     if (Platform.OS === 'ios') {
+      // in app push in ios
       showNotiInApp(notify);
+    } else if (Platform.OS === 'android') {
+      //push in android
+
+      const data = {
+        body: notify.message,
+        title: notify.title,
+        type: notify.data.type,
+        redirectTargetId: notify.data.redirectTargetId,
+      };
+      setNotiData(data);
+
+      PushNotification.localNotification({
+        title: notify.title,
+        message: notify.message.trim(),
+      });
+
+      PushNotification.configure({
+        onNotification: function (notification) {
+          // console.log('NOTIFICATION:', notification);
+
+          if (notification.userInteraction) {
+            // console.log('Notification was pressed!');
+            noticeNavigation_inapp_and(
+              notify.data.type,
+              notify.data.redirectTargetId,
+            );
+          }
+        },
+      });
     }
 
     // if (Platform.OS === 'ios') {
@@ -219,19 +269,15 @@ export default function App() {
     <Provider store={store}>
       {Platform.OS === 'ios' ? (
         <>
-          <NavigationContainer>
-            <NotificationComponent
-              title={notiData.title}
-              message={notiData.body}
-            />
-            <AppInner />
-          </NavigationContainer>
+          <NotificationComponent
+            title={notiData.title}
+            message={notiData.body}
+          />
+          <AppInner />
         </>
       ) : (
         <SafeAreaProvider>
-          <NavigationContainer>
-            <AppInner />
-          </NavigationContainer>
+          <AppInner />
         </SafeAreaProvider>
       )}
     </Provider>
