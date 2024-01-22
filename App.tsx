@@ -20,7 +20,7 @@ import Animated, {
   runOnJS,
 } from 'react-native-reanimated';
 import AnimatedButton from './src/components/AnimatedButton';
-import GestureRecognizer, {swipeDirections} from 'react-native-swipe-gestures';
+import {useNavigation} from '@react-navigation/native';
 
 export type NotificationProps = {
   title: string;
@@ -36,8 +36,9 @@ export default function App() {
   const NotificationComponent: React.FC<NotificationProps> = ({
     title,
     message,
-    link,
   }) => {
+    const navigation = useNavigation();
+
     const translateY = useSharedValue(-100);
     const opacity = useSharedValue(0);
 
@@ -72,51 +73,52 @@ export default function App() {
       };
     });
 
-    const config = {
-      velocityThreshold: 0.1,
-      directionalOffsetThreshold: 20,
+    const noticeNavigation = () => {
+      const type = notiData.type;
+      const redirectTargetId = notiData.redirectTargetId;
+
+      // console.log('type : ', type);
+      // console.log('redirectTargetId : ', redirectTargetId);
+
+      if (type.includes('FEED')) {
+        navigation.navigate('FeedDetail', {feedId: redirectTargetId});
+      } else if (type == 'APPROVE_FRIENDSHIP_REQUEST') {
+        navigation.navigate('Notis');
+      } else if (type == 'CREATE_FRIENDSHIP_REQUEST') {
+        navigation.navigate('Notis');
+      } else if (type == 'SEND_KNOCK') {
+        navigation.navigate('Notis');
+      } else if (type == 'REACT_EMOTICON_ON_COMMENT') {
+        navigation.navigate('FeedDetail', {feedId: redirectTargetId});
+      } else if (type == 'CREATE_KNOCK_FEED') {
+        navigation.navigate('FeedDetail', {feedId: redirectTargetId});
+      }
     };
 
     return isNotification ? (
       <Animated.View style={[styles.container, animatedStyle]}>
-        <GestureRecognizer
-          onSwipeUp={() => {
-            console.log('swipe up');
-            translateY.value = withSpring(-50);
-            opacity.value = withTiming(
-              0,
-              {duration: 100, easing: Easing.in(Easing.exp)},
-              () => {
-                runOnJS(setIsNotification)(false);
-              },
-            );
-          }}
-          config={config}>
-          <AnimatedButton
-            style={styles.buttonArea}
-            onPress={() => {
-              Linking.openURL(link);
-            }}>
-            <Image source={icon} style={styles.icon} />
-            <View style={styles.textContainer}>
-              <View
-                style={{
-                  flexDirection: 'row',
-                  alignItems: 'flex-end',
-                  justifyContent: 'space-between',
-                }}>
-                <Text style={styles.title}>{title}</Text>
-                <Text style={styles.now}>now</Text>
-              </View>
-              <Text
-                numberOfLines={2}
-                ellipsizeMode="tail"
-                style={styles.message}>
-                {message}
-              </Text>
+        <AnimatedButton
+          style={styles.buttonArea}
+          onPress={() => {
+            noticeNavigation();
+            // navigation.navigate('Notis');
+          }}>
+          <Image source={icon} style={styles.icon} />
+          <View style={styles.textContainer}>
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'flex-end',
+                justifyContent: 'space-between',
+              }}>
+              <Text style={styles.title}>{title}</Text>
+              <Text style={styles.now}>now</Text>
             </View>
-          </AnimatedButton>
-        </GestureRecognizer>
+            <Text numberOfLines={2} ellipsizeMode="tail" style={styles.message}>
+              {message.trim()}
+            </Text>
+          </View>
+        </AnimatedButton>
       </Animated.View>
     ) : null;
   };
@@ -146,11 +148,17 @@ export default function App() {
     message: String;
     title: String;
     link: String;
-    data: {link: String};
+    type: String;
+    redirectTargetId: String;
   }) => {
-    const body = Platform.OS === 'ios' ? notify.body : notify.message;
-    const deeplink = Platform.OS === 'ios' ? notify.link : notify.data.link;
-    const data = {body: body, title: notify.title, link: deeplink};
+    console.log('notify : ', notify);
+    const body = notify.body;
+    const data = {
+      body: body,
+      title: notify.title,
+      type: notify.type,
+      redirectTargetId: notify.redirectTargetId,
+    };
     setNotiData(data);
     setIsNotification(true);
   };
@@ -158,7 +166,10 @@ export default function App() {
   const onOpenNotification = (notify: any) => {
     //앱 켜진 상태에서 알림 받았을 때 하는 일
     console.log('앱 켜졌을 때 알림 도착:', notify);
-    showNotiInApp(notify);
+
+    if (Platform.OS === 'ios') {
+      showNotiInApp(notify);
+    }
 
     // if (Platform.OS === 'ios') {
     //   //ios noti resive when app is open
@@ -208,22 +219,16 @@ export default function App() {
     <Provider store={store}>
       {Platform.OS === 'ios' ? (
         <>
-          <NotificationComponent
-            title={notiData.title}
-            message={notiData.body}
-            link={notiData.link}
-          />
           <NavigationContainer>
+            <NotificationComponent
+              title={notiData.title}
+              message={notiData.body}
+            />
             <AppInner />
           </NavigationContainer>
         </>
       ) : (
         <SafeAreaProvider>
-          <NotificationComponent
-            title={notiData.title}
-            message={notiData.body}
-            link={notiData.link}
-          />
           <NavigationContainer>
             <AppInner />
           </NavigationContainer>

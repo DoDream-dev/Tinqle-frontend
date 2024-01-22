@@ -285,11 +285,6 @@ export default function Notis({}: NotisScreenProps) {
                   } else if (
                     item.notificationType == 'APPROVE_FRIENDSHIP_REQUEST'
                   ) {
-                    // navigation.navigate('Profile', {
-                    //   whose: 1,
-                    //   accountId: item.accountId,
-                    // });
-
                     setShowProfileModal(item.accountId);
                   } else if (
                     item.notificationType == 'CREATE_FRIENDSHIP_REQUEST'
@@ -297,11 +292,13 @@ export default function Notis({}: NotisScreenProps) {
                     setShowProfileModal(item.accountId);
                   } else if (item.notificationType == 'SEND_KNOCK') {
                     navigation.navigate('FeedList');
+                  } else if (
+                    item.notificationType == 'REACT_EMOTICON_ON_COMMENT'
+                  ) {
+                    goToFeed(item.redirectTargetId);
+                  } else if (item.notificationType == 'CREATE_KNOCK_FEED') {
+                    goToFeed(item.redirectTargetId);
                   }
-
-                  // else if (item.notificationType.includes('MESSAGE')) {
-                  //   navigation.navigate('NoteBox');
-                  // }
                 }}>
                 <View style={styles.notisView}>
                   {!item.notificationType.includes('MESSAGE') && (
