@@ -13,6 +13,7 @@ import {useAppDispatch} from '../store';
 import userSlice from '../slices/user';
 import FriendProfileModal from '../components/FriendProfileModal';
 import {useNavigation} from '@react-navigation/native';
+import AnimatedButton from '../components/AnimatedButton';
 
 type itemProps = {
   item: {
@@ -288,6 +289,22 @@ export default function Notis({}: NotisScreenProps) {
     }
   };
 
+  const isClickedAll = async () => {
+    const temp = [...notisData];
+    for (var i = 0; i < temp.length; i++) {
+      temp[i].isClicked = true;
+    }
+    setNotisData(temp);
+
+    // call api for check is clicked
+    try {
+      await axios.put(`${Config.API_URL}/notifications/click`);
+    } catch (error) {
+      const errorResponse = (error as AxiosError<{message: string}>).response;
+      console.log(errorResponse.data);
+    }
+  };
+
   return (
     <View style={styles.entire}>
       {noNotis && (
@@ -302,6 +319,23 @@ export default function Notis({}: NotisScreenProps) {
           style={styles.notisEntire}
           onEndReached={onEndReached}
           onEndReachedThreshold={0.4}
+          ListHeaderComponent={
+            <View style={styles.notisHeader}>
+              <AnimatedButton
+                onPress={() => {
+                  // console.log('SDSDS');
+                  isClickedAll();
+                }}
+                style={{
+                  paddingHorizontal: 16,
+                  paddingVertical: 6,
+                }}>
+                <Text style={styles.notisHeaderTxt}>
+                  전체 읽음으로 표시하기
+                </Text>
+              </AnimatedButton>
+            </View>
+          }
           renderItem={({item, index}: itemProps) => {
             return (
               <Pressable
@@ -505,17 +539,19 @@ const styles = StyleSheet.create({
   notisHeader: {
     width: '100%',
     flexDirection: 'row',
-    justifyContent: 'flex-end',
+    justifyContent: 'center',
     alignItems: 'center',
-    paddingRight: 16,
-    height: 40,
+    // paddingRight: 16,
+    height: 32,
     backgroundColor: '#333333',
   },
   notisHeaderTxt: {
+    textAlign: 'center',
     color: '#F0F0F0',
     fontWeight: '500',
-    fontSize: 12,
-    marginRight: 3,
+    fontSize: 13,
+    textDecorationLine: 'underline',
+    // marginRight: 3,
   },
   empty: {
     flex: 1,
