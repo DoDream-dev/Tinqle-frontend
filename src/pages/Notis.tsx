@@ -434,7 +434,7 @@ export default function Notis({}: NotisScreenProps) {
                 <Pressable
                   style={styles.xBtn}
                   onPress={() => deleteNotis(item.notificationId)}>
-                  <SvgXml width={16} height={16} xml={svgXml.icon.notisX} />
+                  <SvgXml width={24} height={24} xml={svgXml.icon.notisX} />
                 </Pressable>
               </Pressable>
             );
@@ -664,9 +664,7 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
   },
   xBtn: {
-    // marginLeft: 10,
-    paddingHorizontal: 5,
-    paddingVertical: 10,
+    marginLeft: 4,
     // backgroundColor: 'red',
   },
   btnWhite: {
