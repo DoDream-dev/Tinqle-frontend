@@ -1,4 +1,5 @@
-import React, {useState, useCallback} from 'react';
+/* eslint-disable react-native/no-inline-styles */
+import React, {useState, useCallback, useEffect} from 'react';
 import {View, Text, StyleSheet, Pressable, FlatList, Image} from 'react-native';
 import {SvgXml} from 'react-native-svg';
 import {svgXml} from '../../assets/image/svgXml';
@@ -29,12 +30,14 @@ type itemProps = {
     content: string;
     friendNickname: string;
     isRead: boolean;
+    isClicked: boolean;
     notificationId: number;
     notificationType: string;
     redirectTargetId: number;
     status: string;
     targetEntity: string;
   };
+  index: number;
 };
 
 type NotisScreenProps = NativeStackScreenProps<RootStackParamList, 'Notis'>;
@@ -57,6 +60,7 @@ export default function Notis({}: NotisScreenProps) {
   const [refresh, setRefresh] = useState(false);
   const [popup, setPopup] = useState('');
   const [popupName, setPopupName] = useState('');
+  const [isNotClicked, setIsNotClicked] = useState(false);
   const [notisData, setNotisData] = useState([
     //   {
     //   notificationId:6,
@@ -124,6 +128,17 @@ export default function Notis({}: NotisScreenProps) {
       );
     }, [refresh, noNotis]),
   );
+
+  useEffect(() => {
+    const temp = [...notisData];
+
+    for (let i = 0; i < temp.length; i++) {
+      if (temp[i].isClicked === false) {
+        setIsNotClicked(true);
+        return;
+      }
+    }
+  }, [notisData]);
 
   const getData = async () => {
     if (!isLast) {
@@ -320,21 +335,24 @@ export default function Notis({}: NotisScreenProps) {
           onEndReached={onEndReached}
           onEndReachedThreshold={0.4}
           ListHeaderComponent={
-            <View style={styles.notisHeader}>
-              <AnimatedButton
-                onPress={() => {
-                  // console.log('SDSDS');
-                  isClickedAll();
-                }}
-                style={{
-                  paddingHorizontal: 16,
-                  paddingVertical: 6,
-                }}>
-                <Text style={styles.notisHeaderTxt}>
-                  전체 읽음으로 표시하기
-                </Text>
-              </AnimatedButton>
-            </View>
+            isNotClicked ? (
+              <View style={styles.notisHeader}>
+                <AnimatedButton
+                  onPress={() => {
+                    // console.log('SDSDS');
+                    isClickedAll();
+                    setIsNotClicked(false);
+                  }}
+                  style={{
+                    paddingHorizontal: 16,
+                    paddingVertical: 6,
+                  }}>
+                  <Text style={styles.notisHeaderTxt}>
+                    전체 읽음으로 표시하기
+                  </Text>
+                </AnimatedButton>
+              </View>
+            ) : null
           }
           renderItem={({item, index}: itemProps) => {
             return (
