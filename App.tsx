@@ -21,6 +21,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import AnimatedButton from './src/components/AnimatedButton';
 import {useNavigation} from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export type NotificationProps = {
   title: string;
@@ -135,7 +136,7 @@ export default function App() {
               <Text style={styles.now}>now</Text>
             </View>
             <Text numberOfLines={2} ellipsizeMode="tail" style={styles.message}>
-              {message.trim()}
+              {message}
             </Text>
           </View>
         </AnimatedButton>
@@ -171,16 +172,23 @@ export default function App() {
     type: String;
     redirectTargetId: String;
   }) => {
-    console.log('notify : ', notify);
-    const body = notify.body;
-    const data = {
-      body: body,
-      title: notify.title,
-      type: notify.type,
-      redirectTargetId: notify.redirectTargetId,
-    };
-    setNotiData(data);
-    setIsNotification(true);
+    // console.log('notify : ', notify);
+    const pushNot_type = await AsyncStorage.getItem('pushNot_type');
+    // console.log('@@@@@@@@@ type : ', pushNot_type);
+    if (pushNot_type) {
+      setIsNotification(false);
+      return;
+    } else {
+      const body = notify.body;
+      const data = {
+        body: body.trim(),
+        title: notify.title,
+        type: notify.type,
+        redirectTargetId: notify.redirectTargetId,
+      };
+      setNotiData(data);
+      setIsNotification(true);
+    }
   };
 
   const onOpenNotification = (notify: any) => {
@@ -203,7 +211,7 @@ export default function App() {
 
       PushNotification.localNotification({
         title: notify.title,
-        message: notify.message.trim(),
+        message: notify.message,
       });
 
       PushNotification.configure({
