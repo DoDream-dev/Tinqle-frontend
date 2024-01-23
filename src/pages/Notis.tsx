@@ -91,7 +91,7 @@ export default function Notis({}: NotisScreenProps) {
           const response = await axios.get(
             `${Config.API_URL}/notifications/accounts/me`,
           );
-          console.log(response.data.data);
+          // console.log(response.data.data);
           if (response.data.data.content.length == 0) setNoNotis(true);
           else {
             setIsLast(response.data.data.last);
@@ -170,7 +170,24 @@ export default function Notis({}: NotisScreenProps) {
     }
   };
 
-  const deleteNotis = async (notificationId: number) => {
+  const deleteNotis = async (
+    notificationId: number,
+    friendshipRequestId: any = null,
+  ) => {
+    // when delete friend request
+    if (friendshipRequestId != null) {
+      try {
+        const response = await axios.post(
+          `${Config.API_URL}/friendships/request/${friendshipRequestId}/reject`,
+        );
+
+        console.log(response.data);
+      } catch (error) {
+        const errorResponse = (error as AxiosError<{message: string}>).response;
+        console.log(errorResponse.data);
+      }
+    }
+
     try {
       const response = await axios.delete(
         `${Config.API_URL}/notifications/${notificationId}`,
@@ -433,7 +450,13 @@ export default function Notis({}: NotisScreenProps) {
                 }
                 <Pressable
                   style={styles.xBtn}
-                  onPress={() => deleteNotis(item.notificationId)}>
+                  onPress={() => {
+                    if (item.notificationType === 'CREATE_FRIENDSHIP_REQUEST') {
+                      deleteNotis(item.notificationId, item.redirectTargetId);
+                    } else {
+                      deleteNotis(item.notificationId);
+                    }
+                  }}>
                   <SvgXml width={24} height={24} xml={svgXml.icon.notisX} />
                 </Pressable>
               </Pressable>
