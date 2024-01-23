@@ -27,6 +27,7 @@ import {checkNotifications} from 'react-native-permissions';
 import axios, {AxiosError} from 'axios';
 import Config from 'react-native-config';
 import {useNavigation} from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export type FeedStackParamList = {
   FeedList: undefined;
@@ -105,6 +106,40 @@ export default function FeedNavigation() {
     }
   };
 
+  const noticeNavigation = (type: String, redirectTargetId: String) => {
+    // console.log('type : ', type);
+    // console.log('redirectTargetId : ', redirectTargetId);
+
+    if (type.includes('FEED')) {
+      navigation.navigate('FeedDetail', {feedId: redirectTargetId});
+    } else if (type == 'APPROVE_FRIENDSHIP_REQUEST') {
+      navigation.navigate('Notis');
+    } else if (type == 'CREATE_FRIENDSHIP_REQUEST') {
+      navigation.navigate('Notis');
+    } else if (type == 'SEND_KNOCK') {
+      navigation.navigate('Notis');
+    } else if (type == 'REACT_EMOTICON_ON_COMMENT') {
+      navigation.navigate('FeedDetail', {feedId: redirectTargetId});
+    } else if (type == 'CREATE_KNOCK_FEED') {
+      navigation.navigate('FeedDetail', {feedId: redirectTargetId});
+    }
+  };
+
+  const checkNotiNavigate = async () => {
+    const type = await AsyncStorage.getItem('pushNot_type');
+    const redirectTargetId = await AsyncStorage.getItem(
+      'pushNoti_redirectTargetId',
+    );
+    // console.log('type : ', type);
+    // console.log('redirectTargetId : ', redirectTargetId);
+    if (type !== null && redirectTargetId !== null) {
+      noticeNavigation(type, redirectTargetId);
+    }
+
+    AsyncStorage.removeItem('pushNot_type');
+    AsyncStorage.removeItem('pushNoti_redirectTargetId');
+  };
+
   useEffect(() => {
     // Function to run when the component mounts
     const onMount = () => {
@@ -130,6 +165,10 @@ export default function FeedNavigation() {
   useEffect(() => {
     checkNotiPermission();
   }, [isEnabled]);
+
+  useEffect(() => {
+    checkNotiNavigate();
+  }, []);
 
   return (
     <Stack.Navigator>
