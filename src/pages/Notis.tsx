@@ -245,6 +245,49 @@ export default function Notis({}: NotisScreenProps) {
     }
   };
 
+  const notiNavigation = async (
+    notificationType: string,
+    redirectTargetId: number,
+    notificationId: number,
+    accountId: number,
+  ) => {
+    if (notificationType.includes('FEED')) {
+      if (await isDeleted(redirectTargetId)) {
+        setPopup('deleted');
+        deleteNotis(notificationId);
+      } else {
+        goToFeed(redirectTargetId);
+      }
+    } else if (notificationType == 'APPROVE_FRIENDSHIP_REQUEST') {
+      setShowProfileModal(accountId);
+    } else if (notificationType == 'CREATE_FRIENDSHIP_REQUEST') {
+      setShowProfileModal(accountId);
+    } else if (notificationType == 'SEND_KNOCK') {
+      navigation.navigate('FeedList');
+    } else if (notificationType == 'REACT_EMOTICON_ON_COMMENT') {
+      goToFeed(redirectTargetId);
+    } else if (notificationType == 'CREATE_KNOCK_FEED') {
+      goToFeed(redirectTargetId);
+    }
+  };
+
+  const noticeClicked = async (index: number, notificationId: number) => {
+    // change isClicked of front
+    const temp = [...notisData];
+    temp[index].isClicked = true;
+    setNotisData(temp);
+
+    // call api for check is clicked
+    try {
+      await axios.put(
+        `${Config.API_URL}/notifications/${notificationId}/click`,
+      );
+    } catch (error) {
+      const errorResponse = (error as AxiosError<{message: string}>).response;
+      console.log(errorResponse.data);
+    }
+  };
+
   return (
     <View style={styles.entire}>
       {noNotis && (
@@ -259,7 +302,7 @@ export default function Notis({}: NotisScreenProps) {
           style={styles.notisEntire}
           onEndReached={onEndReached}
           onEndReachedThreshold={0.4}
-          renderItem={({item}: itemProps) => {
+          renderItem={({item, index}: itemProps) => {
             return (
               <Pressable
                 style={
@@ -268,32 +311,15 @@ export default function Notis({}: NotisScreenProps) {
                     : styles.eachNotis
                 }
                 onPress={async () => {
-                  if (item.notificationType.includes('FEED')) {
-                    if (await isDeleted(item.redirectTargetId)) {
-                      setPopup('deleted');
-                      deleteNotis(item.notificationId);
-                    } else {
-                      goToFeed(item.redirectTargetId);
-                    }
-                  } else if (
-                    item.notificationType == 'APPROVE_FRIENDSHIP_REQUEST'
-                  ) {
-                    setShowProfileModal(item.accountId);
-                  } else if (
-                    item.notificationType == 'CREATE_FRIENDSHIP_REQUEST'
-                  ) {
-                    setShowProfileModal(item.accountId);
-                  } else if (item.notificationType == 'SEND_KNOCK') {
-                    navigation.navigate('FeedList');
-                  } else if (
-                    item.notificationType == 'REACT_EMOTICON_ON_COMMENT'
-                  ) {
-                    goToFeed(item.redirectTargetId);
-                  } else if (item.notificationType == 'CREATE_KNOCK_FEED') {
-                    goToFeed(item.redirectTargetId);
-                  }
+                  noticeClicked(index, item.notificationId);
+
+                  notiNavigation(
+                    item.notificationType,
+                    item.redirectTargetId,
+                    item.notificationId,
+                    item.accountId,
+                  );
                 }}>
-                {console.log('@@@', item)}
                 <View style={styles.notisView}>
                   {!item.notificationType.includes('MESSAGE') && (
                     <Pressable
