@@ -399,7 +399,9 @@ export default function Notis({}: NotisScreenProps) {
                       }
                       ellipsizeMode="tail"
                       numberOfLines={2}>
-                      {item.content.replace('\n', '')}
+                      {item.content
+                        .replace('\n', '')
+                        .replace('""', '내가 올린 이미지')}
                     </Text>
                   </View>
                 </View>
