@@ -181,7 +181,7 @@ export default function App() {
     } else {
       const body = notify.body;
       const data = {
-        body: body,
+        body: body.trim(),
         title: notify.title,
         type: notify.type,
         redirectTargetId: notify.redirectTargetId,
@@ -211,7 +211,7 @@ export default function App() {
 
       PushNotification.localNotification({
         title: notify.title,
-        message: notify.message.trim(),
+        message: notify.message,
       });
 
       PushNotification.configure({
