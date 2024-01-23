@@ -383,11 +383,19 @@ export default function Notis({}: NotisScreenProps) {
                         // });
                         setShowProfileModal(item.accountId);
                       }}>
-                      <Image
-                        style={styles.prifileImage}
-                        source={{uri: item.profileImageUrl}}
-                        resizeMode="contain"
-                      />
+                      {item.profileImageUrl == null ? (
+                        <SvgXml
+                          width={32}
+                          height={32}
+                          xml={svgXml.profile.null}
+                        />
+                      ) : (
+                        <Image
+                          style={styles.prifileImage}
+                          source={{uri: item.profileImageUrl}}
+                          resizeMode="contain"
+                        />
+                      )}
                     </Pressable>
                   )}
                   <View style={styles.notisTextView}>
