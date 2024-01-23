@@ -17,7 +17,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="logo_splash" translatesAutoresizingMaskIntoConstraints="NO" id="mcT-HU-Zx6">
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="logo_splash" highlightedImage="logo_splash" translatesAutoresizingMaskIntoConstraints="NO" id="mcT-HU-Zx6">
                                 <rect key="frame" x="174" y="415" width="66" height="66"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="66" id="1cD-Rh-7rB"/>
@@ -39,7 +39,7 @@
         </scene>
     </scenes>
     <resources>
-        <image name="logo_splash" width="120" height="120"/>
+        <image name="logo_splash" width="90" height="90"/>
         <namedColor name="Color_main">
             <color red="0.12549019607843137" green="0.12549019607843137" blue="0.12549019607843137" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
