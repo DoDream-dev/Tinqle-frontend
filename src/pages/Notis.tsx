@@ -1,14 +1,5 @@
 import React, {useState, useCallback} from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  Pressable,
-  FlatList,
-  Linking,
-  Platform,
-  PermissionsAndroid,
-} from 'react-native';
+import {View, Text, StyleSheet, Pressable, FlatList, Image} from 'react-native';
 import {SvgXml} from 'react-native-svg';
 import {svgXml} from '../../assets/image/svgXml';
 import axios, {AxiosError} from 'axios';
@@ -22,6 +13,7 @@ import {useAppDispatch} from '../store';
 import userSlice from '../slices/user';
 import FriendProfileModal from '../components/FriendProfileModal';
 import {useNavigation} from '@react-navigation/native';
+import AnimatedButton from '../components/AnimatedButton';
 
 type itemProps = {
   item: {
@@ -254,6 +246,65 @@ export default function Notis({}: NotisScreenProps) {
     }
   };
 
+  const notiNavigation = async (
+    notificationType: string,
+    redirectTargetId: number,
+    notificationId: number,
+    accountId: number,
+  ) => {
+    if (notificationType.includes('FEED')) {
+      if (await isDeleted(redirectTargetId)) {
+        setPopup('deleted');
+        deleteNotis(notificationId);
+      } else {
+        goToFeed(redirectTargetId);
+      }
+    } else if (notificationType == 'APPROVE_FRIENDSHIP_REQUEST') {
+      setShowProfileModal(accountId);
+    } else if (notificationType == 'CREATE_FRIENDSHIP_REQUEST') {
+      setShowProfileModal(accountId);
+    } else if (notificationType == 'SEND_KNOCK') {
+      navigation.navigate('FeedList');
+    } else if (notificationType == 'REACT_EMOTICON_ON_COMMENT') {
+      goToFeed(redirectTargetId);
+    } else if (notificationType == 'CREATE_KNOCK_FEED') {
+      goToFeed(redirectTargetId);
+    }
+  };
+
+  const noticeClicked = async (index: number, notificationId: number) => {
+    // change isClicked of front
+    const temp = [...notisData];
+    temp[index].isClicked = true;
+    setNotisData(temp);
+
+    // call api for check is clicked
+    try {
+      await axios.put(
+        `${Config.API_URL}/notifications/${notificationId}/click`,
+      );
+    } catch (error) {
+      const errorResponse = (error as AxiosError<{message: string}>).response;
+      console.log(errorResponse.data);
+    }
+  };
+
+  const isClickedAll = async () => {
+    const temp = [...notisData];
+    for (var i = 0; i < temp.length; i++) {
+      temp[i].isClicked = true;
+    }
+    setNotisData(temp);
+
+    // call api for check is clicked
+    try {
+      await axios.put(`${Config.API_URL}/notifications/click`);
+    } catch (error) {
+      const errorResponse = (error as AxiosError<{message: string}>).response;
+      console.log(errorResponse.data);
+    }
+  };
+
   return (
     <View style={styles.entire}>
       {noNotis && (
@@ -268,37 +319,40 @@ export default function Notis({}: NotisScreenProps) {
           style={styles.notisEntire}
           onEndReached={onEndReached}
           onEndReachedThreshold={0.4}
-          renderItem={({item}: itemProps) => {
+          ListHeaderComponent={
+            <View style={styles.notisHeader}>
+              <AnimatedButton
+                onPress={() => {
+                  // console.log('SDSDS');
+                  isClickedAll();
+                }}
+                style={{
+                  paddingHorizontal: 16,
+                  paddingVertical: 6,
+                }}>
+                <Text style={styles.notisHeaderTxt}>
+                  전체 읽음으로 표시하기
+                </Text>
+              </AnimatedButton>
+            </View>
+          }
+          renderItem={({item, index}: itemProps) => {
             return (
               <Pressable
                 style={
-                  item.isRead === false
+                  item.isClicked === false
                     ? styles.eachNotis_notRead
                     : styles.eachNotis
                 }
                 onPress={async () => {
-                  if (item.notificationType.includes('FEED')) {
-                    if (await isDeleted(item.redirectTargetId)) {
-                      setPopup('deleted');
-                      deleteNotis(item.notificationId);
-                    } else goToFeed(item.redirectTargetId);
-                  } else if (
-                    item.notificationType == 'APPROVE_FRIENDSHIP_REQUEST'
-                  ) {
-                    setShowProfileModal(item.accountId);
-                  } else if (
-                    item.notificationType == 'CREATE_FRIENDSHIP_REQUEST'
-                  ) {
-                    setShowProfileModal(item.accountId);
-                  } else if (item.notificationType == 'SEND_KNOCK') {
-                    navigation.navigate('FeedList');
-                  } else if (
-                    item.notificationType == 'REACT_EMOTICON_ON_COMMENT'
-                  ) {
-                    goToFeed(item.redirectTargetId);
-                  } else if (item.notificationType == 'CREATE_KNOCK_FEED') {
-                    goToFeed(item.redirectTargetId);
-                  }
+                  noticeClicked(index, item.notificationId);
+
+                  notiNavigation(
+                    item.notificationType,
+                    item.redirectTargetId,
+                    item.notificationId,
+                    item.accountId,
+                  );
                 }}>
                 <View style={styles.notisView}>
                   {!item.notificationType.includes('MESSAGE') && (
@@ -311,132 +365,11 @@ export default function Notis({}: NotisScreenProps) {
                         // });
                         setShowProfileModal(item.accountId);
                       }}>
-                      {item.status == 'SMILE' && (
-                        <SvgXml
-                          width={32}
-                          height={32}
-                          xml={svgXml.status.smile}
-                        />
-                      )}
-                      {item.status == 'HAPPY' && (
-                        <SvgXml
-                          width={32}
-                          height={32}
-                          xml={svgXml.status.happy}
-                        />
-                      )}
-                      {item.status == 'SAD' && (
-                        <SvgXml
-                          width={32}
-                          height={32}
-                          xml={svgXml.status.sad}
-                        />
-                      )}
-                      {item.status == 'MAD' && (
-                        <SvgXml
-                          width={32}
-                          height={32}
-                          xml={svgXml.status.mad}
-                        />
-                      )}
-                      {item.status == 'EXHAUSTED' && (
-                        <SvgXml
-                          width={32}
-                          height={32}
-                          xml={svgXml.status.exhauseted}
-                        />
-                      )}
-                      {item.status == 'COFFEE' && (
-                        <SvgXml
-                          width={32}
-                          height={32}
-                          xml={svgXml.status.coffee}
-                        />
-                      )}
-                      {item.status == 'MEAL' && (
-                        <SvgXml
-                          width={32}
-                          height={32}
-                          xml={svgXml.status.meal}
-                        />
-                      )}
-                      {item.status == 'ALCOHOL' && (
-                        <SvgXml
-                          width={32}
-                          height={32}
-                          xml={svgXml.status.alcohol}
-                        />
-                      )}
-                      {item.status == 'CHICKEN' && (
-                        <SvgXml
-                          width={32}
-                          height={32}
-                          xml={svgXml.status.chicken}
-                        />
-                      )}
-                      {item.status == 'SLEEP' && (
-                        <SvgXml
-                          width={32}
-                          height={32}
-                          xml={svgXml.status.sleep}
-                        />
-                      )}
-                      {item.status == 'WORK' && (
-                        <SvgXml
-                          width={32}
-                          height={32}
-                          xml={svgXml.status.work}
-                        />
-                      )}
-                      {item.status == 'STUDY' && (
-                        <SvgXml
-                          width={32}
-                          height={32}
-                          xml={svgXml.status.study}
-                        />
-                      )}
-                      {item.status == 'MOVIE' && (
-                        <SvgXml
-                          width={32}
-                          height={32}
-                          xml={svgXml.status.movie}
-                        />
-                      )}
-                      {item.status == 'MOVE' && (
-                        <SvgXml
-                          width={32}
-                          height={32}
-                          xml={svgXml.status.move}
-                        />
-                      )}
-                      {item.status == 'DANCE' && (
-                        <SvgXml
-                          width={32}
-                          height={32}
-                          xml={svgXml.status.dance}
-                        />
-                      )}
-                      {item.status == 'READ' && (
-                        <SvgXml
-                          width={32}
-                          height={32}
-                          xml={svgXml.status.read}
-                        />
-                      )}
-                      {item.status == 'WALK' && (
-                        <SvgXml
-                          width={32}
-                          height={32}
-                          xml={svgXml.status.walk}
-                        />
-                      )}
-                      {item.status == 'TRAVEL' && (
-                        <SvgXml
-                          width={32}
-                          height={32}
-                          xml={svgXml.status.travel}
-                        />
-                      )}
+                      <Image
+                        style={styles.prifileImage}
+                        source={{uri: item.profileImageUrl}}
+                        resizeMode="contain"
+                      />
                     </Pressable>
                   )}
                   <View style={styles.notisTextView}>
@@ -606,17 +539,19 @@ const styles = StyleSheet.create({
   notisHeader: {
     width: '100%',
     flexDirection: 'row',
-    justifyContent: 'flex-end',
+    justifyContent: 'center',
     alignItems: 'center',
-    paddingRight: 16,
-    height: 40,
+    // paddingRight: 16,
+    height: 32,
     backgroundColor: '#333333',
   },
   notisHeaderTxt: {
+    textAlign: 'center',
     color: '#F0F0F0',
     fontWeight: '500',
-    fontSize: 12,
-    marginRight: 3,
+    fontSize: 13,
+    textDecorationLine: 'underline',
+    // marginRight: 3,
   },
   empty: {
     flex: 1,
@@ -810,5 +745,10 @@ const styles = StyleSheet.create({
     color: '#F0F0F0',
     fontSize: 15,
     fontWeight: '600',
+  },
+  prifileImage: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
   },
 });
