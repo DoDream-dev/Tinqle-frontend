@@ -1,14 +1,5 @@
 import React, {useState, useCallback} from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  Pressable,
-  FlatList,
-  Linking,
-  Platform,
-  PermissionsAndroid,
-} from 'react-native';
+import {View, Text, StyleSheet, Pressable, FlatList, Image} from 'react-native';
 import {SvgXml} from 'react-native-svg';
 import {svgXml} from '../../assets/image/svgXml';
 import axios, {AxiosError} from 'axios';
@@ -272,7 +263,7 @@ export default function Notis({}: NotisScreenProps) {
             return (
               <Pressable
                 style={
-                  item.isRead === false
+                  item.isClicked === false
                     ? styles.eachNotis_notRead
                     : styles.eachNotis
                 }
@@ -281,7 +272,9 @@ export default function Notis({}: NotisScreenProps) {
                     if (await isDeleted(item.redirectTargetId)) {
                       setPopup('deleted');
                       deleteNotis(item.notificationId);
-                    } else goToFeed(item.redirectTargetId);
+                    } else {
+                      goToFeed(item.redirectTargetId);
+                    }
                   } else if (
                     item.notificationType == 'APPROVE_FRIENDSHIP_REQUEST'
                   ) {
@@ -300,6 +293,7 @@ export default function Notis({}: NotisScreenProps) {
                     goToFeed(item.redirectTargetId);
                   }
                 }}>
+                {console.log('@@@', item)}
                 <View style={styles.notisView}>
                   {!item.notificationType.includes('MESSAGE') && (
                     <Pressable
@@ -311,132 +305,11 @@ export default function Notis({}: NotisScreenProps) {
                         // });
                         setShowProfileModal(item.accountId);
                       }}>
-                      {item.status == 'SMILE' && (
-                        <SvgXml
-                          width={32}
-                          height={32}
-                          xml={svgXml.status.smile}
-                        />
-                      )}
-                      {item.status == 'HAPPY' && (
-                        <SvgXml
-                          width={32}
-                          height={32}
-                          xml={svgXml.status.happy}
-                        />
-                      )}
-                      {item.status == 'SAD' && (
-                        <SvgXml
-                          width={32}
-                          height={32}
-                          xml={svgXml.status.sad}
-                        />
-                      )}
-                      {item.status == 'MAD' && (
-                        <SvgXml
-                          width={32}
-                          height={32}
-                          xml={svgXml.status.mad}
-                        />
-                      )}
-                      {item.status == 'EXHAUSTED' && (
-                        <SvgXml
-                          width={32}
-                          height={32}
-                          xml={svgXml.status.exhauseted}
-                        />
-                      )}
-                      {item.status == 'COFFEE' && (
-                        <SvgXml
-                          width={32}
-                          height={32}
-                          xml={svgXml.status.coffee}
-                        />
-                      )}
-                      {item.status == 'MEAL' && (
-                        <SvgXml
-                          width={32}
-                          height={32}
-                          xml={svgXml.status.meal}
-                        />
-                      )}
-                      {item.status == 'ALCOHOL' && (
-                        <SvgXml
-                          width={32}
-                          height={32}
-                          xml={svgXml.status.alcohol}
-                        />
-                      )}
-                      {item.status == 'CHICKEN' && (
-                        <SvgXml
-                          width={32}
-                          height={32}
-                          xml={svgXml.status.chicken}
-                        />
-                      )}
-                      {item.status == 'SLEEP' && (
-                        <SvgXml
-                          width={32}
-                          height={32}
-                          xml={svgXml.status.sleep}
-                        />
-                      )}
-                      {item.status == 'WORK' && (
-                        <SvgXml
-                          width={32}
-                          height={32}
-                          xml={svgXml.status.work}
-                        />
-                      )}
-                      {item.status == 'STUDY' && (
-                        <SvgXml
-                          width={32}
-                          height={32}
-                          xml={svgXml.status.study}
-                        />
-                      )}
-                      {item.status == 'MOVIE' && (
-                        <SvgXml
-                          width={32}
-                          height={32}
-                          xml={svgXml.status.movie}
-                        />
-                      )}
-                      {item.status == 'MOVE' && (
-                        <SvgXml
-                          width={32}
-                          height={32}
-                          xml={svgXml.status.move}
-                        />
-                      )}
-                      {item.status == 'DANCE' && (
-                        <SvgXml
-                          width={32}
-                          height={32}
-                          xml={svgXml.status.dance}
-                        />
-                      )}
-                      {item.status == 'READ' && (
-                        <SvgXml
-                          width={32}
-                          height={32}
-                          xml={svgXml.status.read}
-                        />
-                      )}
-                      {item.status == 'WALK' && (
-                        <SvgXml
-                          width={32}
-                          height={32}
-                          xml={svgXml.status.walk}
-                        />
-                      )}
-                      {item.status == 'TRAVEL' && (
-                        <SvgXml
-                          width={32}
-                          height={32}
-                          xml={svgXml.status.travel}
-                        />
-                      )}
+                      <Image
+                        style={styles.prifileImage}
+                        source={{uri: item.profileImageUrl}}
+                        resizeMode="contain"
+                      />
                     </Pressable>
                   )}
                   <View style={styles.notisTextView}>
@@ -810,5 +683,10 @@ const styles = StyleSheet.create({
     color: '#F0F0F0',
     fontSize: 15,
     fontWeight: '600',
+  },
+  prifileImage: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
   },
 });
