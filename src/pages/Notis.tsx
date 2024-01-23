@@ -204,6 +204,7 @@ export default function Notis({}: NotisScreenProps) {
     friendshipRequestId: number,
     accountId: number,
     name: string,
+    notificationId: number,
   ) => {
     try {
       const response = await axios.post(
@@ -213,6 +214,8 @@ export default function Notis({}: NotisScreenProps) {
       setPopupName(name);
       setPopup('getFriend');
       // setShowProfileModal(accountId);
+
+      deleteNotis(notificationId);
     } catch (error) {
       const errorResponse = (error as AxiosError<{message: string}>).response;
       console.log(errorResponse.data);
@@ -439,6 +442,7 @@ export default function Notis({}: NotisScreenProps) {
                           item.redirectTargetId,
                           item.accountId,
                           item.friendNickname,
+                          item.notificationId,
                         );
                         // getFriendMsg(item.redirectTargetId);
                         // setmodalData(item.content);
