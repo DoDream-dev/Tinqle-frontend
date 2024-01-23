@@ -656,7 +656,10 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
   },
   xBtn: {
-    marginLeft: 10,
+    // marginLeft: 10,
+    paddingHorizontal: 5,
+    paddingVertical: 10,
+    // backgroundColor: 'red',
   },
   btnWhite: {
     height: 44,
