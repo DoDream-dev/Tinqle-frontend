@@ -26,6 +26,7 @@
     "@reduxjs/toolkit": "^1.9.5",
     "axios": "^1.5.0",
     "lodash": "^4.17.21",
+    "lottie-react-native": "^6.5.1",
     "react": "18.2.0",
     "react-native": "0.72.4",
     "react-native-config": "^1.5.1",
