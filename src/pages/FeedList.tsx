@@ -1,3 +1,4 @@
+/* eslint-disable react-native/no-inline-styles */
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import React, {useCallback, useState, useRef, useEffect} from 'react';
 import {
@@ -32,6 +33,7 @@ import {useSelector} from 'react-redux';
 import ToastScreen from '../components/ToastScreen';
 import userSlice from '../slices/user';
 import EncryptedStorage from 'react-native-encrypted-storage/lib/typescript/EncryptedStorage';
+import LottieView from 'lottie-react-native';
 
 type FeedListScreenProps = NativeStackScreenProps<
   RootStackParamList,
@@ -61,6 +63,7 @@ type itemProps = {
     profileImageUrl: string | null;
   };
 };
+
 export default function FeedList({navigation, route}: FeedListScreenProps) {
   const dispatch = useAppDispatch();
   const deleted = useSelector((state: RootState) => !!state.user.deleted);
@@ -103,6 +106,7 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
   // console.log(newNotis)
   const [showWhoseModal, setShowWhoseModal] = useState(0);
   const [whichPopup, setWhichPopup] = useState('');
+  const [uploadBtnLoading, setUploadBtnLoading] = useState(false);
 
   // useEffect(() => {
   //   const keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', (event) => {
@@ -207,6 +211,13 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
     }, [refresh, showWhoseModal, whichPopup]),
   );
 
+  //
+  useEffect(() => {
+    if (uploadBtnLoading) {
+      sendNewFeed();
+    }
+  }, [uploadBtnLoading]);
+
   useFocusEffect(
     useCallback(() => {
       const getNewNotis = async () => {
@@ -284,6 +295,7 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
         setImgData({uri: '', type: ''});
         setUploadImage(undefined);
         setRefresh(!refresh);
+        setUploadBtnLoading(false);
       } else {
         const response = await axios.post(`${Config.API_URL}/feeds`, {
           content: feedContent,
@@ -295,6 +307,7 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
         setImgData({uri: '', type: ''});
         setUploadImage(undefined);
         setRefresh(!refresh);
+        setUploadBtnLoading(false);
       }
       setKBsize(0);
     } catch (error) {
@@ -390,9 +403,9 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
       <KeyboardAvoidingView
-        style={[{flex: 1, backgroundColor: '#202020'}]}
+        style={[{flex: 1, backgroundColor: '#CFD2D9'}]}
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-        keyboardVerticalOffset={105}>
+        keyboardVerticalOffset={103}>
         <View
           style={{flex: 1, alignItems: 'center', backgroundColor: '#202020'}}>
           <View style={[styles.entire]}>
@@ -503,7 +516,7 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
                 </Pressable>
               </View>
             )}
-            <View style={{height: Math.max(60, KBsize + 10)}} />
+            {/* <View style={{height: Math.max(60, KBsize + 10)}} /> */}
             <View style={styles.newFeedView}>
               <Pressable
                 style={{
@@ -593,7 +606,10 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
                   blurOnSubmit={false}
                   maxLength={500}
                   value={feedContent}
-                  onSubmitEditing={sendNewFeed}
+                  onSubmitEditing={async () => {
+                    setUploadBtnLoading(true);
+                    Keyboard.dismiss();
+                  }}
                   multiline={true}
                   textAlignVertical="center"
                   autoCapitalize="none"
@@ -635,13 +651,30 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
               </Pressable>
               <Pressable
                 style={
-                  feedContent.trim() == '' && !selectImg
+                  (feedContent.trim() == '' && !selectImg) || uploadBtnLoading
                     ? styles.sendNewFeed
                     : styles.sendNewFeedActivated
                 }
-                disabled={feedContent.trim() == '' && !selectImg}
-                onPress={sendNewFeed}>
-                <Feather name="check" size={24} style={{color: 'white'}} />
+                disabled={
+                  (feedContent.trim() == '' && !selectImg) || uploadBtnLoading
+                }
+                onPress={async () => {
+                  setUploadBtnLoading(true);
+                  Keyboard.dismiss();
+                }}>
+                {uploadBtnLoading ? (
+                  <LottieView
+                    source={require('../animations/loading_black.json')}
+                    style={{
+                      width: 30,
+                      height: 30,
+                    }}
+                    autoPlay
+                    loop
+                  />
+                ) : (
+                  <Feather name="check" size={24} style={{color: 'white'}} />
+                )}
               </Pressable>
             </View>
           </View>
