@@ -211,7 +211,7 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
     }, [refresh, showWhoseModal, whichPopup]),
   );
 
-  //
+  // Effect for make new feed
   useEffect(() => {
     if (uploadBtnLoading) {
       sendNewFeed();
