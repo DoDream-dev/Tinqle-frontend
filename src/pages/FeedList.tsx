@@ -403,9 +403,9 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
       <KeyboardAvoidingView
-        style={[{flex: 1, backgroundColor: '#202020'}]}
+        style={[{flex: 1, backgroundColor: '#CFD2D9'}]}
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-        keyboardVerticalOffset={105}>
+        keyboardVerticalOffset={103}>
         <View
           style={{flex: 1, alignItems: 'center', backgroundColor: '#202020'}}>
           <View style={[styles.entire]}>
