@@ -45,22 +45,45 @@ export default function FeedNavigation() {
   const navigation = useNavigation();
 
   const [isEnabled, setIsEnabled] = useState(true);
+  const [deviceNoti, setDeviceNoti] = useState(true);
   const [backNoti, setBackNoti] = useState(true);
 
   const checkNotiPermission = async () => {
     const ret = await checkNotifications();
-    console.log(ret);
-    if (ret.status === 'granted') {
-      setIsEnabled(true);
-    } else {
-      setIsEnabled(false);
-    }
 
     try {
-      const response = await axios.get(`${Config.API_URL}/accounts/me`);
-      console.log('###', response.data.data);
+      const response = await axios.get(
+        `${Config.API_URL}/accounts/me/notifications/status`,
+      );
+      // console.log('###', response.data.data.isReceivedPushNotification);
 
-      setBackNoti(response.data.data);
+      const isReceivedPushNotification =
+        response.data.data.isReceivedPushNotification;
+
+      if (ret.status === 'granted' && isReceivedPushNotification) {
+        // t, t
+        setIsEnabled(true);
+        setDeviceNoti(true);
+        setBackNoti(true);
+      } else if (ret.status === 'granted' && !isReceivedPushNotification) {
+        // t, f
+        setIsEnabled(false);
+        setDeviceNoti(true);
+        setBackNoti(false);
+      } else if (isReceivedPushNotification) {
+        // f, t
+        setIsEnabled(false);
+        setDeviceNoti(false);
+        setBackNoti(false);
+        await axios.put(
+          `${Config.API_URL}/accounts/me?push-notification=false`,
+        );
+      } else if (!isReceivedPushNotification) {
+        // f, f
+        setIsEnabled(false);
+        setDeviceNoti(false);
+        setBackNoti(false);
+      }
     } catch (error) {
       const errorResponse = (error as AxiosError<{message: string}>).response;
       console.log(errorResponse.data);
@@ -69,16 +92,25 @@ export default function FeedNavigation() {
 
   const pushNotiChange = async () => {
     if (isEnabled) {
-      Linking.openSettings();
+      // '알림 끄기'
+      setIsEnabled(false);
+      await axios.put(`${Config.API_URL}/accounts/me?push-notification=false`);
     } else {
-      if (Platform.OS === 'ios') {
-        Linking.openSettings();
-      } else {
-        console.log('안드로이드');
+      // '알림 켜기'
+      setBackNoti(true);
+      await axios.put(`${Config.API_URL}/accounts/me?push-notification=true`);
 
-        PermissionsAndroid.check('android.permission.POST_NOTIFICATIONS').then(
-          async response => {
-            // console.log('###', response);
+      if (deviceNoti) {
+        // 기기는 알림 허용 상태
+        setIsEnabled(true);
+      } else {
+        // 기기 허용 필요
+        if (Platform.OS === 'ios') {
+          Linking.openSettings();
+        } else {
+          PermissionsAndroid.check(
+            'android.permission.POST_NOTIFICATIONS',
+          ).then(async response => {
             if (!response) {
               await PermissionsAndroid.request(
                 'android.permission.POST_NOTIFICATIONS',
@@ -90,18 +122,18 @@ export default function FeedNavigation() {
                   buttonPositive: '확인',
                 },
               ).then(response_2 => {
-                console.log('###', response_2);
                 if (response_2 === 'never_ask_again') {
                   // 다시 보지 않음 이면 설정으로 이동
                   Linking.openSettings();
                 } else if (response_2 === 'granted') {
                   // 팝업에서 허용을 누르면
                   setIsEnabled(true);
+                  setDeviceNoti(true);
                 }
               });
             }
-          },
-        );
+          });
+        }
       }
     }
   };
