@@ -489,9 +489,9 @@ export default function FeedDetail({navigation, route}: FeedDetailScreenProps) {
 
   return (
     <KeyboardAvoidingView
-      style={{flex: 1, backgroundColor: '#202020'}}
+      style={{flex: 1, backgroundColor: '#CFD2D9'}}
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-      keyboardVerticalOffset={105}>
+      keyboardVerticalOffset={103}>
       <View style={styles.entire}>
         <View style={styles.commentView}>
           <FlatList
