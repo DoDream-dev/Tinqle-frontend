@@ -342,9 +342,15 @@ export default function MyProfile() {
           }>
           <Text style={styles.settingBtnTxt}>의견 남기기</Text>
         </Pressable>
-        {/* <Pressable style={styles.settingBtn} onPress={()=>{console.log('change id')}}>
-          <Text style={styles.settingBtnTxt}>내 아이디 변경하기</Text>
-        </Pressable> */}
+        <Pressable
+          style={styles.settingBtn}
+          onPress={() =>
+            Linking.openURL(
+              'https://docs.google.com/forms/d/1qmmMGz6k5l4nVgTpvazSxXSV8XXoNH0X43ocvu45_6A/edit?usp=drivesdk',
+            )
+          }>
+          <Text style={styles.settingBtnTxt}>신고하기</Text>
+        </Pressable>
         <Pressable
           style={styles.settingBtn}
           onPress={() => {
