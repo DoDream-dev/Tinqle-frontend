@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unstable-nested-components */
 import React, {useEffect, useState} from 'react';
 import {
   Platform,
@@ -60,7 +61,7 @@ const screenoptions = () => {
       borderTopWidth: 0,
       elevation: 0,
     },
-    tabBarHideOnKeyboard: true,
+    tabBarHideOnKeyboard: Platform.OS === 'ios' ? false : true,
     tabBarActiveTintColor: '#A55FFF',
     tabBarInactiveTintColor: '#F0F0F0',
     tabBarLabelStyle: {fontSize: 11, paddingBottom: 10},
@@ -148,7 +149,18 @@ export default function AppInner() {
           options={{
             headerShown: false,
             tabBarLabel: 'Feed',
-            tabBarIcon: ((props:{focused:boolean, color:string, size:number}) => <SvgXml fill={props.focused ? '#A55FFF' : '#888888'} width={28} height={28} xml={svgXml.bottomTab.feed} />)
+            tabBarIcon: (props: {
+              focused: boolean;
+              color: string;
+              size: number;
+            }) => (
+              <SvgXml
+                fill={props.focused ? '#A55FFF' : '#888888'}
+                width={28}
+                height={28}
+                xml={svgXml.bottomTab.feed}
+              />
+            ),
           }}
         />
         <Tab.Screen
@@ -168,7 +180,18 @@ export default function AppInner() {
             },
             headerShadowVisible: false,
             tabBarLabel: 'Friend',
-            tabBarIcon: ((props:{focused:boolean, color:string, size:number}) => <SvgXml fill={props.focused ? '#A55FFF' : '#888888'} width={28} height={28} xml={svgXml.bottomTab.friend} />)
+            tabBarIcon: (props: {
+              focused: boolean;
+              color: string;
+              size: number;
+            }) => (
+              <SvgXml
+                fill={props.focused ? '#A55FFF' : '#888888'}
+                width={28}
+                height={28}
+                xml={svgXml.bottomTab.friend}
+              />
+            ),
           }}
         />
         {/* <Tab.Screen
@@ -198,13 +221,24 @@ export default function AppInner() {
             },
             headerShadowVisible: false,
             tabBarLabel: 'Profile',
-            tabBarIcon: ((props:{focused:boolean, color:string, size:number}) => <SvgXml fill={props.focused ? '#A55FFF' : '#888888'} width={28} height={28} xml={svgXml.bottomTab.profile} />)
+            tabBarIcon: (props: {
+              focused: boolean;
+              color: string;
+              size: number;
+            }) => (
+              <SvgXml
+                fill={props.focused ? '#A55FFF' : '#888888'}
+                width={28}
+                height={28}
+                xml={svgXml.bottomTab.profile}
+              />
+            ),
           }}
         />
       </Tab.Navigator>
     </Safe>
   ) : (
-    <Safe>
+    <Safe color="#202020">
       <Stack.Navigator>
         <Stack.Screen
           name="SignIn"

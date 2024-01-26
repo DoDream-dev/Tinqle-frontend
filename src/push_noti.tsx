@@ -3,6 +3,7 @@
 import PushNotification from 'react-native-push-notification';
 import PushNotificationIOS from '@react-native-community/push-notification-ios';
 import {Platform} from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 class LocalNotificationService {
   configure = (onOpenNotification: any) => {
@@ -16,6 +17,15 @@ class LocalNotificationService {
 
       onNotification: function (notification) {
         //앱내 알림 시 오는 부분
+        if (notification.userInteraction) {
+          // console.log('Notification was pressed!', notification);
+          AsyncStorage.setItem(
+            'pushNoti_redirectTargetId',
+            notification.data.redirectTargetId,
+          );
+          AsyncStorage.setItem('pushNot_type', notification.data.type);
+        }
+
         console.log('[LocalNotificationService] onNotification ', notification);
         if (!notification?.data) {
           return;
@@ -32,6 +42,7 @@ class LocalNotificationService {
 
         notification.finish(PushNotificationIOS.FetchResult.NoData);
       },
+
       permissions: {
         alert: true,
         badge: true,

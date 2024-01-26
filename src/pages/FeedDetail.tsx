@@ -34,6 +34,7 @@ import {Safe, StatusBarHeight} from '../components/Safe';
 import ToastScreen from '../components/ToastScreen';
 import {useHeaderHeight} from '@react-navigation/elements';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
+import LottieView from 'lottie-react-native';
 
 type FeedDetailScreenProps = NativeStackScreenProps<
   RootStackParamList,
@@ -110,6 +111,8 @@ export default function FeedDetail({navigation, route}: FeedDetailScreenProps) {
   const [cursorId, setCursorId] = useState(0);
   const [showWhoseModal, setShowWhoseModal] = useState(0);
   const [whichPopup, setWhichPopup] = useState('');
+  const [uploadBtnLoading, setUploadBtnLoading] = useState(false);
+  const [deleteModal, setDeleteModal] = useState(false);
 
   useFocusEffect(
     useCallback(() => {
@@ -177,6 +180,7 @@ export default function FeedDetail({navigation, route}: FeedDetailScreenProps) {
       getCmt();
     }, [refresh, showWhoseModal]),
   );
+
   useFocusEffect(
     useCallback(() => {
       const reloadStatus = () => {
@@ -196,7 +200,16 @@ export default function FeedDetail({navigation, route}: FeedDetailScreenProps) {
     }, [refresh, feedData.isAuthor]),
   );
 
-  const [deleteModal, setDeleteModal] = useState(false);
+  // Effect for make new feed
+  useEffect(() => {
+    if (uploadBtnLoading) {
+      if (writeChildCmt === -1) {
+        sendNewCmt();
+      } else {
+        sendNewChildCmt();
+      }
+    }
+  }, [uploadBtnLoading]);
 
   useEffect(() => {
     const handleKeyboardDismiss = () => {
@@ -334,6 +347,7 @@ export default function FeedDetail({navigation, route}: FeedDetailScreenProps) {
       setRefresh(!refresh);
       setIsLast(false);
       setKBsize(0);
+      setUploadBtnLoading(false);
       // console.log(throttleTime)
     } catch (error) {
       const errorResponse = (error as AxiosError<{message: string}>).response;
@@ -357,6 +371,7 @@ export default function FeedDetail({navigation, route}: FeedDetailScreenProps) {
           }),
         );
       }
+      setUploadBtnLoading(false);
     }
   }, throttleTime);
 
@@ -373,6 +388,7 @@ export default function FeedDetail({navigation, route}: FeedDetailScreenProps) {
       setRefresh(!refresh);
       setIsLast(false);
       setWriteChildCmt(-1);
+      setUploadBtnLoading(false);
     } catch (error) {
       const errorResponse = (error as AxiosError<{message: string}>).response;
       console.log(errorResponse.data);
@@ -395,6 +411,7 @@ export default function FeedDetail({navigation, route}: FeedDetailScreenProps) {
           }),
         );
       }
+      setUploadBtnLoading(false);
     }
   }, throttleTime);
 
@@ -472,9 +489,9 @@ export default function FeedDetail({navigation, route}: FeedDetailScreenProps) {
 
   return (
     <KeyboardAvoidingView
-      style={[{flex: 1}]}
+      style={{flex: 1, backgroundColor: '#CFD2D9'}}
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-      keyboardVerticalOffset={105}>
+      keyboardVerticalOffset={103}>
       <View style={styles.entire}>
         <View style={styles.commentView}>
           <FlatList
@@ -615,7 +632,12 @@ export default function FeedDetail({navigation, route}: FeedDetailScreenProps) {
               placeholderTextColor={'#848484'}
               style={[
                 styles.newCmtTxtInput,
-                {height: Math.min(80, Math.max(35, KBsize))},
+                {
+                  height:
+                    Platform.OS === 'android'
+                      ? Math.min(80, Math.max(40, KBsize))
+                      : undefined,
+                },
               ]}
               onBlur={() => setWriteChildCmt(-1)}
               onChangeText={(text: string) => {
@@ -624,7 +646,10 @@ export default function FeedDetail({navigation, route}: FeedDetailScreenProps) {
               blurOnSubmit={false}
               maxLength={200}
               value={cmtContent}
-              onSubmitEditing={() => sendNewCmt()}
+              onSubmitEditing={async () => {
+                setUploadBtnLoading(true);
+                Keyboard.dismiss();
+              }}
               multiline={true}
               textAlignVertical="center"
               autoCapitalize="none"
@@ -639,12 +664,15 @@ export default function FeedDetail({navigation, route}: FeedDetailScreenProps) {
           </View>
           <Pressable
             style={
-              cmtContent.trim() == ''
+              cmtContent.trim() == '' || uploadBtnLoading
                 ? styles.sendNewCmt
                 : styles.sendNewCmtActivated
             }
-            disabled={cmtContent.trim() == ''}
-            onPress={writeChildCmt == -1 ? sendNewCmt : sendNewChildCmt}>
+            disabled={cmtContent.trim() == '' || uploadBtnLoading}
+            onPress={async () => {
+              setUploadBtnLoading(true);
+              Keyboard.dismiss();
+            }}>
             <Feather name="check" size={24} style={{color: 'white'}} />
           </Pressable>
         </View>
@@ -843,7 +871,7 @@ const styles = StyleSheet.create({
     marginVertical: 6,
     marginRight: 4,
     borderRadius: 10,
-    // paddingVertical: 3,
+    paddingVertical: Platform.OS === 'ios' ? 3 : 0,
     // minHeight: 0,
   },
   newCmtTxtInput: {

@@ -9,6 +9,7 @@ import messaging from '@react-native-firebase/messaging';
 import store from './src/store';
 import userSlice from './src/slices/user';
 import {request, check, PERMISSIONS, RESULTS} from 'react-native-permissions';
+import {NavigationContainer} from '@react-navigation/native';
 // import PushNotification, { Importance } from 'react-native-push-notification';
 
 // PushNotification.configure({
@@ -65,19 +66,20 @@ import {request, check, PERMISSIONS, RESULTS} from 'react-native-permissions';
 // };
 
 messaging().setBackgroundMessageHandler(async remoteMessage => {
-  onMessageReceived(remoteMessage);
+  console.log('[index.js] Message handled in the background!', remoteMessage);
+  // onMessageReceived(remoteMessage);
 });
 
-const onMessageReceived = message => {
-  console.log('[index.js] onMessageReceived: ', message);
-  // if (Platform.OS === 'ios') {
-  //   // const {link = null} = message?.data || {}; // <---- 1
-  //   const pushDeepLink = message?.data?.link;
-  //   //console.log('pushDeepLink : ', pushDeepLink);
-  //   pushDeepLink && Linking.openURL(pushDeepLink);
-  //   Vibration.vibrate([400]);
-  // }
-};
+// const onMessageReceived = message => {
+//   console.log('[index.js] onMessageReceived: ', message);
+//   // if (Platform.OS === 'ios') {
+//   //   // const {link = null} = message?.data || {}; // <---- 1
+//   //   const pushDeepLink = message?.data?.link;
+//   //   //console.log('pushDeepLink : ', pushDeepLink);
+//   //   pushDeepLink && Linking.openURL(pushDeepLink);
+//   //   Vibration.vibrate([400]);
+//   // }
+// };
 
 //원래 주석 아님
 // const checkNotificationPermission = async () => {
@@ -117,7 +119,11 @@ function headlessCheck({isHeadless}) {
   if (isHeadless) {
     return null;
   }
-  return <App />;
+  return (
+    <NavigationContainer>
+      <App />
+    </NavigationContainer>
+  );
 }
 
 // AppRegistry.registerComponent(appName, () => App);

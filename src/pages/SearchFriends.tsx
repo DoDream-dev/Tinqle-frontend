@@ -398,31 +398,35 @@ export default function SearchFriends() {
           if (item.friendshipId == -3)
             return (
               <Pressable
-              style={[
-                styles.friendView,
-                {width: (Dimensions.get('window').width - 40) / 2},
-              ]}
-              onPress={() => {
-                setShowWhoseModal(item.accountId);
-              }}>
-              <Pressable style={styles.friendProfileImg}>
-                {item.profileImageUrl == null ? (
-                  <SvgXml width={32} height={32} xml={svgXml.profile.null} />
-                ) : (
-                  <Image
-                    source={{uri: item.profileImageUrl}}
-                    style={{width: 32, height: 32, borderRadius: 16}}
+                style={[
+                  styles.friendView,
+                  {width: (Dimensions.get('window').width - 40) / 2},
+                ]}
+                onPress={() => {
+                  setShowWhoseModal(item.accountId);
+                }}>
+                <Pressable style={styles.friendProfileImg}>
+                  {item.profileImageUrl == null ? (
+                    <SvgXml width={32} height={32} xml={svgXml.profile.null} />
+                  ) : (
+                    <Image
+                      source={{uri: item.profileImageUrl}}
+                      style={{width: 32, height: 32, borderRadius: 16}}
+                    />
+                  )}
+                </Pressable>
+                <View style={styles.friendmiddle}>
+                  <Text style={styles.friendName}>{item.friendNickname}</Text>
+                </View>
+                <Pressable style={styles.requestFriendProfileStatus}>
+                  <SvgXml
+                    width={24}
+                    height={24}
+                    xml={svgXml.icon.requestfriend}
                   />
-                )}
+                </Pressable>
               </Pressable>
-              <View style={styles.friendmiddle}>
-                <Text style={styles.friendName}>{item.friendNickname}</Text>
-              </View>
-              <Pressable style={styles.requestFriendProfileStatus}>
-                <SvgXml width={24} height={24} xml={svgXml.icon.requestfriend} />
-              </Pressable>
-            </Pressable>
-          );
+            );
           return (
             <Pressable
               style={[

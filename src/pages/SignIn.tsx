@@ -7,7 +7,6 @@ import {
   Alert,
   Dimensions,
   ScrollView,
-  Modal as M,
   TextInput,
   Linking,
   Platform,
@@ -116,6 +115,7 @@ export default function SignIn() {
       if (errorResponse?.data.statusCode == 1030) {
         console.log('회원가입 진행');
         setSignUp(errorResponse?.data.data.signToken);
+        setSignUpToken(errorResponse?.data.data.signToken);
       }
     }
   };
@@ -132,17 +132,41 @@ export default function SignIn() {
       if (!appleAuthRequestResponse.identityToken) {
         throw 'Apple Sign-In failed - no identify token returned';
       }
-      const {identityToken, nonce} = appleAuthRequestResponse;
-      console.log('res : ', appleAuthRequestResponse);
-      console.log('identityToken: ', identityToken);
-      console.log('nonce: ', nonce);
+      const {authorizationCode, fullName} = appleAuthRequestResponse;
+
+      const familyName = fullName?.familyName;
+      const givenName = fullName?.givenName;
+      let name = '';
+      if (familyName !== null) {
+        console.log('$$');
+        name = name + familyName;
+      }
+      if (givenName !== null) {
+        console.log('$$');
+        name = name + givenName;
+      }
+
+      console.log('name', authorizationCode);
+
+      const response = await axios.post(`${Config.API_URL}/auth/login`, {
+        oauthAccessToken: '',
+        authorizationCode: authorizationCode,
+        socialType: 'APPLE',
+        fcmToken: fcm,
+        nickname: '',
+      });
+
+      // 성공한 경우 LOGIN call
+      // Alert.alert('login started')
+      Login(response.data.data.refreshToken, response.data.data.accessToken);
     } catch (error) {
-      console.log('에러났으', error);
-      // const errorResponse = (error as AxiosError<{message: string}>).response;
-      // if (errorResponse?.data.statusCode == 1030) {
-      //   console.log('회원가입 진행');
-      //   setSignUp(errorResponse?.data.data.signToken);
-      // }
+      const errorResponse = (error as AxiosError<{message: string}>).response;
+      console.log('에러났으', errorResponse?.data);
+      if (errorResponse?.data.statusCode == 1030) {
+        console.log('회원가입 진행');
+        setSignUp(errorResponse?.data.data.signToken);
+        setSignUpToken(errorResponse?.data.data.signToken);
+      }
     }
   };
 
@@ -568,7 +592,8 @@ export default function SignIn() {
                   disabled={!(serviceP && personalP && ageP)}
                   // onPress={()=>{Signup(signup); setSignUp('');}}
                   onPress={() => {
-                    setSettingID(true);
+                    // setSettingID(true);
+                    setSignUp('');
                   }}>
                   <Text style={styles.sendTxt}>시작하기</Text>
                 </Pressable>
