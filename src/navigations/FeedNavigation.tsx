@@ -233,7 +233,7 @@ export default function FeedNavigation() {
           headerRight: () => <View></View>,
           headerLeft: () => (
             <Pressable onPress={() => navigation.goBack()}>
-              <AntDesign name="arrowleft" size={24} color={'#848484'} />
+              <AntDesign name="arrowleft" size={24} color={'#F0F0F0'} />
             </Pressable>
           ),
           headerStyle: {
