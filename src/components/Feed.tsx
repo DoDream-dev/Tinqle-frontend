@@ -87,7 +87,7 @@ export default function Feed(props: FeedProps) {
 
 const styles = StyleSheet.create({
   entire: {
-    paddingBottom: 14,
+    paddingBottom: 12,
     width: '100%',
   },
 });

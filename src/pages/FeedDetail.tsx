@@ -30,7 +30,7 @@ import {throttleTime, throttleTimeEmoticon} from '../hooks/Throttle';
 import _ from 'lodash';
 import {useAppDispatch} from '../store';
 import userSlice from '../slices/user';
-import {Safe, StatusBarHeight} from '../components/Safe';
+import {Safe, StatusBarHeight, windowHeight} from '../components/Safe';
 import ToastScreen from '../components/ToastScreen';
 import {useHeaderHeight} from '@react-navigation/elements';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
@@ -181,24 +181,24 @@ export default function FeedDetail({navigation, route}: FeedDetailScreenProps) {
     }, [refresh, showWhoseModal]),
   );
 
-  useFocusEffect(
-    useCallback(() => {
-      const reloadStatus = () => {
-        navigation.setOptions({
-          headerRight: () => (
-            <View style={{flexDirection: 'row'}}>
-              {feedData.isAuthor && (
-                <Pressable onPress={() => setDeleteModal(true)}>
-                  <SvgXml width={24} height={24} xml={svgXml.icon.menu} />
-                </Pressable>
-              )}
-            </View>
-          ),
-        });
-      };
-      if (feedData.isAuthor) reloadStatus();
-    }, [refresh, feedData.isAuthor]),
-  );
+  // useFocusEffect(
+  //   useCallback(() => {
+  //     const reloadStatus = () => {
+  //       navigation.setOptions({
+  //         headerRight: () => (
+  //           <View style={{flexDirection: 'row'}}>
+  //             {feedData.isAuthor && (
+  //               <Pressable onPress={() => setDeleteModal(true)}>
+  //                 <SvgXml width={24} height={24} xml={svgXml.icon.menu} />
+  //               </Pressable>
+  //             )}
+  //           </View>
+  //         ),
+  //       });
+  //     };
+  //     if (feedData.isAuthor) reloadStatus();
+  //   }, [refresh, feedData.isAuthor]),
+  // );
 
   // Effect for make new feed
   useEffect(() => {
@@ -221,7 +221,7 @@ export default function FeedDetail({navigation, route}: FeedDetailScreenProps) {
     );
     if (feedData.isAuthor) {
       navigation.setOptions({
-        headerStyle: {backgroundColor: '#333333'},
+        headerStyle: {backgroundColor: '#202020'},
         headerRight: () => (
           <Pressable onPress={() => setDeleteModal(true)}>
             <Feather name="more-vertical" size={24} color={'#888888'} />
@@ -493,63 +493,74 @@ export default function FeedDetail({navigation, route}: FeedDetailScreenProps) {
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       keyboardVerticalOffset={103}>
       <View style={styles.entire}>
-        <View style={styles.commentView}>
+        <View style={styles.feedView}>
+          <Feed
+            mine={feedData.isAuthor}
+            detail={true}
+            commentCnt={feedData.commentCount}
+            createdAt={feedData.createdAt}
+            content={feedData.content}
+            emoticons={feedData.emoticons}
+            nickname={feedData.friendNickname}
+            status={feedData.status}
+            accountId={feedData.accountId}
+            imageURL={feedData.feedImageUrls}
+            press={pressEmoticon}
+            feedId={feedData.feedId}
+            whoReact={whoReact}
+            profileImg={feedData.profileImageUrl}
+            showWhoseModal={showWhoseModal}
+            setShowWhoseModal={setShowWhoseModal}
+            setWhichPopup={setWhichPopup}
+          />
+        </View>
+        {cmtData.length!= 0 && <View style={styles.commentView}>
           <FlatList
             refreshControl={
               <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
             }
             ref={flatListRef}
             data={cmtData}
-            style={styles.cmtList}
+            style={[styles.cmtList, {}]}
             onEndReached={onEndReached}
             onEndReachedThreshold={0.4}
-            ListHeaderComponent={
-              <View>
-                <View style={styles.feedView}>
-                  <Feed
-                    mine={feedData.isAuthor}
-                    detail={true}
-                    commentCnt={feedData.commentCount}
-                    createdAt={feedData.createdAt}
-                    content={feedData.content}
-                    emoticons={feedData.emoticons}
-                    nickname={feedData.friendNickname}
-                    status={feedData.status}
-                    accountId={feedData.accountId}
-                    imageURL={feedData.feedImageUrls}
-                    press={pressEmoticon}
-                    feedId={feedData.feedId}
-                    whoReact={whoReact}
-                    profileImg={feedData.profileImageUrl}
-                    showWhoseModal={showWhoseModal}
-                    setShowWhoseModal={setShowWhoseModal}
-                    setWhichPopup={setWhichPopup}
-                  />
-                </View>
-                <View style={styles.commentHeader}>
-                  <SvgXml
-                    width={16}
-                    height={14}
-                    xml={svgXml.icon.commentIcon}
-                  />
-                  <Text style={styles.commentHeaderTxt}>
-                    댓글 {feedData.commentCount}개
-                  </Text>
-                </View>
-              </View>
-            }
+            
+            // ListHeaderComponent={
+            //   <View style={{backgroundColor:'#202020'}}>
+                
+            //     <View style={styles.commentHeader}>
+            //       <SvgXml
+            //         width={16}
+            //         height={14}
+            //         xml={svgXml.icon.commentIcon}
+            //       />
+            //       <Text style={styles.commentHeaderTxt}>
+            //         댓글 {feedData.commentCount}개
+            //       </Text>
+            //     </View>
+            //   </View>
+            // }
             renderItem={({item, index}: itemProps) => {
               const childData = item.childCommentCardList;
               return (
                 <Pressable
-                  style={
+                  style={[
                     writeChildCmt == index
                       ? {
-                          borderBottomWidth: 1,
-                          borderColor: '#202020',
-                          backgroundColor: '#FFB4431A',
+                          backgroundColor: '#A55FFF33',
                         }
-                      : {borderBottomWidth: 1, borderColor: '#202020'}
+                      : {
+                        backgroundColor:'#333333'
+                      }, 
+                    index == 0 && {
+                      borderTopLeftRadius:10,
+                      borderTopRightRadius:10,
+                    },
+                    index == cmtData.length - 1 && {
+                      borderBottomLeftRadius:10,
+                      borderBottomRightRadius:10,
+                    }
+                  ]
                   }>
                   <Content
                     nickname={item.friendNickname}
@@ -570,7 +581,7 @@ export default function FeedDetail({navigation, route}: FeedDetailScreenProps) {
                     index={index}
                   />
                   {item.childCount != 0 && (
-                    <View style={{backgroundColor: 'white'}}>
+                    <View>
                       <FlatList
                         data={childData}
                         // style={{borderTopWidth:1, borderTopColor:'#ECECEC',}}
@@ -605,7 +616,7 @@ export default function FeedDetail({navigation, route}: FeedDetailScreenProps) {
               );
             }}
           />
-        </View>
+        </View>}
         <View style={{height: Math.max(60, KBsize + 10)}} />
         <View style={styles.newCmtView}>
           <View style={styles.newFeedTxtInputContain}>
@@ -763,27 +774,36 @@ const styles = StyleSheet.create({
   entire: {
     flex: 1,
     alignItems: 'center',
-    backgroundColor: '#333333',
+    backgroundColor: '#202020',
+    paddingHorizontal:16,
+    paddingTop:10
   },
   feedView: {
-    paddingHorizontal: 6,
-    width: '100%',
-    paddingTop: 6,
+    // marginHorizontal:16,
+    // marginTop:10,
+    // paddingHorizontal: 12,
+    // width: '100%',
+    // paddingTop: 9,
+    width:'100%',
+    borderRadius:10,
+    backgroundColor:'#333333',
+    marginBottom:10
   },
   commentView: {
     width: '100%',
     flex: 1,
-    // borderTopColor: '#ECECEC',
-    // borderTopWidth: 1,
+    paddingVertical:8,
+    borderRadius:10,
   },
   commentHeader: {
     flexDirection: 'row',
+    backgroundColor:'red',
     alignItems: 'center',
     width: '100%',
     height: 36,
-    borderColor: '#202020',
-    borderTopWidth: 1,
-    borderBottomWidth: 1,
+    // borderColor: '#202020',
+    // borderTopWidth: 1,
+    // borderBottomWidth: 1,
     paddingLeft: 15,
   },
   commentHeaderTxt: {
@@ -795,12 +815,13 @@ const styles = StyleSheet.create({
   cmtList: {
     // borderBottomWidth:1,
     // borderBottomColor:'#ECECEC',
+    // backgroundColor:'red',
+    // padding:10
+    // height:200
   },
   childCmt: {
-    borderTopWidth: 1,
-    borderTopColor: '#202020',
     paddingLeft: 40,
-    backgroundColor: '#333333',
+    backgroundColor:'#333333'
   },
   popup: {
     position: 'absolute',
@@ -875,7 +896,7 @@ const styles = StyleSheet.create({
     // minHeight: 0,
   },
   newCmtTxtInput: {
-    color: '#888888',
+    color: '#F0F0F0',
     fontSize: 15,
     fontWeight: '400',
     flex: 1,

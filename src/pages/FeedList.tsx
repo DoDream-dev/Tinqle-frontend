@@ -1010,7 +1010,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#202020',
   },
   noFeedTxt: {
-    color: '#848484',
+    color: '#888888',
     fontSize: 12,
     fontWeight: '500',
   },

@@ -606,6 +606,7 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     fontSize: 13,
     textDecorationLine: 'underline',
+    paddingBottom:1
     // marginRight: 3,
   },
   empty: {
