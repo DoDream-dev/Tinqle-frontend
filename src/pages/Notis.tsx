@@ -1,6 +1,14 @@
 /* eslint-disable react-native/no-inline-styles */
 import React, {useState, useCallback, useEffect} from 'react';
-import {View, Text, StyleSheet, Pressable, FlatList, Image} from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  Pressable,
+  RefreshControl,
+  FlatList,
+  Image,
+} from 'react-native';
 import {SvgXml} from 'react-native-svg';
 import {svgXml} from '../../assets/image/svgXml';
 import axios, {AxiosError} from 'axios';
@@ -390,6 +398,13 @@ export default function Notis({}: NotisScreenProps) {
           onEndReachedThreshold={0.4}
           refreshing={refresh}
           onRefresh={refreshNoti}
+          refreshControl={
+            <RefreshControl
+              refreshing={refresh}
+              onRefresh={refreshNoti}
+              tintColor="#F0F0F0"
+            />
+          }
           ListHeaderComponent={
             isNotClicked ? (
               <View style={styles.notisHeader}>
