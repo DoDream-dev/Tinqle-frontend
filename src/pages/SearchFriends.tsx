@@ -26,6 +26,7 @@ import userSlice from '../slices/user';
 import FriendProfileModal from '../components/FriendProfileModal';
 import {Dimensions} from 'react-native';
 import ImageModal from 'react-native-image-modal';
+import { useNavigation } from '@react-navigation/native';
 
 type friendListItemProps = {
   item: {
@@ -33,25 +34,38 @@ type friendListItemProps = {
     friendNickname: string;
     friendshipId: number;
     status: string;
-    profileImageUrl: string;
+    profileImageUrl: string|null;
   };
 };
 
 export default function SearchFriends() {
   const dispatch = useAppDispatch();
+  const navigation = useNavigation();
+
 
   const [myCode, setMyCode] = useState('');
+  const [myName, setMyName] = useState('');
+  const [myStatus, setMyStatus] = useState('');
+  const [myProfileImg, setMyProfileImg] = useState<string|null>('');
   const [placeholder, setPlaceholder] = useState('아이디로 친구 찾기');
   const [searchCode, setSearchCode] = useState('');
-  const [message, setMessage] = useState('');
-  const [otherUser, setOtherUser] = useState({
-    accountId: -1,
-    nickname: '',
-    isFriend: 0,
-  });
+  // const [message, setMessage] = useState('');
+  // const [otherUser, setOtherUser] = useState({
+  //   accountId: -1,
+  //   nickname: '',
+  //   isFriend: 0,
+  // });
   const [reset, setReset] = useState(false);
   // const [friendData, setFriendData] = useState([{accountId:-1, friendshipId:-1, friendNickname:'',status:''}]);
-  const [friendData, setFriendData] = useState<any[]>([]);
+  const [friendData, setFriendData] = useState<any[]>([
+  //   {
+  //   accountId: response.data.data.accountId,
+  //   friendNickname: response.data.data.nickname,
+  //   friendshipId: 0,
+  //   status: response.data.data.status,
+  //   profileImageUrl: response.data.data.profileImageUrl,
+  // }
+]);
   const [isLast, setIsLast] = useState(false);
   const [cursorId, setCursorId] = useState(0);
   const [loading, setLoading] = useState(false);
@@ -111,6 +125,26 @@ export default function SearchFriends() {
       }
     };
     getFriendship();
+    const getMyProfile = async () => {
+      try {
+        const response = await axios.get(`${Config.API_URL}/accounts/me`);
+        setMyName(response.data.data.nickname);
+        setMyStatus(response.data.data.status);
+        setMyProfileImg(response.data.data.profileImageUrl);
+        // console.log('내 프로필 조회')
+      } catch (error) {
+        const errorResponse = (error as AxiosError<{message: string}>).response;
+        console.log(errorResponse?.data);
+        if (errorResponse?.data.status == 500) {
+          dispatch(
+            userSlice.actions.setToken({
+              accessToken: '',
+            }),
+          );
+        }
+      }
+    };
+    getMyProfile();
   }, [isLast, reset]);
 
   useEffect(() => {
@@ -126,7 +160,7 @@ export default function SearchFriends() {
       console.log(response.data);
       if (response.data.data.friendshipRelation === 'me') {
         setWhichPopup('Me');
-        setOtherUser({accountId: -1, nickname: '', isFriend: 0});
+        // setOtherUser({accountId: -1, nickname: '', isFriend: 0});
       } else {
         if (response.data.data.friendshipRelation == 'true') {
           setFriendData([
@@ -278,7 +312,13 @@ export default function SearchFriends() {
   return (
     <Pressable style={styles.entire} onPress={Keyboard.dismiss}>
       <FlatList
-        data={friendData}
+        data={[{
+            accountId: 0,
+            friendNickname: myName,
+            friendshipId: 0,
+            status: myStatus,
+            profileImageUrl: myProfileImg,
+          }].concat(friendData)}
         style={styles.friendList}
         onEndReached={onEndReached}
         onEndReachedThreshold={0.4}
@@ -331,7 +371,7 @@ export default function SearchFriends() {
         keyExtractor={(item, index) => index}
         numColumns={2}
         renderItem={({item}: friendListItemProps) => {
-          if (item.friendshipId == -1)
+          if (item.friendshipId == 0)
             return (
               <Pressable
                 style={[
@@ -339,7 +379,8 @@ export default function SearchFriends() {
                   {width: (Dimensions.get('window').width - 40) / 2},
                 ]}
                 onPress={() => {
-                  setShowWhoseModal(item.accountId);
+                  navigation.navigate('MyProfile');
+                  // console.log(myStatus)
                 }}>
                 <Pressable style={styles.friendProfileImg}>
                   {item.profileImageUrl == null ? (
@@ -350,23 +391,108 @@ export default function SearchFriends() {
                       style={{width: 32, height: 32, borderRadius: 16}}
                     />
                   )}
-                </Pressable>
-                <View style={styles.friendmiddle}>
-                  <Text style={styles.friendName}>{item.friendNickname}</Text>
-                </View>
-                <Pressable
-                  style={styles.nonFriendProfileStatus}
-                  onPress={() => {
-                    askFriend(
-                      item.accountId,
-                      item.friendNickname,
-                      item.profileImageUrl,
-                    );
-                  }}>
-                  <SvgXml width={24} height={24} xml={svgXml.icon.addfriend} />
-                </Pressable>
               </Pressable>
-            );
+              <View style={styles.friendmiddle}>
+                <Text style={styles.friendName}>{item.friendNickname}</Text>
+              </View>
+              <View style={styles.friendProfileStatus}>
+                {item.status == 'smile'.toUpperCase() && (
+                  <SvgXml width={40} height={40} xml={svgXml.status.smile} />
+                )}
+                {item.status == 'happy'.toUpperCase() && (
+                  <SvgXml width={40} height={40} xml={svgXml.status.happy} />
+                )}
+                {item.status == 'sad'.toUpperCase() && (
+                  <SvgXml width={40} height={40} xml={svgXml.status.sad} />
+                )}
+                {item.status == 'mad'.toUpperCase() && (
+                  <SvgXml width={40} height={40} xml={svgXml.status.mad} />
+                )}
+                {item.status == 'exhausted'.toUpperCase() && (
+                  <SvgXml
+                    width={40}
+                    height={40}
+                    xml={svgXml.status.exhauseted}
+                  />
+                )}
+                {item.status == 'coffee'.toUpperCase() && (
+                  <SvgXml width={40} height={40} xml={svgXml.status.coffee} />
+                )}
+                {item.status == 'meal'.toUpperCase() && (
+                  <SvgXml width={40} height={40} xml={svgXml.status.meal} />
+                )}
+                {item.status == 'alcohol'.toUpperCase() && (
+                  <SvgXml width={40} height={40} xml={svgXml.status.alcohol} />
+                )}
+                {item.status == 'chicken'.toUpperCase() && (
+                  <SvgXml width={40} height={40} xml={svgXml.status.chicken} />
+                )}
+                {item.status == 'sleep'.toUpperCase() && (
+                  <SvgXml width={40} height={40} xml={svgXml.status.sleep} />
+                )}
+                {item.status == 'work'.toUpperCase() && (
+                  <SvgXml width={40} height={40} xml={svgXml.status.work} />
+                )}
+                {item.status == 'study'.toUpperCase() && (
+                  <SvgXml width={40} height={40} xml={svgXml.status.study} />
+                )}
+                {item.status == 'movie'.toUpperCase() && (
+                  <SvgXml width={40} height={40} xml={svgXml.status.movie} />
+                )}
+                {item.status == 'move'.toUpperCase() && (
+                  <SvgXml width={40} height={40} xml={svgXml.status.move} />
+                )}
+                {item.status == 'dance'.toUpperCase() && (
+                  <SvgXml width={40} height={40} xml={svgXml.status.dance} />
+                )}
+                {item.status == 'read'.toUpperCase() && (
+                  <SvgXml width={40} height={40} xml={svgXml.status.read} />
+                )}
+                {item.status == 'walk'.toUpperCase() && (
+                  <SvgXml width={40} height={40} xml={svgXml.status.walk} />
+                )}
+                {item.status == 'travel'.toUpperCase() && (
+                  <SvgXml width={40} height={40} xml={svgXml.status.travel} />
+                )}
+              </View>
+            </Pressable>
+          );
+          if (item.friendshipId == -1)
+          return (
+            <Pressable
+              style={[
+                styles.friendView,
+                {width: (Dimensions.get('window').width - 40) / 2},
+              ]}
+              onPress={() => {
+                setShowWhoseModal(item.accountId);
+              }}>
+              <Pressable style={styles.friendProfileImg}>
+                {item.profileImageUrl == null ? (
+                  <SvgXml width={32} height={32} xml={svgXml.profile.null} />
+                ) : (
+                  <Image
+                    source={{uri: item.profileImageUrl}}
+                    style={{width: 32, height: 32, borderRadius: 16}}
+                  />
+                )}
+              </Pressable>
+              <View style={styles.friendmiddle}>
+                <Text style={styles.friendName}>{item.friendNickname}</Text>
+              </View>
+              <Pressable
+                style={styles.nonFriendProfileStatus}
+                onPress={() => {
+                  askFriend(
+                    item.accountId,
+                    item.friendNickname,
+                    item.profileImageUrl,
+                  );
+                }}>
+                <SvgXml width={24} height={24} xml={svgXml.icon.addfriend} />
+              </Pressable>
+            </Pressable>
+          );
           if (item.friendshipId == -2)
             return (
               <Pressable
