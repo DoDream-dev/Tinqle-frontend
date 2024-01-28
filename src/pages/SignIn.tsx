@@ -292,7 +292,7 @@ export default function SignIn() {
   return (
     <View style={styles.entire}>
       <View style={styles.logoView}>
-        <Text style={styles.logoTxt}>내 친구는 지금 뭐할까?</Text>
+        <Text style={styles.logoTxt}>우리들만의 피드</Text>
         <Text style={styles.logoTxtMain}>tincle</Text>
       </View>
       <View style={styles.loginView}>
@@ -592,8 +592,8 @@ export default function SignIn() {
                   disabled={!(serviceP && personalP && ageP)}
                   // onPress={()=>{Signup(signup); setSignUp('');}}
                   onPress={() => {
-                    // setSettingID(true);
-                    setSignUp('');
+                    setSettingID(true);
+                    // setSignUp('');
                   }}>
                   <Text style={styles.sendTxt}>시작하기</Text>
                 </Pressable>
