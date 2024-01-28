@@ -140,6 +140,39 @@ export default function Notis({}: NotisScreenProps) {
     }
   }, [notisData]);
 
+  const refreshNoti = async () => {
+    setRefresh(true);
+    try {
+      const response = await axios.get(
+        `${Config.API_URL}/notifications/accounts/me`,
+      );
+      // console.log(response.data.data);
+      if (response.data.data.content.length == 0) setNoNotis(true);
+      else {
+        setIsLast(response.data.data.last);
+        setNotisData(response.data.data.content);
+        // console.log(response.data.data)
+        if (response.data.data.content.length != 0) {
+          setCursorId(
+            response.data.data.content[response.data.data.content.length - 1]
+              .notificationId,
+          );
+        }
+      }
+    } catch (error) {
+      const errorResponse = (error as AxiosError<{message: string}>).response;
+      console.log(errorResponse?.data.status);
+      if (errorResponse?.data.status == 500) {
+        dispatch(
+          userSlice.actions.setToken({
+            accessToken: '',
+          }),
+        );
+      }
+    }
+    setRefresh(false);
+  };
+
   const getData = async () => {
     if (!isLast) {
       setLoading(true);
@@ -164,6 +197,7 @@ export default function Notis({}: NotisScreenProps) {
     }
     setLoading(false);
   };
+
   const onEndReached = () => {
     if (!loading) {
       getData();
@@ -354,6 +388,8 @@ export default function Notis({}: NotisScreenProps) {
           style={styles.notisEntire}
           onEndReached={onEndReached}
           onEndReachedThreshold={0.4}
+          refreshing={refresh}
+          onRefresh={refreshNoti}
           ListHeaderComponent={
             isNotClicked ? (
               <View style={styles.notisHeader}>
@@ -606,7 +642,7 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     fontSize: 13,
     textDecorationLine: 'underline',
-    paddingBottom:1
+    paddingBottom: 1,
     // marginRight: 3,
   },
   empty: {
