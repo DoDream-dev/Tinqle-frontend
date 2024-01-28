@@ -30,7 +30,7 @@ import {throttleTime, throttleTimeEmoticon} from '../hooks/Throttle';
 import _ from 'lodash';
 import {useAppDispatch} from '../store';
 import userSlice from '../slices/user';
-import {Safe, StatusBarHeight, windowHeight} from '../components/Safe';
+import {Safe, StatusBarHeight} from '../components/Safe';
 import ToastScreen from '../components/ToastScreen';
 import {useHeaderHeight} from '@react-navigation/elements';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
@@ -489,9 +489,9 @@ export default function FeedDetail({navigation, route}: FeedDetailScreenProps) {
 
   return (
     <KeyboardAvoidingView
-      style={{flex: 1, backgroundColor: '#CFD2D9'}}
+      style={{flex: 1, backgroundColor: '#202020'}}
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-      keyboardVerticalOffset={103}>
+      keyboardVerticalOffset={StatusBarHeight + 44}>
       <View style={styles.entire}>
         <View style={styles.feedView}>
           <Feed
@@ -514,109 +514,109 @@ export default function FeedDetail({navigation, route}: FeedDetailScreenProps) {
             setWhichPopup={setWhichPopup}
           />
         </View>
-        {cmtData.length!= 0 && <View style={styles.commentView}>
-          <FlatList
-            refreshControl={
-              <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-            }
-            ref={flatListRef}
-            data={cmtData}
-            style={[styles.cmtList, {}]}
-            onEndReached={onEndReached}
-            onEndReachedThreshold={0.4}
-            
-            // ListHeaderComponent={
-            //   <View style={{backgroundColor:'#202020'}}>
-                
-            //     <View style={styles.commentHeader}>
-            //       <SvgXml
-            //         width={16}
-            //         height={14}
-            //         xml={svgXml.icon.commentIcon}
-            //       />
-            //       <Text style={styles.commentHeaderTxt}>
-            //         댓글 {feedData.commentCount}개
-            //       </Text>
-            //     </View>
-            //   </View>
-            // }
-            renderItem={({item, index}: itemProps) => {
-              const childData = item.childCommentCardList;
-              return (
-                <Pressable
-                  style={[
-                    writeChildCmt == index
-                      ? {
-                          backgroundColor: '#A55FFF33',
-                        }
-                      : {
-                        backgroundColor:'#333333'
-                      }, 
-                    index == 0 && {
-                      borderTopLeftRadius:10,
-                      borderTopRightRadius:10,
-                    },
-                    index == cmtData.length - 1 && {
-                      borderBottomLeftRadius:10,
-                      borderBottomRightRadius:10,
-                    }
-                  ]
-                  }>
-                  <Content
-                    nickname={item.friendNickname}
-                    status={item.status}
-                    content={item.content}
-                    createdAt={item.createAt}
-                    accountId={item.accountId}
-                    mine={item.isAuthor}
-                    imageURL={[null]}
-                    detail={true}
-                    cmt={true}
-                    child={setWriteChildCmt}
-                    cmtId={item.commentId}
-                    profileImg={item.profileImageUrl}
-                    showWhoseModal={showWhoseModal}
-                    setShowWhoseModal={setShowWhoseModal}
-                    setWhichPopup={setWhichPopup}
-                    index={index}
-                  />
-                  {item.childCount != 0 && (
-                    <View>
-                      <FlatList
-                        data={childData}
-                        // style={{borderTopWidth:1, borderTopColor:'#ECECEC',}}
-                        renderItem={({item, index}) => {
-                          return (
-                            <View style={styles.childCmt}>
-                              <Content
-                                nickname={item.friendNickname}
-                                status={item.status}
-                                content={item.content}
-                                createdAt={item.createAt}
-                                accountId={item.accountId}
-                                mine={item.isAuthor}
-                                imageURL={[null]}
-                                detail={true}
-                                cmt={false}
-                                child={setWriteChildCmt}
-                                cmtId={item.commentId}
-                                profileImg={item.profileImageUrl}
-                                showWhoseModal={showWhoseModal}
-                                setShowWhoseModal={setShowWhoseModal}
-                                setWhichPopup={setWhichPopup}
-                                index={index}
-                              />
-                            </View>
-                          );
-                        }}
-                      />
-                    </View>
-                  )}
-                </Pressable>
-              );
-            }}
-          />
-        </View>}
+        {cmtData.length != 0 && (
+          <View style={styles.commentView}>
+            <FlatList
+              refreshControl={
+                <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+              }
+              ref={flatListRef}
+              data={cmtData}
+              style={[styles.cmtList, {}]}
+              onEndReached={onEndReached}
+              onEndReachedThreshold={0.4}
+              // ListHeaderComponent={
+              //   <View style={{backgroundColor:'#202020'}}>
+
+              //     <View style={styles.commentHeader}>
+              //       <SvgXml
+              //         width={16}
+              //         height={14}
+              //         xml={svgXml.icon.commentIcon}
+              //       />
+              //       <Text style={styles.commentHeaderTxt}>
+              //         댓글 {feedData.commentCount}개
+              //       </Text>
+              //     </View>
+              //   </View>
+              // }
+              renderItem={({item, index}: itemProps) => {
+                const childData = item.childCommentCardList;
+                return (
+                  <Pressable
+                    style={[
+                      writeChildCmt == index
+                        ? {
+                            backgroundColor: '#A55FFF33',
+                          }
+                        : {
+                            backgroundColor: '#333333',
+                          },
+                      index == 0 && {
+                        borderTopLeftRadius: 10,
+                        borderTopRightRadius: 10,
+                      },
+                      index == cmtData.length - 1 && {
+                        borderBottomLeftRadius: 10,
+                        borderBottomRightRadius: 10,
+                      },
+                    ]}>
+                    <Content
+                      nickname={item.friendNickname}
+                      status={item.status}
+                      content={item.content}
+                      createdAt={item.createAt}
+                      accountId={item.accountId}
+                      mine={item.isAuthor}
+                      imageURL={[null]}
+                      detail={true}
+                      cmt={true}
+                      child={setWriteChildCmt}
+                      cmtId={item.commentId}
+                      profileImg={item.profileImageUrl}
+                      showWhoseModal={showWhoseModal}
+                      setShowWhoseModal={setShowWhoseModal}
+                      setWhichPopup={setWhichPopup}
+                      index={index}
+                    />
+                    {item.childCount != 0 && (
+                      <View>
+                        <FlatList
+                          data={childData}
+                          // style={{borderTopWidth:1, borderTopColor:'#ECECEC',}}
+                          renderItem={({item, index}) => {
+                            return (
+                              <View style={styles.childCmt}>
+                                <Content
+                                  nickname={item.friendNickname}
+                                  status={item.status}
+                                  content={item.content}
+                                  createdAt={item.createAt}
+                                  accountId={item.accountId}
+                                  mine={item.isAuthor}
+                                  imageURL={[null]}
+                                  detail={true}
+                                  cmt={false}
+                                  child={setWriteChildCmt}
+                                  cmtId={item.commentId}
+                                  profileImg={item.profileImageUrl}
+                                  showWhoseModal={showWhoseModal}
+                                  setShowWhoseModal={setShowWhoseModal}
+                                  setWhichPopup={setWhichPopup}
+                                  index={index}
+                                />
+                              </View>
+                            );
+                          }}
+                        />
+                      </View>
+                    )}
+                  </Pressable>
+                );
+              }}
+            />
+          </View>
+        )}
         <View style={{height: Math.max(60, KBsize + 10)}} />
         <View style={styles.newCmtView}>
           <View style={styles.newFeedTxtInputContain}>
@@ -775,8 +775,8 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     backgroundColor: '#202020',
-    paddingHorizontal:16,
-    paddingTop:10
+    paddingHorizontal: 16,
+    paddingTop: 10,
   },
   feedView: {
     // marginHorizontal:16,
@@ -784,20 +784,20 @@ const styles = StyleSheet.create({
     // paddingHorizontal: 12,
     // width: '100%',
     // paddingTop: 9,
-    width:'100%',
-    borderRadius:10,
-    backgroundColor:'#333333',
-    marginBottom:10
+    width: '100%',
+    borderRadius: 10,
+    backgroundColor: '#333333',
+    marginBottom: 10,
   },
   commentView: {
     width: '100%',
     flex: 1,
-    paddingVertical:8,
-    borderRadius:10,
+    paddingVertical: 8,
+    borderRadius: 10,
   },
   commentHeader: {
     flexDirection: 'row',
-    backgroundColor:'red',
+    backgroundColor: 'red',
     alignItems: 'center',
     width: '100%',
     height: 36,
@@ -821,7 +821,7 @@ const styles = StyleSheet.create({
   },
   childCmt: {
     paddingLeft: 40,
-    backgroundColor:'#333333'
+    backgroundColor: '#333333',
   },
   popup: {
     position: 'absolute',
