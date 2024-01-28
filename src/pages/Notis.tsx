@@ -144,6 +144,8 @@ export default function Notis({}: NotisScreenProps) {
       if (temp[i].isClicked === false) {
         setIsNotClicked(true);
         return;
+      } else {
+        setIsNotClicked(false);
       }
     }
   }, [notisData]);
