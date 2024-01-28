@@ -601,10 +601,10 @@ export default function SignIn() {
             </Shadow>
           </Pressable>
         </Safe>
+        <ServicePolicyModal policy={policy} setPolicy={setPolicy} />
+        <PersonalPolicyModal policy={policy} setPolicy={setPolicy} />
       </Modal>
       {/* modal for policy */}
-      <ServicePolicyModal policy={policy} setPolicy={setPolicy} />
-      <PersonalPolicyModal policy={policy} setPolicy={setPolicy} />
     </View>
   );
 }
@@ -736,7 +736,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     paddingHorizontal: 16,
-    marginBottom: 10,
+    marginBottom: 15,
   },
   idModalHeader: {
     justifyContent: 'center',
