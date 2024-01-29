@@ -35,6 +35,7 @@ import userSlice from '../slices/user';
 import EncryptedStorage from 'react-native-encrypted-storage/lib/typescript/EncryptedStorage';
 import LottieView from 'lottie-react-native';
 import {StatusBarHeight} from '../components/Safe';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 type FeedListScreenProps = NativeStackScreenProps<
   RootStackParamList,
@@ -170,6 +171,7 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
         });
       };
       reloadStatus();
+      openStateModal();
     }, [refresh, status, noti, newNotis]),
   );
 
@@ -386,6 +388,16 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
       }
     }
   }, throttleTimeEmoticon);
+
+  const openStateModal = async () => {
+    const appstart = await AsyncStorage.getItem('app_start');
+
+    if (appstart == 'true') {
+      setChangeStatus(true);
+    }
+
+    await AsyncStorage.removeItem('app_start');
+  };
 
   const flatRef = useRef();
 
@@ -685,6 +697,7 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
               </Pressable>
             </View>
           </View>
+
           <Modal
             isVisible={showBottomSheet}
             onBackButtonPress={() => setShowBottomSheet(false)}
@@ -746,11 +759,15 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
               </Pressable>
             </Pressable>
           </Modal>
+
           <Modal
             isVisible={changeStatus}
             backdropColor="#101010"
             backdropOpacity={0.5}
-            onBackButtonPress={() => setChangeStatus(false)}>
+            swipeDirection={'down'}
+            onSwipeComplete={() => setChangeStatus(false)}
+            onBackButtonPress={() => setChangeStatus(false)}
+            animationIn={'slideInUp'}>
             <Pressable
               style={styles.modalBGView2}
               onPress={() => {
@@ -983,6 +1000,7 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
               </Pressable>
             </Pressable>
           </Modal>
+
           {deleted && (
             <ToastScreen
               height={21}
