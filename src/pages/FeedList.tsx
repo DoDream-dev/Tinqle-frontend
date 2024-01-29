@@ -683,7 +683,7 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
                 }
                 disabled={uploadBtnLoading}
                 onPress={async () => {
-                  if (feedContent.trim() != '' && selectImg) {
+                  if (feedContent.trim() != '' || selectImg) {
                     setUploadBtnLoading(true);
                   }
                   Keyboard.dismiss();
