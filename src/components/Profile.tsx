@@ -150,14 +150,76 @@ export default function Profile(props: ProfileProps) {
             />
           </View>
         )}
-        {friendshipRelation == 'me' && (
+        {friendshipRelation == 'me' ? (
           <Pressable
-            style={styles.addProfileImgBtn}
+            style={[styles.addProfileImgBtn, {backgroundColor:'#101010'}]}
             onPress={async () => {
               if (profileImage == null) await uploadProfileImage();
               else setDeleteProfileImg(true);
             }}>
             <SvgXml width={24} height={24} xml={svgXml.icon.photo} />
+          </Pressable>
+        ) : (
+          <Pressable
+            style={[styles.addProfileImgBtn, {backgroundColor:'#202020'}]}>
+            {status == 'smile' && (
+              <SvgXml width={23} height={23} xml={svgXml.status.smile} />
+            )}
+            {status == 'happy' && (
+              <SvgXml width={23} height={23} xml={svgXml.status.happy} />
+            )}
+            {status == 'sad' && (
+              <SvgXml width={23} height={23} xml={svgXml.status.sad} />
+            )}
+            {status == 'mad' && (
+              <SvgXml width={23} height={23} xml={svgXml.status.mad} />
+            )}
+            {status == 'exhausted' && (
+              <SvgXml
+                width={23}
+                height={23}
+                xml={svgXml.status.exhauseted}
+              />
+            )}
+            {status == 'coffee' && (
+              <SvgXml width={23} height={23} xml={svgXml.status.coffee} />
+            )}
+            {status == 'meal' && (
+              <SvgXml width={23} height={23} xml={svgXml.status.meal} />
+            )}
+            {status == 'alcohol' && (
+              <SvgXml width={23} height={23} xml={svgXml.status.alcohol} />
+            )}
+            {status == 'chicken' && (
+              <SvgXml width={23} height={23} xml={svgXml.status.chicken} />
+            )}
+            {status == 'sleep' && (
+              <SvgXml width={23} height={23} xml={svgXml.status.sleep} />
+            )}
+            {status == 'work' && (
+              <SvgXml width={23} height={23} xml={svgXml.status.work} />
+            )}
+            {status == 'study' && (
+              <SvgXml width={23} height={23} xml={svgXml.status.study} />
+            )}
+            {status == 'movie' && (
+              <SvgXml width={23} height={23} xml={svgXml.status.movie} />
+            )}
+            {status == 'move' && (
+              <SvgXml width={23} height={23} xml={svgXml.status.move} />
+            )}
+            {status == 'dance' && (
+              <SvgXml width={23} height={23} xml={svgXml.status.dance} />
+            )}
+            {status == 'read' && (
+              <SvgXml width={23} height={23} xml={svgXml.status.read} />
+            )}
+            {status == 'walk' && (
+              <SvgXml width={23} height={23} xml={svgXml.status.walk} />
+            )}
+            {status == 'travel' && (
+              <SvgXml width={23} height={23} xml={svgXml.status.travel} />
+            )}
           </Pressable>
         )}
       </View>
@@ -239,13 +301,14 @@ const styles = StyleSheet.create({
   },
   addProfileImgBtn: {
     position: 'absolute',
-    // top: 131,
-    // left: 223,
+    width:30,
+    height:30,
     bottom: 0,
     right: 0,
-    backgroundColor: '#101010',
     borderRadius: 15,
     padding: 3,
+    justifyContent:'center',
+    alignItems:'center'
   },
   modalBGView: {
     width: '100%',

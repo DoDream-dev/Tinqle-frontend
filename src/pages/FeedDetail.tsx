@@ -493,29 +493,13 @@ export default function FeedDetail({navigation, route}: FeedDetailScreenProps) {
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       keyboardVerticalOffset={StatusBarHeight + 44}>
       <View style={styles.entire}>
-        <View style={styles.feedView}>
-          <Feed
-            mine={feedData.isAuthor}
-            detail={true}
-            commentCnt={feedData.commentCount}
-            createdAt={feedData.createdAt}
-            content={feedData.content}
-            emoticons={feedData.emoticons}
-            nickname={feedData.friendNickname}
-            status={feedData.status}
-            accountId={feedData.accountId}
-            imageURL={feedData.feedImageUrls}
-            press={pressEmoticon}
-            feedId={feedData.feedId}
-            whoReact={whoReact}
-            profileImg={feedData.profileImageUrl}
-            showWhoseModal={showWhoseModal}
-            setShowWhoseModal={setShowWhoseModal}
-            setWhichPopup={setWhichPopup}
-          />
-        </View>
-        {cmtData.length != 0 && (
-          <View style={styles.commentView}>
+        <View style={{
+          paddingHorizontal:16, 
+          flex:1, 
+          flexDirection:'row', 
+          alignItems:'flex-start',
+          marginBottom:Math.max(50, KBsize)}}>
+          {cmtData.length!= 0 && <View style={styles.commentView}>
             <FlatList
               refreshControl={
                 <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
@@ -525,9 +509,9 @@ export default function FeedDetail({navigation, route}: FeedDetailScreenProps) {
               style={[styles.cmtList, {}]}
               onEndReached={onEndReached}
               onEndReachedThreshold={0.4}
-              // ListHeaderComponent={
+              ListHeaderComponent={
               //   <View style={{backgroundColor:'#202020'}}>
-
+                  
               //     <View style={styles.commentHeader}>
               //       <SvgXml
               //         width={16}
@@ -539,7 +523,29 @@ export default function FeedDetail({navigation, route}: FeedDetailScreenProps) {
               //       </Text>
               //     </View>
               //   </View>
-              // }
+              <View style={styles.feedView}>
+                <Feed
+                  mine={feedData.isAuthor}
+                  detail={true}
+                  commentCnt={feedData.commentCount}
+                  createdAt={feedData.createdAt}
+                  content={feedData.content}
+                  emoticons={feedData.emoticons}
+                  nickname={feedData.friendNickname}
+                  status={feedData.status}
+                  accountId={feedData.accountId}
+                  imageURL={feedData.feedImageUrls}
+                  press={pressEmoticon}
+                  feedId={feedData.feedId}
+                  whoReact={whoReact}
+                  profileImg={feedData.profileImageUrl}
+                  showWhoseModal={showWhoseModal}
+                  setShowWhoseModal={setShowWhoseModal}
+                  setWhichPopup={setWhichPopup}
+                />
+              </View>
+              }
+              // stickyHeaderIndices={[0]}
               renderItem={({item, index}: itemProps) => {
                 const childData = item.childCommentCardList;
                 return (
@@ -550,17 +556,18 @@ export default function FeedDetail({navigation, route}: FeedDetailScreenProps) {
                             backgroundColor: '#A55FFF33',
                           }
                         : {
-                            backgroundColor: '#333333',
-                          },
+                          backgroundColor:'#333333'
+                        }, 
                       index == 0 && {
-                        borderTopLeftRadius: 10,
-                        borderTopRightRadius: 10,
+                        borderTopLeftRadius:10,
+                        borderTopRightRadius:10,
                       },
                       index == cmtData.length - 1 && {
-                        borderBottomLeftRadius: 10,
-                        borderBottomRightRadius: 10,
-                      },
-                    ]}>
+                        borderBottomLeftRadius:10,
+                        borderBottomRightRadius:10,
+                      }
+                    ]
+                    }>
                     <Content
                       nickname={item.friendNickname}
                       status={item.status}
@@ -586,7 +593,10 @@ export default function FeedDetail({navigation, route}: FeedDetailScreenProps) {
                           // style={{borderTopWidth:1, borderTopColor:'#ECECEC',}}
                           renderItem={({item, index}) => {
                             return (
-                              <View style={styles.childCmt}>
+                              <View style={[styles.childCmt, index == childData.length - 1 && {
+                                borderBottomLeftRadius:10,
+                                borderBottomRightRadius:10,
+                              }]}>
                                 <Content
                                   nickname={item.friendNickname}
                                   status={item.status}
@@ -615,9 +625,11 @@ export default function FeedDetail({navigation, route}: FeedDetailScreenProps) {
                 );
               }}
             />
-          </View>
-        )}
-        <View style={{height: Math.max(60, KBsize + 10)}} />
+          </View>}
+        </View>
+
+        {/* <View style={{height: Math.max(60, KBsize + 10)}} /> */}
+
         <View style={styles.newCmtView}>
           <View style={styles.newFeedTxtInputContain}>
             <TextInput
@@ -775,8 +787,9 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     backgroundColor: '#202020',
-    paddingHorizontal: 16,
-    paddingTop: 10,
+    // paddingHorizontal:16,
+    paddingTop:10,
+    flexDirection:'row',
   },
   feedView: {
     // marginHorizontal:16,

@@ -207,7 +207,9 @@ export default function FriendProfileModal(props: ProfileProps) {
         {friendshipRelation == 'true' && (
           <Pressable
             style={styles.btn}
-            onPress={() => setWhichPopup('whatAreYouDoing')}>
+            onPress={async () => 
+              await sendWhatAreYouDoing()
+              }>
             <Text style={styles.btnTxt}>지금 뭐해?</Text>
           </Pressable>
         )}
