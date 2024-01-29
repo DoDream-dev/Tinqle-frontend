@@ -109,6 +109,7 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
   const [showWhoseModal, setShowWhoseModal] = useState(0);
   const [whichPopup, setWhichPopup] = useState('');
   const [uploadBtnLoading, setUploadBtnLoading] = useState(false);
+  const [onFocus, setOnFocus] = useState(false);
 
   // useEffect(() => {
   //   const keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', (event) => {
@@ -617,8 +618,14 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
                           : undefined,
                     },
                   ]}
-                  onFocus={() => setPlaceholder('')}
-                  onBlur={() => setPlaceholder('지금 기분이 어때요?')}
+                  onFocus={() => {
+                    setOnFocus(true);
+                    setPlaceholder('');
+                  }}
+                  onBlur={() => {
+                    setOnFocus(false);
+                    setPlaceholder('지금 기분이 어때요?');
+                  }}
                   onChangeText={(text: string) => {
                     setFeedContent(text);
                   }}
@@ -674,11 +681,11 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
                     ? styles.sendNewFeed
                     : styles.sendNewFeedActivated
                 }
-                disabled={
-                  (feedContent.trim() == '' && !selectImg) || uploadBtnLoading
-                }
+                disabled={uploadBtnLoading}
                 onPress={async () => {
-                  setUploadBtnLoading(true);
+                  if (feedContent.trim() != '' || selectImg) {
+                    setUploadBtnLoading(true);
+                  }
                   Keyboard.dismiss();
                 }}>
                 {uploadBtnLoading ? (
@@ -690,6 +697,12 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
                     }}
                     autoPlay
                     loop
+                  />
+                ) : onFocus && feedContent.trim() == '' && !selectImg ? (
+                  <Feather
+                    name="chevron-down"
+                    size={24}
+                    style={{color: 'white'}}
                   />
                 ) : (
                   <Feather name="check" size={24} style={{color: 'white'}} />
