@@ -36,6 +36,7 @@ import EncryptedStorage from 'react-native-encrypted-storage/lib/typescript/Encr
 import LottieView from 'lottie-react-native';
 import {StatusBarHeight} from '../components/Safe';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {fcmService} from '../push_fcm';
 
 type FeedListScreenProps = NativeStackScreenProps<
   RootStackParamList,
@@ -244,6 +245,23 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
       getNewNotis();
     }, [refresh, newNotis, noti]),
   );
+
+  // code for check notice
+  useEffect(() => {
+    fcmService.register(
+      null,
+      (notify: any) => {
+        if (Platform.OS === 'android') {
+          setNewNotis(true);
+        }
+      },
+      (notify: any) => {
+        if (Platform.OS === 'ios') {
+          setNewNotis(true);
+        }
+      },
+    );
+  }, []);
 
   const getData = async () => {
     if (!isLast) {
