@@ -167,21 +167,21 @@ export default function FeedNavigation() {
     if (type !== null && redirectTargetId !== null) {
       noticeNavigation(type, redirectTargetId);
 
-      //read_notification
-      // const notificationId = await AsyncStorage.getItem('pushNot_id');
-      // try {
-      //   await axios.put(
-      //     `${Config.API_URL}/notifications/${notificationId}/click`,
-      //   );
-      // } catch (error) {
-      //   const errorResponse = (error as AxiosError<{message: string}>).response;
-      //   console.log(errorResponse.data);
-      // }
+      // read_notification
+      const notificationId = await AsyncStorage.getItem('pushNot_id');
+      try {
+        await axios.put(
+          `${Config.API_URL}/notifications/${notificationId}/click`,
+        );
+      } catch (error) {
+        const errorResponse = (error as AxiosError<{message: string}>).response;
+        console.log(errorResponse.data);
+      }
     }
 
     AsyncStorage.removeItem('pushNot_type');
     AsyncStorage.removeItem('pushNoti_redirectTargetId');
-    // AsyncStorage.removeItem('pushNot_id');
+    AsyncStorage.removeItem('pushNot_id');
   };
 
   useEffect(() => {

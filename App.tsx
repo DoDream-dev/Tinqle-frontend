@@ -22,6 +22,8 @@ import Animated, {
 import AnimatedButton from './src/components/AnimatedButton';
 import {useNavigation} from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios, {AxiosError} from 'axios';
+import Config from 'react-native-config';
 
 export type NotificationProps = {
   title: string;
@@ -33,9 +35,10 @@ export default function App() {
   const [isNotification, setIsNotification] = useState(false);
   const [notiData, setNotiData] = useState({});
 
-  const noticeNavigation_inapp_and = (
+  const noticeNavigation_inapp_and = async (
     type: String,
     redirectTargetId: String,
+    notificationId: String,
   ) => {
     // console.log('type : ', type);
     // console.log('redirectTargetId : ', redirectTargetId);
@@ -52,6 +55,15 @@ export default function App() {
       navigation.navigate('FeedDetail', {feedId: redirectTargetId});
     } else if (type == 'CREATE_KNOCK_FEED') {
       navigation.navigate('FeedDetail', {feedId: redirectTargetId});
+    }
+
+    try {
+      await axios.put(
+        `${Config.API_URL}/notifications/${notificationId}/click`,
+      );
+    } catch (error) {
+      const errorResponse = (error as AxiosError<{message: string}>).response;
+      console.log(errorResponse.data);
     }
   };
 
@@ -94,10 +106,12 @@ export default function App() {
       };
     });
 
-    const noticeNavigation = () => {
+    const noticeNavigation = async () => {
       const type = notiData.type;
       const redirectTargetId = notiData.redirectTargetId;
+      const notificationId = notiData.notificationId;
 
+      // console.log('### : ', notiData.notificationId);
       // console.log('type : ', type);
       // console.log('redirectTargetId : ', redirectTargetId);
 
@@ -114,6 +128,15 @@ export default function App() {
       } else if (type == 'CREATE_KNOCK_FEED') {
         navigation.navigate('FeedDetail', {feedId: redirectTargetId});
       }
+
+      try {
+        await axios.put(
+          `${Config.API_URL}/notifications/${notificationId}/click`,
+        );
+      } catch (error) {
+        const errorResponse = (error as AxiosError<{message: string}>).response;
+        console.log(errorResponse.data);
+      }
     };
 
     return isNotification ? (
@@ -122,6 +145,7 @@ export default function App() {
           style={styles.buttonArea}
           onPress={() => {
             noticeNavigation();
+            setIsNotification(false);
             // navigation.navigate('Notis');
           }}>
           <Image source={icon} style={styles.icon} />
@@ -171,6 +195,7 @@ export default function App() {
     link: String;
     type: String;
     redirectTargetId: String;
+    notificationId: String;
   }) => {
     // console.log('notify : ', notify);
     const pushNot_type = await AsyncStorage.getItem('pushNot_type');
@@ -185,6 +210,7 @@ export default function App() {
         title: notify.title,
         type: notify.type,
         redirectTargetId: notify.redirectTargetId,
+        notificationId: notify.notificationId,
       };
       setNotiData(data);
       setIsNotification(true);
@@ -206,6 +232,7 @@ export default function App() {
         title: notify.title,
         type: notify.data.type,
         redirectTargetId: notify.data.redirectTargetId,
+        notificationId: notify.data.notificationId,
       };
       setNotiData(data);
 
@@ -223,6 +250,7 @@ export default function App() {
             noticeNavigation_inapp_and(
               notify.data.type,
               notify.data.redirectTargetId,
+              notify.data.notificationId,
             );
           }
         },

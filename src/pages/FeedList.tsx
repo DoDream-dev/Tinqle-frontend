@@ -269,6 +269,7 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
     }
     setLoading(false);
   };
+
   const onEndReached = () => {
     if (!loading) {
       getData();
@@ -392,8 +393,9 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
 
   const openStateModal = async () => {
     const appstart = await AsyncStorage.getItem('app_start');
+    const pushNot_type = await AsyncStorage.getItem('pushNot_type');
 
-    if (appstart == 'true') {
+    if (appstart == 'true' && !pushNot_type) {
       setChangeStatus(true);
     }
 

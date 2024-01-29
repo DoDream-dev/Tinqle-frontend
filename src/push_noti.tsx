@@ -24,7 +24,7 @@ class LocalNotificationService {
             notification.data.redirectTargetId,
           );
           AsyncStorage.setItem('pushNot_type', notification.data.type);
-          // AsyncStorage.setItem('pushNot_id', notification.data.notification_id);
+          AsyncStorage.setItem('pushNot_id', notification.data.notificationId);
         }
 
         console.log('[LocalNotificationService] onNotification ', notification);
