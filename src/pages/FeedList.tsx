@@ -269,6 +269,7 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
     }
     setLoading(false);
   };
+
   const onEndReached = () => {
     if (!loading) {
       getData();

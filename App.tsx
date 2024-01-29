@@ -35,9 +35,10 @@ export default function App() {
   const [isNotification, setIsNotification] = useState(false);
   const [notiData, setNotiData] = useState({});
 
-  const noticeNavigation_inapp_and = (
+  const noticeNavigation_inapp_and = async (
     type: String,
     redirectTargetId: String,
+    notificationId: String,
   ) => {
     // console.log('type : ', type);
     // console.log('redirectTargetId : ', redirectTargetId);
@@ -54,6 +55,15 @@ export default function App() {
       navigation.navigate('FeedDetail', {feedId: redirectTargetId});
     } else if (type == 'CREATE_KNOCK_FEED') {
       navigation.navigate('FeedDetail', {feedId: redirectTargetId});
+    }
+
+    try {
+      await axios.put(
+        `${Config.API_URL}/notifications/${notificationId}/click`,
+      );
+    } catch (error) {
+      const errorResponse = (error as AxiosError<{message: string}>).response;
+      console.log(errorResponse.data);
     }
   };
 
@@ -222,6 +232,7 @@ export default function App() {
         title: notify.title,
         type: notify.data.type,
         redirectTargetId: notify.data.redirectTargetId,
+        notificationId: notify.data.notificationId,
       };
       setNotiData(data);
 
@@ -239,6 +250,7 @@ export default function App() {
             noticeNavigation_inapp_and(
               notify.data.type,
               notify.data.redirectTargetId,
+              notify.data.notificationId,
             );
           }
         },
