@@ -34,6 +34,7 @@ import ToastScreen from '../components/ToastScreen';
 import userSlice from '../slices/user';
 import EncryptedStorage from 'react-native-encrypted-storage/lib/typescript/EncryptedStorage';
 import LottieView from 'lottie-react-native';
+import {StatusBarHeight} from '../components/Safe';
 
 type FeedListScreenProps = NativeStackScreenProps<
   RootStackParamList,
@@ -403,29 +404,35 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
       <KeyboardAvoidingView
-        style={[{flex: 1, backgroundColor: '#CFD2D9'}]}
+        style={[
+          {
+            flex: 1,
+            backgroundColor: '#202020',
+          },
+        ]}
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-        keyboardVerticalOffset={103}>
+        keyboardVerticalOffset={StatusBarHeight + 44}>
         <View
           style={{flex: 1, alignItems: 'center', backgroundColor: '#202020'}}>
           <View style={[styles.entire]}>
             {/* <Pressable
-          onPress={async () => {
-            console.log('pressed!');
+              onPress={async () => {
+                console.log('pressed!');
+                console.log('@@', StatusBarHeight + 44);
 
-            //알림확인
-            // const response = await axios.post(
-            //   `${Config.API_URL}/test/push/self`,
-            //   {},
-            // );
-            // console.log(response.status);
-          }}
-          style={{
-            height: 100,
-            width: 500,
-            backgroundColor: 'blue',
-          }}
-        /> */}
+                //알림확인
+                // const response = await axios.post(
+                //   `${Config.API_URL}/test/push/self`,
+                //   {},
+                // );
+                // console.log(response.status);
+              }}
+              style={{
+                height: 100,
+                width: 500,
+                backgroundColor: 'blue',
+              }}
+            /> */}
             <FlatList
               data={feedData}
               style={[styles.feedList]}
