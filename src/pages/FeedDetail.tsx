@@ -113,6 +113,7 @@ export default function FeedDetail({navigation, route}: FeedDetailScreenProps) {
   const [whichPopup, setWhichPopup] = useState('');
   const [uploadBtnLoading, setUploadBtnLoading] = useState(false);
   const [deleteModal, setDeleteModal] = useState(false);
+  const [onFocus, setOnFocus] = useState(false);
 
   useFocusEffect(
     useCallback(() => {
@@ -662,6 +663,8 @@ export default function FeedDetail({navigation, route}: FeedDetailScreenProps) {
           <View style={styles.newFeedTxtInputContain}>
             <TextInput
               onFocus={() => {
+                setOnFocus(true);
+
                 if (writeChildCmt === -1) {
                   return;
                 }
@@ -690,7 +693,10 @@ export default function FeedDetail({navigation, route}: FeedDetailScreenProps) {
                       : undefined,
                 },
               ]}
-              onBlur={() => setWriteChildCmt(-1)}
+              onBlur={() => {
+                setOnFocus(false);
+                setWriteChildCmt(-1);
+              }}
               onChangeText={(text: string) => {
                 setCmtContent(text);
               }}
@@ -719,12 +725,18 @@ export default function FeedDetail({navigation, route}: FeedDetailScreenProps) {
                 ? styles.sendNewCmt
                 : styles.sendNewCmtActivated
             }
-            disabled={cmtContent.trim() == '' || uploadBtnLoading}
+            disabled={uploadBtnLoading}
             onPress={async () => {
-              setUploadBtnLoading(true);
+              if (cmtContent.trim() != '') {
+                setUploadBtnLoading(true);
+              }
               Keyboard.dismiss();
             }}>
-            <Feather name="check" size={24} style={{color: 'white'}} />
+            {onFocus && cmtContent.trim() == '' ? (
+              <Feather name="chevron-down" size={24} style={{color: 'white'}} />
+            ) : (
+              <Feather name="check" size={24} style={{color: 'white'}} />
+            )}
           </Pressable>
         </View>
         <M visible={deleteModal} transparent={true}>
