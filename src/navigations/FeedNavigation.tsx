@@ -28,6 +28,7 @@ import axios, {AxiosError} from 'axios';
 import Config from 'react-native-config';
 import {useNavigation} from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import messaging from '@react-native-firebase/messaging';
 
 export type FeedStackParamList = {
   FeedList: undefined;
@@ -103,6 +104,17 @@ export default function FeedNavigation() {
       if (deviceNoti) {
         // 기기는 알림 허용 상태
         setIsEnabled(true);
+        const fcmToken = await messaging().getToken();
+
+        try {
+          await axios.post(`${Config.API_URL}/accounts/me/fcm`, {
+            fcmToken: fcmToken,
+          });
+        } catch (error) {
+          const errorResponse = (error as AxiosError<{message: string}>)
+            .response;
+          console.log(errorResponse.data);
+        }
       } else {
         // 기기 허용 필요
         if (Platform.OS === 'ios') {
@@ -121,7 +133,7 @@ export default function FeedNavigation() {
                   buttonNegative: '취소',
                   buttonPositive: '확인',
                 },
-              ).then(response_2 => {
+              ).then(async response_2 => {
                 if (response_2 === 'never_ask_again') {
                   // 다시 보지 않음 이면 설정으로 이동
                   Linking.openSettings();
@@ -129,6 +141,18 @@ export default function FeedNavigation() {
                   // 팝업에서 허용을 누르면
                   setIsEnabled(true);
                   setDeviceNoti(true);
+                  const fcmToken = await messaging().getToken();
+
+                  try {
+                    await axios.post(`${Config.API_URL}/accounts/me/fcm`, {
+                      fcmToken: fcmToken,
+                    });
+                  } catch (error) {
+                    const errorResponse = (
+                      error as AxiosError<{message: string}>
+                    ).response;
+                    console.log(errorResponse.data);
+                  }
                 }
               });
             }
@@ -191,13 +215,26 @@ export default function FeedNavigation() {
     };
 
     // Function to run when the app state changes
-    const handleAppStateChange = nextAppState => {
+    const handleAppStateChange = async nextAppState => {
       if (
         appState.current.match(/inactive|background/) &&
         nextAppState === 'active'
       ) {
         console.log('App returned to the foreground on YourScreen');
         checkNotiPermission();
+
+        try {
+          const fcmToken = await messaging().getToken();
+          if (fcmToken) {
+            await axios.post(`${Config.API_URL}/accounts/me/fcm`, {
+              fcmToken: fcmToken,
+            });
+          }
+        } catch (error) {
+          const errorResponse = (error as AxiosError<{message: string}>)
+            .response;
+          console.log(errorResponse.data);
+        }
       }
       appState.current = nextAppState;
     };
