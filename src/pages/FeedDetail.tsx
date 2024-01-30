@@ -499,7 +499,7 @@ export default function FeedDetail({navigation, route}: FeedDetailScreenProps) {
           flexDirection:'row', 
           alignItems:'flex-start',
           marginBottom:Math.max(50, KBsize)}}>
-          {cmtData.length!= 0 && <View style={styles.commentView}>
+          <View style={styles.commentView}>
             <FlatList
               refreshControl={
                 <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
@@ -625,7 +625,7 @@ export default function FeedDetail({navigation, route}: FeedDetailScreenProps) {
                 );
               }}
             />
-          </View>}
+          </View>
         </View>
         {/* <View style={{height: Math.max(60, KBsize + 10)}} /> */}
         <View style={styles.newCmtView}>
