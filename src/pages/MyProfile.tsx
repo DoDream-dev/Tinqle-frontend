@@ -45,6 +45,7 @@ export default function MyProfile() {
   // modal or not
   const [chageName, setChangeName] = useState(false);
   const [changeStatus, setChangeStatus] = useState(false);
+  const [changeId, setChangeId] = useState(false);
   const [policy, setPolicy] = useState('');
   const [deleteAccount, setDeleteAccount] = useState(false);
 
@@ -54,7 +55,8 @@ export default function MyProfile() {
   const [popup, setPopup] = useState(false);
 
   // input value
-  const [chageNameVal, setChangeNameVal] = useState('');
+  const [changeNameVal, setChangeNameVal] = useState('');
+  const [changeIdVal, setChangeIdVal] = useState('');
   const [writeNoteVal, setwriteNoteVal] = useState('');
   const [askFriendMsgVal, setAskFriendMsgVal] = useState('');
 
@@ -62,6 +64,8 @@ export default function MyProfile() {
   const [status, setStatus] = useState('');
   const [name, setName] = useState('');
   const [profileImg, setProfileImg] = useState(null);
+
+  const [duplicate, setDuplicate] = useState('YET');
 
   const inp1 = useRef();
   const inp2 = useRef();
@@ -94,6 +98,7 @@ export default function MyProfile() {
       try {
         const response = await axios.get(`${Config.API_URL}/friendships`);
         setMyCode(response.data.data.code);
+        setChangeIdVal(response.data.data.code);
       } catch (error) {
         const errorResponse = (error as AxiosError<{message: string}>).response;
         console.log(errorResponse.data);
@@ -224,7 +229,7 @@ export default function MyProfile() {
 
   const lastFocus = () => {
     if (Platform.OS === 'android' && inp1.current) {
-      const length = chageNameVal.length;
+      const length = changeNameVal.length;
       inp1.current.setSelection(length, length);
     }
   };
@@ -269,6 +274,40 @@ export default function MyProfile() {
     } catch (error) {
       const errorResponse = (error as AxiosError<{message: string}>).response;
       console.log(errorResponse.data);
+    }
+  };
+
+  const idChange = async () => {
+    try {
+      setChangeId(false);
+    } catch (error) {
+
+    }
+  }
+
+  const checkDuplicate = async () => {
+    const reg = new RegExp(`^[a-z0-9]{4,12}$`);
+    if (changeIdVal == myCode) {
+      setDuplicate('SAME');
+    } else {
+      if (!reg.test(changeIdVal)) {
+        setDuplicate('NO');
+      } else {
+        try {
+          const response = await axios.get(
+            `${Config.API_URL}/accounts/check/code/${changeIdVal}`,
+          );
+          if (response.data.data.isDuplicated) {
+            setDuplicate('CAN');
+          } else {
+            setDuplicate('CANNOT');
+          }
+        } catch (error) {
+          const errorResponse = (error as AxiosError<{message: string}>).response;
+          console.log(errorResponse);
+          setDuplicate('CANNOT');
+        }
+      }
     }
   };
 
@@ -345,6 +384,13 @@ export default function MyProfile() {
         <Pressable
           style={styles.settingBtn}
           onPress={() =>
+            setChangeId(true)
+          }>
+          <Text style={styles.settingBtnTxt}>내 아이디 변경하기</Text>
+        </Pressable>
+        <Pressable
+          style={styles.settingBtn}
+          onPress={() =>
             Linking.openURL(
               'https://docs.google.com/forms/d/1qmmMGz6k5l4nVgTpvazSxXSV8XXoNH0X43ocvu45_6A/edit?usp=drivesdk',
             )
@@ -410,7 +456,7 @@ export default function MyProfile() {
           <Pressable
             style={styles.modalView}
             onPress={e => e.stopPropagation()}>
-            <Text style={styles.modalTitleTxt}>내 이름 바꾸기</Text>
+            <Text style={styles.modalTitleTxt}>내 이름 변경하기</Text>
             <View style={styles.changeView}>
               <TextInput
                 ref={inp1}
@@ -420,10 +466,10 @@ export default function MyProfile() {
                 }}
                 blurOnSubmit={true}
                 maxLength={10}
-                value={chageNameVal}
+                value={changeNameVal}
                 autoFocus={Platform.OS === 'ios' ? true : false}
                 onSubmitEditing={() => {
-                  rename(chageNameVal.trim());
+                  rename(changeNameVal.trim());
                 }}
                 onFocus={lastFocus}
               />
@@ -440,13 +486,13 @@ export default function MyProfile() {
               <View style={{width: 8}}></View>
               <Pressable
                 style={styles.btn}
-                disabled={chageNameVal.trim() == ''}
+                disabled={changeNameVal.trim() == ''}
                 onPress={() => {
-                  if (chageNameVal != '') {
-                    if (chageNameVal == name) {
+                  if (changeNameVal != '') {
+                    if (changeNameVal == name) {
                       setChangeName(false);
                     } else {
-                      rename(chageNameVal.trim());
+                      rename(changeNameVal.trim());
                     }
                   }
                 }}>
@@ -493,7 +539,84 @@ export default function MyProfile() {
           </Pressable>
         </Pressable>
       </Modal>
-
+      <Modal
+        isVisible={changeId}
+        onBackButtonPress={()=>{setChangeId(false); setChangeIdVal(myCode);}}
+        // hasBackdrop={false}
+        animationIn="fadeIn" // Set the animation type to fade-in
+        animationInTiming={600}
+        onDismiss={() => setChangeId(false)}
+        style={{margin: 0}}>
+        <Pressable
+          onPress={() => setChangeId(false)}
+          style={styles.modalBGView2}>
+          <Pressable
+            style={[styles.modalView2 /*{width:windowWidth}*/]}
+            onPress={e => e.stopPropagation()}>
+            <View style={styles.idModalHeader}>
+              <Text style={styles.idModalHeaderTxt}>내 아이디 정하기</Text>
+            </View>
+            <View style={styles.idModalBody}>
+              <TextInput
+                // ref={inp1}
+                onChangeText={(text: string) => {
+                  setChangeIdVal(text);
+                  if (duplicate != 'YET') setDuplicate('YET');
+                }}
+                // blurOnSubmit={true}
+                maxLength={12}
+                value={changeIdVal}
+                // autoFocus={true}
+                // onSubmitEditing={()=>{
+                //   if (whoseProfile == 0) {rename(chageNameVal.trim(), undefined);}
+                //   else {rename(chageNameVal.trim(), accountId);}
+                // }}
+                style={styles.idModalBodyTxtInp}
+              />
+              <Pressable
+                style={styles.idModalBodyBtn}
+                onPress={() => {
+                  checkDuplicate();
+                }}>
+                <Text style={styles.idModalBodyBtnTxt}>중복확인</Text>
+              </Pressable>
+            </View>
+            {duplicate == 'YET' && <View style={{height: 12}}></View>}
+            {duplicate == 'CANNOT' && (
+              <Text style={styles.idModalBodyBtnTxt}>
+                이미 존재하는 아이디예요.
+              </Text>
+            )}
+            {duplicate == 'CAN' && (
+              <Text style={styles.idModalBodyBtnTxt}>
+                사용할 수 있는 아이디예요.
+              </Text>
+            )}
+            {duplicate == 'NO' && (
+              <Text style={styles.idModalBodyBtnTxt}>
+                아이디는 4~12자, 영문 소문자나 숫자만 가능합니다.
+              </Text>
+            )}
+            {duplicate == 'SAME' && (
+              <Text style={styles.idModalBodyBtnTxt}>
+                현재 사용하고 있는 아이디예요.
+              </Text>
+            )}
+            <Pressable
+              style={
+                duplicate == 'CAN'
+                  ? styles.idModalFooterBtnActive
+                  : styles.idModalFooterBtn
+              }
+              onPress={() => {
+                idChange();
+              }}
+              disabled={duplicate != 'CAN'}>
+              <Text style={styles.idModalFooterBtnTxt}>완료</Text>
+            </Pressable>
+          </Pressable>
+        </Pressable>
+      </Modal>
       {/* modal for changin status */}
       {/* <Modal isVisible={changeStatus} backdropColor='#222222' backdropOpacity={0.5} onBackButtonPress={()=>setChangeStatus(false)}>
         <Pressable style={styles.modalBGView} onPress={()=>{Keyboard.dismiss(); setChangeStatus(false);}}>
@@ -673,6 +796,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 36,
   },
+  modalBGView2: {
+    flex: 1,
+    justifyContent: 'center',
+    paddingHorizontal: 36,
+    backgroundColor: '#202020',
+  },
   modalView: {
     backgroundColor: '#333333',
     borderRadius: 10,
@@ -689,16 +818,11 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   modalView2: {
-    backgroundColor: '#FFFFFF',
+    paddingHorizontal: 16,
     borderRadius: 10,
-    width: 303,
-    height: 580,
-    marginHorizontal: 36,
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: 20,
-    flexWrap: 'wrap',
-    flexDirection: 'row',
+    backgroundColor: '#333333',
+    paddingTop: 30,
+    paddingBottom: 24,
   },
   statusSelect: {
     borderRadius: 30,
@@ -783,5 +907,66 @@ const styles = StyleSheet.create({
     color: '#F0F0F0',
     fontWeight: '600',
     fontSize: 15,
+  },
+  idModalHeader: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  idModalHeaderTxt: {
+    color: '#F0F0F0',
+    fontWeight: '600',
+    fontSize: 15,
+  },
+  idModalBody: {
+    backgroundColor: '#202020',
+    marginBottom: 4,
+    flexDirection: 'row',
+    paddingHorizontal: 8,
+    paddingVertical: 6,
+    borderRadius: 5,
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  idModalBodyTxtInp: {
+    color: '#F0F0F0',
+    fontWeight: '400',
+    fontSize: 15,
+    padding: 0,
+    flex: 1,
+  },
+  idModalBodyBtn: {
+    backgroundColor: '#A55FFF',
+    padding: 5,
+    marginLeft: 5,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 5,
+  },
+  idModalBodyBtnTxt: {
+    color: '#F0F0F0',
+    fontWeight: '500',
+    fontSize: 13,
+  },
+  idModalFooterBtn: {
+    marginTop: 8,
+    backgroundColor: '#888888',
+    borderRadius: 5,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: 13,
+  },
+  idModalFooterBtnActive: {
+    marginTop: 8,
+    backgroundColor: '#A55FFF',
+    borderRadius: 5,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: 13,
+  },
+  idModalFooterBtnTxt: {
+    fontSize: 15,
+    fontWeight: '600',
+    color: '#F0F0F0',
   },
 });

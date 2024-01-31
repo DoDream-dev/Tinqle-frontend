@@ -431,7 +431,7 @@ export default function SignIn() {
             )}
             {duplicate == 'NO' && (
               <Text style={styles.idModalBodyBtnTxt}>
-                아이디는 4~12자, 영문이나 숫자로만 가능합니다.
+                아이디는 4~12자, 영문 소문자나 숫자만 가능합니다.
               </Text>
             )}
             <Pressable

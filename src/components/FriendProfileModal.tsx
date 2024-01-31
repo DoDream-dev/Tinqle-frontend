@@ -269,7 +269,7 @@ export default function FriendProfileModal(props: ProfileProps) {
           <Pressable
             style={styles.modalView}
             onPress={e => e.stopPropagation()}>
-            <Text style={styles.modalTitleTxt}>친구 이름 바꾸기</Text>
+            <Text style={styles.modalTitleTxt}>친구 이름 변경하기</Text>
             <View style={styles.changeView}>
               <TextInput
                 ref={inp1}
