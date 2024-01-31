@@ -1,3 +1,4 @@
+/* eslint-disable react/self-closing-comp */
 import React, {useState, useRef, useEffect, useCallback} from 'react';
 import {
   StyleSheet,
@@ -23,8 +24,8 @@ import ToastScreen from './ToastScreen';
 type ProfileProps = {
   showWhoseModal: number;
   setShowWhoseModal: React.Dispatch<React.SetStateAction<number>>;
-  setDeleteFriend: React.Dispatch<React.SetStateAction<number>>;
 };
+
 export default function FriendProfileModal(props: ProfileProps) {
   const showWhoseModal = props.showWhoseModal;
   const setShowWhoseModal = props.setShowWhoseModal;
@@ -37,8 +38,8 @@ export default function FriendProfileModal(props: ProfileProps) {
   const [friendshipId, setFriendshipId] = useState(-1);
   const [friendshipRequestId, setFriendshipRequestId] = useState(0);
   const [profileImg, setProfileImg] = useState<string | null>(null);
-  const setDeleteFriend = props.setDeleteFriend;
   const [whichPopup, setWhichPopup] = useState('');
+  const [deleteFriend, setDeleteFriend] = useState(false);
 
   const inp1 = useRef();
 
@@ -161,6 +162,22 @@ export default function FriendProfileModal(props: ProfileProps) {
     }
   };
 
+  const deleteFriends = async () => {
+    try {
+      // console.log(friendshipId);
+      const response = await axios.delete(
+        `${Config.API_URL}/friendships/${friendshipId}`,
+      );
+      setWhichPopup('deletedFriend');
+      // setPopupName(name);
+      setDeleteFriend(false);
+      setShowWhoseModal(0);
+    } catch (error) {
+      const errorResponse = (error as AxiosError<{message: string}>).response;
+      console.log(errorResponse.data);
+    }
+  };
+
   return (
     <Modal
       isVisible={showWhoseModal != 0 && showWhoseModal != undefined}
@@ -197,8 +214,8 @@ export default function FriendProfileModal(props: ProfileProps) {
           <Pressable
             style={styles.btnGray}
             onPress={() => {
-              setDeleteFriend(friendshipId);
-              setShowWhoseModal(0);
+              //삭제 모달 보여주기
+              setDeleteFriend(true);
             }}>
             <Text style={styles.btnTxt}>친구 삭제하기</Text>
           </Pressable>
@@ -207,9 +224,7 @@ export default function FriendProfileModal(props: ProfileProps) {
         {friendshipRelation == 'true' && (
           <Pressable
             style={styles.btn}
-            onPress={async () => 
-              await sendWhatAreYouDoing()
-              }>
+            onPress={async () => await sendWhatAreYouDoing()}>
             <Text style={styles.btnTxt}>지금 뭐해?</Text>
           </Pressable>
         )}
@@ -233,6 +248,7 @@ export default function FriendProfileModal(props: ProfileProps) {
           </Pressable>
         )}
       </View>
+
       <Modal
         isVisible={chageName}
         onBackButtonPress={() => setChangeName(false)}
@@ -330,6 +346,43 @@ export default function FriendProfileModal(props: ProfileProps) {
           />
         )}
       </View>
+
+      <Modal
+        isVisible={deleteFriend}
+        // onModalWillShow={getProfile}
+        hasBackdrop={true}
+        onBackdropPress={() => setDeleteFriend(false)}
+        // coverScreen={false}
+        onBackButtonPress={() => setDeleteFriend(false)}
+        // backdropColor='#222222' backdropOpacity={0.5}
+        // style={[styles.entire, {marginVertical:(Dimensions.get('screen').height - 400)/2}]}
+      >
+        {/* <View style={styles.modalBGView}>   */}
+        <View style={styles.modalView}>
+          <Text style={styles.modalTitleTxt}>친구를 삭제하시겠어요?</Text>
+          <Text style={styles.modalContentTxt}>
+            상대방에게 알림이 가지 않으니 안심하세요.
+          </Text>
+          <View style={styles.btnView}>
+            <Pressable
+              style={styles.btnGray}
+              onPress={() => {
+                setDeleteFriend(false);
+              }}>
+              <Text style={styles.btnTxt}>취소</Text>
+            </Pressable>
+            <View style={{width: 8}}></View>
+            <Pressable
+              style={styles.btn}
+              onPress={() => {
+                deleteFriends();
+              }}>
+              <Text style={styles.btnTxt}>네, 삭제할게요.</Text>
+            </Pressable>
+          </View>
+        </View>
+        {/* </View> */}
+      </Modal>
     </Modal>
   );
 }
@@ -413,6 +466,13 @@ const styles = StyleSheet.create({
     height: 40,
     paddingHorizontal: 10,
     marginBottom: 20,
+    marginTop: 10,
+  },
+  modalContentTxt: {
+    color: '#F0F0F0',
+    fontSize: 15,
+    fontWeight: '400',
+    marginBottom: 10,
     marginTop: 10,
   },
 });
