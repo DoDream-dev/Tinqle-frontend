@@ -599,19 +599,23 @@ export default function MyProfile() {
             )}
             {duplicate == 'SAME' && (
               <Text style={styles.idModalBodyBtnTxt}>
-                현재 사용하고 있는 아이디예요.
+                사용할 수 있는 아이디예요.
               </Text>
             )}
             <Pressable
               style={
-                duplicate == 'CAN'
+                (duplicate == 'CAN' || duplicate == 'SAME')
                   ? styles.idModalFooterBtnActive
                   : styles.idModalFooterBtn
               }
               onPress={() => {
-                idChange();
+                if (duplicate == 'SAME') {
+                  setChangeId(false);
+                } else {
+                  idChange();
+                }
               }}
-              disabled={duplicate != 'CAN'}>
+              disabled={duplicate != 'CAN' && duplicate != 'SAME'}>
               <Text style={styles.idModalFooterBtnTxt}>완료</Text>
             </Pressable>
           </Pressable>
