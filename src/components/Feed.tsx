@@ -1,7 +1,14 @@
 import React, {useState} from 'react';
-import {StyleSheet, Text, View} from 'react-native';
+import {Pressable, StyleSheet, Text, View} from 'react-native';
 import ContentFeedBottom from './ContentFeedBottom';
 import Content from './Content';
+import _ from 'lodash';
+import Config from 'react-native-config';
+import axios, { AxiosError } from 'axios';
+import { throttleTime } from '../hooks/Throttle';
+import userSlice from '../slices/user';
+import { useNavigation } from '@react-navigation/native';
+import { Shadow } from 'react-native-shadow-2';
 
 type EmoticonsProps = {
   smileEmoticonCount: number;
@@ -31,6 +38,9 @@ type FeedProps = {
   showWhoseModal: number;
   setShowWhoseModal: React.Dispatch<React.SetStateAction<number>>;
   setWhichPopup: React.Dispatch<React.SetStateAction<string>>;
+  deleteFeedId: number;
+  setDeleteFeedId: React.Dispatch<React.SetStateAction<number>>;
+  setRefresh: React.Dispatch<React.SetStateAction<boolean>>;
   // heartEmoticonNicknameList:string[];
   // smileEmoticonNicknameList:string[];
   // sadEmoticonNicknameList:string[];
@@ -48,10 +58,56 @@ export default function Feed(props: FeedProps) {
   const accountId = props.accountId;
   const imageURL = props.imageURL;
   const profileImg = props.profileImg;
-  const [a, setA] = useState(-1);
   const showWhoseModal = props.showWhoseModal;
   const setShowWhoseModal = props.setShowWhoseModal;
   const setWhichPopup = props.setWhichPopup;
+
+  const navigation = useNavigation();
+
+  const deleteFeed = _.throttle(async () => {
+    try {
+      if (imageURL[0] != null) {
+        const response = await axios.delete(
+          `${Config.API_URL}/images/feed?fileUrls=${imageURL[0]}`,
+        );
+        console.log('img del:', response.data.data);
+      }
+      const response = await axios.delete(
+        `${Config.API_URL}/feeds/${props.deleteFeedId}`,
+        {},
+      );
+      // console.log(response.data.data);
+      if (response.data.data.isDeleted) {
+        if (detail) navigation.goBack();
+        else {
+          props.setRefresh(true);
+          props.setRefresh(false);
+        }
+        // else rese
+      }
+    } catch (error) {
+      const errorResponse = (error as AxiosError<{message: string}>).response;
+      if (
+        errorResponse?.data.statusCode == 4030 ||
+        errorResponse?.data.statusCode == 4010
+      ) {
+        console.log('already deleted');
+        if (detail) navigation.goBack();
+        else {
+          props.setRefresh(true);
+          props.setRefresh(false);
+        }
+      }
+      if (errorResponse?.data.status == 500) {
+        dispatch(
+          userSlice.actions.setToken({
+            accessToken: '',
+          }),
+        );
+      }
+      console.log(errorResponse.data);
+    }
+  }, throttleTime);
 
   return (
     <View style={styles.entire}>
@@ -63,14 +119,13 @@ export default function Feed(props: FeedProps) {
         accountId={accountId}
         mine={mine}
         imageURL={imageURL}
-        detail={detail}
-        cmt={false}
-        child={setA}
-        cmtId={-1}
         profileImg={profileImg}
         showWhoseModal={showWhoseModal}
         setShowWhoseModal={setShowWhoseModal}
         setWhichPopup={setWhichPopup}
+        feedId={props.feedId}
+        deleteFeedId={props.deleteFeedId}
+        setDeleteFeedId={props.setDeleteFeedId}
       />
       <ContentFeedBottom
         mine={mine}
@@ -81,6 +136,14 @@ export default function Feed(props: FeedProps) {
         feedId={props.feedId}
         whoReact={props.whoReact}
       />
+      {props.deleteFeedId == props.feedId && <Pressable 
+        style={{zIndex:1,flex:1, position:'absolute', right:25, top:20}}
+        onPress={(e) => {e.stopPropagation(); deleteFeed();}}
+      >
+        <Shadow distance={2} startColor="rgba(0, 0, 0, 0.10)">
+          <View style={[styles.modalView]}><Text style={styles.modalText}>삭제하기</Text></View>
+        </Shadow>
+      </Pressable>}
     </View>
   );
 }
@@ -90,4 +153,20 @@ const styles = StyleSheet.create({
     paddingBottom: 12,
     width: '100%',
   },
+  modalView:{
+    backgroundColor:'#202020',
+    paddingHorizontal:12,
+    paddingVertical:9,
+    borderRadius:5,
+    elevation:1
+  },
+  modalText:{
+    color:'#F0F0F0',
+    fontSize:15,
+    fontWeight:'400'
+  }
 });
+function dispatch(arg0: { payload: any; type: "user/setToken"; }) {
+  throw new Error('Function not implemented.');
+}
+

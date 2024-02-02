@@ -79,6 +79,7 @@ export default function AppInner() {
   const isLoggedIn = useSelector(
     (state: RootState) => !!state.user.accessToken,
   );
+  const [deleteFeedId, setDeleteFeedId] = useState(-1);
 
   useEffect(() => {
     SplashScreen.hide();
