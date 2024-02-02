@@ -47,11 +47,14 @@ export default function MyProfile() {
   const [changeStatus, setChangeStatus] = useState(false);
   const [policy, setPolicy] = useState('');
   const [deleteAccount, setDeleteAccount] = useState(false);
+  const [idChange, setIdChange] = useState(false);
 
   // const [checkNoteBox, setCheckNoteBox] = useState(false);
   const [writeNote, setWriteNote] = useState(false);
   const [askFriendMsg, setAskFriendMsg] = useState(false);
   const [popup, setPopup] = useState(false);
+  const [duplicate, setDuplicate] = useState('YET');
+  const [id, setID] = useState('');
 
   // input value
   const [chageNameVal, setChangeNameVal] = useState('');
@@ -227,6 +230,10 @@ export default function MyProfile() {
       const length = chageNameVal.length;
       inp1.current.setSelection(length, length);
     }
+    if (Platform.OS === 'android' && inp2.current) {
+      const length = id.length;
+      inp2.current.setSelection(length, length);
+    }
   };
 
   const LogOut = async () => {
@@ -269,6 +276,29 @@ export default function MyProfile() {
     } catch (error) {
       const errorResponse = (error as AxiosError<{message: string}>).response;
       console.log(errorResponse.data);
+    }
+  };
+
+  //check ID duplicate
+  const checkDuplicate = async () => {
+    const reg = new RegExp(`^[a-z0-9]{4,12}$`);
+    if (!reg.test(id)) {
+      setDuplicate('NO');
+    } else {
+      try {
+        const response = await axios.get(
+          `${Config.API_URL}/accounts/check/code/${id}`,
+        );
+        if (response.data.data.isDuplicated) {
+          setDuplicate('CAN');
+        } else {
+          setDuplicate('CANNOT');
+        }
+      } catch (error) {
+        const errorResponse = (error as AxiosError<{message: string}>).response;
+        console.log(errorResponse);
+        setDuplicate('CANNOT');
+      }
     }
   };
 
@@ -341,6 +371,13 @@ export default function MyProfile() {
             )
           }>
           <Text style={styles.settingBtnTxt}>의견 남기기</Text>
+        </Pressable>
+        <Pressable
+          style={styles.settingBtn}
+          onPress={() => {
+            setIdChange(true);
+          }}>
+          <Text style={styles.settingBtnTxt}>내 아이디 변경하기</Text>
         </Pressable>
         <Pressable
           style={styles.settingBtn}
@@ -492,6 +529,87 @@ export default function MyProfile() {
             </View>
           </Pressable>
         </Pressable>
+      </Modal>
+
+      {/* id change modal */}
+      <Modal
+        isVisible={idChange}
+        avoidKeyboard={true}
+        animationIn="fadeIn"
+        onDismiss={() => setIdChange(false)}
+        onBackButtonPress={() => setIdChange(false)}
+        onBackdropPress={() => setIdChange(false)}
+        onModalShow={() => {
+          if (Platform.OS === 'android') {
+            inp2.current.focus();
+          }
+        }}>
+        <View
+          style={[styles.modalView2]}
+          // onPress={e => e.stopPropagation()}
+        >
+          <View style={styles.idModalHeader}>
+            <Text style={styles.idModalHeaderTxt}>내 아이디 정하기</Text>
+          </View>
+          <View style={styles.idModalBody}>
+            <TextInput
+              ref={inp2}
+              onChangeText={(text: string) => {
+                setID(text);
+                if (duplicate != 'YET') setDuplicate('YET');
+              }}
+              // blurOnSubmit={true}
+              maxLength={12}
+              value={id}
+              autoFocus={Platform.OS === 'ios' ? true : false}
+              style={styles.idModalBodyTxtInp}
+              blurOnSubmit={true}
+              onFocus={lastFocus}
+            />
+            <Pressable
+              style={styles.idModalBodyBtn}
+              onPress={() => {
+                checkDuplicate();
+              }}>
+              <Text style={styles.idModalBodyBtnTxt}>중복확인</Text>
+            </Pressable>
+          </View>
+          <View style={{height: 20}}>
+            {duplicate == 'CANNOT' && (
+              <Text style={styles.idModalBodyBtnTxt}>
+                {' 이미 존재하는 아이디예요.'}
+              </Text>
+            )}
+            {duplicate == 'CAN' && (
+              <Text style={styles.idModalBodyBtnTxt}>
+                {' 사용할 수 있는 아이디예요.'}
+              </Text>
+            )}
+            {duplicate == 'NO' && (
+              <Text style={styles.idModalBodyBtnTxt}>
+                {' 아이디는 4~12자, 영문이나 숫자로만 가능합니다.'}
+              </Text>
+            )}
+          </View>
+          <View style={styles.modalBtnView}>
+            <Pressable
+              style={styles.btnGray}
+              onPress={() => {
+                setIdChange(false);
+              }}>
+              <Text style={styles.btnTxt}>취소</Text>
+            </Pressable>
+            <View style={{width: 8}}></View>
+            <Pressable
+              style={duplicate != 'CAN' ? styles.btnGray : styles.btn}
+              disabled={duplicate != 'CAN'}
+              onPress={() => {
+                console.log('아이디 바꾸기 id', id);
+              }}>
+              <Text style={styles.btnTxt}>완료</Text>
+            </Pressable>
+          </View>
+        </View>
       </Modal>
 
       {/* modal for changin status */}
@@ -689,16 +807,11 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   modalView2: {
-    backgroundColor: '#FFFFFF',
+    paddingHorizontal: 16,
     borderRadius: 10,
-    width: 303,
-    height: 580,
-    marginHorizontal: 36,
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: 20,
-    flexWrap: 'wrap',
-    flexDirection: 'row',
+    backgroundColor: '#333333',
+    paddingTop: 30,
+    paddingBottom: 24,
   },
   statusSelect: {
     borderRadius: 30,
@@ -730,6 +843,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   modalBtnView: {
+    margin: 0,
     flexDirection: 'row',
     width: '100%',
   },
@@ -783,5 +897,70 @@ const styles = StyleSheet.create({
     color: '#F0F0F0',
     fontWeight: '600',
     fontSize: 15,
+  },
+  idModalHeader: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  idModalHeaderTxt: {
+    color: '#F0F0F0',
+    fontWeight: '600',
+    fontSize: 15,
+  },
+  idModalBody: {
+    backgroundColor: '#202020',
+    marginBottom: 4,
+    flexDirection: 'row',
+    paddingHorizontal: 8,
+    paddingVertical: 6,
+    borderRadius: 5,
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  idModalBodyTxtInp: {
+    color: '#F0F0F0',
+    fontWeight: '400',
+    fontSize: 15,
+    padding: 0,
+    flex: 1,
+  },
+  modalBGView2: {
+    justifyContent: 'center',
+    margin: 20,
+  },
+  idModalBodyBtn: {
+    backgroundColor: '#A55FFF',
+    padding: 5,
+    marginLeft: 5,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 5,
+  },
+  idModalBodyBtnTxt: {
+    color: '#F0F0F0',
+    fontWeight: '500',
+    fontSize: 13,
+  },
+  idModalFooterBtn: {
+    marginTop: 8,
+    backgroundColor: '#888888',
+    borderRadius: 5,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: 13,
+  },
+  idModalFooterBtnActive: {
+    marginTop: 8,
+    backgroundColor: '#A55FFF',
+    borderRadius: 5,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: 13,
+  },
+  idModalFooterBtnTxt: {
+    fontSize: 15,
+    fontWeight: '600',
+    color: '#F0F0F0',
   },
 });
