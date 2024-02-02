@@ -207,7 +207,7 @@ export default function FeedNavigation() {
       <Stack.Screen
         name="FeedList"
         component={FeedList}
-        options={({navigation}) => ({
+        options={({navigation, route}) => ({
           title: 'tincle',
           headerTitleAlign: 'center',
           // headerLeft: () => (
