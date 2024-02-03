@@ -1,15 +1,17 @@
 import React, {ReactNode} from 'react';
 import {Dimensions, SafeAreaView, ViewStyle} from 'react-native';
-import {getStatusBarHeight} from 'react-native-status-bar-height';
+// import {getStatusBarHeight} from 'react-native-status-bar-height';
 import {StatusBar, Platform} from 'react-native';
+import {getStatusBarHeight} from 'react-native-safearea-height';
 
+export const StatusBarHeight = getStatusBarHeight(true);
 // export const StatusBarHeight =
 //   Platform.OS === 'ios' ? -30 : StatusBar.currentHeight;
-export const StatusBarHeight =
-  Platform.OS === 'ios' ? getStatusBarHeight(true) : StatusBar.currentHeight;
+// export const StatusBarHeight =
+//   Platform.OS === 'ios' ? getStatusBarHeight(true) : StatusBar.currentHeight;
 
-export const windowWidth: number = Dimensions.get('window').width;
-export const windowHeight: number = Dimensions.get('window').height;
+// export const windowWidth: number = Dimensions.get('window').width;
+// export const windowHeight: number = Dimensions.get('window').height;
 
 interface SafeProps {
   children: ReactNode;

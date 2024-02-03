@@ -30,7 +30,7 @@ import {throttleTime, throttleTimeEmoticon} from '../hooks/Throttle';
 import _ from 'lodash';
 import {useAppDispatch} from '../store';
 import userSlice from '../slices/user';
-import {Safe, StatusBarHeight, windowHeight} from '../components/Safe';
+import {Safe, StatusBarHeight} from '../components/Safe';
 import ToastScreen from '../components/ToastScreen';
 import {useHeaderHeight} from '@react-navigation/elements';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
@@ -117,8 +117,11 @@ export default function FeedDetail({navigation, route}: FeedDetailScreenProps) {
   const [showWhoseModal, setShowWhoseModal] = useState(0);
   const [whichPopup, setWhichPopup] = useState('');
   const [uploadBtnLoading, setUploadBtnLoading] = useState(false);
+
+  const [onFocus, setOnFocus] = useState(false);
   const [deleteModal, setDeleteModal] = useState(-1);
   const [showContextModal, setShowContextModal] = useState(-1);
+
 
   useFocusEffect(
     useCallback(() => {
@@ -216,6 +219,19 @@ export default function FeedDetail({navigation, route}: FeedDetailScreenProps) {
       }
     }
   }, [uploadBtnLoading]);
+
+  // Remove keyboard when click outside of keyboard
+  useEffect(() => {
+    const keyboardDidHideListener = Keyboard.addListener(
+      'keyboardDidHide',
+      () => {
+        handleKeyboardHide();
+      },
+    );
+    return () => {
+      keyboardDidHideListener.remove();
+    };
+  }, []);
 
   useEffect(() => {
     const handleKeyboardDismiss = () => {
@@ -472,6 +488,10 @@ export default function FeedDetail({navigation, route}: FeedDetailScreenProps) {
     }
   };
 
+  const handleKeyboardHide = () => {
+    inputRef.current.blur();
+  };
+
   const [refreshing, setRefreshing] = useState(false);
 
   const onRefresh = async () => {
@@ -483,6 +503,7 @@ export default function FeedDetail({navigation, route}: FeedDetailScreenProps) {
 
   const inputRef = useRef();
   const [writeChildCmt, setWriteChildCmt] = useState(-1);
+
   useEffect(() => {
     if (writeChildCmt != -1) {
       setPlaceholder('대댓글을 적어주세요.');
@@ -510,7 +531,7 @@ export default function FeedDetail({navigation, route}: FeedDetailScreenProps) {
       <KeyboardAvoidingView
         style={{flex: 1, backgroundColor: '#CFD2D9'}}
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-        keyboardVerticalOffset={103}>
+        keyboardVerticalOffset={StatusBarHeight + 44}>
           <View style={styles.entire}>
             <View style={{
               paddingHorizontal:16, 
@@ -532,7 +553,6 @@ export default function FeedDetail({navigation, route}: FeedDetailScreenProps) {
                   onEndReachedThreshold={0.4}
                   ListHeaderComponent={
                   //   <View style={{backgroundColor:'#202020'}}>
-                      
                   //     <View style={styles.commentHeader}>
                   //       <SvgXml
                   //         width={16}
@@ -606,6 +626,7 @@ export default function FeedDetail({navigation, route}: FeedDetailScreenProps) {
               <View style={styles.newFeedTxtInputContain}>
                 <TextInput
                   onFocus={() => {
+                    setOnFocus(true);
                     if (writeChildCmt === -1) {
                       return;
                     }
@@ -634,7 +655,10 @@ export default function FeedDetail({navigation, route}: FeedDetailScreenProps) {
                           : undefined,
                     },
                   ]}
-                  onBlur={() => setWriteChildCmt(-1)}
+                  onBlur={() => {
+                    setOnFocus(false);
+                    setWriteChildCmt(-1)
+                  }}
                   onChangeText={(text: string) => {
                     setCmtContent(text);
                   }}
@@ -663,12 +687,18 @@ export default function FeedDetail({navigation, route}: FeedDetailScreenProps) {
                     ? styles.sendNewCmt
                     : styles.sendNewCmtActivated
                 }
-                disabled={cmtContent.trim() == '' || uploadBtnLoading}
+                disabled={uploadBtnLoading}
                 onPress={async () => {
-                  setUploadBtnLoading(true);
+                  if (cmtContent.trim() != '') {
+                    setUploadBtnLoading(true);
+                  }
                   Keyboard.dismiss();
                 }}>
-                <Feather name="check" size={24} style={{color: 'white'}} />
+                {onFocus && cmtContent.trim() == '' ? (
+                  <Feather name="chevron-down" size={24} style={{color: 'white'}} />
+                ) : (
+                  <Feather name="check" size={24} style={{color: 'white'}} />
+                )}
               </Pressable>
             </View>
             {/* <M visible={deleteModal == feedData.feedId} transparent={true}>
@@ -684,6 +714,7 @@ export default function FeedDetail({navigation, route}: FeedDetailScreenProps) {
                 </Pressable>
               </Safe>
             </M> */}
+            
             <Modal
               isVisible={showBottomSheet}
               onBackButtonPress={() => setShowBottomSheet(false)}
@@ -761,8 +792,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#202020',
     // paddingHorizontal:16,
-    paddingTop:10,
-    flexDirection:'row',
+    paddingTop: 10,
+    flexDirection: 'row',
   },
   feedView: {
     // marginHorizontal:16,
@@ -770,10 +801,10 @@ const styles = StyleSheet.create({
     // paddingHorizontal: 12,
     // width: '100%',
     // paddingTop: 9,
-    width:'100%',
-    borderRadius:10,
-    backgroundColor:'#333333',
-    marginBottom:10
+    width: '100%',
+    borderRadius: 10,
+    backgroundColor: '#333333',
+    marginBottom: 10,
   },
   commentView: {
     width: '100%',
@@ -783,7 +814,7 @@ const styles = StyleSheet.create({
   },
   commentHeader: {
     flexDirection: 'row',
-    backgroundColor:'red',
+    backgroundColor: 'red',
     alignItems: 'center',
     width: '100%',
     height: 36,
@@ -807,7 +838,7 @@ const styles = StyleSheet.create({
   },
   childCmt: {
     paddingLeft: 40,
-    backgroundColor:'#333333'
+    backgroundColor: '#333333',
   },
   popup: {
     position: 'absolute',

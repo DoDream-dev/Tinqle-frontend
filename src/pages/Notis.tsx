@@ -1,6 +1,14 @@
 /* eslint-disable react-native/no-inline-styles */
 import React, {useState, useCallback, useEffect} from 'react';
-import {View, Text, StyleSheet, Pressable, FlatList, Image} from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  Pressable,
+  RefreshControl,
+  FlatList,
+  Image,
+} from 'react-native';
 import {SvgXml} from 'react-native-svg';
 import {svgXml} from '../../assets/image/svgXml';
 import axios, {AxiosError} from 'axios';
@@ -136,9 +144,44 @@ export default function Notis({}: NotisScreenProps) {
       if (temp[i].isClicked === false) {
         setIsNotClicked(true);
         return;
+      } else {
+        setIsNotClicked(false);
       }
     }
   }, [notisData]);
+
+  const refreshNoti = async () => {
+    setRefresh(true);
+    try {
+      const response = await axios.get(
+        `${Config.API_URL}/notifications/accounts/me`,
+      );
+      // console.log(response.data.data);
+      if (response.data.data.content.length == 0) setNoNotis(true);
+      else {
+        setIsLast(response.data.data.last);
+        setNotisData(response.data.data.content);
+        // console.log(response.data.data)
+        if (response.data.data.content.length != 0) {
+          setCursorId(
+            response.data.data.content[response.data.data.content.length - 1]
+              .notificationId,
+          );
+        }
+      }
+    } catch (error) {
+      const errorResponse = (error as AxiosError<{message: string}>).response;
+      console.log(errorResponse?.data.status);
+      if (errorResponse?.data.status == 500) {
+        dispatch(
+          userSlice.actions.setToken({
+            accessToken: '',
+          }),
+        );
+      }
+    }
+    setRefresh(false);
+  };
 
   const getData = async () => {
     if (!isLast) {
@@ -164,6 +207,7 @@ export default function Notis({}: NotisScreenProps) {
     }
     setLoading(false);
   };
+
   const onEndReached = () => {
     if (!loading) {
       getData();
@@ -354,6 +398,15 @@ export default function Notis({}: NotisScreenProps) {
           style={styles.notisEntire}
           onEndReached={onEndReached}
           onEndReachedThreshold={0.4}
+          refreshing={refresh}
+          onRefresh={refreshNoti}
+          refreshControl={
+            <RefreshControl
+              refreshing={refresh}
+              onRefresh={refreshNoti}
+              tintColor="#F0F0F0"
+            />
+          }
           ListHeaderComponent={
             isNotClicked ? (
               <View style={styles.notisHeader}>
@@ -471,44 +524,8 @@ export default function Notis({}: NotisScreenProps) {
       <FriendProfileModal
         showWhoseModal={showProfileModal}
         setShowWhoseModal={setShowProfileModal}
-        setDeleteFriend={setDeleteFriend}
       />
-      <Modal
-        isVisible={deleteFriend != -1}
-        // onModalWillShow={getProfile}
-        hasBackdrop={true}
-        onBackdropPress={() => setDeleteFriend(-1)}
-        // coverScreen={false}
-        onBackButtonPress={() => setDeleteFriend(-1)}
-        // backdropColor='#222222' backdropOpacity={0.5}
-        // style={[styles.entire, {marginVertical:(Dimensions.get('screen').height - 400)/2}]}
-      >
-        {/* <View style={styles.modalBGView}>   */}
-        <View style={styles.modalView}>
-          <Text style={styles.modalTitleTxt}>친구를 삭제하시겠어요?</Text>
-          <Text style={styles.modalContentTxt}>
-            상대방에게 알림이 가지 않으니 안심하세요.
-          </Text>
-          <View style={styles.btnView}>
-            <Pressable
-              style={styles.btnGray}
-              onPress={() => {
-                setDeleteFriend(-1);
-              }}>
-              <Text style={styles.btnTxt}>취소</Text>
-            </Pressable>
-            <View style={{width: 8}}></View>
-            <Pressable
-              style={styles.btn}
-              onPress={() => {
-                deleteFriends();
-              }}>
-              <Text style={styles.btnTxt}>네, 삭제할게요.</Text>
-            </Pressable>
-          </View>
-        </View>
-        {/* </View> */}
-      </Modal>
+
       {/* <Modal
         isVisible={showModal}
         onBackButtonPress={() => setShowModal(false)}
@@ -606,7 +623,7 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     fontSize: 13,
     textDecorationLine: 'underline',
-    paddingBottom:1
+    paddingBottom: 1,
     // marginRight: 3,
   },
   empty: {
