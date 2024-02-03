@@ -112,6 +112,8 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
   const [uploadBtnLoading, setUploadBtnLoading] = useState(false);
   const [onFocus, setOnFocus] = useState(false);
 
+  const [deleteFeedId, setDeleteFeedId] = useState(-1);
+
   // useEffect(() => {
   //   const keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', (event) => {
   //     const keyboardHeight = event.endCoordinates.height;
@@ -435,624 +437,629 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
   };
 
   return (
-    <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-      <KeyboardAvoidingView
-        style={[
-          {
-            flex: 1,
-            backgroundColor: '#202020',
-          },
-        ]}
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-        keyboardVerticalOffset={StatusBarHeight + 44}>
-        <View
-          style={{flex: 1, alignItems: 'center', backgroundColor: '#202020'}}>
-          <View style={[styles.entire]}>
-            {/* <Pressable
-              onPress={async () => {
-                console.log('pressed!');
-                console.log('@@', StatusBarHeight + 44);
+    <Pressable style={{flex:1}} onTouchStart={()=>{
+      if (deleteFeedId != -1) {
+        setTimeout(() => {
+          setDeleteFeedId(-1);
+        }, 100);
+      }
+    }}>
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+        <KeyboardAvoidingView
+          style={[{flex: 1, backgroundColor: '#CFD2D9'}]}
+          behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+          keyboardVerticalOffset={StatusBarHeight + 44}>
+          <View
+            style={{flex: 1, alignItems: 'center', backgroundColor: '#202020'}}>
+            <View style={[styles.entire]}>
+              {/* <Pressable
+            onPress={async () => {
+              console.log('pressed!');
 
-                //알림확인
-                // const response = await axios.post(
-                //   `${Config.API_URL}/test/push/self`,
-                //   {},
-                // );
-                // console.log(response.status);
-              }}
-              style={{
-                height: 100,
-                width: 500,
-                backgroundColor: 'blue',
-              }}
-            /> */}
-            <FlatList
-              data={feedData}
-              style={[styles.feedList]}
-              onEndReached={onEndReached}
-              onEndReachedThreshold={0.4}
-              ListHeaderComponent={
-                <View>
-                  <Text style={styles.noFeedTxt}>
-                    지금 떠오르는 생각을 적어보세요!
-                  </Text>
-                </View>
-              }
-              ListHeaderComponentStyle={
-                feedData.length === 0
-                  ? [styles.noFeedView, {height: windowHeight - 200}]
-                  : {height: 0, width: 0}
-              }
-              refreshControl={
-                <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-              }
-              // onStartReached={()=>{
-              //   if (first) scroll(feedData.length - 1)
-              //   else {
-              //     onEndReached();
-              //   }
-              // }}
-              // onStartReachedThreshold={0.4}
-              keyboardShouldPersistTaps={'always'}
-              inverted={true}
-              ref={flatRef}
-              ListFooterComponent={<View style={{height: 10}}></View>}
-              // getItemLayout={(data, index) => ({
-              //   length:100,
-              //   offset:20000*index,
-              //   index,
-              // })}
-              // onLayout={()=>scrollToEnd()}
-              renderItem={({item}: itemProps) => {
-                return (
+              //알림확인
+              // const response = await axios.post(
+              //   `${Config.API_URL}/test/push/self`,
+              //   {},
+              // );
+              // console.log(response.status);
+            }}
+            style={{
+              height: 100,
+              width: 500,
+              backgroundColor: 'blue',
+            }}
+          /> */}
+              <FlatList
+                data={feedData}
+                style={[styles.feedList]}
+                onEndReached={onEndReached}
+                onEndReachedThreshold={0.4}
+                ListHeaderComponent={
+                  <View>
+                    <Text style={styles.noFeedTxt}>
+                      지금 떠오르는 생각을 적어보세요!
+                    </Text>
+                  </View>
+                }
+                ListHeaderComponentStyle={
+                  feedData.length === 0
+                    ? [styles.noFeedView, {height: windowHeight - 200}]
+                    : {height: 0, width: 0}
+                }
+                refreshControl={
+                  <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+                }
+                // onStartReached={()=>{
+                //   if (first) scroll(feedData.length - 1)
+                //   else {
+                //     onEndReached();
+                //   }
+                // }}
+                // onStartReachedThreshold={0.4}
+                keyboardShouldPersistTaps={'always'}
+                inverted={true}
+                ref={flatRef}
+                ListFooterComponent={<View style={{height: 10}}></View>}
+                // getItemLayout={(data, index) => ({
+                //   length:100,
+                //   offset:20000*index,
+                //   index,
+                // })}
+                // onLayout={()=>scrollToEnd()}
+                renderItem={({item}: itemProps) => {
+                  return (
+                    <Pressable
+                      style={styles.feed}
+                      onPress={() =>
+                        navigation.navigate('FeedDetail', {feedId: item.feedId})
+                      }>
+                      <Feed
+                        mine={item.isAuthor}
+                        detail={false}
+                        commentCnt={item.commentCount}
+                        createdAt={item.createdAt}
+                        content={item.content}
+                        emoticons={item.emoticons}
+                        nickname={item.friendNickname}
+                        status={item.status}
+                        accountId={item.accountId}
+                        imageURL={item.feedImageUrls}
+                        press={pressEmoticon}
+                        feedId={item.feedId}
+                        whoReact={whoReact}
+                        profileImg={item.profileImageUrl}
+                        showWhoseModal={showWhoseModal}
+                        setShowWhoseModal={setShowWhoseModal}
+                        setWhichPopup={setWhichPopup}
+                        deleteFeedId={deleteFeedId}
+                        setDeleteFeedId={setDeleteFeedId}
+                        setRefresh={setRefresh}
+                      />
+                    </Pressable>
+                  );
+                }}
+              />
+            </View>
+            <View style={[styles.newFeedAll, {width: windowWidth}]}>
+              {selectImg && (
+                <View style={[styles.newFeedImgView, {width: windowWidth}]}>
                   <Pressable
-                    style={styles.feed}
-                    onPress={() =>
-                      navigation.navigate('FeedDetail', {feedId: item.feedId})
-                    }>
-                    <Feed
-                      mine={item.isAuthor}
-                      detail={false}
-                      commentCnt={item.commentCount}
-                      createdAt={item.createdAt}
-                      content={item.content}
-                      emoticons={item.emoticons}
-                      nickname={item.friendNickname}
-                      status={item.status}
-                      accountId={item.accountId}
-                      imageURL={item.feedImageUrls}
-                      press={pressEmoticon}
-                      feedId={item.feedId}
-                      whoReact={whoReact}
-                      profileImg={item.profileImageUrl}
-                      showWhoseModal={showWhoseModal}
-                      setShowWhoseModal={setShowWhoseModal}
-                      setWhichPopup={setWhichPopup}
+                    onPress={() => {
+                      setSelectImg(false);
+                      setImgData({uri: '', type: ''});
+                      setUploadImage(undefined);
+                    }}>
+                    <Image
+                      source={{uri: imgData.uri}}
+                      style={styles.newFeedImg}
+                    />
+                    <SvgXml
+                      width={18}
+                      height={18}
+                      xml={svgXml.icon.imageX}
+                      style={styles.xBtn}
                     />
                   </Pressable>
-                );
-              }}
-            />
-          </View>
-          <View style={[styles.newFeedAll, {width: windowWidth}]}>
-            {selectImg && (
-              <View style={[styles.newFeedImgView, {width: windowWidth}]}>
+                </View>
+              )}
+              {/* <View style={{height: Math.max(60, KBsize + 10)}} /> */}
+              <View style={styles.newFeedView}>
                 <Pressable
-                  onPress={() => {
-                    setSelectImg(false);
-                    setImgData({uri: '', type: ''});
-                    setUploadImage(undefined);
-                  }}>
-                  <Image
-                    source={{uri: imgData.uri}}
-                    style={styles.newFeedImg}
-                  />
-                  <SvgXml
-                    width={18}
-                    height={18}
-                    xml={svgXml.icon.imageX}
-                    style={styles.xBtn}
-                  />
+                  style={{
+                    width: 48,
+                    height: 48,
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                  }}
+                  onPress={() => setChangeStatus(true)}>
+                  {status == 'smile' && (
+                    <SvgXml width={32} height={32} xml={svgXml.status.smile} />
+                  )}
+                  {status == 'happy' && (
+                    <SvgXml width={32} height={32} xml={svgXml.status.happy} />
+                  )}
+                  {status == 'sad' && (
+                    <SvgXml width={32} height={32} xml={svgXml.status.sad} />
+                  )}
+                  {status == 'mad' && (
+                    <SvgXml width={32} height={32} xml={svgXml.status.mad} />
+                  )}
+                  {status == 'exhausted' && (
+                    <SvgXml
+                      width={32}
+                      height={32}
+                      xml={svgXml.status.exhauseted}
+                    />
+                  )}
+                  {status == 'coffee' && (
+                    <SvgXml width={32} height={32} xml={svgXml.status.coffee} />
+                  )}
+                  {status == 'meal' && (
+                    <SvgXml width={32} height={32} xml={svgXml.status.meal} />
+                  )}
+                  {status == 'alcohol' && (
+                    <SvgXml width={32} height={32} xml={svgXml.status.alcohol} />
+                  )}
+                  {status == 'chicken' && (
+                    <SvgXml width={32} height={32} xml={svgXml.status.chicken} />
+                  )}
+                  {status == 'sleep' && (
+                    <SvgXml width={32} height={32} xml={svgXml.status.sleep} />
+                  )}
+                  {status == 'work' && (
+                    <SvgXml width={32} height={32} xml={svgXml.status.work} />
+                  )}
+                  {status == 'study' && (
+                    <SvgXml width={32} height={32} xml={svgXml.status.study} />
+                  )}
+                  {status == 'movie' && (
+                    <SvgXml width={32} height={32} xml={svgXml.status.movie} />
+                  )}
+                  {status == 'move' && (
+                    <SvgXml width={32} height={32} xml={svgXml.status.move} />
+                  )}
+                  {status == 'dance' && (
+                    <SvgXml width={32} height={32} xml={svgXml.status.dance} />
+                  )}
+                  {status == 'read' && (
+                    <SvgXml width={32} height={32} xml={svgXml.status.read} />
+                  )}
+                  {status == 'walk' && (
+                    <SvgXml width={32} height={32} xml={svgXml.status.walk} />
+                  )}
+                  {status == 'travel' && (
+                    <SvgXml width={32} height={32} xml={svgXml.status.travel} />
+                  )}
                 </Pressable>
-              </View>
-            )}
-            {/* <View style={{height: Math.max(60, KBsize + 10)}} /> */}
-            <View style={styles.newFeedView}>
-              <Pressable
-                style={{
-                  width: 48,
-                  height: 48,
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                }}
-                onPress={() => setChangeStatus(true)}>
-                {status == 'smile' && (
-                  <SvgXml width={32} height={32} xml={svgXml.status.smile} />
-                )}
-                {status == 'happy' && (
-                  <SvgXml width={32} height={32} xml={svgXml.status.happy} />
-                )}
-                {status == 'sad' && (
-                  <SvgXml width={32} height={32} xml={svgXml.status.sad} />
-                )}
-                {status == 'mad' && (
-                  <SvgXml width={32} height={32} xml={svgXml.status.mad} />
-                )}
-                {status == 'exhausted' && (
-                  <SvgXml
-                    width={32}
-                    height={32}
-                    xml={svgXml.status.exhauseted}
-                  />
-                )}
-                {status == 'coffee' && (
-                  <SvgXml width={32} height={32} xml={svgXml.status.coffee} />
-                )}
-                {status == 'meal' && (
-                  <SvgXml width={32} height={32} xml={svgXml.status.meal} />
-                )}
-                {status == 'alcohol' && (
-                  <SvgXml width={32} height={32} xml={svgXml.status.alcohol} />
-                )}
-                {status == 'chicken' && (
-                  <SvgXml width={32} height={32} xml={svgXml.status.chicken} />
-                )}
-                {status == 'sleep' && (
-                  <SvgXml width={32} height={32} xml={svgXml.status.sleep} />
-                )}
-                {status == 'work' && (
-                  <SvgXml width={32} height={32} xml={svgXml.status.work} />
-                )}
-                {status == 'study' && (
-                  <SvgXml width={32} height={32} xml={svgXml.status.study} />
-                )}
-                {status == 'movie' && (
-                  <SvgXml width={32} height={32} xml={svgXml.status.movie} />
-                )}
-                {status == 'move' && (
-                  <SvgXml width={32} height={32} xml={svgXml.status.move} />
-                )}
-                {status == 'dance' && (
-                  <SvgXml width={32} height={32} xml={svgXml.status.dance} />
-                )}
-                {status == 'read' && (
-                  <SvgXml width={32} height={32} xml={svgXml.status.read} />
-                )}
-                {status == 'walk' && (
-                  <SvgXml width={32} height={32} xml={svgXml.status.walk} />
-                )}
-                {status == 'travel' && (
-                  <SvgXml width={32} height={32} xml={svgXml.status.travel} />
-                )}
-              </Pressable>
-              <View style={[styles.newFeedTxtInputContain]}>
-                <TextInput
-                  placeholder={placeholder}
-                  placeholderTextColor={'#888888'}
-                  style={[
-                    styles.newFeedTxtInput,
-                    {
-                      height:
-                        Platform.OS === 'android'
-                          ? Math.min(80, Math.max(40, KBsize))
-                          : undefined,
-                    },
-                  ]}
-                  onFocus={() => {
-                    setOnFocus(true);
-                    setPlaceholder('');
-                  }}
-                  onBlur={() => {
-                    setOnFocus(false);
-                    setPlaceholder('지금 기분이 어때요?');
-                  }}
-                  onChangeText={(text: string) => {
-                    setFeedContent(text);
-                  }}
-                  blurOnSubmit={false}
-                  maxLength={500}
-                  value={feedContent}
-                  onSubmitEditing={async () => {
-                    setUploadBtnLoading(true);
-                    Keyboard.dismiss();
-                  }}
-                  multiline={true}
-                  textAlignVertical="center"
-                  autoCapitalize="none"
-                  autoComplete="off"
-                  autoCorrect={false}
-                  onContentSizeChange={e => {
-                    setKBsize(e.nativeEvent.contentSize.height);
-                  }}
-                />
-              </View>
-              <Pressable
-                style={styles.addPhoto}
-                onPress={() =>
-                  ImagePicker.openPicker({
-                    multiple: false,
-                    mediaType: 'photo',
-                    // cropping:true,
-                  }).then(image => {
-                    // console.log(image)
-                    let name = image.path.split('/');
-                    const imageFormData = new FormData();
-                    let file = {
-                      uri: image.path,
-                      type: image.mime,
-                      name: name[name.length - 1],
-                    };
-                    imageFormData.append('file', file);
-                    // console.log(file)
-                    setImgData({
-                      uri: image.path,
-                      type: image.mime,
-                    });
-                    setSelectImg(true);
-                    imageFormData.append('type', 'feed');
-                    setUploadImage(imageFormData);
-                  })
-                }>
-                <SvgXml width={24} height={24} xml={svgXml.icon.addphoto} />
-              </Pressable>
-              <Pressable
-                style={
-                  (feedContent.trim() == '' && !selectImg) || uploadBtnLoading
-                    ? styles.sendNewFeed
-                    : styles.sendNewFeedActivated
-                }
-                disabled={uploadBtnLoading}
-                onPress={async () => {
-                  if (feedContent.trim() != '' || selectImg) {
-                    setUploadBtnLoading(true);
-                  }
-                  Keyboard.dismiss();
-                }}>
-                {uploadBtnLoading ? (
-                  <LottieView
-                    source={require('../animations/loading_black.json')}
-                    style={{
-                      width: 30,
-                      height: 30,
+                <View style={[styles.newFeedTxtInputContain]}>
+                  <TextInput
+                    placeholder={placeholder}
+                    placeholderTextColor={'#888888'}
+                    style={[
+                      styles.newFeedTxtInput,
+                      {
+                        height:
+                          Platform.OS === 'android'
+                            ? Math.min(80, Math.max(40, KBsize))
+                            : undefined,
+                      },
+                    ]}
+                    onFocus={() => {
+                      setOnFocus(true);
+                      setPlaceholder('');
                     }}
-                    autoPlay
-                    loop
+                    onBlur={() => {
+                      setOnFocus(false);
+                      setPlaceholder('지금 기분이 어때요?');
+                    }}
+                    onChangeText={(text: string) => {
+                      setFeedContent(text);
+                    }}
+                    blurOnSubmit={false}
+                    maxLength={500}
+                    value={feedContent}
+                    onSubmitEditing={async () => {
+                      setUploadBtnLoading(true);
+                      Keyboard.dismiss();
+                    }}
+                    multiline={true}
+                    textAlignVertical="center"
+                    autoCapitalize="none"
+                    autoComplete="off"
+                    autoCorrect={false}
+                    onContentSizeChange={e => {
+                      setKBsize(e.nativeEvent.contentSize.height);
+                    }}
                   />
-                ) : onFocus && feedContent.trim() == '' && !selectImg ? (
-                  <Feather
-                    name="chevron-down"
-                    size={24}
-                    style={{color: 'white'}}
-                  />
-                ) : (
-                  <Feather name="check" size={24} style={{color: 'white'}} />
-                )}
-              </Pressable>
+                </View>
+                <Pressable
+                  style={styles.addPhoto}
+                  onPress={() =>
+                    ImagePicker.openPicker({
+                      multiple: false,
+                      mediaType: 'photo',
+                      // cropping:true,
+                    }).then(image => {
+                      // console.log(image)
+                      let name = image.path.split('/');
+                      const imageFormData = new FormData();
+                      let file = {
+                        uri: image.path,
+                        type: image.mime,
+                        name: name[name.length - 1],
+                      };
+                      imageFormData.append('file', file);
+                      // console.log(file)
+                      setImgData({
+                        uri: image.path,
+                        type: image.mime,
+                      });
+                      setSelectImg(true);
+                      imageFormData.append('type', 'feed');
+                      setUploadImage(imageFormData);
+                    })
+                  }>
+                  <SvgXml width={24} height={24} xml={svgXml.icon.addphoto} />
+                </Pressable>
+                <Pressable
+                  style={
+                    (feedContent.trim() == '' && !selectImg) || uploadBtnLoading
+                      ? styles.sendNewFeed
+                      : styles.sendNewFeedActivated
+                  }
+                  disabled={
+                    (feedContent.trim() == '' && !selectImg) || uploadBtnLoading
+                  }
+                  onPress={async () => {
+                    if (feedContent.trim() != '' || selectImg) {
+                      setUploadBtnLoading(true);
+                    }
+                    Keyboard.dismiss();
+                  }}>
+                  {uploadBtnLoading ? (
+                    <LottieView
+                      source={require('../animations/loading_black.json')}
+                      style={{
+                        width: 30,
+                        height: 30,
+                      }}
+                      autoPlay
+                      loop
+                    />
+                  ) : onFocus && feedContent.trim() == '' && !selectImg ? (
+                    <Feather
+                      name="chevron-down"
+                      size={24}
+                      style={{color: 'white'}}
+                    />
+                  ) : (
+                    <Feather name="check" size={24} style={{color: 'white'}} />
+                  )}
+                </Pressable>
+              </View>
             </View>
+            
+            <Modal
+              isVisible={showBottomSheet}
+              onBackButtonPress={() => setShowBottomSheet(false)}
+              backdropColor="#101010"
+              backdropOpacity={0.5}
+              onSwipeComplete={() => setShowBottomSheet(false)}
+              swipeDirection={'down'}
+              style={{justifyContent: 'flex-end', margin: 0}}>
+              <Pressable
+                style={styles.modalBGView}
+                onPress={() => setShowBottomSheet(false)}>
+                <Pressable
+                  style={styles.modalView}
+                  onPress={e => e.stopPropagation()}>
+                  <View style={styles.whoReacted}>
+                    <SvgXml width={22} height={22} xml={svgXml.emoticon.heart} />
+                    <Text style={styles.emoticonTxt}>
+                      {EmoticonList.heartEmoticonNicknameList.join(' ') == ''
+                        ? '-'
+                        : EmoticonList.heartEmoticonNicknameList
+                            .join(', ')
+                            .replace(/ /g, '\u00A0')}
+                    </Text>
+                  </View>
+                  <View style={styles.whoReacted}>
+                    <SvgXml width={22} height={22} xml={svgXml.emoticon.smile} />
+                    <Text style={styles.emoticonTxt}>
+                      {EmoticonList.smileEmoticonNicknameList.join(' ') == ''
+                        ? '-'
+                        : EmoticonList.smileEmoticonNicknameList
+                            .join(', ')
+                            .replace(/ /g, '\u00A0')}
+                    </Text>
+                  </View>
+                  <View style={styles.whoReacted}>
+                    <SvgXml width={22} height={22} xml={svgXml.emoticon.sad} />
+                    <Text style={styles.emoticonTxt}>
+                      {EmoticonList.sadEmoticonNicknameList.join(' ') == ''
+                        ? '-'
+                        : EmoticonList.sadEmoticonNicknameList
+                            .join(', ')
+                            .replace(/ /g, '\u00A0')}
+                    </Text>
+                  </View>
+                  <View style={styles.whoReacted}>
+                    <SvgXml
+                      width={22}
+                      height={22}
+                      xml={svgXml.emoticon.surprise}
+                    />
+                    <Text style={styles.emoticonTxt}>
+                      {EmoticonList.surpriseEmoticonNicknameList.join(' ') == ''
+                        ? '-'
+                        : EmoticonList.surpriseEmoticonNicknameList
+                            .join(', ')
+                            .replace(/ /g, '\u00A0')}
+                    </Text>
+                  </View>
+                </Pressable>
+              </Pressable>
+            </Modal>
+            
+            <Modal
+              isVisible={changeStatus}
+              backdropColor="#101010"
+              backdropOpacity={0.5}
+              swipeDirection={'down'}
+              onSwipeComplete={() => setChangeStatus(false)}
+              onBackButtonPress={() => setChangeStatus(false)}>
+              <Pressable
+                style={styles.modalBGView2}
+                onPress={() => {
+                  Keyboard.dismiss();
+                  setChangeStatus(false);
+                }}>
+                <Pressable
+                  onPress={e => e.stopPropagation()}
+                  style={styles.modalView2}>
+                  <Pressable
+                    onPress={() => {
+                      setChangeStatus(false);
+                      postStatus('smile');
+                    }}
+                    style={
+                      status == 'smile'
+                        ? styles.statusSelected
+                        : styles.statusSelect
+                    }>
+                    <SvgXml width={60} height={60} xml={svgXml.status.smile} />
+                  </Pressable>
+                  <Pressable
+                    onPress={() => {
+                      setChangeStatus(false);
+                      postStatus('happy');
+                    }}
+                    style={
+                      status == 'happy'
+                        ? styles.statusSelected
+                        : styles.statusSelect
+                    }>
+                    <SvgXml width={60} height={60} xml={svgXml.status.happy} />
+                  </Pressable>
+                  <Pressable
+                    onPress={() => {
+                      setChangeStatus(false);
+                      postStatus('sad');
+                    }}
+                    style={
+                      status == 'sad'
+                        ? styles.statusSelected
+                        : styles.statusSelect
+                    }>
+                    <SvgXml width={60} height={60} xml={svgXml.status.sad} />
+                  </Pressable>
+                  <Pressable
+                    onPress={() => {
+                      setChangeStatus(false);
+                      postStatus('mad');
+                    }}
+                    style={
+                      status == 'mad'
+                        ? styles.statusSelected
+                        : styles.statusSelect
+                    }>
+                    <SvgXml width={60} height={60} xml={svgXml.status.mad} />
+                  </Pressable>
+                  <Pressable
+                    onPress={() => {
+                      setChangeStatus(false);
+                      postStatus('exhausted');
+                    }}
+                    style={
+                      status == 'exhausted'
+                        ? styles.statusSelected
+                        : styles.statusSelect
+                    }>
+                    <SvgXml
+                      width={60}
+                      height={60}
+                      xml={svgXml.status.exhauseted}
+                    />
+                  </Pressable>
+                  <Pressable
+                    onPress={() => {
+                      setChangeStatus(false);
+                      postStatus('coffee');
+                    }}
+                    style={
+                      status == 'coffee'
+                        ? styles.statusSelected
+                        : styles.statusSelect
+                    }>
+                    <SvgXml width={60} height={60} xml={svgXml.status.coffee} />
+                  </Pressable>
+                  <Pressable
+                    onPress={() => {
+                      setChangeStatus(false);
+                      postStatus('meal');
+                    }}
+                    style={
+                      status == 'meal'
+                        ? styles.statusSelected
+                        : styles.statusSelect
+                    }>
+                    <SvgXml width={60} height={60} xml={svgXml.status.meal} />
+                  </Pressable>
+                  <Pressable
+                    onPress={() => {
+                      setChangeStatus(false);
+                      postStatus('alcohol');
+                    }}
+                    style={
+                      status == 'alcohol'
+                        ? styles.statusSelected
+                        : styles.statusSelect
+                    }>
+                    <SvgXml width={60} height={60} xml={svgXml.status.alcohol} />
+                  </Pressable>
+                  <Pressable
+                    onPress={() => {
+                      setChangeStatus(false);
+                      postStatus('chicken');
+                    }}
+                    style={
+                      status == 'chicken'
+                        ? styles.statusSelected
+                        : styles.statusSelect
+                    }>
+                    <SvgXml width={60} height={60} xml={svgXml.status.chicken} />
+                  </Pressable>
+                  <Pressable
+                    onPress={() => {
+                      setChangeStatus(false);
+                      postStatus('sleep');
+                    }}
+                    style={
+                      status == 'sleep'
+                        ? styles.statusSelected
+                        : styles.statusSelect
+                    }>
+                    <SvgXml width={60} height={60} xml={svgXml.status.sleep} />
+                  </Pressable>
+                  <Pressable
+                    onPress={() => {
+                      setChangeStatus(false);
+                      postStatus('work');
+                    }}
+                    style={
+                      status == 'work'
+                        ? styles.statusSelected
+                        : styles.statusSelect
+                    }>
+                    <SvgXml width={60} height={60} xml={svgXml.status.work} />
+                  </Pressable>
+                  <Pressable
+                    onPress={() => {
+                      setChangeStatus(false);
+                      postStatus('study');
+                    }}
+                    style={
+                      status == 'study'
+                        ? styles.statusSelected
+                        : styles.statusSelect
+                    }>
+                    <SvgXml width={60} height={60} xml={svgXml.status.study} />
+                  </Pressable>
+                  <Pressable
+                    onPress={() => {
+                      setChangeStatus(false);
+                      postStatus('movie');
+                    }}
+                    style={
+                      status == 'movie'
+                        ? styles.statusSelected
+                        : styles.statusSelect
+                    }>
+                    <SvgXml width={60} height={60} xml={svgXml.status.movie} />
+                  </Pressable>
+                  <Pressable
+                    onPress={() => {
+                      setChangeStatus(false);
+                      postStatus('move');
+                    }}
+                    style={
+                      status == 'move'
+                        ? styles.statusSelected
+                        : styles.statusSelect
+                    }>
+                    <SvgXml width={60} height={60} xml={svgXml.status.move} />
+                  </Pressable>
+                  <Pressable
+                    onPress={() => {
+                      setChangeStatus(false);
+                      postStatus('dance');
+                    }}
+                    style={
+                      status == 'dance'
+                        ? styles.statusSelected
+                        : styles.statusSelect
+                    }>
+                    <SvgXml width={60} height={60} xml={svgXml.status.dance} />
+                  </Pressable>
+                  <Pressable
+                    onPress={() => {
+                      setChangeStatus(false);
+                      postStatus('read');
+                    }}
+                    style={
+                      status == 'read'
+                        ? styles.statusSelected
+                        : styles.statusSelect
+                    }>
+                    <SvgXml width={60} height={60} xml={svgXml.status.read} />
+                  </Pressable>
+                  <Pressable
+                    onPress={() => {
+                      setChangeStatus(false);
+                      postStatus('walk');
+                    }}
+                    style={
+                      status == 'walk'
+                        ? styles.statusSelected
+                        : styles.statusSelect
+                    }>
+                    <SvgXml width={60} height={60} xml={svgXml.status.walk} />
+                  </Pressable>
+                  <Pressable
+                    onPress={() => {
+                      setChangeStatus(false);
+                      postStatus('travel');
+                    }}
+                    style={
+                      status == 'travel'
+                        ? styles.statusSelected
+                        : styles.statusSelect
+                    }>
+                    <SvgXml width={60} height={60} xml={svgXml.status.travel} />
+                  </Pressable>
+                </Pressable>
+              </Pressable>
+            </Modal>
+            {deleted && (
+              <ToastScreen
+                height={21}
+                marginBottom={48}
+                onClose={() => setDeleted()}
+                message="삭제된 글이에요."
+              />
+            )}
+            {whichPopup === 'deletedFriend' && (
+              <ToastScreen
+                height={21}
+                marginBottom={48}
+                onClose={() => setWhichPopup('')}
+                message="친구를 삭제했어요."
+              />
+            )}
           </View>
-
-          <Modal
-            isVisible={showBottomSheet}
-            onBackButtonPress={() => setShowBottomSheet(false)}
-            backdropColor="#101010"
-            backdropOpacity={0.5}
-            onSwipeComplete={() => setShowBottomSheet(false)}
-            swipeDirection={'down'}
-            style={{justifyContent: 'flex-end', margin: 0}}>
-            <Pressable
-              style={styles.modalBGView}
-              onPress={() => setShowBottomSheet(false)}>
-              <Pressable
-                style={styles.modalView}
-                onPress={e => e.stopPropagation()}>
-                <View style={styles.whoReacted}>
-                  <SvgXml width={22} height={22} xml={svgXml.emoticon.heart} />
-                  <Text style={styles.emoticonTxt}>
-                    {EmoticonList.heartEmoticonNicknameList.join(' ') == ''
-                      ? '-'
-                      : EmoticonList.heartEmoticonNicknameList
-                          .join(', ')
-                          .replace(/ /g, '\u00A0')}
-                  </Text>
-                </View>
-                <View style={styles.whoReacted}>
-                  <SvgXml width={22} height={22} xml={svgXml.emoticon.smile} />
-                  <Text style={styles.emoticonTxt}>
-                    {EmoticonList.smileEmoticonNicknameList.join(' ') == ''
-                      ? '-'
-                      : EmoticonList.smileEmoticonNicknameList
-                          .join(', ')
-                          .replace(/ /g, '\u00A0')}
-                  </Text>
-                </View>
-                <View style={styles.whoReacted}>
-                  <SvgXml width={22} height={22} xml={svgXml.emoticon.sad} />
-                  <Text style={styles.emoticonTxt}>
-                    {EmoticonList.sadEmoticonNicknameList.join(' ') == ''
-                      ? '-'
-                      : EmoticonList.sadEmoticonNicknameList
-                          .join(', ')
-                          .replace(/ /g, '\u00A0')}
-                  </Text>
-                </View>
-                <View style={styles.whoReacted}>
-                  <SvgXml
-                    width={22}
-                    height={22}
-                    xml={svgXml.emoticon.surprise}
-                  />
-                  <Text style={styles.emoticonTxt}>
-                    {EmoticonList.surpriseEmoticonNicknameList.join(' ') == ''
-                      ? '-'
-                      : EmoticonList.surpriseEmoticonNicknameList
-                          .join(', ')
-                          .replace(/ /g, '\u00A0')}
-                  </Text>
-                </View>
-              </Pressable>
-            </Pressable>
-          </Modal>
-
-          <Modal
-            isVisible={changeStatus}
-            backdropColor="#101010"
-            backdropOpacity={0.5}
-            swipeDirection={'down'}
-            onSwipeComplete={() => setChangeStatus(false)}
-            onBackButtonPress={() => setChangeStatus(false)}
-            animationIn={'slideInUp'}>
-            <Pressable
-              style={styles.modalBGView2}
-              onPress={() => {
-                Keyboard.dismiss();
-                setChangeStatus(false);
-              }}>
-              <Pressable
-                onPress={e => e.stopPropagation()}
-                style={styles.modalView2}>
-                <Pressable
-                  onPress={() => {
-                    setChangeStatus(false);
-                    postStatus('smile');
-                  }}
-                  style={
-                    status == 'smile'
-                      ? styles.statusSelected
-                      : styles.statusSelect
-                  }>
-                  <SvgXml width={60} height={60} xml={svgXml.status.smile} />
-                </Pressable>
-                <Pressable
-                  onPress={() => {
-                    setChangeStatus(false);
-                    postStatus('happy');
-                  }}
-                  style={
-                    status == 'happy'
-                      ? styles.statusSelected
-                      : styles.statusSelect
-                  }>
-                  <SvgXml width={60} height={60} xml={svgXml.status.happy} />
-                </Pressable>
-                <Pressable
-                  onPress={() => {
-                    setChangeStatus(false);
-                    postStatus('sad');
-                  }}
-                  style={
-                    status == 'sad'
-                      ? styles.statusSelected
-                      : styles.statusSelect
-                  }>
-                  <SvgXml width={60} height={60} xml={svgXml.status.sad} />
-                </Pressable>
-                <Pressable
-                  onPress={() => {
-                    setChangeStatus(false);
-                    postStatus('mad');
-                  }}
-                  style={
-                    status == 'mad'
-                      ? styles.statusSelected
-                      : styles.statusSelect
-                  }>
-                  <SvgXml width={60} height={60} xml={svgXml.status.mad} />
-                </Pressable>
-                <Pressable
-                  onPress={() => {
-                    setChangeStatus(false);
-                    postStatus('exhausted');
-                  }}
-                  style={
-                    status == 'exhausted'
-                      ? styles.statusSelected
-                      : styles.statusSelect
-                  }>
-                  <SvgXml
-                    width={60}
-                    height={60}
-                    xml={svgXml.status.exhauseted}
-                  />
-                </Pressable>
-                <Pressable
-                  onPress={() => {
-                    setChangeStatus(false);
-                    postStatus('coffee');
-                  }}
-                  style={
-                    status == 'coffee'
-                      ? styles.statusSelected
-                      : styles.statusSelect
-                  }>
-                  <SvgXml width={60} height={60} xml={svgXml.status.coffee} />
-                </Pressable>
-                <Pressable
-                  onPress={() => {
-                    setChangeStatus(false);
-                    postStatus('meal');
-                  }}
-                  style={
-                    status == 'meal'
-                      ? styles.statusSelected
-                      : styles.statusSelect
-                  }>
-                  <SvgXml width={60} height={60} xml={svgXml.status.meal} />
-                </Pressable>
-                <Pressable
-                  onPress={() => {
-                    setChangeStatus(false);
-                    postStatus('alcohol');
-                  }}
-                  style={
-                    status == 'alcohol'
-                      ? styles.statusSelected
-                      : styles.statusSelect
-                  }>
-                  <SvgXml width={60} height={60} xml={svgXml.status.alcohol} />
-                </Pressable>
-                <Pressable
-                  onPress={() => {
-                    setChangeStatus(false);
-                    postStatus('chicken');
-                  }}
-                  style={
-                    status == 'chicken'
-                      ? styles.statusSelected
-                      : styles.statusSelect
-                  }>
-                  <SvgXml width={60} height={60} xml={svgXml.status.chicken} />
-                </Pressable>
-                <Pressable
-                  onPress={() => {
-                    setChangeStatus(false);
-                    postStatus('sleep');
-                  }}
-                  style={
-                    status == 'sleep'
-                      ? styles.statusSelected
-                      : styles.statusSelect
-                  }>
-                  <SvgXml width={60} height={60} xml={svgXml.status.sleep} />
-                </Pressable>
-                <Pressable
-                  onPress={() => {
-                    setChangeStatus(false);
-                    postStatus('work');
-                  }}
-                  style={
-                    status == 'work'
-                      ? styles.statusSelected
-                      : styles.statusSelect
-                  }>
-                  <SvgXml width={60} height={60} xml={svgXml.status.work} />
-                </Pressable>
-                <Pressable
-                  onPress={() => {
-                    setChangeStatus(false);
-                    postStatus('study');
-                  }}
-                  style={
-                    status == 'study'
-                      ? styles.statusSelected
-                      : styles.statusSelect
-                  }>
-                  <SvgXml width={60} height={60} xml={svgXml.status.study} />
-                </Pressable>
-                <Pressable
-                  onPress={() => {
-                    setChangeStatus(false);
-                    postStatus('movie');
-                  }}
-                  style={
-                    status == 'movie'
-                      ? styles.statusSelected
-                      : styles.statusSelect
-                  }>
-                  <SvgXml width={60} height={60} xml={svgXml.status.movie} />
-                </Pressable>
-                <Pressable
-                  onPress={() => {
-                    setChangeStatus(false);
-                    postStatus('move');
-                  }}
-                  style={
-                    status == 'move'
-                      ? styles.statusSelected
-                      : styles.statusSelect
-                  }>
-                  <SvgXml width={60} height={60} xml={svgXml.status.move} />
-                </Pressable>
-                <Pressable
-                  onPress={() => {
-                    setChangeStatus(false);
-                    postStatus('dance');
-                  }}
-                  style={
-                    status == 'dance'
-                      ? styles.statusSelected
-                      : styles.statusSelect
-                  }>
-                  <SvgXml width={60} height={60} xml={svgXml.status.dance} />
-                </Pressable>
-                <Pressable
-                  onPress={() => {
-                    setChangeStatus(false);
-                    postStatus('read');
-                  }}
-                  style={
-                    status == 'read'
-                      ? styles.statusSelected
-                      : styles.statusSelect
-                  }>
-                  <SvgXml width={60} height={60} xml={svgXml.status.read} />
-                </Pressable>
-                <Pressable
-                  onPress={() => {
-                    setChangeStatus(false);
-                    postStatus('walk');
-                  }}
-                  style={
-                    status == 'walk'
-                      ? styles.statusSelected
-                      : styles.statusSelect
-                  }>
-                  <SvgXml width={60} height={60} xml={svgXml.status.walk} />
-                </Pressable>
-                <Pressable
-                  onPress={() => {
-                    setChangeStatus(false);
-                    postStatus('travel');
-                  }}
-                  style={
-                    status == 'travel'
-                      ? styles.statusSelected
-                      : styles.statusSelect
-                  }>
-                  <SvgXml width={60} height={60} xml={svgXml.status.travel} />
-                </Pressable>
-              </Pressable>
-            </Pressable>
-          </Modal>
-
-          {deleted && (
-            <ToastScreen
-              height={21}
-              marginBottom={48}
-              onClose={() => setDeleted()}
-              message="삭제된 글이에요."
-            />
-          )}
-          {whichPopup === 'deletedFriend' && (
-            <ToastScreen
-              height={21}
-              marginBottom={48}
-              onClose={() => setWhichPopup('')}
-              message="친구를 삭제했어요."
-            />
-          )}
-        </View>
-      </KeyboardAvoidingView>
-    </TouchableWithoutFeedback>
+        </KeyboardAvoidingView>
+      </TouchableWithoutFeedback>
+    </Pressable>
   );
 }
 

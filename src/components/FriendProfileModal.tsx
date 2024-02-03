@@ -206,6 +206,7 @@ export default function FriendProfileModal(props: ProfileProps) {
               // console.log('setting');
               setSettingModal(true);
             }}>
+
             <SvgXml
               fill={'#888888'}
               width={24}
@@ -214,7 +215,7 @@ export default function FriendProfileModal(props: ProfileProps) {
             />
           </AnimatedButton>
         ) : null}
-
+        
         <View style={styles.profileView}>
           <Profile
             name={name}
@@ -225,6 +226,7 @@ export default function FriendProfileModal(props: ProfileProps) {
             friendshipRelation={friendshipRelation}
           />
         </View>
+        
         <View style={styles.btnView}>
           {/* 여기에 friendshipId 필요 */}
           {friendshipRelation == 'true' && (
@@ -246,7 +248,8 @@ export default function FriendProfileModal(props: ProfileProps) {
               </Pressable>
             </>
           )}
-          {friendshipRelation == 'false' && (
+          
+           {friendshipRelation == 'false' && (
             <Pressable
               style={styles.btn}
               onPress={() => askFriend(showWhoseModal, name, profileImg)}>
@@ -266,6 +269,8 @@ export default function FriendProfileModal(props: ProfileProps) {
             </Pressable>
           )}
         </View>
+
+         
 
         <Modal
           isVisible={chageName}
@@ -306,6 +311,7 @@ export default function FriendProfileModal(props: ProfileProps) {
                 />
               </View>
               <View style={styles.modalBtnView}>
+                
                 <Pressable
                   style={styles.btnGray}
                   onPress={() => {

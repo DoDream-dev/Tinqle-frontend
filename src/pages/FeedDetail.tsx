@@ -35,6 +35,7 @@ import ToastScreen from '../components/ToastScreen';
 import {useHeaderHeight} from '@react-navigation/elements';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import LottieView from 'lottie-react-native';
+import CommentItem from '../components/CommentItem';
 
 type FeedDetailScreenProps = NativeStackScreenProps<
   RootStackParamList,
@@ -51,7 +52,7 @@ type itemProps = {
     status: string;
     isAuthor: boolean;
     profileImageUrl: string | null;
-    createAt: string;
+    createdAt: string;
     childCommentCardList: [
       {
         parentId: number;
@@ -62,15 +63,19 @@ type itemProps = {
         status: string;
         profileImageUrl: string | null;
         isAuthor: boolean;
-        createAt: string;
+        createdAt: string;
+        isReactEmoticon: boolean;
+        emoticonCount: number;
       },
     ];
+    isReactEmoticon: boolean;
+    emoticonCount: number;
   };
   index: number;
 };
 
 export default function FeedDetail({navigation, route}: FeedDetailScreenProps) {
-  const dispach = useAppDispatch();
+  const dispatch = useAppDispatch();
 
   const [refresh, setRefresh] = useState(false);
   const [feedData, setFeedData] = useState({
@@ -112,8 +117,11 @@ export default function FeedDetail({navigation, route}: FeedDetailScreenProps) {
   const [showWhoseModal, setShowWhoseModal] = useState(0);
   const [whichPopup, setWhichPopup] = useState('');
   const [uploadBtnLoading, setUploadBtnLoading] = useState(false);
-  const [deleteModal, setDeleteModal] = useState(false);
+
   const [onFocus, setOnFocus] = useState(false);
+  const [deleteModal, setDeleteModal] = useState(-1);
+  const [showContextModal, setShowContextModal] = useState(-1);
+
 
   useFocusEffect(
     useCallback(() => {
@@ -132,7 +140,7 @@ export default function FeedDetail({navigation, route}: FeedDetailScreenProps) {
             errorResponse?.data.statusCode == 4010
           ) {
             console.log('삭제된 글');
-            dispach(
+            dispatch(
               userSlice.actions.setDeleted({
                 deleted: true,
               }),
@@ -140,7 +148,7 @@ export default function FeedDetail({navigation, route}: FeedDetailScreenProps) {
             navigation.navigate('FeedList');
           }
           if (errorResponse?.data.status == 500) {
-            dispach(
+            dispatch(
               userSlice.actions.setToken({
                 accessToken: '',
               }),
@@ -154,7 +162,7 @@ export default function FeedDetail({navigation, route}: FeedDetailScreenProps) {
             `${Config.API_URL}/feeds/${route.params.feedId}/comments`,
           );
           setCmtData(response.data.data.content);
-          // console.log(response.data.data.content[0])
+          // console.log(response.data.data)
           if (response.data.data.content.length == 0) {
             setCursorId(0);
           } else {
@@ -169,7 +177,7 @@ export default function FeedDetail({navigation, route}: FeedDetailScreenProps) {
             .response;
           console.log(errorResponse.data);
           if (errorResponse?.data.status == 500) {
-            dispach(
+            dispatch(
               userSlice.actions.setToken({
                 accessToken: '',
               }),
@@ -236,11 +244,11 @@ export default function FeedDetail({navigation, route}: FeedDetailScreenProps) {
     if (feedData.isAuthor) {
       navigation.setOptions({
         headerStyle: {backgroundColor: '#202020'},
-        headerRight: () => (
-          <Pressable onPress={() => setDeleteModal(true)}>
-            <Feather name="more-vertical" size={24} color={'#888888'} />
-          </Pressable>
-        ),
+        // headerRight: () => (
+        //   <Pressable onPress={() => setDeleteModal(true)}>
+        //     <Feather name="more-vertical" size={24} color={'#888888'} />
+        //   </Pressable>
+        // ),
       });
     }
     return () => {
@@ -274,7 +282,7 @@ export default function FeedDetail({navigation, route}: FeedDetailScreenProps) {
         navigation.goBack();
       }
       if (errorResponse?.data.status == 500) {
-        dispach(
+        dispatch(
           userSlice.actions.setToken({
             accessToken: '',
           }),
@@ -300,7 +308,7 @@ export default function FeedDetail({navigation, route}: FeedDetailScreenProps) {
         errorResponse?.data.statusCode == 4010
       ) {
         console.log('삭제된 글');
-        dispach(
+        dispatch(
           userSlice.actions.setDeleted({
             deleted: true,
           }),
@@ -308,7 +316,7 @@ export default function FeedDetail({navigation, route}: FeedDetailScreenProps) {
         navigation.navigate('FeedList');
       }
       if (errorResponse?.data.status == 500) {
-        dispach(
+        dispatch(
           userSlice.actions.setToken({
             accessToken: '',
           }),
@@ -333,7 +341,7 @@ export default function FeedDetail({navigation, route}: FeedDetailScreenProps) {
         errorResponse?.data.statusCode == 4010
       ) {
         console.log('삭제된 글');
-        dispach(
+        dispatch(
           userSlice.actions.setDeleted({
             deleted: true,
           }),
@@ -341,7 +349,7 @@ export default function FeedDetail({navigation, route}: FeedDetailScreenProps) {
         navigation.navigate('FeedList');
       }
       if (errorResponse?.data.status == 500) {
-        dispach(
+        dispatch(
           userSlice.actions.setToken({
             accessToken: '',
           }),
@@ -371,7 +379,7 @@ export default function FeedDetail({navigation, route}: FeedDetailScreenProps) {
         errorResponse?.data.statusCode == 4010
       ) {
         console.log('삭제된 글');
-        dispach(
+        dispatch(
           userSlice.actions.setDeleted({
             deleted: true,
           }),
@@ -379,7 +387,7 @@ export default function FeedDetail({navigation, route}: FeedDetailScreenProps) {
         navigation.navigate('FeedList');
       }
       if (errorResponse?.data.status == 500) {
-        dispach(
+        dispatch(
           userSlice.actions.setToken({
             accessToken: '',
           }),
@@ -399,6 +407,7 @@ export default function FeedDetail({navigation, route}: FeedDetailScreenProps) {
       );
       // console.log(response.data.data);
       setCmtContent('');
+      setKBsize(0);
       setRefresh(!refresh);
       setIsLast(false);
       setWriteChildCmt(-1);
@@ -411,7 +420,7 @@ export default function FeedDetail({navigation, route}: FeedDetailScreenProps) {
         errorResponse?.data.statusCode == 4010
       ) {
         console.log('삭제된 글');
-        dispach(
+        dispatch(
           userSlice.actions.setDeleted({
             deleted: true,
           }),
@@ -419,7 +428,7 @@ export default function FeedDetail({navigation, route}: FeedDetailScreenProps) {
         navigation.navigate('FeedList');
       }
       if (errorResponse?.data.status == 500) {
-        dispach(
+        dispatch(
           userSlice.actions.setToken({
             accessToken: '',
           }),
@@ -454,7 +463,7 @@ export default function FeedDetail({navigation, route}: FeedDetailScreenProps) {
           errorResponse?.data.statusCode == 4010
         ) {
           console.log('삭제된 글');
-          dispach(
+          dispatch(
             userSlice.actions.setDeleted({
               deleted: true,
             }),
@@ -462,7 +471,7 @@ export default function FeedDetail({navigation, route}: FeedDetailScreenProps) {
           navigation.navigate('FeedList');
         }
         if (errorResponse?.data.status == 500) {
-          dispach(
+          dispatch(
             userSlice.actions.setToken({
               accessToken: '',
             }),
@@ -507,36 +516,43 @@ export default function FeedDetail({navigation, route}: FeedDetailScreenProps) {
   const flatListRef = useRef(null);
 
   return (
-    <KeyboardAvoidingView
-      style={{flex: 1, backgroundColor: '#202020'}}
-      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-      keyboardVerticalOffset={StatusBarHeight + 44}>
-      <View style={styles.entire}>
-        <View
-          style={{
-            paddingHorizontal: 16,
-            flex: 1,
-            flexDirection: 'row',
-            alignItems: 'flex-start',
-            marginBottom: Math.max(50, KBsize),
-          }}>
-          {cmtData.length != 0 && (
-            <View style={styles.commentView}>
-              <FlatList
-                refreshControl={
-                  <RefreshControl
-                    refreshing={refreshing}
-                    onRefresh={onRefresh}
-                  />
-                }
-                ref={flatListRef}
-                data={cmtData}
-                style={[styles.cmtList, {}]}
-                onEndReached={onEndReached}
-                onEndReachedThreshold={0.4}
-                ListHeaderComponent={
+    <Pressable style={{flex:1}} onTouchStart={()=>{
+      if (showContextModal != -1) {
+        setTimeout(() => {
+          setShowContextModal(-1);
+        }, 100);
+      }
+      if (deleteModal != -1) {
+        setTimeout(() => {
+          setDeleteModal(-1);
+        }, 100);
+      }
+    }}>
+      <KeyboardAvoidingView
+        style={{flex: 1, backgroundColor: '#CFD2D9'}}
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        keyboardVerticalOffset={StatusBarHeight + 44}>
+          <View style={styles.entire}>
+            <View style={{
+              paddingHorizontal:16, 
+              flex:1, 
+              flexDirection:'row', 
+              alignItems:'flex-start',
+              marginBottom:Math.min(80, Math.max(50, KBsize))+10
+            }}
+              >
+              <View style={styles.commentView}>
+                <FlatList
+                  refreshControl={
+                    <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+                  }
+                  ref={flatListRef}
+                  data={cmtData}
+                  style={[styles.cmtList, {}]}
+                  onEndReached={onEndReached}
+                  onEndReachedThreshold={0.4}
+                  ListHeaderComponent={
                   //   <View style={{backgroundColor:'#202020'}}>
-
                   //     <View style={styles.commentHeader}>
                   //       <SvgXml
                   //         width={16}
@@ -567,258 +583,206 @@ export default function FeedDetail({navigation, route}: FeedDetailScreenProps) {
                       showWhoseModal={showWhoseModal}
                       setShowWhoseModal={setShowWhoseModal}
                       setWhichPopup={setWhichPopup}
+                      deleteFeedId={deleteModal}
+                      setDeleteFeedId={setDeleteModal}
+                      setRefresh={setRefresh}
                     />
                   </View>
-                }
-                // stickyHeaderIndices={[0]}
-                renderItem={({item, index}: itemProps) => {
-                  const childData = item.childCommentCardList;
-                  return (
-                    <Pressable
-                      style={[
-                        writeChildCmt == index
-                          ? {
-                              backgroundColor: '#A55FFF33',
-                            }
-                          : {
-                              backgroundColor: '#333333',
-                            },
-                        index == 0 && {
-                          borderTopLeftRadius: 10,
-                          borderTopRightRadius: 10,
-                        },
-                        index == cmtData.length - 1 && {
-                          borderBottomLeftRadius: 10,
-                          borderBottomRightRadius: 10,
-                        },
-                      ]}>
-                      <Content
-                        nickname={item.friendNickname}
-                        status={item.status}
+                  }
+                  // stickyHeaderIndices={[0]}
+                  renderItem={({item, index}: itemProps) => {
+                    return (
+                      <CommentItem 
+                        commentId={item.commentId}
                         content={item.content}
-                        createdAt={item.createAt}
+                        childCount={item.childCount}
                         accountId={item.accountId}
-                        mine={item.isAuthor}
-                        imageURL={[null]}
-                        detail={true}
-                        cmt={true}
-                        child={setWriteChildCmt}
-                        cmtId={item.commentId}
-                        profileImg={item.profileImageUrl}
+                        friendNickname={item.friendNickname}
+                        status={item.status}
+                        isAuthor={item.isAuthor}
+                        profileImageUrl={item.profileImageUrl}
+                        createdAt={item.createdAt}
+                        childCommentCardList={item.childCommentCardList}
+                        index={index}
                         showWhoseModal={showWhoseModal}
                         setShowWhoseModal={setShowWhoseModal}
                         setWhichPopup={setWhichPopup}
-                        index={index}
+                        isReactEmoticon={item.isReactEmoticon}
+                        emoticonCount={item.emoticonCount}
+                        setRefresh={setRefresh}
+                        writeChildCmt={writeChildCmt}
+                        setWriteChildCmt={setWriteChildCmt}
+                        cmtCount={cmtData.length}
+                        showContextModal={showContextModal}
+                        setShowContextModal={setShowContextModal}
                       />
-                      {item.childCount != 0 && (
-                        <View>
-                          <FlatList
-                            data={childData}
-                            // style={{borderTopWidth:1, borderTopColor:'#ECECEC',}}
-                            renderItem={({item, index}) => {
-                              return (
-                                <View
-                                  style={[
-                                    styles.childCmt,
-                                    index == childData.length - 1 && {
-                                      borderBottomLeftRadius: 10,
-                                      borderBottomRightRadius: 10,
-                                    },
-                                  ]}>
-                                  <Content
-                                    nickname={item.friendNickname}
-                                    status={item.status}
-                                    content={item.content}
-                                    createdAt={item.createAt}
-                                    accountId={item.accountId}
-                                    mine={item.isAuthor}
-                                    imageURL={[null]}
-                                    detail={true}
-                                    cmt={false}
-                                    child={setWriteChildCmt}
-                                    cmtId={item.commentId}
-                                    profileImg={item.profileImageUrl}
-                                    showWhoseModal={showWhoseModal}
-                                    setShowWhoseModal={setShowWhoseModal}
-                                    setWhichPopup={setWhichPopup}
-                                    index={index}
-                                  />
-                                </View>
-                              );
-                            }}
-                          />
-                        </View>
-                      )}
-                    </Pressable>
-                  );
-                }}
-              />
+                    );
+                  }}
+                />
+              </View>
             </View>
-          )}
-        </View>
+            {/* <View style={{height: Math.max(60, KBsize + 10)}} /> */}
+            <View style={styles.newCmtView}>
+              <View style={styles.newFeedTxtInputContain}>
+                <TextInput
+                  onFocus={() => {
+                    setOnFocus(true);
+                    if (writeChildCmt === -1) {
+                      return;
+                    }
 
-        {/* <View style={{height: Math.max(60, KBsize + 10)}} /> */}
+                    const delayedScroll = () => {
+                      flatListRef.current.scrollToIndex({
+                        index: writeChildCmt,
+                        animated: true,
+                      });
+                    };
 
-        <View style={styles.newCmtView}>
-          <View style={styles.newFeedTxtInputContain}>
-            <TextInput
-              onFocus={() => {
-                setOnFocus(true);
+                    // Wait for 1 second (1000 milliseconds) and then execute the scroll
+                    const timeoutId = setTimeout(delayedScroll, 100);
 
-                if (writeChildCmt === -1) {
-                  return;
+                    // Cleanup the timeout to avoid memory leaks
+                    return () => clearTimeout(timeoutId);
+                  }}
+                  placeholder={placeholder}
+                  placeholderTextColor={'#848484'}
+                  style={[
+                    styles.newCmtTxtInput,
+                    {
+                      height:
+                        Platform.OS === 'android'
+                          ? Math.min(80, Math.max(40, KBsize))
+                          : undefined,
+                    },
+                  ]}
+                  onBlur={() => {
+                    setOnFocus(false);
+                    setWriteChildCmt(-1)
+                  }}
+                  onChangeText={(text: string) => {
+                    setCmtContent(text);
+                  }}
+                  blurOnSubmit={false}
+                  maxLength={200}
+                  value={cmtContent}
+                  onSubmitEditing={async () => {
+                    setUploadBtnLoading(true);
+                    Keyboard.dismiss();
+                  }}
+                  multiline={true}
+                  textAlignVertical="center"
+                  autoCapitalize="none"
+                  autoComplete="off"
+                  autoCorrect={false}
+                  onContentSizeChange={e => {
+                    setKBsize(e.nativeEvent.contentSize.height);
+                  }}
+                  ref={inputRef}
+                  // numberOfLines={4}
+                />
+              </View>
+              <Pressable
+                style={
+                  cmtContent.trim() == '' || uploadBtnLoading
+                    ? styles.sendNewCmt
+                    : styles.sendNewCmtActivated
                 }
-
-                const delayedScroll = () => {
-                  flatListRef.current.scrollToIndex({
-                    index: writeChildCmt,
-                    animated: true,
-                  });
-                };
-
-                // Wait for 1 second (1000 milliseconds) and then execute the scroll
-                const timeoutId = setTimeout(delayedScroll, 100);
-
-                // Cleanup the timeout to avoid memory leaks
-                return () => clearTimeout(timeoutId);
-              }}
-              placeholder={placeholder}
-              placeholderTextColor={'#848484'}
-              style={[
-                styles.newCmtTxtInput,
-                {
-                  height:
-                    Platform.OS === 'android'
-                      ? Math.min(80, Math.max(40, KBsize))
-                      : undefined,
-                },
-              ]}
-              onBlur={() => {
-                setOnFocus(false);
-                setWriteChildCmt(-1);
-              }}
-              onChangeText={(text: string) => {
-                setCmtContent(text);
-              }}
-              blurOnSubmit={false}
-              maxLength={200}
-              value={cmtContent}
-              onSubmitEditing={async () => {
-                setUploadBtnLoading(true);
-                Keyboard.dismiss();
-              }}
-              multiline={true}
-              textAlignVertical="center"
-              autoCapitalize="none"
-              autoComplete="off"
-              autoCorrect={false}
-              onContentSizeChange={e => {
-                setKBsize(e.nativeEvent.contentSize.height);
-              }}
-              ref={inputRef}
-              // numberOfLines={4}
-            />
-          </View>
-          <Pressable
-            style={
-              cmtContent.trim() == '' || uploadBtnLoading
-                ? styles.sendNewCmt
-                : styles.sendNewCmtActivated
-            }
-            disabled={uploadBtnLoading}
-            onPress={async () => {
-              if (cmtContent.trim() != '') {
-                setUploadBtnLoading(true);
-              }
-              Keyboard.dismiss();
-            }}>
-            {onFocus && cmtContent.trim() == '' ? (
-              <Feather name="chevron-down" size={24} style={{color: 'white'}} />
-            ) : (
-              <Feather name="check" size={24} style={{color: 'white'}} />
+                disabled={uploadBtnLoading}
+                onPress={async () => {
+                  if (cmtContent.trim() != '') {
+                    setUploadBtnLoading(true);
+                  }
+                  Keyboard.dismiss();
+                }}>
+                {onFocus && cmtContent.trim() == '' ? (
+                  <Feather name="chevron-down" size={24} style={{color: 'white'}} />
+                ) : (
+                  <Feather name="check" size={24} style={{color: 'white'}} />
+                )}
+              </Pressable>
+            </View>
+            {/* <M visible={deleteModal == feedData.feedId} transparent={true}>
+              <Safe>
+                <Pressable onPress={() => setDeleteModal(-1)} style={{flex: 1}}>
+                  <View style={styles.popup}>
+                    <Shadow distance={10} startColor="#00000008">
+                      <Pressable onPress={deleteFeed} style={styles.deleteFeed}>
+                        <Text style={styles.deleteFeedTxt}>삭제하기</Text>
+                      </Pressable>
+                    </Shadow>
+                  </View>
+                </Pressable>
+              </Safe>
+            </M> */}
+            
+            <Modal
+              isVisible={showBottomSheet}
+              onBackButtonPress={() => setShowBottomSheet(false)}
+              backdropColor="#101010"
+              backdropOpacity={0.5}
+              onSwipeComplete={() => setShowBottomSheet(false)}
+              swipeDirection={'down'}
+              style={{justifyContent: 'flex-end', margin: 0}}>
+              <Pressable
+                style={styles.modalBGView}
+                onPress={() => setShowBottomSheet(false)}>
+                <Pressable
+                  style={styles.modalView}
+                  onPress={e => e.stopPropagation()}>
+                  <View style={styles.whoReacted}>
+                    <SvgXml width={22} height={22} xml={svgXml.emoticon.heart} />
+                    <Text style={styles.emoticonTxt}>
+                      {EmoticonList.heartEmoticonNicknameList.join(' ') == ''
+                        ? '-'
+                        : EmoticonList.heartEmoticonNicknameList
+                            .join(', ')
+                            .replace(/ /g, '\u00A0')}
+                    </Text>
+                  </View>
+                  <View style={styles.whoReacted}>
+                    <SvgXml width={22} height={22} xml={svgXml.emoticon.smile} />
+                    <Text style={styles.emoticonTxt}>
+                      {EmoticonList.smileEmoticonNicknameList.join(' ') == ''
+                        ? '-'
+                        : EmoticonList.smileEmoticonNicknameList
+                            .join(', ')
+                            .replace(/ /g, '\u00A0')}
+                    </Text>
+                  </View>
+                  <View style={styles.whoReacted}>
+                    <SvgXml width={22} height={22} xml={svgXml.emoticon.sad} />
+                    <Text style={styles.emoticonTxt}>
+                      {EmoticonList.sadEmoticonNicknameList.join(' ') == ''
+                        ? '-'
+                        : EmoticonList.sadEmoticonNicknameList
+                            .join(', ')
+                            .replace(/ /g, '\u00A0')}
+                    </Text>
+                  </View>
+                  <View style={styles.whoReacted}>
+                    <SvgXml width={22} height={22} xml={svgXml.emoticon.surprise} />
+                    <Text style={styles.emoticonTxt}>
+                      {EmoticonList.surpriseEmoticonNicknameList.join(' ') == ''
+                        ? '-'
+                        : EmoticonList.surpriseEmoticonNicknameList
+                            .join(', ')
+                            .replace(/ /g, '\u00A0')}
+                    </Text>
+                  </View>
+                </Pressable>
+              </Pressable>
+            </Modal>
+            {whichPopup === 'deletedFriend' && (
+              <ToastScreen
+                height={21}
+                marginBottom={48}
+                onClose={() => setWhichPopup('')}
+                message="친구를 삭제했어요."
+              />
             )}
-          </Pressable>
-        </View>
-        <M visible={deleteModal} transparent={true}>
-          <Safe>
-            <Pressable onPress={() => setDeleteModal(false)} style={{flex: 1}}>
-              <View style={styles.popup}>
-                <Shadow distance={10} startColor="#00000008">
-                  <Pressable onPress={deleteFeed} style={styles.deleteFeed}>
-                    <Text style={styles.deleteFeedTxt}>삭제하기</Text>
-                  </Pressable>
-                </Shadow>
-              </View>
-            </Pressable>
-          </Safe>
-        </M>
-        <Modal
-          isVisible={showBottomSheet}
-          onBackButtonPress={() => setShowBottomSheet(false)}
-          backdropColor="#101010"
-          backdropOpacity={0.5}
-          onSwipeComplete={() => setShowBottomSheet(false)}
-          swipeDirection={'down'}
-          style={{justifyContent: 'flex-end', margin: 0}}>
-          <Pressable
-            style={styles.modalBGView}
-            onPress={() => setShowBottomSheet(false)}>
-            <Pressable
-              style={styles.modalView}
-              onPress={e => e.stopPropagation()}>
-              <View style={styles.whoReacted}>
-                <SvgXml width={22} height={22} xml={svgXml.emoticon.heart} />
-                <Text style={styles.emoticonTxt}>
-                  {EmoticonList.heartEmoticonNicknameList.join(' ') == ''
-                    ? '-'
-                    : EmoticonList.heartEmoticonNicknameList
-                        .join(', ')
-                        .replace(/ /g, '\u00A0')}
-                </Text>
-              </View>
-              <View style={styles.whoReacted}>
-                <SvgXml width={22} height={22} xml={svgXml.emoticon.smile} />
-                <Text style={styles.emoticonTxt}>
-                  {EmoticonList.smileEmoticonNicknameList.join(' ') == ''
-                    ? '-'
-                    : EmoticonList.smileEmoticonNicknameList
-                        .join(', ')
-                        .replace(/ /g, '\u00A0')}
-                </Text>
-              </View>
-              <View style={styles.whoReacted}>
-                <SvgXml width={22} height={22} xml={svgXml.emoticon.sad} />
-                <Text style={styles.emoticonTxt}>
-                  {EmoticonList.sadEmoticonNicknameList.join(' ') == ''
-                    ? '-'
-                    : EmoticonList.sadEmoticonNicknameList
-                        .join(', ')
-                        .replace(/ /g, '\u00A0')}
-                </Text>
-              </View>
-              <View style={styles.whoReacted}>
-                <SvgXml width={22} height={22} xml={svgXml.emoticon.surprise} />
-                <Text style={styles.emoticonTxt}>
-                  {EmoticonList.surpriseEmoticonNicknameList.join(' ') == ''
-                    ? '-'
-                    : EmoticonList.surpriseEmoticonNicknameList
-                        .join(', ')
-                        .replace(/ /g, '\u00A0')}
-                </Text>
-              </View>
-            </Pressable>
-          </Pressable>
-        </Modal>
-        {whichPopup === 'deletedFriend' && (
-          <ToastScreen
-            height={21}
-            marginBottom={48}
-            onClose={() => setWhichPopup('')}
-            message="친구를 삭제했어요."
-          />
-        )}
-      </View>
-    </KeyboardAvoidingView>
+          </View>
+      </KeyboardAvoidingView>
+    </Pressable>
   );
 }
 
@@ -845,8 +809,8 @@ const styles = StyleSheet.create({
   commentView: {
     width: '100%',
     flex: 1,
-    paddingVertical: 8,
-    borderRadius: 10,
+    paddingVertical:12,
+    borderRadius:10,
   },
   commentHeader: {
     flexDirection: 'row',
@@ -879,7 +843,7 @@ const styles = StyleSheet.create({
   popup: {
     position: 'absolute',
     right: 55,
-    top: Platform.OS === 'ios' ? 1 : 20,
+    top: Platform.OS === 'ios' ? 1 : 100,
     // borderRadius: 10,
     // borderColor: 'red',
     // backgroundColor: 'white',
@@ -887,13 +851,13 @@ const styles = StyleSheet.create({
   deleteFeed: {
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#888888',
+    backgroundColor: '#202020',
     paddingHorizontal: 18,
     paddingVertical: 13,
     borderRadius: 5,
   },
   deleteFeedTxt: {
-    color: '#202020',
+    color: '#F0F0F0',
     fontWeight: '400',
     fontSize: 15,
   },
