@@ -437,13 +437,15 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
   };
 
   return (
-    <Pressable style={{flex:1}} onTouchStart={()=>{
-      if (deleteFeedId != -1) {
-        setTimeout(() => {
-          setDeleteFeedId(-1);
-        }, 100);
-      }
-    }}>
+    <Pressable
+      style={{flex: 1}}
+      onTouchStart={() => {
+        if (deleteFeedId != -1) {
+          setTimeout(() => {
+            setDeleteFeedId(-1);
+          }, 100);
+        }
+      }}>
       <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
         <KeyboardAvoidingView
           style={[{flex: 1, backgroundColor: '#CFD2D9'}]}
@@ -487,7 +489,10 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
                     : {height: 0, width: 0}
                 }
                 refreshControl={
-                  <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+                  <RefreshControl
+                    refreshing={refreshing}
+                    onRefresh={onRefresh}
+                  />
                 }
                 // onStartReached={()=>{
                 //   if (first) scroll(feedData.length - 1)
@@ -598,10 +603,18 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
                     <SvgXml width={32} height={32} xml={svgXml.status.meal} />
                   )}
                   {status == 'alcohol' && (
-                    <SvgXml width={32} height={32} xml={svgXml.status.alcohol} />
+                    <SvgXml
+                      width={32}
+                      height={32}
+                      xml={svgXml.status.alcohol}
+                    />
                   )}
                   {status == 'chicken' && (
-                    <SvgXml width={32} height={32} xml={svgXml.status.chicken} />
+                    <SvgXml
+                      width={32}
+                      height={32}
+                      xml={svgXml.status.chicken}
+                    />
                   )}
                   {status == 'sleep' && (
                     <SvgXml width={32} height={32} xml={svgXml.status.sleep} />
@@ -738,7 +751,7 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
                 </Pressable>
               </View>
             </View>
-            
+
             <Modal
               isVisible={showBottomSheet}
               onBackButtonPress={() => setShowBottomSheet(false)}
@@ -754,7 +767,11 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
                   style={styles.modalView}
                   onPress={e => e.stopPropagation()}>
                   <View style={styles.whoReacted}>
-                    <SvgXml width={22} height={22} xml={svgXml.emoticon.heart} />
+                    <SvgXml
+                      width={22}
+                      height={22}
+                      xml={svgXml.emoticon.heart}
+                    />
                     <Text style={styles.emoticonTxt}>
                       {EmoticonList.heartEmoticonNicknameList.join(' ') == ''
                         ? '-'
@@ -764,7 +781,11 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
                     </Text>
                   </View>
                   <View style={styles.whoReacted}>
-                    <SvgXml width={22} height={22} xml={svgXml.emoticon.smile} />
+                    <SvgXml
+                      width={22}
+                      height={22}
+                      xml={svgXml.emoticon.smile}
+                    />
                     <Text style={styles.emoticonTxt}>
                       {EmoticonList.smileEmoticonNicknameList.join(' ') == ''
                         ? '-'
@@ -800,7 +821,7 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
                 </Pressable>
               </Pressable>
             </Modal>
-            
+
             <Modal
               isVisible={changeStatus}
               backdropColor="#101010"
@@ -915,7 +936,11 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
                         ? styles.statusSelected
                         : styles.statusSelect
                     }>
-                    <SvgXml width={60} height={60} xml={svgXml.status.alcohol} />
+                    <SvgXml
+                      width={60}
+                      height={60}
+                      xml={svgXml.status.alcohol}
+                    />
                   </Pressable>
                   <Pressable
                     onPress={() => {
@@ -927,7 +952,11 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
                         ? styles.statusSelected
                         : styles.statusSelect
                     }>
-                    <SvgXml width={60} height={60} xml={svgXml.status.chicken} />
+                    <SvgXml
+                      width={60}
+                      height={60}
+                      xml={svgXml.status.chicken}
+                    />
                   </Pressable>
                   <Pressable
                     onPress={() => {
