@@ -10,6 +10,8 @@ import store from './src/store';
 import userSlice from './src/slices/user';
 import {request, check, PERMISSIONS, RESULTS} from 'react-native-permissions';
 import {NavigationContainer} from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 // import PushNotification, { Importance } from 'react-native-push-notification';
 
 // PushNotification.configure({
@@ -115,10 +117,13 @@ messaging().setBackgroundMessageHandler(async remoteMessage => {
 //   console.log('Noti caused app to open from gb state: ', remoteMessage.notification,);
 // });
 
+AsyncStorage.setItem('app_start', 'true');
+
 function headlessCheck({isHeadless}) {
   if (isHeadless) {
     return null;
   }
+
   return (
     <NavigationContainer>
       <App />

@@ -16,14 +16,15 @@ class LocalNotificationService {
       },
 
       onNotification: function (notification) {
-        //앱내 알림 시 오는 부분
+        // 앱내 알림 시 오는 부분
         if (notification.userInteraction) {
-          // console.log('Notification was pressed!', notification);
+          console.log('Notification was pressed!', notification);
           AsyncStorage.setItem(
             'pushNoti_redirectTargetId',
             notification.data.redirectTargetId,
           );
           AsyncStorage.setItem('pushNot_type', notification.data.type);
+          AsyncStorage.setItem('pushNot_id', notification.data.notificationId);
         }
 
         console.log('[LocalNotificationService] onNotification ', notification);

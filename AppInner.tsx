@@ -123,21 +123,21 @@ export default function AppInner() {
     getRefreshTokenAgain();
   }, [dispatch]);
 
-  useEffect(() => {
-    // const unsubscribe = messaging().onMessage(async remoteMessage => {
-    //   Alert.alert('alarm', JSON.stringify(remoteMessage));
-    //   console.log('new messag arrived:', remoteMessage)
-    //   dispatch(
-    //     userSlice.actions.setNotis({
-    //       notis:true,
-    //     }),
-    //   );
-    // });
-    // messaging().onNotificationOpenedApp(remoteMessage => {
-    //   console.log('Noti caused app to open from gb state: ', remoteMessage.notification,);
-    // // });
-    // return unsubscribe;
-  }, []);
+  // useEffect(() => {
+  //   // const unsubscribe = messaging().onMessage(async remoteMessage => {
+  //   //   Alert.alert('alarm', JSON.stringify(remoteMessage));
+  //   //   console.log('new messag arrived:', remoteMessage)
+  //   //   dispatch(
+  //   //     userSlice.actions.setNotis({
+  //   //       notis:true,
+  //   //     }),
+  //   //   );
+  //   // });
+  //   // messaging().onNotificationOpenedApp(remoteMessage => {
+  //   //   console.log('Noti caused app to open from gb state: ', remoteMessage.notification,);
+  //   // // });
+  //   // return unsubscribe;
+  // }, []);
 
   return isLoggedIn ? (
     <Safe color="#202020">

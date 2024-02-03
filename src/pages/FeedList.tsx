@@ -34,6 +34,9 @@ import ToastScreen from '../components/ToastScreen';
 import userSlice from '../slices/user';
 import EncryptedStorage from 'react-native-encrypted-storage/lib/typescript/EncryptedStorage';
 import LottieView from 'lottie-react-native';
+import {StatusBarHeight} from '../components/Safe';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import {fcmService} from '../push_fcm';
 
 type FeedListScreenProps = NativeStackScreenProps<
   RootStackParamList,
@@ -107,6 +110,7 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
   const [showWhoseModal, setShowWhoseModal] = useState(0);
   const [whichPopup, setWhichPopup] = useState('');
   const [uploadBtnLoading, setUploadBtnLoading] = useState(false);
+  const [onFocus, setOnFocus] = useState(false);
 
   const [deleteFeedId, setDeleteFeedId] = useState(-1);
 
@@ -171,6 +175,7 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
         });
       };
       reloadStatus();
+      openStateModal();
     }, [refresh, status, noti, newNotis]),
   );
 
@@ -243,6 +248,23 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
     }, [refresh, newNotis, noti]),
   );
 
+  // code for check notice
+  useEffect(() => {
+    fcmService.register(
+      null,
+      (notify: any) => {
+        if (Platform.OS === 'android') {
+          setNewNotis(true);
+        }
+      },
+      (notify: any) => {
+        if (Platform.OS === 'ios') {
+          setNewNotis(true);
+        }
+      },
+    );
+  }, []);
+
   const getData = async () => {
     if (!isLast) {
       setLoading(true);
@@ -267,6 +289,7 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
     }
     setLoading(false);
   };
+
   const onEndReached = () => {
     if (!loading) {
       getData();
@@ -388,6 +411,17 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
     }
   }, throttleTimeEmoticon);
 
+  const openStateModal = async () => {
+    const appstart = await AsyncStorage.getItem('app_start');
+    const pushNot_type = await AsyncStorage.getItem('pushNot_type');
+
+    if (appstart == 'true' && !pushNot_type) {
+      setChangeStatus(true);
+    }
+
+    await AsyncStorage.removeItem('app_start');
+  };
+
   const flatRef = useRef();
 
   const [refreshing, setRefreshing] = React.useState(false);
@@ -414,7 +448,7 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
         <KeyboardAvoidingView
           style={[{flex: 1, backgroundColor: '#CFD2D9'}]}
           behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-          keyboardVerticalOffset={103}>
+          keyboardVerticalOffset={StatusBarHeight + 44}>
           <View
             style={{flex: 1, alignItems: 'center', backgroundColor: '#202020'}}>
             <View style={[styles.entire]}>
@@ -610,8 +644,14 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
                             : undefined,
                       },
                     ]}
-                    onFocus={() => setPlaceholder('')}
-                    onBlur={() => setPlaceholder('지금 기분이 어때요?')}
+                    onFocus={() => {
+                      setOnFocus(true);
+                      setPlaceholder('');
+                    }}
+                    onBlur={() => {
+                      setOnFocus(false);
+                      setPlaceholder('지금 기분이 어때요?');
+                    }}
                     onChangeText={(text: string) => {
                       setFeedContent(text);
                     }}
@@ -671,7 +711,9 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
                     (feedContent.trim() == '' && !selectImg) || uploadBtnLoading
                   }
                   onPress={async () => {
-                    setUploadBtnLoading(true);
+                    if (feedContent.trim() != '' || selectImg) {
+                      setUploadBtnLoading(true);
+                    }
                     Keyboard.dismiss();
                   }}>
                   {uploadBtnLoading ? (
@@ -684,12 +726,19 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
                       autoPlay
                       loop
                     />
+                  ) : onFocus && feedContent.trim() == '' && !selectImg ? (
+                    <Feather
+                      name="chevron-down"
+                      size={24}
+                      style={{color: 'white'}}
+                    />
                   ) : (
                     <Feather name="check" size={24} style={{color: 'white'}} />
                   )}
                 </Pressable>
               </View>
             </View>
+            
             <Modal
               isVisible={showBottomSheet}
               onBackButtonPress={() => setShowBottomSheet(false)}
@@ -751,10 +800,13 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
                 </Pressable>
               </Pressable>
             </Modal>
+            
             <Modal
               isVisible={changeStatus}
               backdropColor="#101010"
               backdropOpacity={0.5}
+              swipeDirection={'down'}
+              onSwipeComplete={() => setChangeStatus(false)}
               onBackButtonPress={() => setChangeStatus(false)}>
               <Pressable
                 style={styles.modalBGView2}

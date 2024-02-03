@@ -9,6 +9,7 @@ import {
   ScrollView,
   TextInput,
   Linking,
+  PermissionsAndroid,
   Platform,
 } from 'react-native';
 import * as KakaoLogin from '@react-native-seoul/kakao-login';
@@ -66,6 +67,7 @@ export default function SignIn() {
       console.log('fcm auth fail');
     }
   };
+
   requestUserPermissionForFCM();
 
   useEffect(() => {
@@ -74,6 +76,27 @@ export default function SignIn() {
     });
 
     return unsubscribe;
+  }, []);
+
+  useEffect(() => {
+    if (Platform.OS == 'android') {
+      PermissionsAndroid.check('android.permission.POST_NOTIFICATIONS').then(
+        async response => {
+          if (!response) {
+            await PermissionsAndroid.request(
+              'android.permission.POST_NOTIFICATIONS',
+              {
+                title: '팅클 알림 설정',
+                message: '팅클에서 소식을 받으려면 알림을 허용해주세요.',
+                buttonNeutral: '다음에 설정',
+                buttonNegative: '취소',
+                buttonPositive: '확인',
+              },
+            );
+          }
+        },
+      );
+    }
   }, []);
 
   const LoginWithGoogle = async () => {

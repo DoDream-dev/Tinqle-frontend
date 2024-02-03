@@ -88,8 +88,8 @@ export default function Content(props: ContentProps) {
           <ImageModal
             swipeToDismiss={true}
             modalImageResizeMode="contain"
-            resizeMode="contain"
-            // resizeMode="cover"
+            // resizeMode="contain"
+            resizeMode="cover"
             imageBackgroundColor="transparent"
             overlayBackgroundColor="rgba(32, 32, 32, 0.9)"
             style={{
@@ -112,6 +112,7 @@ export default function Content(props: ContentProps) {
           <Text style={styles.recommentTxt}>대댓글 쓰기</Text>
         </Pressable>
       )} */}
+
       {/* <View style={{bottom:0, alignItems:'center', backgroundColor:'red', width:'100%', position:'absolute', height:100}}>
         {whichPopup === 'deleted' && (
           <ToastScreen
