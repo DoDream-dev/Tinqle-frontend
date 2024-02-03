@@ -122,7 +122,6 @@ export default function FeedDetail({navigation, route}: FeedDetailScreenProps) {
   const [deleteModal, setDeleteModal] = useState(-1);
   const [showContextModal, setShowContextModal] = useState(-1);
 
-
   useFocusEffect(
     useCallback(() => {
       const getFeed = async () => {
@@ -516,42 +515,48 @@ export default function FeedDetail({navigation, route}: FeedDetailScreenProps) {
   const flatListRef = useRef(null);
 
   return (
-    <Pressable style={{flex:1}} onTouchStart={()=>{
-      if (showContextModal != -1) {
-        setTimeout(() => {
-          setShowContextModal(-1);
-        }, 100);
-      }
-      if (deleteModal != -1) {
-        setTimeout(() => {
-          setDeleteModal(-1);
-        }, 100);
-      }
-    }}>
+    <Pressable
+      style={{flex: 1}}
+      onTouchStart={() => {
+        if (showContextModal != -1) {
+          setTimeout(() => {
+            setShowContextModal(-1);
+          }, 100);
+        }
+        if (deleteModal != -1) {
+          setTimeout(() => {
+            setDeleteModal(-1);
+          }, 100);
+        }
+      }}>
       <KeyboardAvoidingView
         style={{flex: 1, backgroundColor: '#CFD2D9'}}
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         keyboardVerticalOffset={StatusBarHeight + 44}>
-          <View style={styles.entire}>
-            <View style={{
-              paddingHorizontal:16, 
-              flex:1, 
-              flexDirection:'row', 
-              alignItems:'flex-start',
-              marginBottom:Math.min(80, Math.max(50, KBsize))+10
-            }}
-              >
-              <View style={styles.commentView}>
-                <FlatList
-                  refreshControl={
-                    <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-                  }
-                  ref={flatListRef}
-                  data={cmtData}
-                  style={[styles.cmtList, {}]}
-                  onEndReached={onEndReached}
-                  onEndReachedThreshold={0.4}
-                  ListHeaderComponent={
+        <View style={styles.entire}>
+          <View
+            style={{
+              paddingHorizontal: 16,
+              flex: 1,
+              flexDirection: 'row',
+              alignItems: 'flex-start',
+              // marginBottom: Math.min(80, Math.max(50, KBsize)) + 10,
+              marginBottom: Math.min(80, Math.max(50, KBsize)),
+            }}>
+            <View style={styles.commentView}>
+              <FlatList
+                refreshControl={
+                  <RefreshControl
+                    refreshing={refreshing}
+                    onRefresh={onRefresh}
+                  />
+                }
+                ref={flatListRef}
+                data={cmtData}
+                style={[styles.cmtList, {}]}
+                onEndReached={onEndReached}
+                onEndReachedThreshold={0.4}
+                ListHeaderComponent={
                   //   <View style={{backgroundColor:'#202020'}}>
                   //     <View style={styles.commentHeader}>
                   //       <SvgXml
@@ -588,120 +593,126 @@ export default function FeedDetail({navigation, route}: FeedDetailScreenProps) {
                       setRefresh={setRefresh}
                     />
                   </View>
-                  }
-                  // stickyHeaderIndices={[0]}
-                  renderItem={({item, index}: itemProps) => {
-                    return (
-                      <CommentItem 
-                        commentId={item.commentId}
-                        content={item.content}
-                        childCount={item.childCount}
-                        accountId={item.accountId}
-                        friendNickname={item.friendNickname}
-                        status={item.status}
-                        isAuthor={item.isAuthor}
-                        profileImageUrl={item.profileImageUrl}
-                        createdAt={item.createdAt}
-                        childCommentCardList={item.childCommentCardList}
-                        index={index}
-                        showWhoseModal={showWhoseModal}
-                        setShowWhoseModal={setShowWhoseModal}
-                        setWhichPopup={setWhichPopup}
-                        isReactEmoticon={item.isReactEmoticon}
-                        emoticonCount={item.emoticonCount}
-                        setRefresh={setRefresh}
-                        writeChildCmt={writeChildCmt}
-                        setWriteChildCmt={setWriteChildCmt}
-                        cmtCount={cmtData.length}
-                        showContextModal={showContextModal}
-                        setShowContextModal={setShowContextModal}
-                      />
-                    );
-                  }}
-                />
-              </View>
-            </View>
-            {/* <View style={{height: Math.max(60, KBsize + 10)}} /> */}
-            <View style={styles.newCmtView}>
-              <View style={styles.newFeedTxtInputContain}>
-                <TextInput
-                  onFocus={() => {
-                    setOnFocus(true);
-                    if (writeChildCmt === -1) {
-                      return;
-                    }
-
-                    const delayedScroll = () => {
-                      flatListRef.current.scrollToIndex({
-                        index: writeChildCmt,
-                        animated: true,
-                      });
-                    };
-
-                    // Wait for 1 second (1000 milliseconds) and then execute the scroll
-                    const timeoutId = setTimeout(delayedScroll, 100);
-
-                    // Cleanup the timeout to avoid memory leaks
-                    return () => clearTimeout(timeoutId);
-                  }}
-                  placeholder={placeholder}
-                  placeholderTextColor={'#848484'}
-                  style={[
-                    styles.newCmtTxtInput,
-                    {
-                      height:
-                        Platform.OS === 'android'
-                          ? Math.min(80, Math.max(40, KBsize))
-                          : undefined,
-                    },
-                  ]}
-                  onBlur={() => {
-                    setOnFocus(false);
-                    setWriteChildCmt(-1)
-                  }}
-                  onChangeText={(text: string) => {
-                    setCmtContent(text);
-                  }}
-                  blurOnSubmit={false}
-                  maxLength={200}
-                  value={cmtContent}
-                  onSubmitEditing={async () => {
-                    setUploadBtnLoading(true);
-                    Keyboard.dismiss();
-                  }}
-                  multiline={true}
-                  textAlignVertical="center"
-                  autoCapitalize="none"
-                  autoComplete="off"
-                  autoCorrect={false}
-                  onContentSizeChange={e => {
-                    setKBsize(e.nativeEvent.contentSize.height);
-                  }}
-                  ref={inputRef}
-                  // numberOfLines={4}
-                />
-              </View>
-              <Pressable
-                style={
-                  cmtContent.trim() == '' || uploadBtnLoading
-                    ? styles.sendNewCmt
-                    : styles.sendNewCmtActivated
                 }
-                disabled={uploadBtnLoading}
-                onPress={async () => {
-                  if (cmtContent.trim() != '') {
-                    setUploadBtnLoading(true);
-                  }
-                  Keyboard.dismiss();
-                }}>
-                {onFocus && cmtContent.trim() == '' ? (
-                  <Feather name="chevron-down" size={24} style={{color: 'white'}} />
-                ) : (
-                  <Feather name="check" size={24} style={{color: 'white'}} />
-                )}
-              </Pressable>
+                // stickyHeaderIndices={[0]}
+                ListFooterComponent={<View style={{height: 22}} />}
+                renderItem={({item, index}: itemProps) => {
+                  return (
+                    <CommentItem
+                      commentId={item.commentId}
+                      content={item.content}
+                      childCount={item.childCount}
+                      accountId={item.accountId}
+                      friendNickname={item.friendNickname}
+                      status={item.status}
+                      isAuthor={item.isAuthor}
+                      profileImageUrl={item.profileImageUrl}
+                      createdAt={item.createdAt}
+                      childCommentCardList={item.childCommentCardList}
+                      index={index}
+                      showWhoseModal={showWhoseModal}
+                      setShowWhoseModal={setShowWhoseModal}
+                      setWhichPopup={setWhichPopup}
+                      isReactEmoticon={item.isReactEmoticon}
+                      emoticonCount={item.emoticonCount}
+                      setRefresh={setRefresh}
+                      writeChildCmt={writeChildCmt}
+                      setWriteChildCmt={setWriteChildCmt}
+                      cmtCount={cmtData.length}
+                      showContextModal={showContextModal}
+                      setShowContextModal={setShowContextModal}
+                    />
+                  );
+                }}
+              />
             </View>
-            {/* <M visible={deleteModal == feedData.feedId} transparent={true}>
+          </View>
+
+          {/* <View style={{height: Math.max(60, KBsize + 10)}} /> */}
+          <View style={styles.newCmtView}>
+            <View style={styles.newFeedTxtInputContain}>
+              <TextInput
+                onFocus={() => {
+                  setOnFocus(true);
+                  if (writeChildCmt === -1) {
+                    return;
+                  }
+
+                  const delayedScroll = () => {
+                    flatListRef.current.scrollToIndex({
+                      index: writeChildCmt,
+                      animated: true,
+                    });
+                  };
+
+                  // Wait for 1 second (1000 milliseconds) and then execute the scroll
+                  const timeoutId = setTimeout(delayedScroll, 100);
+
+                  // Cleanup the timeout to avoid memory leaks
+                  return () => clearTimeout(timeoutId);
+                }}
+                placeholder={placeholder}
+                placeholderTextColor={'#848484'}
+                style={[
+                  styles.newCmtTxtInput,
+                  {
+                    height:
+                      Platform.OS === 'android'
+                        ? Math.min(80, Math.max(40, KBsize))
+                        : undefined,
+                  },
+                ]}
+                onBlur={() => {
+                  setOnFocus(false);
+                  setWriteChildCmt(-1);
+                }}
+                onChangeText={(text: string) => {
+                  setCmtContent(text);
+                }}
+                blurOnSubmit={false}
+                maxLength={200}
+                value={cmtContent}
+                onSubmitEditing={async () => {
+                  setUploadBtnLoading(true);
+                  Keyboard.dismiss();
+                }}
+                multiline={true}
+                textAlignVertical="center"
+                autoCapitalize="none"
+                autoComplete="off"
+                autoCorrect={false}
+                onContentSizeChange={e => {
+                  setKBsize(e.nativeEvent.contentSize.height);
+                }}
+                ref={inputRef}
+                // numberOfLines={4}
+              />
+            </View>
+            <Pressable
+              style={
+                cmtContent.trim() == '' || uploadBtnLoading
+                  ? styles.sendNewCmt
+                  : styles.sendNewCmtActivated
+              }
+              disabled={uploadBtnLoading}
+              onPress={async () => {
+                if (cmtContent.trim() != '') {
+                  setUploadBtnLoading(true);
+                }
+                Keyboard.dismiss();
+              }}>
+              {onFocus && cmtContent.trim() == '' ? (
+                <Feather
+                  name="chevron-down"
+                  size={24}
+                  style={{color: 'white'}}
+                />
+              ) : (
+                <Feather name="check" size={24} style={{color: 'white'}} />
+              )}
+            </Pressable>
+          </View>
+          {/* <M visible={deleteModal == feedData.feedId} transparent={true}>
               <Safe>
                 <Pressable onPress={() => setDeleteModal(-1)} style={{flex: 1}}>
                   <View style={styles.popup}>
@@ -714,73 +725,77 @@ export default function FeedDetail({navigation, route}: FeedDetailScreenProps) {
                 </Pressable>
               </Safe>
             </M> */}
-            
-            <Modal
-              isVisible={showBottomSheet}
-              onBackButtonPress={() => setShowBottomSheet(false)}
-              backdropColor="#101010"
-              backdropOpacity={0.5}
-              onSwipeComplete={() => setShowBottomSheet(false)}
-              swipeDirection={'down'}
-              style={{justifyContent: 'flex-end', margin: 0}}>
+
+          <Modal
+            isVisible={showBottomSheet}
+            onBackButtonPress={() => setShowBottomSheet(false)}
+            backdropColor="#101010"
+            backdropOpacity={0.5}
+            onSwipeComplete={() => setShowBottomSheet(false)}
+            swipeDirection={'down'}
+            style={{justifyContent: 'flex-end', margin: 0}}>
+            <Pressable
+              style={styles.modalBGView}
+              onPress={() => setShowBottomSheet(false)}>
               <Pressable
-                style={styles.modalBGView}
-                onPress={() => setShowBottomSheet(false)}>
-                <Pressable
-                  style={styles.modalView}
-                  onPress={e => e.stopPropagation()}>
-                  <View style={styles.whoReacted}>
-                    <SvgXml width={22} height={22} xml={svgXml.emoticon.heart} />
-                    <Text style={styles.emoticonTxt}>
-                      {EmoticonList.heartEmoticonNicknameList.join(' ') == ''
-                        ? '-'
-                        : EmoticonList.heartEmoticonNicknameList
-                            .join(', ')
-                            .replace(/ /g, '\u00A0')}
-                    </Text>
-                  </View>
-                  <View style={styles.whoReacted}>
-                    <SvgXml width={22} height={22} xml={svgXml.emoticon.smile} />
-                    <Text style={styles.emoticonTxt}>
-                      {EmoticonList.smileEmoticonNicknameList.join(' ') == ''
-                        ? '-'
-                        : EmoticonList.smileEmoticonNicknameList
-                            .join(', ')
-                            .replace(/ /g, '\u00A0')}
-                    </Text>
-                  </View>
-                  <View style={styles.whoReacted}>
-                    <SvgXml width={22} height={22} xml={svgXml.emoticon.sad} />
-                    <Text style={styles.emoticonTxt}>
-                      {EmoticonList.sadEmoticonNicknameList.join(' ') == ''
-                        ? '-'
-                        : EmoticonList.sadEmoticonNicknameList
-                            .join(', ')
-                            .replace(/ /g, '\u00A0')}
-                    </Text>
-                  </View>
-                  <View style={styles.whoReacted}>
-                    <SvgXml width={22} height={22} xml={svgXml.emoticon.surprise} />
-                    <Text style={styles.emoticonTxt}>
-                      {EmoticonList.surpriseEmoticonNicknameList.join(' ') == ''
-                        ? '-'
-                        : EmoticonList.surpriseEmoticonNicknameList
-                            .join(', ')
-                            .replace(/ /g, '\u00A0')}
-                    </Text>
-                  </View>
-                </Pressable>
+                style={styles.modalView}
+                onPress={e => e.stopPropagation()}>
+                <View style={styles.whoReacted}>
+                  <SvgXml width={22} height={22} xml={svgXml.emoticon.heart} />
+                  <Text style={styles.emoticonTxt}>
+                    {EmoticonList.heartEmoticonNicknameList.join(' ') == ''
+                      ? '-'
+                      : EmoticonList.heartEmoticonNicknameList
+                          .join(', ')
+                          .replace(/ /g, '\u00A0')}
+                  </Text>
+                </View>
+                <View style={styles.whoReacted}>
+                  <SvgXml width={22} height={22} xml={svgXml.emoticon.smile} />
+                  <Text style={styles.emoticonTxt}>
+                    {EmoticonList.smileEmoticonNicknameList.join(' ') == ''
+                      ? '-'
+                      : EmoticonList.smileEmoticonNicknameList
+                          .join(', ')
+                          .replace(/ /g, '\u00A0')}
+                  </Text>
+                </View>
+                <View style={styles.whoReacted}>
+                  <SvgXml width={22} height={22} xml={svgXml.emoticon.sad} />
+                  <Text style={styles.emoticonTxt}>
+                    {EmoticonList.sadEmoticonNicknameList.join(' ') == ''
+                      ? '-'
+                      : EmoticonList.sadEmoticonNicknameList
+                          .join(', ')
+                          .replace(/ /g, '\u00A0')}
+                  </Text>
+                </View>
+                <View style={styles.whoReacted}>
+                  <SvgXml
+                    width={22}
+                    height={22}
+                    xml={svgXml.emoticon.surprise}
+                  />
+                  <Text style={styles.emoticonTxt}>
+                    {EmoticonList.surpriseEmoticonNicknameList.join(' ') == ''
+                      ? '-'
+                      : EmoticonList.surpriseEmoticonNicknameList
+                          .join(', ')
+                          .replace(/ /g, '\u00A0')}
+                  </Text>
+                </View>
               </Pressable>
-            </Modal>
-            {whichPopup === 'deletedFriend' && (
-              <ToastScreen
-                height={21}
-                marginBottom={48}
-                onClose={() => setWhichPopup('')}
-                message="친구를 삭제했어요."
-              />
-            )}
-          </View>
+            </Pressable>
+          </Modal>
+          {whichPopup === 'deletedFriend' && (
+            <ToastScreen
+              height={21}
+              marginBottom={48}
+              onClose={() => setWhichPopup('')}
+              message="친구를 삭제했어요."
+            />
+          )}
+        </View>
       </KeyboardAvoidingView>
     </Pressable>
   );
@@ -809,8 +824,9 @@ const styles = StyleSheet.create({
   commentView: {
     width: '100%',
     flex: 1,
-    paddingVertical:12,
-    borderRadius:10,
+    paddingTop: 12,
+    // paddingVertical: 12,
+    borderRadius: 10,
   },
   commentHeader: {
     flexDirection: 'row',
@@ -923,7 +939,7 @@ const styles = StyleSheet.create({
     // borderRadius: 10,
     // paddingVertical: 3,
     paddingHorizontal: 10,
-    // maxHeight:'4vh'
+    maxHeight: 80,
   },
   sendNewCmt: {
     backgroundColor: '#888888',

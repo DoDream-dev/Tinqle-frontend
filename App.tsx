@@ -24,6 +24,7 @@ import {useNavigation} from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios, {AxiosError} from 'axios';
 import Config from 'react-native-config';
+import NetInfo, {useNetInfo} from '@react-native-community/netinfo';
 
 export type NotificationProps = {
   title: string;
@@ -32,8 +33,11 @@ export type NotificationProps = {
 
 export default function App() {
   const navigation = useNavigation();
+  const netInfo = useNetInfo();
+
   const [isNotification, setIsNotification] = useState(false);
   const [notiData, setNotiData] = useState({});
+  const [network, setNetwork] = useState(true);
 
   const noticeNavigation_inapp_and = async (
     type: String,
@@ -301,8 +305,31 @@ export default function App() {
     });
   }, []);
 
+  // for network status
+
+  useEffect(() => {
+    const handleConnectivityChange = newState => {
+      if (newState.isConnected) {
+        setNetwork(true);
+      } else {
+        setNetwork(false);
+      }
+    };
+    handleConnectivityChange(netInfo);
+    const unsubscribe = NetInfo.addEventListener(handleConnectivityChange);
+
+    return () => {
+      unsubscribe();
+    };
+  }, [netInfo]);
+
   return (
     <Provider store={store}>
+      {network ? null : (
+        <View style={{height: 200, backgroundColor: 'white'}}>
+          <Text>"네트워크 없음!!"</Text>
+        </View>
+      )}
       {Platform.OS === 'ios' ? (
         <>
           <NotificationComponent
