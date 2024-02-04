@@ -140,38 +140,52 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
     useCallback(() => {
       const reloadStatus = () => {
         navigation.setOptions({
-          headerRight: () => (
-            <View style={{flexDirection: 'row'}}>
-              <Pressable onPress={() => navigation.navigate('Notis')}>
-                {!(noti || newNotis) && (
-                  <SvgXml width={24} height={24} xml={svgXml.icon.noti} />
-                )}
-                {(noti || newNotis) && (
-                  <SvgXml width={24} height={24} xml={svgXml.icon.notiYes} />
-                )}
-              </Pressable>
-              {/* <Pressable style={{marginRight:3}} onPress={()=>navigation.navigate('MyProfile')}>
-            {status == 'smile' && <SvgXml width={24} height={24} xml={svgXml.status.smile}/>}
-            {status == 'happy' && <SvgXml width={24} height={24} xml={svgXml.status.happy}/>}
-            {status == 'sad' && <SvgXml width={24} height={24} xml={svgXml.status.sad}/>}
-            {status == 'mad' && <SvgXml width={24} height={24} xml={svgXml.status.mad}/>}
-            {status == 'exhausted' && <SvgXml width={24} height={24} xml={svgXml.status.exhauseted}/>}
-            {status == 'coffee' && <SvgXml width={24} height={24} xml={svgXml.status.coffee}/>}
-            {status == 'meal' && <SvgXml width={24} height={24} xml={svgXml.status.meal}/>}
-            {status == 'alcohol' && <SvgXml width={24} height={24} xml={svgXml.status.alcohol}/>}
-            {status == 'chicken' && <SvgXml width={24} height={24} xml={svgXml.status.chicken}/>}
-            {status == 'sleep' && <SvgXml width={24} height={24} xml={svgXml.status.sleep}/>}
-            {status == 'work' && <SvgXml width={24} height={24} xml={svgXml.status.work}/>}
-            {status == 'study' && <SvgXml width={24} height={24} xml={svgXml.status.study}/>}
-            {status == 'movie' && <SvgXml width={24} height={24} xml={svgXml.status.movie}/>}
-            {status == 'move' && <SvgXml width={24} height={24} xml={svgXml.status.move}/>}
-            {status == 'dance' && <SvgXml width={24} height={24} xml={svgXml.status.dance}/>}
-            {status == 'read' && <SvgXml width={24} height={24} xml={svgXml.status.read}/>}
-            {status == 'walk' && <SvgXml width={24} height={24} xml={svgXml.status.walk}/>}
-            {status == 'travel' && <SvgXml width={24} height={24} xml={svgXml.status.travel}/>}
-            </Pressable> */}
+          header: (props) => (
+            <View style={
+              {
+                flexDirection:'row', 
+                backgroundColor:'#202020', 
+                justifyContent:'space-between', 
+                paddingVertical:11,
+                alignItems:'center'
+              }
+            }>
+              <View style={{marginLeft:16, width:24}}></View>
+              <SvgXml width={60.8} height={30} xml={svgXml.logo.tincle} />
+              <View style={{marginRight:16}}>
+                <Pressable onPress={() => navigation.navigate('Notis')}>
+                  {!(noti || newNotis) && (
+                    <SvgXml width={24} height={24} xml={svgXml.icon.noti} />
+                  )}
+                  {(noti || newNotis) && (
+                    <SvgXml width={24} height={24} xml={svgXml.icon.notiYes} />
+                  )}
+                </Pressable>
+                {/* <Pressable style={{marginRight:3}} onPress={()=>navigation.navigate('MyProfile')}>
+              {status == 'smile' && <SvgXml width={24} height={24} xml={svgXml.status.smile}/>}
+              {status == 'happy' && <SvgXml width={24} height={24} xml={svgXml.status.happy}/>}
+              {status == 'sad' && <SvgXml width={24} height={24} xml={svgXml.status.sad}/>}
+              {status == 'mad' && <SvgXml width={24} height={24} xml={svgXml.status.mad}/>}
+              {status == 'exhausted' && <SvgXml width={24} height={24} xml={svgXml.status.exhauseted}/>}
+              {status == 'coffee' && <SvgXml width={24} height={24} xml={svgXml.status.coffee}/>}
+              {status == 'meal' && <SvgXml width={24} height={24} xml={svgXml.status.meal}/>}
+              {status == 'alcohol' && <SvgXml width={24} height={24} xml={svgXml.status.alcohol}/>}
+              {status == 'chicken' && <SvgXml width={24} height={24} xml={svgXml.status.chicken}/>}
+              {status == 'sleep' && <SvgXml width={24} height={24} xml={svgXml.status.sleep}/>}
+              {status == 'work' && <SvgXml width={24} height={24} xml={svgXml.status.work}/>}
+              {status == 'study' && <SvgXml width={24} height={24} xml={svgXml.status.study}/>}
+              {status == 'movie' && <SvgXml width={24} height={24} xml={svgXml.status.movie}/>}
+              {status == 'move' && <SvgXml width={24} height={24} xml={svgXml.status.move}/>}
+              {status == 'dance' && <SvgXml width={24} height={24} xml={svgXml.status.dance}/>}
+              {status == 'read' && <SvgXml width={24} height={24} xml={svgXml.status.read}/>}
+              {status == 'walk' && <SvgXml width={24} height={24} xml={svgXml.status.walk}/>}
+              {status == 'travel' && <SvgXml width={24} height={24} xml={svgXml.status.travel}/>}
+              </Pressable> */}
+              </View>
             </View>
           ),
+          // headerRight: () => (
+          // ),
         });
       };
       reloadStatus();

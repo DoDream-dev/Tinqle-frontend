@@ -315,8 +315,8 @@ export default function SignIn() {
   return (
     <View style={styles.entire}>
       <View style={styles.logoView}>
+        <SvgXml width={136} height={67} xml={svgXml.logo.tincle} />
         <Text style={styles.logoTxt}>우리들만의 피드</Text>
-        <Text style={styles.logoTxtMain}>tincle</Text>
       </View>
       <View style={styles.loginView}>
         {Platform.OS == 'ios' ? (
@@ -648,11 +648,7 @@ const styles = StyleSheet.create({
     color: '#F0F0F0',
     fontWeight: '500',
     fontSize: 15,
-  },
-  logoTxtMain: {
-    color: '#A55FFF',
-    fontSize: 70,
-    fontWeight: 'bold',
+    marginTop:8,
   },
   loginView: {
     flex: Platform.OS === 'ios' ? 3 : 2,

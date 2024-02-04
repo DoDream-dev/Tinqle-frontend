@@ -172,7 +172,6 @@ export default function ContentProfile(props: ContentProfileProps) {
       <FriendProfileModal
         showWhoseModal={showWhoseModal}
         setShowWhoseModal={setShowWhoseModal}
-        setDeleteFriend={setDeleteFriend}
       />
       <Modal
         isVisible={deleteFriend != -1}
