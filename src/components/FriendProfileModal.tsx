@@ -231,13 +231,13 @@ export default function FriendProfileModal(props: ProfileProps) {
           {/* 여기에 friendshipId 필요 */}
           {friendshipRelation == 'true' && (
             <>
-              <Pressable
+              {/* <Pressable
                 style={styles.btn}
                 onPress={async () => {
                   console.log('1:1 대화 기능 넣어야함');
                 }}>
                 <Text style={styles.btnTxt}>대화 하기</Text>
-              </Pressable>
+              </Pressable> */}
 
               <View style={{width: 8}}></View>
 
@@ -385,13 +385,13 @@ export default function FriendProfileModal(props: ProfileProps) {
               }}>
               <Text style={styles.settingButtonText}>친구 삭제하기</Text>
             </AnimatedButton>
-            <AnimatedButton
+            {/* <AnimatedButton
               style={styles.settingModalButton}
               onPress={() => {
                 setBlockFriend(true);
               }}>
               <Text style={styles.settingButtonText}>친구 차단하기</Text>
-            </AnimatedButton>
+            </AnimatedButton> */}
 
             {/* modal for delete */}
             <Modal

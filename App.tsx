@@ -307,21 +307,21 @@ export default function App() {
 
   // for network status
 
-  useEffect(() => {
-    const handleConnectivityChange = newState => {
-      if (newState.isConnected) {
-        setNetwork(true);
-      } else {
-        setNetwork(false);
-      }
-    };
-    handleConnectivityChange(netInfo);
-    const unsubscribe = NetInfo.addEventListener(handleConnectivityChange);
+  // useEffect(() => {
+  //   const handleConnectivityChange = newState => {
+  //     if (newState.isConnected) {
+  //       setNetwork(true);
+  //     } else {
+  //       setNetwork(false);
+  //     }
+  //   };
+  //   handleConnectivityChange(netInfo);
+  //   const unsubscribe = NetInfo.addEventListener(handleConnectivityChange);
 
-    return () => {
-      unsubscribe();
-    };
-  }, [netInfo]);
+  //   return () => {
+  //     unsubscribe();
+  //   };
+  // }, [netInfo]);
 
   return (
     <Provider store={store}>
