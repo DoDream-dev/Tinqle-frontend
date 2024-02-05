@@ -325,11 +325,11 @@ export default function App() {
 
   return (
     <Provider store={store}>
-      {network ? null : (
+      {/* {network ? null : (
         <View style={{height: 200, backgroundColor: 'white'}}>
           <Text>"네트워크 없음!!"</Text>
         </View>
-      )}
+      )} */}
       {Platform.OS === 'ios' ? (
         <>
           <NotificationComponent
