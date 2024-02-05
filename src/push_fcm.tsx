@@ -142,7 +142,9 @@ class FCMService {
     });
 
     messaging().onTokenRefresh(fcmToken => {
-      onRegister(fcmToken);
+      if (onRegister) {
+        onRegister(fcmToken);
+      }
     });
   };
 
