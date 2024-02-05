@@ -530,7 +530,7 @@ export default function FeedDetail({navigation, route}: FeedDetailScreenProps) {
         }
       }}>
       <KeyboardAvoidingView
-        style={{flex: 1, backgroundColor: '#CFD2D9'}}
+        style={{flex: 1, backgroundColor: '#202020'}}
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         keyboardVerticalOffset={StatusBarHeight + 44}>
         <View style={styles.entire}>

@@ -140,19 +140,18 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
     useCallback(() => {
       const reloadStatus = () => {
         navigation.setOptions({
-          header: (props) => (
-            <View style={
-              {
-                flexDirection:'row', 
-                backgroundColor:'#202020', 
-                justifyContent:'space-between', 
-                paddingVertical:11,
-                alignItems:'center'
-              }
-            }>
-              <View style={{marginLeft:16, width:24}}></View>
+          header: props => (
+            <View
+              style={{
+                flexDirection: 'row',
+                backgroundColor: '#202020',
+                justifyContent: 'space-between',
+                paddingVertical: 11,
+                alignItems: 'center',
+              }}>
+              <View style={{marginLeft: 16, width: 24}}></View>
               <SvgXml width={60.8} height={30} xml={svgXml.logo.tincle} />
-              <View style={{marginRight:16}}>
+              <View style={{marginRight: 16}}>
                 <Pressable onPress={() => navigation.navigate('Notis')}>
                   {!(noti || newNotis) && (
                     <SvgXml width={24} height={24} xml={svgXml.icon.noti} />
@@ -462,9 +461,9 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
       }}>
       <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
         <KeyboardAvoidingView
-          style={[{flex: 1, backgroundColor: '#CFD2D9'}]}
+          style={[{flex: 1, backgroundColor: '#202020'}]}
           behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-          keyboardVerticalOffset={StatusBarHeight + 44}>
+          keyboardVerticalOffset={StatusBarHeight + 52}>
           <View
             style={{flex: 1, alignItems: 'center', backgroundColor: '#202020'}}>
             <View style={[styles.entire]}>
