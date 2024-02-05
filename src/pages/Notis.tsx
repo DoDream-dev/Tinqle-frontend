@@ -151,7 +151,6 @@ export default function Notis({}: NotisScreenProps) {
   }, [notisData]);
 
   const refreshNoti = async () => {
-    setRefresh(true);
     try {
       const response = await axios.get(
         `${Config.API_URL}/notifications/accounts/me`,
@@ -237,7 +236,7 @@ export default function Notis({}: NotisScreenProps) {
         `${Config.API_URL}/notifications/${notificationId}`,
       );
       // console.log(response.data.data)
-      setRefresh(!refresh);
+      refreshNoti();
     } catch (error) {
       const errorResponse = (error as AxiosError<{message: string}>).response;
       console.log(errorResponse.data);
