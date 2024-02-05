@@ -172,10 +172,29 @@ export default function FriendProfileModal(props: ProfileProps) {
       const response = await axios.delete(
         `${Config.API_URL}/friendships/${friendshipId}`,
       );
+      getProfile();
       setWhichPopup('deletedFriend');
       // setPopupName(name);
       setDeleteFriend(false);
-      setShowWhoseModal(0);
+      // setShowWhoseModal(0);
+      setSettingModal(false);
+    } catch (error) {
+      const errorResponse = (error as AxiosError<{message: string}>).response;
+      console.log(errorResponse.data);
+    }
+  };
+
+  const blockFriends = async () => {
+    try {
+      // console.log(friendshipId);
+      const response = await axios.post(
+        `${Config.API_URL}/blocks/${showWhoseModal}`,
+      );
+      getProfile();
+      setWhichPopup('blockFriend');
+
+      setBlockFriend(false);
+      // setShowWhoseModal(0);
       setSettingModal(false);
     } catch (error) {
       const errorResponse = (error as AxiosError<{message: string}>).response;
@@ -206,7 +225,6 @@ export default function FriendProfileModal(props: ProfileProps) {
               // console.log('setting');
               setSettingModal(true);
             }}>
-
             <SvgXml
               fill={'#888888'}
               width={24}
@@ -215,7 +233,7 @@ export default function FriendProfileModal(props: ProfileProps) {
             />
           </AnimatedButton>
         ) : null}
-        
+
         <View style={styles.profileView}>
           <Profile
             name={name}
@@ -226,7 +244,7 @@ export default function FriendProfileModal(props: ProfileProps) {
             friendshipRelation={friendshipRelation}
           />
         </View>
-        
+
         <View style={styles.btnView}>
           {/* 여기에 friendshipId 필요 */}
           {friendshipRelation == 'true' && (
@@ -248,8 +266,8 @@ export default function FriendProfileModal(props: ProfileProps) {
               </Pressable>
             </>
           )}
-          
-           {friendshipRelation == 'false' && (
+
+          {friendshipRelation == 'false' && (
             <Pressable
               style={styles.btn}
               onPress={() => askFriend(showWhoseModal, name, profileImg)}>
@@ -269,8 +287,6 @@ export default function FriendProfileModal(props: ProfileProps) {
             </Pressable>
           )}
         </View>
-
-         
 
         <Modal
           isVisible={chageName}
@@ -311,7 +327,6 @@ export default function FriendProfileModal(props: ProfileProps) {
                 />
               </View>
               <View style={styles.modalBtnView}>
-                
                 <Pressable
                   style={styles.btnGray}
                   onPress={() => {
@@ -367,6 +382,14 @@ export default function FriendProfileModal(props: ProfileProps) {
               marginBottom={48}
               onClose={() => setWhichPopup('')}
               message={`${name}님과 친구가 되었어요.`}
+            />
+          )}
+          {whichPopup == 'blockFriend' && (
+            <ToastScreen
+              height={21}
+              marginBottom={48}
+              onClose={() => setWhichPopup('')}
+              message={`${name}님을 차단했어요.`}
             />
           )}
         </View>
@@ -458,8 +481,9 @@ export default function FriendProfileModal(props: ProfileProps) {
                     onPress={() => {
                       console.log(
                         '친구 차단 기능 추가하기 friend id : ',
-                        friendshipId,
+                        showWhoseModal,
                       );
+                      blockFriends();
                     }}>
                     <Text style={styles.btnTxt}>네, 차단할게요.</Text>
                   </Pressable>
