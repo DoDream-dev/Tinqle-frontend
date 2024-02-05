@@ -144,7 +144,7 @@ export default function CommentItem(props: CommentItemProps) {
       >
       <View style={{flexDirection:'row', padding:12}}>
         <View style={styles.profileView}>
-          <ContentProfile 
+          {accountId != null ? <ContentProfile 
             nickname={friendNickname}
             status={status}
             createdAt={createdAt}
@@ -155,10 +155,10 @@ export default function CommentItem(props: CommentItemProps) {
             setShowWhoseModal={setShowWhoseModal}
             setWhichPopup={setWhichPopup}
             feedId={-1}
-          />
+          /> : <SvgXml width={32} height={32} xml={svgXml.profile.null} />}
         </View>
-        <View style={styles.contentView}>
-          <Text style={styles.contentText}>{content}</Text>
+        <View style={[styles.contentView, accountId == null && {justifyContent:'center'}]}>
+          <Text style={[styles.contentText, accountId == null && {color:'#888888'}]}>{content}</Text>
           {childData != null && accountId != null && <Pressable onPress={()=>setWriteChildCmt(index)}>
             <SvgXml width={24} height={24} xml={svgXml.icon.newCommentIcon} />
           </Pressable>}

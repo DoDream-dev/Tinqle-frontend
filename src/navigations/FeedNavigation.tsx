@@ -257,21 +257,26 @@ export default function FeedNavigation() {
         name="FeedList"
         component={FeedList}
         options={({navigation, route}) => ({
-          title: 'tincle',
-          headerTitleAlign: 'center',
+          // title: 'tincle',
+          // header: () => (
+          //   <View style={{backgroundColor:'red', justifyContent:'center', paddingVertical:11}}>
+          //     <SvgXml width={60.8} height={30} xml={svgXml.logo.tincle} />
+          //   </View>
+          // ),
+          // headerTitleAlign: 'center',
           // headerLeft: () => (
           //   <Pressable onPress={()=>navigation.navigate('SearchFriends')} style={{marginLeft:2}}>
           //     <SvgXml width={24} height={24} xml={svgXml.icon.addfriend}/>
           //   </Pressable>
           // ),
-          headerStyle: {
-            backgroundColor: '#202020',
-          },
-          headerTitleStyle: {
-            color: '#A55FFF',
-            fontWeight: 'bold',
-            fontSize: 25,
-          },
+          // headerStyle: {
+          //   backgroundColor: '#202020',
+          // },
+          // headerTitleStyle: {
+          //   color: '#A55FFF',
+          //   fontWeight: 'bold',
+          //   fontSize: 25,
+          // },
         })}
       />
       <Stack.Screen

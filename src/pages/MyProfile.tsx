@@ -41,6 +41,7 @@ export default function MyProfile() {
   // const [alreadyRequestFriend, setAlreadyRequestFriend] = useState(-1);
   const [myCode, setMyCode] = useState('');
   // const [accountId, setAcoountId] = useState(route.params.accountId);
+  const [reset, setReset] = useState(false);
 
   // modal or not
   const [chageName, setChangeName] = useState(false);
@@ -143,7 +144,7 @@ export default function MyProfile() {
     //   };
     //   getProfile();
     // }
-  }, [name, status, profileImg]);
+  }, [name, status, profileImg, reset]);
 
   // useFocusEffect(
   //   useCallback(()=>{
@@ -279,9 +280,17 @@ export default function MyProfile() {
 
   const idChange = async () => {
     try {
+      const response = await axios.post(`${Config.API_URL}/accounts/me/code`, {
+        code: changeIdVal
+      });
+      console.log(response.data);
       setChangeId(false);
+      setChangeIdVal(response.data.data.code);
+      setReset(!reset);
+      setDuplicate('YET');
     } catch (error) {
-
+      const errorResponse = (error as AxiosError<{message: string}>).response;
+      console.log(errorResponse.data);
     }
   }
 
