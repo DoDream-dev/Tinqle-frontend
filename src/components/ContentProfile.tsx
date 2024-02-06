@@ -73,7 +73,7 @@ export default function ContentProfile(props: ContentProfileProps) {
   return (
     <View style={styles.profileSection}>
       <View style={{flexDirection:'row'}}>
-        <View style={styles.statusView}>
+        <View style={styles.imgView}>
           <Pressable
             onPress={() => {
               if (props.mine) {
@@ -225,9 +225,9 @@ export default function ContentProfile(props: ContentProfileProps) {
 const styles = StyleSheet.create({
   profileSection: {
     flexDirection: 'row',
-    justifyContent:'space-between'
+    justifyContent:'space-between',
   },
-  statusView: {
+  imgView: {
   },
   contentView: {
     // flex: 1,
@@ -238,6 +238,7 @@ const styles = StyleSheet.create({
   txtNickname: {
     flexDirection: 'row',
     alignItems: 'center',
+    minHeight:18
   },
   nickname: {
     fontSize: 15,
