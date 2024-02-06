@@ -376,82 +376,7 @@ export default function SignIn() {
           </Shadow>
         </Pressable>
       </View>
-      <Modal
-        isVisible={settingID}
-        // onBackButtonPress={()=>setSettingID(false)}
-        // hasBackdrop={false}
-        animationIn="fadeIn" // Set the animation type to fade-in
-        animationInTiming={600}
-        onDismiss={() => setSettingID(false)}
-        style={{margin: 0}}>
-        <Pressable
-          onPress={() => setSettingID(false)}
-          style={styles.modalBGView2}>
-          <Pressable
-            style={[styles.modalView2 /*{width:windowWidth}*/]}
-            onPress={e => e.stopPropagation()}>
-            <View style={styles.idModalHeader}>
-              <Text style={styles.idModalHeaderTxt}>내 아이디 정하기</Text>
-            </View>
-            <View style={styles.idModalBody}>
-              <TextInput
-                // ref={inp1}
-                onChangeText={(text: string) => {
-                  setID(text);
-                  if (duplicate != 'YET') setDuplicate('YET');
-                }}
-                // blurOnSubmit={true}
-                maxLength={12}
-                value={id}
-                // autoFocus={true}
-                // onSubmitEditing={()=>{
-                //   if (whoseProfile == 0) {rename(chageNameVal.trim(), undefined);}
-                //   else {rename(chageNameVal.trim(), accountId);}
-                // }}
-                style={styles.idModalBodyTxtInp}
-              />
-              <Pressable
-                style={styles.idModalBodyBtn}
-                onPress={() => {
-                  checkDuplicate();
-                }}>
-                <Text style={styles.idModalBodyBtnTxt}>중복확인</Text>
-              </Pressable>
-            </View>
-            {duplicate == 'YET' && <View style={{height: 12}}></View>}
-            {duplicate == 'CANNOT' && (
-              <Text style={styles.idModalBodyBtnTxt}>
-                이미 존재하는 아이디예요.
-              </Text>
-            )}
-            {duplicate == 'CAN' && (
-              <Text style={styles.idModalBodyBtnTxt}>
-                사용할 수 있는 아이디예요.
-              </Text>
-            )}
-            {duplicate == 'NO' && (
-              <Text style={styles.idModalBodyBtnTxt}>
-                아이디는 4~12자, 영문 소문자나 숫자만 가능합니다.
-              </Text>
-            )}
-            <Pressable
-              style={
-                duplicate == 'CAN'
-                  ? styles.idModalFooterBtnActive
-                  : styles.idModalFooterBtn
-              }
-              onPress={() => {
-                console.log('signup', signup);
-                Signup(signup);
-                setSignUp('');
-                setSettingID(false);
-              }}
-              disabled={duplicate != 'CAN'}>
-              <Text style={styles.idModalFooterBtnTxt}>완료</Text>
-            </Pressable>
-          </Pressable>
-        </Pressable>
-      </Modal>
+
       <Modal
         onDismiss={() => {
           if (serviceP && personalP && ageP) {
@@ -626,6 +551,85 @@ export default function SignIn() {
         </Safe>
         <ServicePolicyModal policy={policy} setPolicy={setPolicy} />
         <PersonalPolicyModal policy={policy} setPolicy={setPolicy} />
+        <Modal
+          isVisible={settingID}
+          // onBackButtonPress={()=>setSettingID(false)}
+          // hasBackdrop={false}
+          animationIn="fadeIn" // Set the animation type to fade-in
+          animationInTiming={600}
+          onDismiss={() => {
+            setSettingID(false);
+            setSignUp('');
+          }}
+          style={{margin: 0}}>
+          <Pressable
+            onPress={() => setSettingID(false)}
+            style={styles.modalBGView2}>
+            <Pressable
+              style={[styles.modalView2 /*{width:windowWidth}*/]}
+              onPress={e => e.stopPropagation()}>
+              <View style={styles.idModalHeader}>
+                <Text style={styles.idModalHeaderTxt}>내 아이디 정하기</Text>
+              </View>
+              <View style={styles.idModalBody}>
+                <TextInput
+                  // ref={inp1}
+                  onChangeText={(text: string) => {
+                    setID(text);
+                    if (duplicate != 'YET') setDuplicate('YET');
+                  }}
+                  // blurOnSubmit={true}
+                  maxLength={12}
+                  value={id}
+                  // autoFocus={true}
+                  // onSubmitEditing={()=>{
+                  //   if (whoseProfile == 0) {rename(chageNameVal.trim(), undefined);}
+                  //   else {rename(chageNameVal.trim(), accountId);}
+                  // }}
+                  style={styles.idModalBodyTxtInp}
+                />
+                <Pressable
+                  style={styles.idModalBodyBtn}
+                  onPress={() => {
+                    checkDuplicate();
+                  }}>
+                  <Text style={styles.idModalBodyBtnTxt}>중복확인</Text>
+                </Pressable>
+              </View>
+              {duplicate == 'YET' && <View style={{height: 12}}></View>}
+              {duplicate == 'CANNOT' && (
+                <Text style={styles.idModalBodyBtnTxt}>
+                  이미 존재하는 아이디예요.
+                </Text>
+              )}
+              {duplicate == 'CAN' && (
+                <Text style={styles.idModalBodyBtnTxt}>
+                  사용할 수 있는 아이디예요.
+                </Text>
+              )}
+              {duplicate == 'NO' && (
+                <Text style={styles.idModalBodyBtnTxt}>
+                  아이디는 4~12자, 영문 소문자나 숫자만 가능합니다.
+                </Text>
+              )}
+              <Pressable
+                style={
+                  duplicate == 'CAN'
+                    ? styles.idModalFooterBtnActive
+                    : styles.idModalFooterBtn
+                }
+                onPress={() => {
+                  console.log('signup', signup);
+                  Signup(signup);
+                  setSignUp('');
+                  setSettingID(false);
+                }}
+                disabled={duplicate != 'CAN'}>
+                <Text style={styles.idModalFooterBtnTxt}>완료</Text>
+              </Pressable>
+            </Pressable>
+          </Pressable>
+        </Modal>
       </Modal>
       {/* modal for policy */}
     </View>
@@ -648,7 +652,7 @@ const styles = StyleSheet.create({
     color: '#F0F0F0',
     fontWeight: '500',
     fontSize: 15,
-    marginTop:8,
+    marginTop: 8,
   },
   loginView: {
     flex: Platform.OS === 'ios' ? 3 : 2,
