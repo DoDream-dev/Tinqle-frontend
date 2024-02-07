@@ -1191,6 +1191,7 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: '400',
     flex: 1,
+    maxHeight: 80,
     // backgroundColor: '#333333',
     // backgroundColor: 'blue',
   },
