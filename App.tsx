@@ -294,7 +294,7 @@ export default function App() {
     //앱 켜졌을 때 작동부                 여기
     fcmService.register(onRegister, onNotification, onOpenNotification);
     localNotificationService.configure(onOpenNotification);
-  }, []);
+  }, [onOpenNotification]);
 
   useEffect(() => {
     PushNotification.popInitialNotification(notification => {
