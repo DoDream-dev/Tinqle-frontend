@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react-native/no-inline-styles */
 /* eslint-disable react/no-unstable-nested-components */
 import React, {useEffect, useState} from 'react';
@@ -25,6 +26,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios, {AxiosError} from 'axios';
 import Config from 'react-native-config';
 import NetInfo, {useNetInfo} from '@react-native-community/netinfo';
+import {StatusBarHeight} from './src/components/Safe';
 
 export type NotificationProps = {
   title: string;
@@ -168,6 +170,36 @@ export default function App() {
             </Text>
           </View>
         </AnimatedButton>
+      </Animated.View>
+    ) : null;
+  };
+
+  //notification
+  const NetworkComponent = () => {
+    const translateY = useSharedValue(-10);
+    const opacity = useSharedValue(0);
+
+    useEffect(() => {
+      if (!network) {
+        translateY.value = withSpring(0, {mass: 0.1});
+        opacity.value = withTiming(1, {
+          duration: 500,
+          easing: Easing.out(Easing.exp),
+        });
+      }
+    }, [network]);
+
+    const animatedStyle = useAnimatedStyle(() => {
+      'worklet';
+      return {
+        transform: [{translateY: translateY.value}],
+        opacity: opacity.value,
+      };
+    });
+
+    return !network ? (
+      <Animated.View style={[styles.networkAlert, animatedStyle]}>
+        <Text style={styles.networkText}>네트워크 연결이 불안정합니다.</Text>
       </Animated.View>
     ) : null;
   };
@@ -325,13 +357,9 @@ export default function App() {
 
   return (
     <Provider store={store}>
-      {/* {network ? null : (
-        <View style={{height: 200, backgroundColor: 'white'}}>
-          <Text>"네트워크 없음!!"</Text>
-        </View>
-      )} */}
       {Platform.OS === 'ios' ? (
         <>
+          <NetworkComponent />
           <NotificationComponent
             title={notiData.title}
             message={notiData.body}
@@ -340,6 +368,7 @@ export default function App() {
         </>
       ) : (
         <SafeAreaProvider>
+          <NetworkComponent />
           <AppInner />
         </SafeAreaProvider>
       )}
@@ -391,5 +420,28 @@ const styles = StyleSheet.create({
   now: {
     fontWeight: 'normal',
     color: '#3F3F3F',
+  },
+  networkAlert: {
+    position: 'absolute',
+    top: Platform.OS === 'ios' ? StatusBarHeight + 44 : 44,
+    left: 0,
+    right: 0,
+    zIndex: 100,
+    justifyContent: 'center',
+    width: '100%',
+    height: 32,
+    backgroundColor: '#333333',
+  },
+  networkText: {
+    color: '#F0F0F0',
+    textAlign: 'center',
+    fontFamily: 'Pretendard',
+    fontSize: 13,
+    fontStyle: 'normal',
+    fontWeight: '500',
+    lineHeight: 16,
+    // lineHeight: 'normal',
+    letterSpacing: -0.26,
+    textDecorationLine: 'underline',
   },
 });
