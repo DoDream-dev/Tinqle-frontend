@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unstable-nested-components */
 /* eslint-disable react-native/no-inline-styles */
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import React, {useCallback, useState, useRef, useEffect} from 'react';
@@ -361,7 +362,7 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
         {emoticonType: emoticon},
       );
       // console.log(response.data.data);
-      setRefresh(!refresh);
+      // setRefresh(!refresh);
     } catch (error) {
       const errorResponse = (error as AxiosError<{message: string}>).response;
       console.log(errorResponse.data);
@@ -375,7 +376,7 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
             deleted: true,
           }),
         );
-        setRefresh(!refresh);
+        // setRefresh(!refresh);
       }
     }
   };

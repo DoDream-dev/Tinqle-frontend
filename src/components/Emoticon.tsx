@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import {StyleSheet, Text, Pressable} from 'react-native';
 import {svgXml} from '../../assets/image/svgXml';
 import {SvgXml} from 'react-native-svg';
@@ -11,20 +11,31 @@ type EmoticonProps = {
   feedId: number;
 };
 export default function Emoticon(props: EmoticonProps) {
+  const [localPressed, setLocalPressed] = React.useState(false);
   const emotion = props.emotion;
   const count = props.count;
   const mine = props.mine;
   // const mine = false;
   const pressed = props.pressed;
 
+  useEffect(() => {
+    setLocalPressed(pressed);
+  }, []);
+
   return (
     <Pressable
       style={[
         styles.entire,
-        pressed ? {backgroundColor: '#A55FFF'} : {backgroundColor: '#202020'},
+        mine
+          ? {backgroundColor: '#333333'}
+          : localPressed
+          ? {backgroundColor: '#A55FFF'}
+          : {backgroundColor: '#202020'},
         mine ? {paddingHorizontal: 5} : {paddingHorizontal: 4},
       ]}
+      disabled={mine}
       onPress={() => {
+        setLocalPressed(!localPressed);
         props.press(props.feedId, emotion);
       }}>
       {emotion == 'heart' && (
@@ -43,7 +54,7 @@ export default function Emoticon(props: EmoticonProps) {
         <Text
           style={[
             styles.emoticonCnt,
-            pressed ? {color: '#F0F0F0'} : {color: '#848484'},
+            localPressed ? {color: '#F0F0F0'} : {color: '#848484'},
           ]}>
           {count}
         </Text>
