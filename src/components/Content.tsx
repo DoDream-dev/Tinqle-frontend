@@ -56,7 +56,7 @@ export default function Content(props: ContentProps) {
 
   return (
     <View style={styles.entire}>
-      <ContentProfile 
+      <ContentProfile
         nickname={nickname}
         status={status}
         createdAt={createdAt}

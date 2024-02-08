@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unstable-nested-components */
 /* eslint-disable react-native/no-inline-styles */
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import React, {useCallback, useState, useRef, useEffect} from 'react';
@@ -354,7 +355,7 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
     }
   }, throttleTime);
 
-  const pressEmoticon = async (feedId: number, emoticon: string) => {
+  const pressEmoticon = _.debounce(async (feedId: number, emoticon: string) => {
     try {
       const response = await axios.put(
         `${Config.API_URL}/emoticons/feeds/${feedId}`,
@@ -375,10 +376,10 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
             deleted: true,
           }),
         );
-        setRefresh(!refresh);
+        // setRefresh(!refresh);
       }
     }
-  };
+  }, throttleTimeEmoticon);
 
   const whoReact = _.throttle(async (feedId: number) => {
     try {
