@@ -355,14 +355,14 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
     }
   }, throttleTime);
 
-  const pressEmoticon = async (feedId: number, emoticon: string) => {
+  const pressEmoticon = _.debounce(async (feedId: number, emoticon: string) => {
     try {
       const response = await axios.put(
         `${Config.API_URL}/emoticons/feeds/${feedId}`,
         {emoticonType: emoticon},
       );
       // console.log(response.data.data);
-      // setRefresh(!refresh);
+      setRefresh(!refresh);
     } catch (error) {
       const errorResponse = (error as AxiosError<{message: string}>).response;
       console.log(errorResponse.data);
@@ -379,7 +379,7 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
         // setRefresh(!refresh);
       }
     }
-  };
+  }, throttleTimeEmoticon);
 
   const whoReact = _.throttle(async (feedId: number) => {
     try {

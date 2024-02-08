@@ -22,6 +22,7 @@ type EmoticonsProps = {
 export default function Emoticons(props: EmoticonsProps) {
   const mine = props.mine;
   const emotionData = props.emotionData;
+
   return (
     <View style={styles.entire}>
       <Emoticon
