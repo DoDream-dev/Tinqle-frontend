@@ -16,7 +16,8 @@ import FeedDetail from './src/pages/FeedDetail';
 import MyProfile from './src/pages/MyProfile';
 // import MyFriendList from "./src/pages/MyFriendList";
 import SearchFriends from './src/pages/SearchFriends';
-import NoteBox from './src/pages/NoteBox';
+import MsgList from './src/pages/MsgList';
+import MsgDetail from './src/pages/MsgDetail';
 // import Setting from "./src/pages/Setting";
 import Notis from './src/pages/Notis';
 import SignIn from './src/pages/SignIn';
@@ -44,7 +45,8 @@ export type RootStackParamList = {
   MyProfile: undefined;
   // MyFriendList: undefined;
   SearchFriends: undefined;
-  NoteBox: undefined;
+  MsgList: undefined;
+  MsgDetail: undefined;
   // Setting: undefined;
   Notis: undefined;
   SignIn: undefined;
@@ -195,16 +197,26 @@ export default function AppInner() {
             ),
           }}
         />
-        {/* <Tab.Screen
+        <Tab.Screen
           name="NoteNavigation"
           component={NoteNavigation}
           options={{
-            title: '1:1대화',
-            headerShown: false,
-            tabBarLabel: 'Note',
-            // tabBarIcon:
+            headerShown:false,
+            tabBarLabel: 'Profile',
+            tabBarIcon: (props: {
+              focused: boolean;
+              color: string;
+              size: number;
+            }) => (
+              <SvgXml
+                color={'#A55FFF'}
+                width={28}
+                height={28}
+                xml={props.focused ? svgXml.bottomTab.convFocused : svgXml.bottomTab.conversation}
+              />
+            ),
           }}
-        /> */}
+        />
         <Tab.Screen
           name="MyProfile"
           component={MyProfile}

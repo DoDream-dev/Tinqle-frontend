@@ -652,7 +652,7 @@ export default function FeedDetail({navigation, route}: FeedDetailScreenProps) {
                   return () => clearTimeout(timeoutId);
                 }}
                 placeholder={placeholder}
-                placeholderTextColor={'#848484'}
+                placeholderTextColor={'#888888'}
                 style={[
                   styles.newCmtTxtInput,
                   {
