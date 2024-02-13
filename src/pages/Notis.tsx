@@ -268,7 +268,7 @@ export default function Notis({}: NotisScreenProps) {
   const writeKnock = async (notificationId: number) => {
     try {
       navigation.navigate('FeedList', {isKnock: true});
-      // deleteNotis(notificationId);
+      deleteNotis(notificationId);
     } catch (error) {
       console.log(error);
     }
