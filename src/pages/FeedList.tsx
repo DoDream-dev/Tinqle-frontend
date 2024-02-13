@@ -69,6 +69,8 @@ type itemProps = {
 };
 
 export default function FeedList({navigation, route}: FeedListScreenProps) {
+  const textInputRef = useRef(null);
+
   const dispatch = useAppDispatch();
   const deleted = useSelector((state: RootState) => !!state.user.deleted);
   const setDeleted = () => {
@@ -112,7 +114,7 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
   const [whichPopup, setWhichPopup] = useState('');
   const [uploadBtnLoading, setUploadBtnLoading] = useState(false);
   const [onFocus, setOnFocus] = useState(false);
-
+  const [isKnock, setIsKnock] = useState(false);
   const [deleteFeedId, setDeleteFeedId] = useState(-1);
 
   // useEffect(() => {
@@ -235,9 +237,34 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
   // Effect for make new feed
   useEffect(() => {
     if (uploadBtnLoading) {
-      sendNewFeed();
+      if (isKnock) {
+        sendNewKnock();
+      } else {
+        sendNewFeed();
+      }
     }
   }, [uploadBtnLoading]);
+
+  // useFocusEffect hook to write Knock
+  useFocusEffect(
+    React.useCallback(() => {
+      try {
+        if (route.params?.isKnock) {
+          console.log('Screen focused: ', route.params?.isKnock);
+          setIsKnock(route.params?.isKnock);
+          setPlaceholder('지금 뭐해?에 답변하기');
+          textInputRef.current.focus();
+          route.params.isKnock = false;
+        }
+      } catch (error) {
+        console.log(error);
+      }
+
+      return () => {
+        console.log('Screen lost focus');
+      };
+    }, [route]),
+  );
 
   useFocusEffect(
     useCallback(() => {
@@ -352,6 +379,61 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
     } catch (error) {
       const errorResponse = (error as AxiosError<{message: string}>).response;
       console.log(errorResponse.data);
+    }
+  }, throttleTime);
+
+  const sendNewKnock = _.throttle(async () => {
+    console.log('sendNewKnock');
+    try {
+      if (selectImg) {
+        const response = await axios.post(
+          `${Config.API_URL}/images/single`,
+          uploadImage,
+          {
+            headers: {'Content-Type': 'multipart/form-data'},
+            transformRequest: (data, headers) => {
+              return data;
+            },
+          },
+        );
+        // console.log(response.data.data.files[0].fileUrl);
+        const response2 = await axios.post(`${Config.API_URL}/feeds/knock`, {
+          content: feedContent,
+          feedImageUrl: [response.data.data.files[0].fileUrl],
+        });
+        // console.log(response2.data.data);
+        setFeedContent('');
+        setSelectImg(false);
+        setImgData({uri: '', type: ''});
+        setUploadImage(undefined);
+        setIsKnock(false);
+        setRefresh(!refresh);
+        setUploadBtnLoading(false);
+      } else {
+        const response = await axios.post(`${Config.API_URL}/feeds/knock`, {
+          content: feedContent,
+          feedImageUrl: [],
+        });
+        // console.log(response.data.data);
+        setFeedContent('');
+        setSelectImg(false);
+        setImgData({uri: '', type: ''});
+        setUploadImage(undefined);
+        setIsKnock(false);
+        setRefresh(!refresh);
+        setUploadBtnLoading(false);
+      }
+      setKBsize(0);
+    } catch (error) {
+      const errorResponse = (error as AxiosError<{message: string}>).response;
+      console.log(errorResponse.data);
+      setIsKnock(false);
+      setFeedContent('');
+      setSelectImg(false);
+      setImgData({uri: '', type: ''});
+      setUploadImage(undefined);
+      setIsKnock(false);
+      setUploadBtnLoading(false);
     }
   }, throttleTime);
 
@@ -535,6 +617,7 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
                       <Feed
                         mine={item.isAuthor}
                         detail={false}
+                        isKnock={item.isKnock}
                         commentCnt={item.commentCount}
                         createdAt={item.createdAt}
                         content={item.content}
@@ -658,10 +741,18 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
                     <SvgXml width={32} height={32} xml={svgXml.status.travel} />
                   )}
                 </Pressable>
-                <View style={[styles.newFeedTxtInputContain]}>
+                <View
+                  style={[
+                    styles.newFeedTxtInputContain,
+                    {
+                      borderWidth: isKnock ? 1 : undefined,
+                      borderColor: isKnock ? '#A55FFF' : undefined,
+                    },
+                  ]}>
                   <TextInput
+                    ref={textInputRef}
                     placeholder={placeholder}
-                    placeholderTextColor={'#888888'}
+                    placeholderTextColor={isKnock ? '#A55FFF' : '#888888'}
                     style={[
                       styles.newFeedTxtInput,
                       {
@@ -673,7 +764,7 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
                     ]}
                     onFocus={() => {
                       setOnFocus(true);
-                      setPlaceholder('');
+                      // setPlaceholder('');
                     }}
                     onBlur={() => {
                       setOnFocus(false);
@@ -726,7 +817,15 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
                       setUploadImage(imageFormData);
                     })
                   }>
-                  <SvgXml width={24} height={24} xml={svgXml.icon.addphoto} />
+                  {isKnock ? (
+                    <SvgXml
+                      width={24}
+                      height={24}
+                      xml={svgXml.icon.addphotocolor}
+                    />
+                  ) : (
+                    <SvgXml width={24} height={24} xml={svgXml.icon.addphoto} />
+                  )}
                 </Pressable>
                 <Pressable
                   style={

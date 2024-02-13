@@ -96,6 +96,7 @@ export default function FeedDetail({navigation, route}: FeedDetailScreenProps) {
       surpriseEmoticonCount: 0,
       isCheckedSurpriseEmoticon: false,
     },
+    isKnock: false,
     isAuthor: false,
     createdAt: '',
     profileImageUrl: null,
@@ -573,6 +574,7 @@ export default function FeedDetail({navigation, route}: FeedDetailScreenProps) {
                     <Feed
                       mine={feedData.isAuthor}
                       detail={true}
+                      isKnock={feedData.isKnock}
                       commentCnt={feedData.commentCount}
                       createdAt={feedData.createdAt}
                       content={feedData.content}
