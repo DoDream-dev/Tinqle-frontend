@@ -116,6 +116,7 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
   const [onFocus, setOnFocus] = useState(false);
   const [isKnock, setIsKnock] = useState(false);
   const [deleteFeedId, setDeleteFeedId] = useState(-1);
+  const [imagePicking, setImagePicking] = useState(false);
 
   // useEffect(() => {
   //   const keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', (event) => {
@@ -305,6 +306,13 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
       },
     );
   }, []);
+
+  // useEffect for image picking & not cancel isKnock
+  useEffect(() => {
+    if (imagePicking) {
+      imagePick();
+    }
+  }, [imagePicking]);
 
   const getData = async () => {
     if (!isLast) {
@@ -530,6 +538,39 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
     // setRefresh(!refresh)
     // startRefresh()
     setRefresh(!refresh);
+  };
+
+  const imagePick = async () => {
+    ImagePicker.openPicker({
+      multiple: false,
+      mediaType: 'photo',
+      // cropping:true,
+    })
+      .then(image => {
+        // console.log(image)
+        let name = image.path.split('/');
+        const imageFormData = new FormData();
+        let file = {
+          uri: image.path,
+          type: image.mime,
+          name: name[name.length - 1],
+        };
+        imageFormData.append('file', file);
+        // console.log(file)
+        setImgData({
+          uri: image.path,
+          type: image.mime,
+        });
+        setSelectImg(true);
+        imageFormData.append('type', 'feed');
+        setUploadImage(imageFormData);
+      })
+      .then(() => {
+        setImagePicking(false);
+      })
+      .catch(() => {
+        setImagePicking(false);
+      });
   };
 
   return (
@@ -768,7 +809,14 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
                     }}
                     onBlur={() => {
                       setOnFocus(false);
-                      setPlaceholder('지금 기분이 어때요?');
+                      if (
+                        !imagePicking &&
+                        feedContent.trim() == '' &&
+                        !selectImg
+                      ) {
+                        setIsKnock(false);
+                        setPlaceholder('지금 기분이 어때요?');
+                      }
                     }}
                     onChangeText={(text: string) => {
                       setFeedContent(text);
@@ -792,31 +840,9 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
                 </View>
                 <Pressable
                   style={styles.addPhoto}
-                  onPress={() =>
-                    ImagePicker.openPicker({
-                      multiple: false,
-                      mediaType: 'photo',
-                      // cropping:true,
-                    }).then(image => {
-                      // console.log(image)
-                      let name = image.path.split('/');
-                      const imageFormData = new FormData();
-                      let file = {
-                        uri: image.path,
-                        type: image.mime,
-                        name: name[name.length - 1],
-                      };
-                      imageFormData.append('file', file);
-                      // console.log(file)
-                      setImgData({
-                        uri: image.path,
-                        type: image.mime,
-                      });
-                      setSelectImg(true);
-                      imageFormData.append('type', 'feed');
-                      setUploadImage(imageFormData);
-                    })
-                  }>
+                  onPress={() => {
+                    setImagePicking(true);
+                  }}>
                   {isKnock ? (
                     <SvgXml
                       width={24}
