@@ -24,6 +24,7 @@ type EmoticonsProps = {
 type FeedProps = {
   mine: boolean;
   detail: boolean;
+  isKnock: boolean;
   commentCnt: number;
   createdAt: string;
   content: string;
@@ -51,6 +52,7 @@ export default function Feed(props: FeedProps) {
   const mine = props.mine;
   const content = props.content;
   const detail = props.detail;
+  const isKnock = props.isKnock;
   const commentCnt = props.commentCnt;
   const emoticons = props.emoticons;
   const createdAt = props.createdAt;
@@ -111,7 +113,14 @@ export default function Feed(props: FeedProps) {
   }, throttleTime);
 
   return (
-    <View style={styles.entire}>
+    <View
+      style={[
+        styles.entire,
+        {
+          borderWidth: isKnock ? 1 : undefined,
+          borderColor: isKnock ? '#A55FFF' : undefined,
+        },
+      ]}>
       <Content
         nickname={nickname}
         status={status}
@@ -127,6 +136,7 @@ export default function Feed(props: FeedProps) {
         feedId={props.feedId}
         deleteFeedId={props.deleteFeedId}
         setDeleteFeedId={props.setDeleteFeedId}
+        isKnock={isKnock}
       />
       <ContentFeedBottom
         mine={mine}
@@ -159,6 +169,7 @@ const styles = StyleSheet.create({
   entire: {
     paddingBottom: 12,
     width: '100%',
+    borderRadius: 10,
   },
   modalView: {
     backgroundColor: '#202020',
