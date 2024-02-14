@@ -56,7 +56,7 @@ export default function App() {
     } else if (type == 'CREATE_FRIENDSHIP_REQUEST') {
       navigation.navigate('Notis');
     } else if (type == 'SEND_KNOCK') {
-      navigation.navigate('Notis');
+      navigation.navigate('FeedList', {isKnock: true});
     } else if (type == 'REACT_EMOTICON_ON_COMMENT') {
       navigation.navigate('FeedDetail', {feedId: redirectTargetId});
     } else if (type == 'CREATE_KNOCK_FEED') {
@@ -128,7 +128,7 @@ export default function App() {
       } else if (type == 'CREATE_FRIENDSHIP_REQUEST') {
         navigation.navigate('Notis');
       } else if (type == 'SEND_KNOCK') {
-        navigation.navigate('Notis');
+        navigation.navigate('FeedList', {isKnock: true});
       } else if (type == 'REACT_EMOTICON_ON_COMMENT') {
         navigation.navigate('FeedDetail', {feedId: redirectTargetId});
       } else if (type == 'CREATE_KNOCK_FEED') {
@@ -211,8 +211,8 @@ export default function App() {
       playSound: true,
     };
 
-    if (Platform.OS === 'android' && notify !== undefined) {
-      // console.log('1. [onNotification] notify.body :', notify);
+    if (Platform.OS === 'android' && notify) {
+      console.log('1. [onNotification] notify.body :', notify);
       // console.log('1. [onNotification] notify.body :', notify.body);
       localNotificationService.showNotification(
         0,
@@ -272,23 +272,14 @@ export default function App() {
       };
       setNotiData(data);
 
-      PushNotification.localNotification({
-        title: notify.title,
-        message: notify.message,
-      });
+      // PushNotification.localNotification({
+      //   title: notify.title,
+      //   message: notify.message,
+      // });
 
       PushNotification.configure({
         onNotification: function (notification) {
-          // console.log('NOTIFICATION:', notification);
-
-          if (notification.userInteraction) {
-            // console.log('Notification was pressed!');
-            noticeNavigation_inapp_and(
-              notify.data.type,
-              notify.data.redirectTargetId,
-              notify.data.notificationId,
-            );
-          }
+          navigation.navigate('Notis');
         },
       });
     }
@@ -326,7 +317,8 @@ export default function App() {
     //앱 켜졌을 때 작동부                 여기
     fcmService.register(onRegister, onNotification, onOpenNotification);
     localNotificationService.configure(onOpenNotification);
-  }, [onOpenNotification]);
+  }, []);
+  // }, [onOpenNotification]);
 
   useEffect(() => {
     PushNotification.popInitialNotification(notification => {
