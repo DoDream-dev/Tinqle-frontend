@@ -188,9 +188,9 @@ export default function FeedNavigation() {
     );
     // console.log('type : ', type);
     // console.log('redirectTargetId : ', redirectTargetId);
-    if (type !== null && redirectTargetId !== null) {
-      noticeNavigation(type, redirectTargetId);
 
+    if (type && redirectTargetId) {
+      noticeNavigation(type, redirectTargetId);
       // read_notification
       const notificationId = await AsyncStorage.getItem('pushNot_id');
       try {

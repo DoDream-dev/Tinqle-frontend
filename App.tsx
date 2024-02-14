@@ -263,14 +263,14 @@ export default function App() {
     } else if (Platform.OS === 'android') {
       //push in android
 
-      // const data = {
-      //   body: notify.message,
-      //   title: notify.title,
-      //   type: notify.data.type,
-      //   redirectTargetId: notify.data.redirectTargetId,
-      //   notificationId: notify.data.notificationId,
-      // };
-      // setNotiData(data);
+      const data = {
+        body: notify.message,
+        title: notify.title,
+        type: notify.data.type,
+        redirectTargetId: notify.data.redirectTargetId,
+        notificationId: notify.data.notificationId,
+      };
+      setNotiData(data);
 
       // PushNotification.localNotification({
       //   title: notify.title,
@@ -279,16 +279,7 @@ export default function App() {
 
       PushNotification.configure({
         onNotification: function (notification) {
-          // console.log('NOTIFICATION:', notification);
-
-          if (notification.userInteraction) {
-            // console.log('Notification was pressed!');
-            noticeNavigation_inapp_and(
-              notify.data.type,
-              notify.data.redirectTargetId,
-              notify.data.notificationId,
-            );
-          }
+          navigation.navigate('Notis');
         },
       });
     }
