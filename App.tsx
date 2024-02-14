@@ -211,8 +211,8 @@ export default function App() {
       playSound: true,
     };
 
-    if (Platform.OS === 'android' && notify !== undefined) {
-      // console.log('1. [onNotification] notify.body :', notify);
+    if (Platform.OS === 'android' && notify) {
+      console.log('1. [onNotification] notify.body :', notify);
       // console.log('1. [onNotification] notify.body :', notify.body);
       localNotificationService.showNotification(
         0,
@@ -263,19 +263,19 @@ export default function App() {
     } else if (Platform.OS === 'android') {
       //push in android
 
-      const data = {
-        body: notify.message,
-        title: notify.title,
-        type: notify.data.type,
-        redirectTargetId: notify.data.redirectTargetId,
-        notificationId: notify.data.notificationId,
-      };
-      setNotiData(data);
+      // const data = {
+      //   body: notify.message,
+      //   title: notify.title,
+      //   type: notify.data.type,
+      //   redirectTargetId: notify.data.redirectTargetId,
+      //   notificationId: notify.data.notificationId,
+      // };
+      // setNotiData(data);
 
-      PushNotification.localNotification({
-        title: notify.title,
-        message: notify.message,
-      });
+      // PushNotification.localNotification({
+      //   title: notify.title,
+      //   message: notify.message,
+      // });
 
       PushNotification.configure({
         onNotification: function (notification) {
@@ -326,7 +326,8 @@ export default function App() {
     //앱 켜졌을 때 작동부                 여기
     fcmService.register(onRegister, onNotification, onOpenNotification);
     localNotificationService.configure(onOpenNotification);
-  }, [onOpenNotification]);
+  }, []);
+  // }, [onOpenNotification]);
 
   useEffect(() => {
     PushNotification.popInitialNotification(notification => {

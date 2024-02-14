@@ -19,6 +19,7 @@ class LocalNotificationService {
         // 앱내 알림 시 오는 부분
         if (notification.userInteraction) {
           console.log('Notification was pressed!', notification);
+
           AsyncStorage.setItem(
             'pushNoti_redirectTargetId',
             notification.data.redirectTargetId,
@@ -75,22 +76,20 @@ class LocalNotificationService {
   ) => {
     // console.log('TEST : ', id, title, message, data, options);
 
-    if (Platform.OS === 'ios') {
-      PushNotification.localNotification({
-        // Android only Properties
-        ...this.buildAndroidNotification(id, title, message, data, options),
+    PushNotification.localNotification({
+      // Android only Properties
+      ...this.buildAndroidNotification(id, title, message, data, options),
 
-        // IOS and Android properties
-        ...this.buildIOSNotification(id, title, message, data, options),
+      // IOS and Android properties
+      ...this.buildIOSNotification(id, title, message, data, options),
 
-        // IOS and Android properties
-        title: title || '',
-        message: message || '',
-        playSound: options.playSound || false,
-        soundName: options.soundName || 'default',
-        userInteraction: false,
-      });
-    }
+      // IOS and Android properties
+      title: title || '',
+      message: message || '',
+      playSound: options.playSound || false,
+      soundName: options.soundName || 'default',
+      userInteraction: false,
+    });
   };
 
   buildAndroidNotification = (
