@@ -351,7 +351,7 @@ export default function Notis({}: NotisScreenProps) {
     } else if (notificationType == 'CREATE_FRIENDSHIP_REQUEST') {
       setShowProfileModal(accountId);
     } else if (notificationType == 'SEND_KNOCK') {
-      navigation.navigate('FeedList');
+      // navigation.navigate('FeedList');
     } else if (notificationType == 'REACT_EMOTICON_ON_COMMENT') {
       goToFeed(redirectTargetId);
     } else if (notificationType == 'CREATE_KNOCK_FEED') {
@@ -444,6 +444,9 @@ export default function Notis({}: NotisScreenProps) {
                     : styles.eachNotis
                 }
                 onPress={async () => {
+                  if (item.notificationType === 'SEND_KNOCK') {
+                    return;
+                  }
                   noticeClicked(index, item.notificationId);
 
                   notiNavigation(
