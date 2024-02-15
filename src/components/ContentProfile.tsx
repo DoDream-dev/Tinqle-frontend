@@ -20,7 +20,6 @@ import ToastScreen from './ToastScreen';
 import Modal from 'react-native-modal';
 import axios, {AxiosError} from 'axios';
 import Config from 'react-native-config';
-import AnimatedButton from './AnimatedButton';
 
 const windowWidth = Dimensions.get('screen').width;
 type ContentProfileProps = {
@@ -73,9 +72,9 @@ export default function ContentProfile(props: ContentProfileProps) {
 
   return (
     <View style={styles.profileSection}>
-      <View style={{flexDirection: 'row'}}>
+      <View style={{flexDirection:'row'}}>
         <View style={styles.imgView}>
-          <AnimatedButton
+          <Pressable
             onPress={() => {
               if (props.mine) {
                 navigation.navigate('MyProfile');
@@ -91,11 +90,11 @@ export default function ContentProfile(props: ContentProfileProps) {
                 style={{width: 32, height: 32, borderRadius: 16}}
               />
             )}
-          </AnimatedButton>
+          </Pressable>
         </View>
         <View style={styles.contentView}>
           <View style={[styles.txtNickname, feedId == -1 && {maxWidth: 70}]}>
-            <AnimatedButton
+            <Pressable
               onPress={() => {
                 if (props.mine) {
                   navigation.navigate('MyProfile');
@@ -104,78 +103,72 @@ export default function ContentProfile(props: ContentProfileProps) {
                 }
               }}>
               <Text style={styles.nickname}>{nickname}</Text>
-            </AnimatedButton>
-            {feedId != -1 && (
-              <View>
-                {status == 'smile'.toUpperCase() && (
-                  <SvgXml width={18} height={18} xml={svgXml.status.smile} />
-                )}
-                {status == 'happy'.toUpperCase() && (
-                  <SvgXml width={18} height={18} xml={svgXml.status.happy} />
-                )}
-                {status == 'sad'.toUpperCase() && (
-                  <SvgXml width={18} height={18} xml={svgXml.status.sad} />
-                )}
-                {status == 'mad'.toUpperCase() && (
-                  <SvgXml width={18} height={18} xml={svgXml.status.mad} />
-                )}
-                {status == 'exhausted'.toUpperCase() && (
-                  <SvgXml
-                    width={18}
-                    height={18}
-                    xml={svgXml.status.exhauseted}
-                  />
-                )}
-                {status == 'coffee'.toUpperCase() && (
-                  <SvgXml width={18} height={18} xml={svgXml.status.coffee} />
-                )}
-                {status == 'meal'.toUpperCase() && (
-                  <SvgXml width={18} height={18} xml={svgXml.status.meal} />
-                )}
-                {status == 'alcohol'.toUpperCase() && (
-                  <SvgXml width={18} height={18} xml={svgXml.status.alcohol} />
-                )}
-                {status == 'chicken'.toUpperCase() && (
-                  <SvgXml width={18} height={18} xml={svgXml.status.chicken} />
-                )}
-                {status == 'sleep'.toUpperCase() && (
-                  <SvgXml width={18} height={18} xml={svgXml.status.sleep} />
-                )}
-                {status == 'work'.toUpperCase() && (
-                  <SvgXml width={18} height={18} xml={svgXml.status.work} />
-                )}
-                {status == 'study'.toUpperCase() && (
-                  <SvgXml width={18} height={18} xml={svgXml.status.study} />
-                )}
-                {status == 'movie'.toUpperCase() && (
-                  <SvgXml width={18} height={18} xml={svgXml.status.movie} />
-                )}
-                {status == 'move'.toUpperCase() && (
-                  <SvgXml width={18} height={18} xml={svgXml.status.move} />
-                )}
-                {status == 'dance'.toUpperCase() && (
-                  <SvgXml width={18} height={18} xml={svgXml.status.dance} />
-                )}
-                {status == 'read'.toUpperCase() && (
-                  <SvgXml width={18} height={18} xml={svgXml.status.read} />
-                )}
-                {status == 'walk'.toUpperCase() && (
-                  <SvgXml width={18} height={18} xml={svgXml.status.walk} />
-                )}
-                {status == 'travel'.toUpperCase() && (
-                  <SvgXml width={18} height={18} xml={svgXml.status.travel} />
-                )}
-              </View>
-            )}
+            </Pressable>
+            {feedId != -1 && <View>
+              {status == 'smile'.toUpperCase() && (
+              <SvgXml width={18} height={18} xml={svgXml.status.smile} />
+              )}
+              {status == 'happy'.toUpperCase() && (
+                <SvgXml width={18} height={18} xml={svgXml.status.happy} />
+              )}
+              {status == 'sad'.toUpperCase() && (
+                <SvgXml width={18} height={18} xml={svgXml.status.sad} />
+              )}
+              {status == 'mad'.toUpperCase() && (
+                <SvgXml width={18} height={18} xml={svgXml.status.mad} />
+              )}
+              {status == 'exhausted'.toUpperCase() && (
+                <SvgXml width={18} height={18} xml={svgXml.status.exhauseted} />
+              )}
+              {status == 'coffee'.toUpperCase() && (
+                <SvgXml width={18} height={18} xml={svgXml.status.coffee} />
+              )}
+              {status == 'meal'.toUpperCase() && (
+                <SvgXml width={18} height={18} xml={svgXml.status.meal} />
+              )}
+              {status == 'alcohol'.toUpperCase() && (
+                <SvgXml width={18} height={18} xml={svgXml.status.alcohol} />
+              )}
+              {status == 'chicken'.toUpperCase() && (
+                <SvgXml width={18} height={18} xml={svgXml.status.chicken} />
+              )}
+              {status == 'sleep'.toUpperCase() && (
+                <SvgXml width={18} height={18} xml={svgXml.status.sleep} />
+              )}
+              {status == 'work'.toUpperCase() && (
+                <SvgXml width={18} height={18} xml={svgXml.status.work} />
+              )}
+              {status == 'study'.toUpperCase() && (
+                <SvgXml width={18} height={18} xml={svgXml.status.study} />
+              )}
+              {status == 'movie'.toUpperCase() && (
+                <SvgXml width={18} height={18} xml={svgXml.status.movie} />
+              )}
+              {status == 'move'.toUpperCase() && (
+                <SvgXml width={18} height={18} xml={svgXml.status.move} />
+              )}
+              {status == 'dance'.toUpperCase() && (
+                <SvgXml width={18} height={18} xml={svgXml.status.dance} />
+              )}
+              {status == 'read'.toUpperCase() && (
+                <SvgXml width={18} height={18} xml={svgXml.status.read} />
+              )}
+              {status == 'walk'.toUpperCase() && (
+                <SvgXml width={18} height={18} xml={svgXml.status.walk} />
+              )}
+              {status == 'travel'.toUpperCase() && (
+                <SvgXml width={18} height={18} xml={svgXml.status.travel} />
+              )}
+            </View>}
           </View>
           <Text style={styles.createdAt}>{createdAt}</Text>
         </View>
       </View>
-      {feedId != -1 && props.mine && (
-        <AnimatedButton onPress={() => props.setDeleteFeedId(feedId)}>
-          <SvgXml width={24} height={24} xml={svgXml.icon.menu} />
-        </AnimatedButton>
-      )}
+      {feedId != -1 && props.mine && <Pressable
+        onPress={()=>props.setDeleteFeedId(feedId)}
+      >
+        <SvgXml width={24} height={24} xml={svgXml.icon.menu} />
+      </Pressable>}
       <FriendProfileModal
         showWhoseModal={showWhoseModal}
         setShowWhoseModal={setShowWhoseModal}
@@ -197,25 +190,25 @@ export default function ContentProfile(props: ContentProfileProps) {
             상대방에게 알림이 가지 않으니 안심하세요.
           </Text>
           <View style={styles.btnView}>
-            <AnimatedButton
+            <Pressable
               style={styles.btnGray}
               onPress={() => {
                 setDeleteFriend(-1);
               }}>
               <Text style={styles.btnTxt}>취소</Text>
-            </AnimatedButton>
+            </Pressable>
             <View style={{width: 8}}></View>
-            <AnimatedButton
+            <Pressable
               style={styles.btn}
               onPress={() => {
                 deleteFriends();
               }}>
               <Text style={styles.btnTxt}>네, 삭제할게요.</Text>
-            </AnimatedButton>
+            </Pressable>
           </View>
         </View>
       </Modal>
-      {/* <View style={{bottom:0, alignItems:'center', backgroundColor:'red', width:'100%', position:'absolute', height:100}}>
+    {/* <View style={{bottom:0, alignItems:'center', backgroundColor:'red', width:'100%', position:'absolute', height:100}}>
       {whichPopup === 'deleted' && (
         <ToastScreen
           height={21}
@@ -232,9 +225,10 @@ export default function ContentProfile(props: ContentProfileProps) {
 const styles = StyleSheet.create({
   profileSection: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent:'space-between',
   },
-  imgView: {},
+  imgView: {
+  },
   contentView: {
     // flex: 1,
     paddingLeft: 8,
@@ -244,7 +238,7 @@ const styles = StyleSheet.create({
   txtNickname: {
     flexDirection: 'row',
     alignItems: 'center',
-    minHeight: 18,
+    minHeight:18
   },
   nickname: {
     fontSize: 15,

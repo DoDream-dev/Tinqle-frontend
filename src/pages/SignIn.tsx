@@ -33,7 +33,6 @@ import {Safe} from '../components/Safe';
 import {appleAuth} from '@invertase/react-native-apple-authentication';
 import ServicePolicyModal from '../components/ServicePolicyModal';
 import PersonalPolicyModal from '../components/PersonalPolicyModal';
-import AnimatedButton from '../components/AnimatedButton';
 
 export default function SignIn() {
   const navigation =
@@ -321,7 +320,7 @@ export default function SignIn() {
       </View>
       <View style={styles.loginView}>
         {Platform.OS == 'ios' ? (
-          <AnimatedButton style={styles.loginBtnApple} onPress={LoginWithApple}>
+          <Pressable style={styles.loginBtnApple} onPress={LoginWithApple}>
             <Shadow
               distance={5}
               startColor="#00000009"
@@ -338,9 +337,9 @@ export default function SignIn() {
                 <Text style={styles.loginBtnTxtApple}>Apple로 계속하기</Text>
               </View>
             </Shadow>
-          </AnimatedButton>
+          </Pressable>
         ) : null}
-        <AnimatedButton style={styles.loginBtnGoogle} onPress={LoginWithGoogle}>
+        <Pressable style={styles.loginBtnGoogle} onPress={LoginWithGoogle}>
           <Shadow
             distance={5}
             startColor="#00000009"
@@ -357,8 +356,8 @@ export default function SignIn() {
               <Text style={styles.loginBtnTxtGoogle}>Google로 계속하기</Text>
             </View>
           </Shadow>
-        </AnimatedButton>
-        <AnimatedButton style={styles.loginBtnKakao} onPress={LoginWithKaKao}>
+        </Pressable>
+        <Pressable style={styles.loginBtnKakao} onPress={LoginWithKaKao}>
           <Shadow
             distance={5}
             startColor="#00000009"
@@ -375,7 +374,7 @@ export default function SignIn() {
               <Text style={styles.loginBtnTxtKakao}>카카오로 계속하기</Text>
             </View>
           </Shadow>
-        </AnimatedButton>
+        </Pressable>
       </View>
 
       <Modal
@@ -390,15 +389,13 @@ export default function SignIn() {
         hasBackdrop={false}
         style={{justifyContent: 'flex-end', margin: 0}}>
         <Safe>
-          <AnimatedButton
-            onPress={() => setSignUp('')}
-            style={styles.modalBGView}>
+          <Pressable onPress={() => setSignUp('')} style={styles.modalBGView}>
             <Shadow distance={6} startColor="#00000010">
-              <AnimatedButton
+              <Pressable
                 style={[styles.modalView, {width: windowWidth}]}
                 onPress={e => e.stopPropagation()}>
                 <View style={styles.modalAllView}>
-                  <AnimatedButton
+                  <Pressable
                     style={styles.policyBtn}
                     onPress={() => {
                       if (allP) {
@@ -427,10 +424,10 @@ export default function SignIn() {
                       <View style={styles.checkBtn}></View>
                     )}
                     <Text style={styles.policyTxtBold}>전체 동의하기</Text>
-                  </AnimatedButton>
+                  </Pressable>
                 </View>
                 <View style={styles.modalItemView}>
-                  <AnimatedButton
+                  <Pressable
                     style={styles.policyBtn}
                     onPress={() => {
                       if (serviceP) {
@@ -453,17 +450,17 @@ export default function SignIn() {
                     <Text style={styles.policyTxt}>
                       [필수] 서비스 이용약관 동의
                     </Text>
-                  </AnimatedButton>
-                  <AnimatedButton
+                  </Pressable>
+                  <Pressable
                     style={styles.seePolicy}
                     onPress={() => {
                       setPolicy('service');
                     }}>
                     <Text style={styles.seePolicyTxt}>보기</Text>
-                  </AnimatedButton>
+                  </Pressable>
                 </View>
                 <View style={styles.modalItemView}>
-                  <AnimatedButton
+                  <Pressable
                     style={styles.policyBtn}
                     onPress={() => {
                       if (personalP) {
@@ -486,17 +483,17 @@ export default function SignIn() {
                     <Text style={styles.policyTxt}>
                       [필수] 개인정보 수집 및 이용 동의
                     </Text>
-                  </AnimatedButton>
-                  <AnimatedButton
+                  </Pressable>
+                  <Pressable
                     style={styles.seePolicy}
                     onPress={() => {
                       setPolicy('personal');
                     }}>
                     <Text style={styles.seePolicyTxt}>보기</Text>
-                  </AnimatedButton>
+                  </Pressable>
                 </View>
                 <View style={styles.modalItemView}>
-                  <AnimatedButton
+                  <Pressable
                     style={styles.policyBtn}
                     onPress={() => {
                       if (ageP) {
@@ -519,10 +516,10 @@ export default function SignIn() {
                     <Text style={styles.policyTxt}>
                       [필수] 만14세 이상입니다
                     </Text>
-                  </AnimatedButton>
+                  </Pressable>
                 </View>
                 {/* <View style={styles.modalItemView}>
-                <AnimatedButton style={styles.policyBtn} onPress={()=>{
+                <Pressable style={styles.policyBtn} onPress={()=>{
                   if (adsP) {setAllP(false)}
                   else if (personalP && ageP && serviceP) {setAllP(true)}
                   setAdsP(!adsP);
@@ -532,9 +529,9 @@ export default function SignIn() {
                     <Feather name={'check'} size={20} style={{color:'white'}}/>
                   </View>}
                   <Text style={styles.policyTxt}>[선택] 마케팅 활용 및 광고성 정보 수신 동의</Text>
-                </AnimatedButton>
+                </Pressable>
               </View> */}
-                <AnimatedButton
+                <Pressable
                   style={
                     !(serviceP && personalP && ageP)
                       ? styles.sendBtnUnActivated
@@ -547,10 +544,10 @@ export default function SignIn() {
                     // setSignUp('');
                   }}>
                   <Text style={styles.sendTxt}>시작하기</Text>
-                </AnimatedButton>
-              </AnimatedButton>
+                </Pressable>
+              </Pressable>
             </Shadow>
-          </AnimatedButton>
+          </Pressable>
         </Safe>
         <ServicePolicyModal policy={policy} setPolicy={setPolicy} />
         <PersonalPolicyModal policy={policy} setPolicy={setPolicy} />
@@ -565,10 +562,10 @@ export default function SignIn() {
             setSignUp('');
           }}
           style={{margin: 0}}>
-          <AnimatedButton
+          <Pressable
             onPress={() => setSettingID(false)}
             style={styles.modalBGView2}>
-            <AnimatedButton
+            <Pressable
               style={[styles.modalView2 /*{width:windowWidth}*/]}
               onPress={e => e.stopPropagation()}>
               <View style={styles.idModalHeader}>
@@ -591,13 +588,13 @@ export default function SignIn() {
                   // }}
                   style={styles.idModalBodyTxtInp}
                 />
-                <AnimatedButton
+                <Pressable
                   style={styles.idModalBodyBtn}
                   onPress={() => {
                     checkDuplicate();
                   }}>
                   <Text style={styles.idModalBodyBtnTxt}>중복확인</Text>
-                </AnimatedButton>
+                </Pressable>
               </View>
               {duplicate == 'YET' && <View style={{height: 12}}></View>}
               {duplicate == 'CANNOT' && (
@@ -615,7 +612,7 @@ export default function SignIn() {
                   아이디는 4~12자, 영문 소문자나 숫자만 가능합니다.
                 </Text>
               )}
-              <AnimatedButton
+              <Pressable
                 style={
                   duplicate == 'CAN'
                     ? styles.idModalFooterBtnActive
@@ -629,9 +626,9 @@ export default function SignIn() {
                 }}
                 disabled={duplicate != 'CAN'}>
                 <Text style={styles.idModalFooterBtnTxt}>완료</Text>
-              </AnimatedButton>
-            </AnimatedButton>
-          </AnimatedButton>
+              </Pressable>
+            </Pressable>
+          </Pressable>
         </Modal>
       </Modal>
       {/* modal for policy */}

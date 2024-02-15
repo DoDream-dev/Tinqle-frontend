@@ -10,8 +10,6 @@ import {throttleTime} from '../hooks/Throttle';
 import userSlice from '../slices/user';
 import {useNavigation} from '@react-navigation/native';
 import {Shadow} from 'react-native-shadow-2';
-import Animated from 'react-native-reanimated';
-import AnimatedButton from './AnimatedButton';
 
 type EmoticonsProps = {
   smileEmoticonCount: number;
@@ -150,7 +148,7 @@ export default function Feed(props: FeedProps) {
         whoReact={props.whoReact}
       />
       {props.deleteFeedId === props.feedId ? (
-        <AnimatedButton
+        <Pressable
           style={{zIndex: 1, flex: 1, position: 'absolute', right: 25, top: 20}}
           onPress={e => {
             e.stopPropagation();
@@ -161,7 +159,7 @@ export default function Feed(props: FeedProps) {
               <Text style={styles.modalText}>삭제하기</Text>
             </View>
           </Shadow>
-        </AnimatedButton>
+        </Pressable>
       ) : null}
     </View>
   );

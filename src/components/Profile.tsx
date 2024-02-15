@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {StyleSheet, Text, View, Image} from 'react-native';
+import {StyleSheet, Text, Pressable, View, Image} from 'react-native';
 import MaterialCommunity from 'react-native-vector-icons/MaterialCommunityIcons';
 import {svgXml} from '../../assets/image/svgXml';
 import {SvgXml} from 'react-native-svg';
@@ -8,7 +8,6 @@ import ImageModal from 'react-native-image-modal';
 import ImagePicker from 'react-native-image-crop-picker';
 import axios, {AxiosError} from 'axios';
 import Config from 'react-native-config';
-import AnimatedButton from './AnimatedButton';
 
 type ProfileProps = {
   status: string;
@@ -113,7 +112,7 @@ export default function Profile(props: ProfileProps) {
   return (
     <View style={styles.entire}>
       <View style={styles.statusView}>
-        {/* <AnimatedButton style={styles.statusBtn} disabled={imsi} onPress={()=>restatusModal(true)}>
+        {/* <Pressable style={styles.statusBtn} disabled={imsi} onPress={()=>restatusModal(true)}>
           {status == 'smile' && <SvgXml width={90} height={90} xml={svgXml.status.smile} />}
           {status == 'happy' && <SvgXml width={90} height={90} xml={svgXml.status.happy} />}
           {status == 'sad' && <SvgXml width={90} height={90} xml={svgXml.status.sad} />}
@@ -132,7 +131,7 @@ export default function Profile(props: ProfileProps) {
           {status == 'read' && <SvgXml width={90} height={90} xml={svgXml.status.read} />}
           {status == 'walk' && <SvgXml width={90} height={90} xml={svgXml.status.walk} />}
           {status == 'travel' && <SvgXml width={90} height={90} xml={svgXml.status.travel} />}
-        </AnimatedButton> */}
+        </Pressable> */}
         {profileImage == null ? (
           <SvgXml width={120} height={120} xml={svgXml.profile.null} />
         ) : (
@@ -152,17 +151,17 @@ export default function Profile(props: ProfileProps) {
           </View>
         )}
         {friendshipRelation == 'me' ? (
-          <AnimatedButton
-            style={[styles.addProfileImgBtn, {backgroundColor: '#101010'}]}
+          <Pressable
+            style={[styles.addProfileImgBtn, {backgroundColor:'#101010'}]}
             onPress={async () => {
               if (profileImage == null) await uploadProfileImage();
               else setDeleteProfileImg(true);
             }}>
             <SvgXml width={24} height={24} xml={svgXml.icon.photo} />
-          </AnimatedButton>
+          </Pressable>
         ) : (
-          <AnimatedButton
-            style={[styles.addProfileImgBtn, {backgroundColor: '#202020'}]}>
+          <Pressable
+            style={[styles.addProfileImgBtn, {backgroundColor:'#202020'}]}>
             {status == 'smile' && (
               <SvgXml width={23} height={23} xml={svgXml.status.smile} />
             )}
@@ -176,7 +175,11 @@ export default function Profile(props: ProfileProps) {
               <SvgXml width={23} height={23} xml={svgXml.status.mad} />
             )}
             {status == 'exhausted' && (
-              <SvgXml width={23} height={23} xml={svgXml.status.exhauseted} />
+              <SvgXml
+                width={23}
+                height={23}
+                xml={svgXml.status.exhauseted}
+              />
             )}
             {status == 'coffee' && (
               <SvgXml width={23} height={23} xml={svgXml.status.coffee} />
@@ -217,7 +220,7 @@ export default function Profile(props: ProfileProps) {
             {status == 'travel' && (
               <SvgXml width={23} height={23} xml={svgXml.status.travel} />
             )}
-          </AnimatedButton>
+          </Pressable>
         )}
       </View>
       <View style={styles.nameView}>
@@ -225,7 +228,7 @@ export default function Profile(props: ProfileProps) {
           {name}
         </Text>
         {(friendshipRelation == 'true' || friendshipRelation == 'me') && (
-          <AnimatedButton
+          <Pressable
             style={styles.changeNameBtn}
             onPress={() => renameModal(true)}>
             <MaterialCommunity
@@ -233,7 +236,7 @@ export default function Profile(props: ProfileProps) {
               size={14}
               color={'#888888'}
             />
-          </AnimatedButton>
+          </Pressable>
         )}
       </View>
       {/* modal for deleting profileimg */}
@@ -242,24 +245,22 @@ export default function Profile(props: ProfileProps) {
         onBackButtonPress={() => setDeleteProfileImg(false)}
         backdropColor="#101010"
         backdropOpacity={0.5}>
-        <AnimatedButton
+        <Pressable
           style={styles.modalBGView}
           onPress={() => {
             setDeleteProfileImg(false);
           }}>
           <View style={styles.modalView}>
-            <AnimatedButton
+            <Pressable
               style={styles.modalBtn}
               onPress={async () => await uploadProfileImage()}>
               <Text style={styles.modalTitleTxt}>갤러리에서 사진 선택하기</Text>
-            </AnimatedButton>
-            <AnimatedButton
-              style={styles.modalBtn}
-              onPress={() => deleteProfile()}>
+            </Pressable>
+            <Pressable style={styles.modalBtn} onPress={() => deleteProfile()}>
               <Text style={styles.modalTitleTxt}>사진 삭제하기</Text>
-            </AnimatedButton>
+            </Pressable>
           </View>
-        </AnimatedButton>
+        </Pressable>
       </Modal>
     </View>
   );
@@ -300,14 +301,14 @@ const styles = StyleSheet.create({
   },
   addProfileImgBtn: {
     position: 'absolute',
-    width: 30,
-    height: 30,
+    width:30,
+    height:30,
     bottom: 0,
     right: 0,
     borderRadius: 15,
     padding: 3,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent:'center',
+    alignItems:'center'
   },
   modalBGView: {
     width: '100%',
