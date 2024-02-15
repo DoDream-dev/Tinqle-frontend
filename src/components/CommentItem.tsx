@@ -18,6 +18,7 @@ import axios, {AxiosError} from 'axios';
 import Config from 'react-native-config';
 import ContentProfile from './ContentProfile';
 import {GestureResponderEvent} from 'react-native';
+import AnimatedButton from '../components/AnimatedButton';
 
 const windowWidth = Dimensions.get('screen').width;
 type childCommentItemProps = {
@@ -120,8 +121,13 @@ export default function CommentItem(props: CommentItemProps) {
   };
 
   return (
-    <Pressable
-      // onPress={setTouchLocation}
+    <AnimatedButton
+      disabled={childData && accountId}
+      onPress={() => {
+        if (!childData || !accountId) {
+          console.log('EEE');
+        }
+      }}
       style={[
         writeChildCmt == index && childData != null
           ? {
@@ -281,7 +287,7 @@ export default function CommentItem(props: CommentItemProps) {
           </View>
         </Pressable>
       )}
-    </Pressable>
+    </AnimatedButton>
   );
 }
 
