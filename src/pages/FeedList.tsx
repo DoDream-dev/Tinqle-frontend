@@ -965,7 +965,7 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
               isVisible={changeStatus}
               backdropColor="#101010"
               backdropOpacity={0.5}
-              swipeDirection={'down'}
+              swipeDirection={['down', 'left', 'right', 'up']}
               onSwipeComplete={() => setChangeStatus(false)}
               onBackButtonPress={() => setChangeStatus(false)}>
               <Pressable
