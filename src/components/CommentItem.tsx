@@ -9,7 +9,7 @@ import {
   Dimensions,
   useWindowDimensions,
   FlatList,
-  NativeTouchEvent
+  NativeTouchEvent,
 } from 'react-native';
 import {svgXml} from '../../assets/image/svgXml';
 import {SvgXml} from 'react-native-svg';
@@ -17,7 +17,7 @@ import Modal from 'react-native-modal';
 import axios, {AxiosError} from 'axios';
 import Config from 'react-native-config';
 import ContentProfile from './ContentProfile';
-import { GestureResponderEvent } from 'react-native';
+import {GestureResponderEvent} from 'react-native';
 
 const windowWidth = Dimensions.get('screen').width;
 type childCommentItemProps = {
@@ -32,7 +32,7 @@ type childCommentItemProps = {
   createdAt: string;
   isReactEmoticon: boolean;
   emoticonCount: number;
-}
+};
 type CommentItemProps = {
   commentId: number;
   content: string;
@@ -96,20 +96,19 @@ export default function CommentItem(props: CommentItemProps) {
       const response = await axios.put(
         `${Config.API_URL}/emoticons/comments/${commentId}`,
       );
-      console.log(response.data)
+      console.log(response.data);
       setRefresh(true);
       setRefresh(false);
-
     } catch (error) {
       const errorResponse = (error as AxiosError<{message: string}>).response;
       console.log(errorResponse.data);
     }
-  }
+  };
 
   const deleteComment = async () => {
     try {
       const response = await axios.delete(
-        `${Config.API_URL}/feeds/comments/${commentId}`
+        `${Config.API_URL}/feeds/comments/${commentId}`,
       );
       console.log(response.data);
       setRefresh(true);
@@ -118,63 +117,97 @@ export default function CommentItem(props: CommentItemProps) {
       const errorResponse = (error as AxiosError<{message: string}>).response;
       console.log(errorResponse.data);
     }
-  }
+  };
 
   return (
     <Pressable
       // onPress={setTouchLocation}
       style={[
-        (writeChildCmt == index && childData != null)
+        writeChildCmt == index && childData != null
           ? {
               backgroundColor: '#A55FFF33',
             }
           : {
-            backgroundColor:'#333333'
-          }, 
+              backgroundColor: '#333333',
+            },
         index == 0 && {
-          borderTopLeftRadius:10,
-          borderTopRightRadius:10,
+          borderTopLeftRadius: 10,
+          borderTopRightRadius: 10,
         },
-        index == props.cmtCount - 1 && 
-        {
-          borderBottomLeftRadius:10,
-          borderBottomRightRadius:10,
+        index == props.cmtCount - 1 && {
+          borderBottomLeftRadius: 10,
+          borderBottomRightRadius: 10,
         },
-      ]}
-      >
-      <View style={{flexDirection:'row', padding:12}}>
+      ]}>
+      <View style={{flexDirection: 'row', padding: 12}}>
         <View style={styles.profileView}>
-          {accountId != null ? <ContentProfile 
-            nickname={friendNickname}
-            status={status}
-            createdAt={createdAt}
-            accountId={accountId}
-            mine={isAuthor}
-            profileImg={profileImageUrl}
-            showWhoseModal={showWhoseModal}
-            setShowWhoseModal={setShowWhoseModal}
-            setWhichPopup={setWhichPopup}
-            feedId={-1}
-          /> : <SvgXml width={32} height={32} xml={svgXml.profile.null} />}
+          {accountId != null ? (
+            <ContentProfile
+              nickname={friendNickname}
+              status={status}
+              createdAt={createdAt}
+              accountId={accountId}
+              mine={isAuthor}
+              profileImg={profileImageUrl}
+              showWhoseModal={showWhoseModal}
+              setShowWhoseModal={setShowWhoseModal}
+              setWhichPopup={setWhichPopup}
+              feedId={-1}
+            />
+          ) : (
+            <SvgXml width={32} height={32} xml={svgXml.profile.null} />
+          )}
         </View>
-        <View style={[styles.contentView, accountId == null && {justifyContent:'center'}]}>
-          <Text style={[styles.contentText, accountId == null && {color:'#888888'}]}>{content}</Text>
-          {childData != null && accountId != null && <Pressable onPress={()=>setWriteChildCmt(index)}>
-            <SvgXml width={24} height={24} xml={svgXml.icon.newCommentIcon} />
-          </Pressable>}
+        <View
+          style={[
+            styles.contentView,
+            accountId == null && {justifyContent: 'center'},
+          ]}>
+          <Text
+            style={[
+              styles.contentText,
+              accountId == null && {color: '#888888'},
+            ]}>
+            {content}
+          </Text>
+          {childData != null && accountId != null && (
+            <Pressable onPress={() => setWriteChildCmt(index)}>
+              <SvgXml width={24} height={24} xml={svgXml.icon.newCommentIcon} />
+            </Pressable>
+          )}
         </View>
-        {accountId != null && <View style={styles.btnView}>
-          <Pressable 
-            style={[styles.reactToComment, props.isReactEmoticon ? {backgroundColor:'#A55FFF'} : {backgroundColor:'#202020'}]}
-            onPress={()=>reactComment()}
-          >
-            <SvgXml width={20} height={20} xml={svgXml.emoticon.heart} />
-            {isAuthor && <Text style={[styles.reactTxt, props.isReactEmoticon ? {color:'#F0F0F0'} : {color:'#848484',}]}>{props.emoticonCount}</Text>}
-          </Pressable>
-          {isAuthor && <Pressable style={{marginLeft:4}} onPress={()=>setShowContextModal(commentId)}>
-            <SvgXml width={24} height={24} xml={svgXml.icon.menu} />
-          </Pressable>}
-        </View>}
+        {accountId != null && (
+          <View style={styles.btnView}>
+            <Pressable
+              style={[
+                styles.reactToComment,
+                props.isReactEmoticon
+                  ? {backgroundColor: '#A55FFF'}
+                  : {backgroundColor: '#202020'},
+              ]}
+              onPress={() => reactComment()}>
+              <SvgXml width={20} height={20} xml={svgXml.emoticon.heart} />
+              {isAuthor && (
+                <Text
+                  style={[
+                    styles.reactTxt,
+                    props.isReactEmoticon
+                      ? {color: '#F0F0F0'}
+                      : {color: '#848484'},
+                  ]}>
+                  {props.emoticonCount}
+                </Text>
+              )}
+            </Pressable>
+            {isAuthor && (
+              <Pressable
+                style={{marginLeft: 4}}
+                onPress={() => setShowContextModal(commentId)}>
+                <SvgXml width={24} height={24} xml={svgXml.icon.menu} />
+              </Pressable>
+            )}
+          </View>
+        )}
       </View>
       {childCount != 0 && (
         <View>
@@ -183,11 +216,15 @@ export default function CommentItem(props: CommentItemProps) {
             // style={{borderTopWidth:1, borderTopColor:'#ECECEC',}}
             renderItem={({item, index}) => {
               return (
-                <View style={[styles.childCmt, index == childData.length - 1 && {
-                  borderBottomLeftRadius:10,
-                  borderBottomRightRadius:10,
-                }]}>
-                  <CommentItem 
+                <View
+                  style={[
+                    styles.childCmt,
+                    index == childData.length - 1 && {
+                      borderBottomLeftRadius: 10,
+                      borderBottomRightRadius: 10,
+                    },
+                  ]}>
+                  <CommentItem
                     commentId={item.commentId}
                     content={item.content}
                     childCount={0}
@@ -232,12 +269,18 @@ export default function CommentItem(props: CommentItemProps) {
         // style={{width:800}}
         >
       </Modal> */}
-      {showContextModal == commentId && <Pressable 
-        style={{zIndex:1,flex:1, position:'absolute', right:25, top:20}}
-        onPress={(e) => {e.stopPropagation(); deleteComment();}}
-      >
-        <View style={[styles.modalView]}><Text style={styles.modalText}>삭제하기</Text></View>
-      </Pressable>}
+      {showContextModal == commentId && (
+        <Pressable
+          style={{zIndex: 1, flex: 1, position: 'absolute', right: 25, top: 20}}
+          onPress={e => {
+            e.stopPropagation();
+            deleteComment();
+          }}>
+          <View style={[styles.modalView]}>
+            <Text style={styles.modalText}>삭제하기</Text>
+          </View>
+        </Pressable>
+      )}
     </Pressable>
   );
 }
@@ -245,49 +288,49 @@ export default function CommentItem(props: CommentItemProps) {
 const styles = StyleSheet.create({
   contentView: {
     flex: 1,
-    alignItems:'flex-start',
-    justifyContent:'flex-start',
-    paddingLeft:10
+    alignItems: 'flex-start',
+    justifyContent: 'flex-start',
+    paddingLeft: 10,
   },
-  contentText:{
-    color:'#F0F0F0',
-    fontSize:15,
-    fontWeight:'400',
+  contentText: {
+    color: '#F0F0F0',
+    fontSize: 15,
+    fontWeight: '400',
   },
   btnView: {
-    flexDirection:'row',
-    justifyContent:'center',
-    alignItems:'center'
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
-  reactToComment:{
-    borderRadius:20,
+  reactToComment: {
+    borderRadius: 20,
     padding: 4,
-    flexDirection:'row',
-    justifyContent:'center',
-    alignItems:'center'
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
-  reactTxt:{
-    fontSize:12,
-    fontWeight:'500',
-    paddingLeft:2,
-    paddingRight:1
+  reactTxt: {
+    fontSize: 12,
+    fontWeight: '500',
+    paddingLeft: 2,
+    paddingRight: 1,
   },
-  profileView:{
-    flexShrink:1,
+  profileView: {
+    flexShrink: 1,
   },
   childCmt: {
     paddingLeft: 40,
-    backgroundColor:'#333333'
+    backgroundColor: '#333333',
   },
-  modalView:{
-    backgroundColor:'#202020',
-    paddingHorizontal:12,
-    paddingVertical:9,
-    borderRadius:5,
+  modalView: {
+    backgroundColor: '#202020',
+    paddingHorizontal: 12,
+    paddingVertical: 9,
+    borderRadius: 5,
   },
-  modalText:{
-    color:'#F0F0F0',
-    fontSize:15,
-    fontWeight:'400'
-  }
+  modalText: {
+    color: '#F0F0F0',
+    fontSize: 15,
+    fontWeight: '400',
+  },
 });

@@ -147,7 +147,7 @@ export default function Feed(props: FeedProps) {
         feedId={props.feedId}
         whoReact={props.whoReact}
       />
-      {props.deleteFeedId == props.feedId && (
+      {props.deleteFeedId === props.feedId ? (
         <Pressable
           style={{zIndex: 1, flex: 1, position: 'absolute', right: 25, top: 20}}
           onPress={e => {
@@ -160,7 +160,7 @@ export default function Feed(props: FeedProps) {
             </View>
           </Shadow>
         </Pressable>
-      )}
+      ) : null}
     </View>
   );
 }
