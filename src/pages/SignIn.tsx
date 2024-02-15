@@ -575,7 +575,7 @@ export default function SignIn() {
                 <TextInput
                   // ref={inp1}
                   onChangeText={(text: string) => {
-                    setID(text);
+                    setID(text.toLowerCase());
                     if (duplicate != 'YET') setDuplicate('YET');
                   }}
                   // blurOnSubmit={true}

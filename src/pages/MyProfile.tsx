@@ -281,7 +281,7 @@ export default function MyProfile() {
   const idChange = async () => {
     try {
       const response = await axios.post(`${Config.API_URL}/accounts/me/code`, {
-        code: changeIdVal
+        code: changeIdVal,
       });
       console.log(response.data);
       setChangeId(false);
@@ -292,7 +292,7 @@ export default function MyProfile() {
       const errorResponse = (error as AxiosError<{message: string}>).response;
       console.log(errorResponse.data);
     }
-  }
+  };
 
   const checkDuplicate = async () => {
     const reg = new RegExp(`^[a-z0-9]{4,12}$`);
@@ -312,7 +312,8 @@ export default function MyProfile() {
             setDuplicate('CANNOT');
           }
         } catch (error) {
-          const errorResponse = (error as AxiosError<{message: string}>).response;
+          const errorResponse = (error as AxiosError<{message: string}>)
+            .response;
           console.log(errorResponse);
           setDuplicate('CANNOT');
         }
@@ -390,11 +391,7 @@ export default function MyProfile() {
           }>
           <Text style={styles.settingBtnTxt}>의견 남기기</Text>
         </Pressable>
-        <Pressable
-          style={styles.settingBtn}
-          onPress={() =>
-            setChangeId(true)
-          }>
+        <Pressable style={styles.settingBtn} onPress={() => setChangeId(true)}>
           <Text style={styles.settingBtnTxt}>내 아이디 변경하기</Text>
         </Pressable>
         <Pressable
@@ -550,7 +547,10 @@ export default function MyProfile() {
       </Modal>
       <Modal
         isVisible={changeId}
-        onBackButtonPress={()=>{setChangeId(false); setChangeIdVal(myCode);}}
+        onBackButtonPress={() => {
+          setChangeId(false);
+          setChangeIdVal(myCode);
+        }}
         // hasBackdrop={false}
         animationIn="fadeIn" // Set the animation type to fade-in
         animationInTiming={600}
@@ -568,8 +568,9 @@ export default function MyProfile() {
             <View style={styles.idModalBody}>
               <TextInput
                 // ref={inp1}
+                autoCapitalize="none"
                 onChangeText={(text: string) => {
-                  setChangeIdVal(text);
+                  setChangeIdVal(text.toLowerCase());
                   if (duplicate != 'YET') setDuplicate('YET');
                 }}
                 // blurOnSubmit={true}
@@ -613,7 +614,7 @@ export default function MyProfile() {
             )}
             <Pressable
               style={
-                (duplicate == 'CAN' || duplicate == 'SAME')
+                duplicate == 'CAN' || duplicate == 'SAME'
                   ? styles.idModalFooterBtnActive
                   : styles.idModalFooterBtn
               }
