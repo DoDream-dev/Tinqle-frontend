@@ -8,6 +8,7 @@ import {
   Text,
   StyleSheet,
   Pressable,
+  Modal as M,
   TextInput,
   FlatList,
   KeyboardAvoidingView,
@@ -35,7 +36,6 @@ import {useHeaderHeight} from '@react-navigation/elements';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import LottieView from 'lottie-react-native';
 import CommentItem from '../components/CommentItem';
-import AnimatedButton from '../components/AnimatedButton';
 
 type FeedDetailScreenProps = NativeStackScreenProps<
   RootStackParamList,
@@ -690,7 +690,7 @@ export default function FeedDetail({navigation, route}: FeedDetailScreenProps) {
                 // numberOfLines={4}
               />
             </View>
-            <AnimatedButton
+            <Pressable
               style={
                 cmtContent.trim() == '' || uploadBtnLoading
                   ? styles.sendNewCmt
@@ -712,19 +712,19 @@ export default function FeedDetail({navigation, route}: FeedDetailScreenProps) {
               ) : (
                 <Feather name="check" size={24} style={{color: 'white'}} />
               )}
-            </AnimatedButton>
+            </Pressable>
           </View>
           {/* <M visible={deleteModal == feedData.feedId} transparent={true}>
               <Safe>
-                <AnimatedButton onPress={() => setDeleteModal(-1)} style={{flex: 1}}>
+                <Pressable onPress={() => setDeleteModal(-1)} style={{flex: 1}}>
                   <View style={styles.popup}>
                     <Shadow distance={10} startColor="#00000008">
-                      <AnimatedButton onPress={deleteFeed} style={styles.deleteFeed}>
+                      <Pressable onPress={deleteFeed} style={styles.deleteFeed}>
                         <Text style={styles.deleteFeedTxt}>삭제하기</Text>
-                      </AnimatedButton>
+                      </Pressable>
                     </Shadow>
                   </View>
-                </AnimatedButton>
+                </Pressable>
               </Safe>
             </M> */}
 
@@ -736,10 +736,10 @@ export default function FeedDetail({navigation, route}: FeedDetailScreenProps) {
             onSwipeComplete={() => setShowBottomSheet(false)}
             swipeDirection={'down'}
             style={{justifyContent: 'flex-end', margin: 0}}>
-            <AnimatedButton
+            <Pressable
               style={styles.modalBGView}
               onPress={() => setShowBottomSheet(false)}>
-              <AnimatedButton
+              <Pressable
                 style={styles.modalView}
                 onPress={e => e.stopPropagation()}>
                 <View style={styles.whoReacted}>
@@ -786,8 +786,8 @@ export default function FeedDetail({navigation, route}: FeedDetailScreenProps) {
                           .replace(/ /g, '\u00A0')}
                   </Text>
                 </View>
-              </AnimatedButton>
-            </AnimatedButton>
+              </Pressable>
+            </Pressable>
           </Modal>
           {whichPopup === 'deletedFriend' && (
             <ToastScreen

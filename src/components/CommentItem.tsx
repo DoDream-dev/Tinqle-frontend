@@ -18,7 +18,6 @@ import axios, {AxiosError} from 'axios';
 import Config from 'react-native-config';
 import ContentProfile from './ContentProfile';
 import {GestureResponderEvent} from 'react-native';
-import AnimatedButton from '../components/AnimatedButton';
 
 const windowWidth = Dimensions.get('screen').width;
 type childCommentItemProps = {
@@ -121,13 +120,8 @@ export default function CommentItem(props: CommentItemProps) {
   };
 
   return (
-    <AnimatedButton
-      disabled={childData && accountId}
-      onPress={() => {
-        if (!childData || !accountId) {
-          console.log('EEE');
-        }
-      }}
+    <Pressable
+      // onPress={setTouchLocation}
       style={[
         writeChildCmt == index && childData != null
           ? {
@@ -177,14 +171,14 @@ export default function CommentItem(props: CommentItemProps) {
             {content}
           </Text>
           {childData != null && accountId != null && (
-            <AnimatedButton onPress={() => setWriteChildCmt(index)}>
+            <Pressable onPress={() => setWriteChildCmt(index)}>
               <SvgXml width={24} height={24} xml={svgXml.icon.newCommentIcon} />
-            </AnimatedButton>
+            </Pressable>
           )}
         </View>
         {accountId != null && (
           <View style={styles.btnView}>
-            <AnimatedButton
+            <Pressable
               style={[
                 styles.reactToComment,
                 props.isReactEmoticon
@@ -204,13 +198,13 @@ export default function CommentItem(props: CommentItemProps) {
                   {props.emoticonCount}
                 </Text>
               )}
-            </AnimatedButton>
+            </Pressable>
             {isAuthor && (
-              <AnimatedButton
+              <Pressable
                 style={{marginLeft: 4}}
                 onPress={() => setShowContextModal(commentId)}>
                 <SvgXml width={24} height={24} xml={svgXml.icon.menu} />
-              </AnimatedButton>
+              </Pressable>
             )}
           </View>
         )}
@@ -276,7 +270,7 @@ export default function CommentItem(props: CommentItemProps) {
         >
       </Modal> */}
       {showContextModal == commentId && (
-        <AnimatedButton
+        <Pressable
           style={{zIndex: 1, flex: 1, position: 'absolute', right: 25, top: 20}}
           onPress={e => {
             e.stopPropagation();
@@ -285,9 +279,9 @@ export default function CommentItem(props: CommentItemProps) {
           <View style={[styles.modalView]}>
             <Text style={styles.modalText}>삭제하기</Text>
           </View>
-        </AnimatedButton>
+        </Pressable>
       )}
-    </AnimatedButton>
+    </Pressable>
   );
 }
 

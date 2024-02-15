@@ -3,6 +3,7 @@ import React, {useState, useRef, useEffect, useCallback} from 'react';
 import {
   StyleSheet,
   Text,
+  Pressable,
   View,
   Keyboard,
   TextInput,
@@ -213,9 +214,9 @@ export default function FriendProfileModal(props: ProfileProps) {
         setWhichPopup('');
       }}>
       <View style={styles.entire}>
-        {/* <AnimatedButton style={styles.xBtn} onPress={()=>setShowWhoseModal(0)}>
+        {/* <Pressable style={styles.xBtn} onPress={()=>setShowWhoseModal(0)}>
         <Text style={styles.btnTxt}>x</Text>
-      </AnimatedButton> */}
+      </Pressable> */}
 
         {friendshipRelation == 'true' ? (
           <AnimatedButton
@@ -248,42 +249,42 @@ export default function FriendProfileModal(props: ProfileProps) {
           {/* 여기에 friendshipId 필요 */}
           {friendshipRelation == 'true' && (
             <>
-              <AnimatedButton
+              <Pressable
                 style={styles.btn}
                 onPress={async () => {
                   console.log('1:1 대화 기능 넣어야함');
                 }}>
                 <Text style={styles.btnTxt}>대화 하기</Text>
-              </AnimatedButton>
+              </Pressable>
 
               <View style={{width: 8}}></View>
 
-              <AnimatedButton
+              <Pressable
                 style={styles.btn}
                 onPress={async () => await sendWhatAreYouDoing()}>
                 <Text style={styles.btnTxt}>지금 뭐해?</Text>
-              </AnimatedButton>
+              </Pressable>
             </>
           )}
 
           {friendshipRelation == 'false' && (
-            <AnimatedButton
+            <Pressable
               style={styles.btn}
               onPress={() => askFriend(showWhoseModal, name, profileImg)}>
               <Text style={styles.btnTxt}>친구 요청하기</Text>
-            </AnimatedButton>
+            </Pressable>
           )}
           {friendshipRelation == 'waiting' && (
-            <AnimatedButton style={styles.btnGray}>
+            <Pressable style={styles.btnGray}>
               <Text style={styles.btnTxt}>친구 요청됨</Text>
-            </AnimatedButton>
+            </Pressable>
           )}
           {friendshipRelation == 'request' && (
-            <AnimatedButton
+            <Pressable
               style={styles.btn}
               onPress={() => approveFriendship(friendshipRequestId)}>
               <Text style={styles.btnTxt}>친구 요청 수락하기</Text>
-            </AnimatedButton>
+            </Pressable>
           )}
         </View>
 
@@ -298,13 +299,13 @@ export default function FriendProfileModal(props: ProfileProps) {
               inp1.current.focus();
             }
           }}>
-          <AnimatedButton
+          <Pressable
             style={styles.modalBGView}
             onPress={() => {
               setChangeName(false);
               Keyboard.dismiss();
             }}>
-            <AnimatedButton
+            <Pressable
               style={styles.modalView}
               onPress={e => e.stopPropagation()}>
               <Text style={styles.modalTitleTxt}>친구 이름 바꾸기</Text>
@@ -326,16 +327,16 @@ export default function FriendProfileModal(props: ProfileProps) {
                 />
               </View>
               <View style={styles.modalBtnView}>
-                <AnimatedButton
+                <Pressable
                   style={styles.btnGray}
                   onPress={() => {
                     setChangeName(false);
                     setChangeNameVal(name);
                   }}>
                   <Text style={styles.btnTxt}>취소</Text>
-                </AnimatedButton>
+                </Pressable>
                 <View style={{width: 8}}></View>
-                <AnimatedButton
+                <Pressable
                   style={styles.btn}
                   disabled={chageNameVal.trim() == ''}
                   onPress={() => {
@@ -348,10 +349,10 @@ export default function FriendProfileModal(props: ProfileProps) {
                     }
                   }}>
                   <Text style={styles.btnTxt}>완료</Text>
-                </AnimatedButton>
+                </Pressable>
               </View>
-            </AnimatedButton>
-          </AnimatedButton>
+            </Pressable>
+          </Pressable>
         </Modal>
 
         <View
@@ -431,21 +432,21 @@ export default function FriendProfileModal(props: ProfileProps) {
                   }
                 </Text>
                 <View style={styles.btnView}>
-                  <AnimatedButton
+                  <Pressable
                     style={styles.btnGray}
                     onPress={() => {
                       setDeleteFriend(false);
                     }}>
                     <Text style={styles.btnTxt}>취소</Text>
-                  </AnimatedButton>
+                  </Pressable>
                   <View style={{width: 8}}></View>
-                  <AnimatedButton
+                  <Pressable
                     style={styles.btn}
                     onPress={() => {
                       deleteFriends();
                     }}>
                     <Text style={styles.btnTxt}>네, 삭제할게요.</Text>
-                  </AnimatedButton>
+                  </Pressable>
                 </View>
               </View>
               {/* </View> */}
@@ -467,21 +468,21 @@ export default function FriendProfileModal(props: ProfileProps) {
                   }
                 </Text>
                 <View style={styles.btnView}>
-                  <AnimatedButton
+                  <Pressable
                     style={styles.btnGray}
                     onPress={() => {
                       setBlockFriend(false);
                     }}>
                     <Text style={styles.btnTxt}>취소</Text>
-                  </AnimatedButton>
+                  </Pressable>
                   <View style={{width: 8}}></View>
-                  <AnimatedButton
+                  <Pressable
                     style={styles.btn}
                     onPress={() => {
                       blockFriends();
                     }}>
                     <Text style={styles.btnTxt}>네, 차단할게요.</Text>
-                  </AnimatedButton>
+                  </Pressable>
                 </View>
               </View>
               {/* </View> */}
