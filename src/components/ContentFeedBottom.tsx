@@ -3,6 +3,7 @@ import {StyleSheet, View, Text, Pressable} from 'react-native';
 import Emoticons from './Emoticons';
 import {svgXml} from '../../assets/image/svgXml';
 import {SvgXml} from 'react-native-svg';
+import AnimatedButton from './AnimatedButton';
 type EmoticonsProps = {
   smileEmoticonCount: number;
   sadEmoticonCount: number;
@@ -62,13 +63,13 @@ export default function ContentFeedBottom(props: ContentFeedBottomProps) {
           feedId={props.feedId}
         />
         {mine && (
-          <Pressable
+          <AnimatedButton
             style={styles.reactedPeopleBtn}
             onPress={() => {
               props.whoReact(props.feedId);
             }}>
             <SvgXml width={20} height={20} xml={svgXml.icon.reacted} />
-          </Pressable>
+          </AnimatedButton>
         )}
       </View>
     </View>

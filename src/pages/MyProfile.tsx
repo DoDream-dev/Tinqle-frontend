@@ -10,6 +10,7 @@ import {
   Linking,
   Platform,
   ScrollView,
+  useWindowDimensions,
 } from 'react-native';
 import Modal from 'react-native-modal';
 import ToastScreen from '../components/ToastScreen';
@@ -30,6 +31,7 @@ import EncryptedStorage from 'react-native-encrypted-storage';
 import Profile from '../components/Profile';
 import ServicePolicyModal from '../components/ServicePolicyModal';
 import PersonalPolicyModal from '../components/PersonalPolicyModal';
+import AnimatedButton from '../components/AnimatedButton';
 
 // type ProfileScreenProps = NativeStackScreenProps<RootStackParamList, 'Profile'>;
 
@@ -67,6 +69,8 @@ export default function MyProfile() {
   const [profileImg, setProfileImg] = useState(null);
 
   const [duplicate, setDuplicate] = useState('YET');
+
+  const [whichPopup, setWhichPopup] = useState('');
 
   const inp1 = useRef();
   const inp2 = useRef();
@@ -322,380 +326,386 @@ export default function MyProfile() {
   };
 
   return (
-    <ScrollView style={styles.entire}>
-      <View style={styles.profileView}>
-        <Profile
-          status={status}
-          name={name}
-          renameModal={setChangeName}
-          profileImg={profileImg}
-          setProfileImg={setProfileImg}
-          friendshipRelation="me"
-        />
-        <View style={styles.myCodeView}>
-          <Pressable
-            style={styles.myCodeBtn}
-            onPress={() => Clipboard.setString(myCode)}>
-            <Text style={styles.myCodeTxt}>내 아이디: {myCode}</Text>
-            <SvgXml
-              width="15"
-              height="15"
-              xml={svgXml.icon.copyIcon}
-              style={styles.copyIcon}
-            />
-          </Pressable>
-        </View>
-        {/* {whoseProfile == 0 && <View style={styles.btnView}>
-          <Pressable style={styles.btnWhite} onPress={()=>navigation.navigate('MyFriendList')}>
+    <>
+      <ScrollView style={styles.entire}>
+        <View style={styles.profileView}>
+          <Profile
+            status={status}
+            name={name}
+            renameModal={setChangeName}
+            profileImg={profileImg}
+            setProfileImg={setProfileImg}
+            friendshipRelation="me"
+          />
+          <View style={styles.myCodeView}>
+            <AnimatedButton
+              style={styles.myCodeBtn}
+              onPress={() => {
+                Clipboard.setString(myCode);
+                setWhichPopup('copyId');
+              }}>
+              <Text style={styles.myCodeTxt}>내 아이디: {myCode}</Text>
+              <SvgXml
+                width="15"
+                height="15"
+                xml={svgXml.icon.copyIcon}
+                style={styles.copyIcon}
+              />
+            </AnimatedButton>
+          </View>
+          {/* {whoseProfile == 0 && <View style={styles.btnView}>
+          <AnimatedButton style={styles.btnWhite} onPress={()=>navigation.navigate('MyFriendList')}>
             <Text style={styles.btnWhiteTxt}>친구 관리</Text>
-          </Pressable>
-          <Pressable style={styles.btnYellow} onPress={()=>navigation.navigate('NoteBox')}>
+          </AnimatedButton>
+          <AnimatedButton style={styles.btnYellow} onPress={()=>navigation.navigate('NoteBox')}>
             <Text style={styles.btnYellowTxt}>익명 쪽지함</Text>
-          </Pressable>
+          </AnimatedButton>
         </View>}
         {whoseProfile == 1 && <View style={styles.btnView}>
           <View style={{flex:0.4}}></View>
-          <Pressable style={styles.btnYellow} onPress={()=>setWriteNote(true)}>
+          <AnimatedButton style={styles.btnYellow} onPress={()=>setWriteNote(true)}>
             <Text style={styles.btnYellowTxt}>익명 쪽지 보내기</Text>
-          </Pressable>
+          </AnimatedButton>
           <View style={{flex:0.4}}></View>
         </View>}
         {whoseProfile == 2 && <View style={styles.btnView}>
           <View style={{flex:0.4}}></View>
-          {alreadyRequestFriend == 1 ? <Pressable style={styles.btnWhite} disabled={true}>
+          {alreadyRequestFriend == 1 ? <AnimatedButton style={styles.btnWhite} disabled={true}>
             <Text style={styles.btnWhiteTxt}>친구 수락 대기 중</Text>
-          </Pressable> :
-          <Pressable style={styles.btnYellow} onPress={()=>setAskFriendMsg(true)}>
+          </AnimatedButton> :
+          <AnimatedButton style={styles.btnYellow} onPress={()=>setAskFriendMsg(true)}>
             <Text style={styles.btnYellowTxt}>친구 요청하기</Text>
-          </Pressable>}
+          </AnimatedButton>}
           <View style={{flex:0.4}}></View>
         </View>} */}
-      </View>
+        </View>
 
-      <View style={styles.settingView}>
-        <Pressable
-          style={styles.settingBtn}
-          onPress={() =>
-            Linking.openURL(
-              'https://understood-blender-196.notion.site/ef94bd7843e94cc0ab57521878b482e0?pvs=4',
-            )
-          }>
-          <Text style={styles.settingBtnTxt}>공지사항</Text>
-        </Pressable>
-        <Pressable
-          style={styles.settingBtn}
-          onPress={() =>
-            Linking.openURL(
-              'https://docs.google.com/forms/d/e/1FAIpQLSeAsQ-hqAzVdrgmIS5re1MEP_yjxWwhXtg_RT9qKgW9HyBbZQ/viewform?usp=sf_link',
-            )
-          }>
-          <Text style={styles.settingBtnTxt}>의견 남기기</Text>
-        </Pressable>
-        <Pressable style={styles.settingBtn} onPress={() => setChangeId(true)}>
-          <Text style={styles.settingBtnTxt}>내 아이디 변경하기</Text>
-        </Pressable>
-        <Pressable
-          style={styles.settingBtn}
-          onPress={() =>
-            Linking.openURL(
-              'https://docs.google.com/forms/d/1qmmMGz6k5l4nVgTpvazSxXSV8XXoNH0X43ocvu45_6A/edit?usp=drivesdk',
-            )
-          }>
-          <Text style={styles.settingBtnTxt}>신고하기</Text>
-        </Pressable>
-        <Pressable
-          style={styles.settingBtn}
-          onPress={() => {
-            setPolicy('service');
-          }}>
-          <Text style={styles.settingBtnTxt}>서비스 이용약관</Text>
-        </Pressable>
-        <Pressable
-          style={styles.settingBtn}
-          onPress={() => {
-            setPolicy('personal');
-          }}>
-          <Text style={styles.settingBtnTxt}>개인정보 처리방침</Text>
-        </Pressable>
-        <Pressable style={styles.settingBtn} onPress={LogOut}>
-          <Text style={styles.settingBtnTxt}>로그아웃</Text>
-        </Pressable>
-        <Pressable
-          style={styles.settingBtn}
-          onPress={() => setDeleteAccount(true)}>
-          <Text style={styles.settingBtnTxt}>계정 삭제</Text>
-        </Pressable>
-        <Pressable
-          style={[
-            styles.settingBtn,
-            {flexDirection: 'row', justifyContent: 'space-between'},
-          ]}>
-          <Text style={styles.settingBtnTxt}>앱 버전</Text>
-          <Text style={[styles.settingBtnTxt, {color: '#888888'}]}>
-            {version}
-          </Text>
-        </Pressable>
-      </View>
+        <View style={styles.settingView}>
+          <AnimatedButton
+            style={styles.settingBtn}
+            onPress={() =>
+              Linking.openURL(
+                'https://understood-blender-196.notion.site/ef94bd7843e94cc0ab57521878b482e0?pvs=4',
+              )
+            }>
+            <Text style={styles.settingBtnTxt}>공지사항</Text>
+          </AnimatedButton>
+          <AnimatedButton
+            style={styles.settingBtn}
+            onPress={() =>
+              Linking.openURL(
+                'https://docs.google.com/forms/d/e/1FAIpQLSeAsQ-hqAzVdrgmIS5re1MEP_yjxWwhXtg_RT9qKgW9HyBbZQ/viewform?usp=sf_link',
+              )
+            }>
+            <Text style={styles.settingBtnTxt}>의견 남기기</Text>
+          </AnimatedButton>
+          <AnimatedButton
+            style={styles.settingBtn}
+            onPress={() => setChangeId(true)}>
+            <Text style={styles.settingBtnTxt}>내 아이디 변경하기</Text>
+          </AnimatedButton>
+          <AnimatedButton
+            style={styles.settingBtn}
+            onPress={() =>
+              Linking.openURL(
+                'https://docs.google.com/forms/d/1qmmMGz6k5l4nVgTpvazSxXSV8XXoNH0X43ocvu45_6A/edit?usp=drivesdk',
+              )
+            }>
+            <Text style={styles.settingBtnTxt}>신고하기</Text>
+          </AnimatedButton>
+          <AnimatedButton
+            style={styles.settingBtn}
+            onPress={() => {
+              setPolicy('service');
+            }}>
+            <Text style={styles.settingBtnTxt}>서비스 이용약관</Text>
+          </AnimatedButton>
+          <AnimatedButton
+            style={styles.settingBtn}
+            onPress={() => {
+              setPolicy('personal');
+            }}>
+            <Text style={styles.settingBtnTxt}>개인정보 처리방침</Text>
+          </AnimatedButton>
+          <AnimatedButton style={styles.settingBtn} onPress={LogOut}>
+            <Text style={styles.settingBtnTxt}>로그아웃</Text>
+          </AnimatedButton>
+          <AnimatedButton
+            style={styles.settingBtn}
+            onPress={() => setDeleteAccount(true)}>
+            <Text style={styles.settingBtnTxt}>계정 삭제</Text>
+          </AnimatedButton>
+          <AnimatedButton
+            style={[
+              styles.settingBtn,
+              {flexDirection: 'row', justifyContent: 'space-between'},
+            ]}>
+            <Text style={styles.settingBtnTxt}>앱 버전</Text>
+            <Text style={[styles.settingBtnTxt, {color: '#888888'}]}>
+              {version}
+            </Text>
+          </AnimatedButton>
+        </View>
 
-      {/* modal for policy */}
-      <ServicePolicyModal policy={policy} setPolicy={setPolicy} />
-      <PersonalPolicyModal policy={policy} setPolicy={setPolicy} />
+        {/* modal for policy */}
+        <ServicePolicyModal policy={policy} setPolicy={setPolicy} />
+        <PersonalPolicyModal policy={policy} setPolicy={setPolicy} />
 
-      {/* modal for changing name */}
-      <Modal
-        isVisible={chageName}
-        onBackButtonPress={() => setChangeName(false)}
-        avoidKeyboard={true}
-        backdropColor="#101010"
-        backdropOpacity={0.5}
-        onModalShow={() => {
-          if (Platform.OS === 'android') {
-            inp1.current.focus();
-          }
-        }}>
-        <Pressable
-          style={styles.modalBGView}
-          onPress={() => {
-            setChangeName(false);
-            Keyboard.dismiss();
+        {/* modal for changing name */}
+        <Modal
+          isVisible={chageName}
+          onBackButtonPress={() => setChangeName(false)}
+          avoidKeyboard={true}
+          backdropColor="#101010"
+          backdropOpacity={0.5}
+          onModalShow={() => {
+            if (Platform.OS === 'android') {
+              inp1.current.focus();
+            }
           }}>
-          <Pressable
-            style={styles.modalView}
-            onPress={e => e.stopPropagation()}>
-            <Text style={styles.modalTitleTxt}>내 이름 변경하기</Text>
-            <View style={styles.changeView}>
-              <TextInput
-                ref={inp1}
-                style={styles.nameChangeTxtInput}
-                onChangeText={(text: string) => {
-                  setChangeNameVal(text);
-                }}
-                blurOnSubmit={true}
-                maxLength={10}
-                value={changeNameVal}
-                autoFocus={Platform.OS === 'ios' ? true : false}
-                onSubmitEditing={() => {
-                  rename(changeNameVal.trim());
-                }}
-                onFocus={lastFocus}
-              />
-            </View>
-            <View style={styles.modalBtnView}>
-              <Pressable
-                style={styles.btnGray}
-                onPress={() => {
-                  setChangeName(false);
-                  setChangeNameVal(name);
-                }}>
-                <Text style={styles.btnTxt}>취소</Text>
-              </Pressable>
-              <View style={{width: 8}}></View>
-              <Pressable
-                style={styles.btn}
-                disabled={changeNameVal.trim() == ''}
-                onPress={() => {
-                  if (changeNameVal != '') {
-                    if (changeNameVal == name) {
-                      setChangeName(false);
-                    } else {
-                      rename(changeNameVal.trim());
+          <AnimatedButton
+            style={styles.modalBGView}
+            onPress={() => {
+              setChangeName(false);
+              Keyboard.dismiss();
+            }}>
+            <AnimatedButton
+              style={styles.modalView}
+              onPress={e => e.stopPropagation()}>
+              <Text style={styles.modalTitleTxt}>내 이름 변경하기</Text>
+              <View style={styles.changeView}>
+                <TextInput
+                  ref={inp1}
+                  style={styles.nameChangeTxtInput}
+                  onChangeText={(text: string) => {
+                    setChangeNameVal(text);
+                  }}
+                  blurOnSubmit={true}
+                  maxLength={10}
+                  value={changeNameVal}
+                  autoFocus={Platform.OS === 'ios' ? true : false}
+                  onSubmitEditing={() => {
+                    rename(changeNameVal.trim());
+                  }}
+                  onFocus={lastFocus}
+                />
+              </View>
+              <View style={styles.modalBtnView}>
+                <AnimatedButton
+                  style={styles.btnGray}
+                  onPress={() => {
+                    setChangeName(false);
+                    setChangeNameVal(name);
+                  }}>
+                  <Text style={styles.btnTxt}>취소</Text>
+                </AnimatedButton>
+                <View style={{width: 8}}></View>
+                <AnimatedButton
+                  style={styles.btn}
+                  disabled={changeNameVal.trim() == ''}
+                  onPress={() => {
+                    if (changeNameVal != '') {
+                      if (changeNameVal == name) {
+                        setChangeName(false);
+                      } else {
+                        rename(changeNameVal.trim());
+                      }
                     }
-                  }
-                }}>
-                <Text style={styles.btnTxt}>완료</Text>
-              </Pressable>
-            </View>
-          </Pressable>
-        </Pressable>
-      </Modal>
-      <Modal
-        isVisible={deleteAccount}
-        onBackButtonPress={() => setDeleteAccount(false)}
-        avoidKeyboard={true}
-        backdropColor="#101010"
-        backdropOpacity={0.5}>
-        <Pressable
-          style={styles.modalBGView}
-          onPress={() => {
-            setDeleteAccount(false);
-            Keyboard.dismiss();
-          }}>
-          <Pressable
-            style={styles.modalView}
-            onPress={e => e.stopPropagation()}>
-            <Text style={styles.modalTitleTxt}>계정을 삭제하시겠어요?</Text>
-            <Text style={styles.modalContentTxt}>떠나신다니 아쉬워요.</Text>
-            <View style={styles.modalBtnView}>
-              <Pressable
-                style={styles.btnGray}
-                onPress={() => {
-                  setDeleteAccount(false);
-                }}>
-                <Text style={styles.btnTxt}>취소</Text>
-              </Pressable>
-              <View style={{width: 8}}></View>
-              <Pressable
-                style={styles.btn}
-                onPress={() => {
-                  revoke();
-                }}>
-                <Text style={styles.btnTxt}>네, 삭제할게요.</Text>
-              </Pressable>
-            </View>
-          </Pressable>
-        </Pressable>
-      </Modal>
-      <Modal
-        isVisible={changeId}
-        onBackButtonPress={() => {
-          setChangeId(false);
-          setChangeIdVal(myCode);
-        }}
-        // hasBackdrop={false}
-        animationIn="fadeIn" // Set the animation type to fade-in
-        animationInTiming={600}
-        onDismiss={() => setChangeId(false)}
-        style={{margin: 0}}>
-        <Pressable
-          onPress={() => setChangeId(false)}
-          style={styles.modalBGView2}>
-          <Pressable
-            style={[styles.modalView2 /*{width:windowWidth}*/]}
-            onPress={e => e.stopPropagation()}>
-            <View style={styles.idModalHeader}>
-              <Text style={styles.idModalHeaderTxt}>내 아이디 정하기</Text>
-            </View>
-            <View style={styles.idModalBody}>
-              <TextInput
-                // ref={inp1}
-                autoCapitalize="none"
-                onChangeText={(text: string) => {
-                  setChangeIdVal(text.toLowerCase());
-                  if (duplicate != 'YET') setDuplicate('YET');
-                }}
-                // blurOnSubmit={true}
-                maxLength={12}
-                value={changeIdVal}
-                // autoFocus={true}
-                // onSubmitEditing={()=>{
-                //   if (whoseProfile == 0) {rename(chageNameVal.trim(), undefined);}
-                //   else {rename(chageNameVal.trim(), accountId);}
-                // }}
-                style={styles.idModalBodyTxtInp}
-              />
-              <Pressable
-                style={styles.idModalBodyBtn}
-                onPress={() => {
-                  checkDuplicate();
-                }}>
-                <Text style={styles.idModalBodyBtnTxt}>중복확인</Text>
-              </Pressable>
-            </View>
-            {duplicate == 'YET' && <View style={{height: 12}}></View>}
-            {duplicate == 'CANNOT' && (
-              <Text style={styles.idModalBodyBtnTxt}>
-                이미 존재하는 아이디예요.
-              </Text>
-            )}
-            {duplicate == 'CAN' && (
-              <Text style={styles.idModalBodyBtnTxt}>
-                사용할 수 있는 아이디예요.
-              </Text>
-            )}
-            {duplicate == 'NO' && (
-              <Text style={styles.idModalBodyBtnTxt}>
-                아이디는 4~12자, 영문 소문자나 숫자만 가능합니다.
-              </Text>
-            )}
-            {duplicate == 'SAME' && (
-              <Text style={styles.idModalBodyBtnTxt}>
-                사용할 수 있는 아이디예요.
-              </Text>
-            )}
-            <Pressable
-              style={
-                duplicate == 'CAN' || duplicate == 'SAME'
-                  ? styles.idModalFooterBtnActive
-                  : styles.idModalFooterBtn
-              }
-              onPress={() => {
-                if (duplicate == 'SAME') {
-                  setChangeId(false);
-                } else {
-                  idChange();
+                  }}>
+                  <Text style={styles.btnTxt}>완료</Text>
+                </AnimatedButton>
+              </View>
+            </AnimatedButton>
+          </AnimatedButton>
+        </Modal>
+        <Modal
+          isVisible={deleteAccount}
+          onBackButtonPress={() => setDeleteAccount(false)}
+          avoidKeyboard={true}
+          backdropColor="#101010"
+          backdropOpacity={0.5}>
+          <AnimatedButton
+            style={styles.modalBGView}
+            onPress={() => {
+              setDeleteAccount(false);
+              Keyboard.dismiss();
+            }}>
+            <AnimatedButton
+              style={styles.modalView}
+              onPress={e => e.stopPropagation()}>
+              <Text style={styles.modalTitleTxt}>계정을 삭제하시겠어요?</Text>
+              <Text style={styles.modalContentTxt}>떠나신다니 아쉬워요.</Text>
+              <View style={styles.modalBtnView}>
+                <AnimatedButton
+                  style={styles.btnGray}
+                  onPress={() => {
+                    setDeleteAccount(false);
+                  }}>
+                  <Text style={styles.btnTxt}>취소</Text>
+                </AnimatedButton>
+                <View style={{width: 8}}></View>
+                <AnimatedButton
+                  style={styles.btn}
+                  onPress={() => {
+                    revoke();
+                  }}>
+                  <Text style={styles.btnTxt}>네, 삭제할게요.</Text>
+                </AnimatedButton>
+              </View>
+            </AnimatedButton>
+          </AnimatedButton>
+        </Modal>
+        <Modal
+          isVisible={changeId}
+          onBackButtonPress={() => {
+            setChangeId(false);
+            setChangeIdVal(myCode);
+          }}
+          // hasBackdrop={false}
+          animationIn="fadeIn" // Set the animation type to fade-in
+          animationInTiming={600}
+          onDismiss={() => setChangeId(false)}
+          style={{margin: 0}}>
+          <AnimatedButton
+            onPress={() => setChangeId(false)}
+            style={styles.modalBGView2}>
+            <AnimatedButton
+              style={[styles.modalView2 /*{width:windowWidth}*/]}
+              onPress={e => e.stopPropagation()}>
+              <View style={styles.idModalHeader}>
+                <Text style={styles.idModalHeaderTxt}>내 아이디 정하기</Text>
+              </View>
+              <View style={styles.idModalBody}>
+                <TextInput
+                  // ref={inp1}
+                  autoCapitalize="none"
+                  onChangeText={(text: string) => {
+                    setChangeIdVal(text.toLowerCase());
+                    if (duplicate != 'YET') setDuplicate('YET');
+                  }}
+                  // blurOnSubmit={true}
+                  maxLength={12}
+                  value={changeIdVal}
+                  // autoFocus={true}
+                  // onSubmitEditing={()=>{
+                  //   if (whoseProfile == 0) {rename(chageNameVal.trim(), undefined);}
+                  //   else {rename(chageNameVal.trim(), accountId);}
+                  // }}
+                  style={styles.idModalBodyTxtInp}
+                />
+                <AnimatedButton
+                  style={styles.idModalBodyBtn}
+                  onPress={() => {
+                    checkDuplicate();
+                  }}>
+                  <Text style={styles.idModalBodyBtnTxt}>중복확인</Text>
+                </AnimatedButton>
+              </View>
+              {duplicate == 'YET' && <View style={{height: 12}}></View>}
+              {duplicate == 'CANNOT' && (
+                <Text style={styles.idModalBodyBtnTxt}>
+                  이미 존재하는 아이디예요.
+                </Text>
+              )}
+              {duplicate == 'CAN' && (
+                <Text style={styles.idModalBodyBtnTxt}>
+                  사용할 수 있는 아이디예요.
+                </Text>
+              )}
+              {duplicate == 'NO' && (
+                <Text style={styles.idModalBodyBtnTxt}>
+                  아이디는 4~12자, 영문 소문자나 숫자만 가능합니다.
+                </Text>
+              )}
+              {duplicate == 'SAME' && (
+                <Text style={styles.idModalBodyBtnTxt}>
+                  사용할 수 있는 아이디예요.
+                </Text>
+              )}
+              <AnimatedButton
+                style={
+                  duplicate == 'CAN' || duplicate == 'SAME'
+                    ? styles.idModalFooterBtnActive
+                    : styles.idModalFooterBtn
                 }
-              }}
-              disabled={duplicate != 'CAN' && duplicate != 'SAME'}>
-              <Text style={styles.idModalFooterBtnTxt}>완료</Text>
-            </Pressable>
-          </Pressable>
-        </Pressable>
-      </Modal>
-      {/* modal for changin status */}
-      {/* <Modal isVisible={changeStatus} backdropColor='#222222' backdropOpacity={0.5} onBackButtonPress={()=>setChangeStatus(false)}>
-        <Pressable style={styles.modalBGView} onPress={()=>{Keyboard.dismiss(); setChangeStatus(false);}}>
-          <Pressable onPress={(e)=>e.stopPropagation()} style={styles.modalView2}>
-            <Pressable onPress={()=>{setChangeStatus(false); postStatus('smile');}} style={status == 'smile' ? styles.statusSelected : styles.statusSelect}>
+                onPress={() => {
+                  if (duplicate == 'SAME') {
+                    setChangeId(false);
+                  } else {
+                    idChange();
+                  }
+                }}
+                disabled={duplicate != 'CAN' && duplicate != 'SAME'}>
+                <Text style={styles.idModalFooterBtnTxt}>완료</Text>
+              </AnimatedButton>
+            </AnimatedButton>
+          </AnimatedButton>
+        </Modal>
+        {/* modal for changin status */}
+        {/* <Modal isVisible={changeStatus} backdropColor='#222222' backdropOpacity={0.5} onBackButtonPress={()=>setChangeStatus(false)}>
+        <AnimatedButton style={styles.modalBGView} onPress={()=>{Keyboard.dismiss(); setChangeStatus(false);}}>
+          <AnimatedButton onPress={(e)=>e.stopPropagation()} style={styles.modalView2}>
+            <AnimatedButton onPress={()=>{setChangeStatus(false); postStatus('smile');}} style={status == 'smile' ? styles.statusSelected : styles.statusSelect}>
               <SvgXml width={60} height={60} xml={svgXml.status.smile} />
-            </Pressable>
-            <Pressable onPress={()=>{setChangeStatus(false); postStatus('happy');}} style={status == 'happy' ? styles.statusSelected : styles.statusSelect}>
+            </AnimatedButton>
+            <AnimatedButton onPress={()=>{setChangeStatus(false); postStatus('happy');}} style={status == 'happy' ? styles.statusSelected : styles.statusSelect}>
               <SvgXml width={60} height={60} xml={svgXml.status.happy} />
-            </Pressable>
-            <Pressable onPress={()=>{setChangeStatus(false); postStatus('sad');}} style={status == 'sad' ? styles.statusSelected : styles.statusSelect}>
+            </AnimatedButton>
+            <AnimatedButton onPress={()=>{setChangeStatus(false); postStatus('sad');}} style={status == 'sad' ? styles.statusSelected : styles.statusSelect}>
               <SvgXml width={60} height={60} xml={svgXml.status.sad} />
-            </Pressable>
-            <Pressable onPress={()=>{setChangeStatus(false); postStatus('mad');}} style={status == 'mad' ? styles.statusSelected : styles.statusSelect}>
+            </AnimatedButton>
+            <AnimatedButton onPress={()=>{setChangeStatus(false); postStatus('mad');}} style={status == 'mad' ? styles.statusSelected : styles.statusSelect}>
               <SvgXml width={60} height={60} xml={svgXml.status.mad} />
-            </Pressable>
-            <Pressable onPress={()=>{setChangeStatus(false); postStatus('exhausted');}} style={status == 'exhausted' ? styles.statusSelected : styles.statusSelect}>
+            </AnimatedButton>
+            <AnimatedButton onPress={()=>{setChangeStatus(false); postStatus('exhausted');}} style={status == 'exhausted' ? styles.statusSelected : styles.statusSelect}>
               <SvgXml width={60} height={60} xml={svgXml.status.exhauseted} />
-            </Pressable>
-            <Pressable onPress={()=>{setChangeStatus(false); postStatus('coffee');}} style={status == 'coffee' ? styles.statusSelected : styles.statusSelect}>
+            </AnimatedButton>
+            <AnimatedButton onPress={()=>{setChangeStatus(false); postStatus('coffee');}} style={status == 'coffee' ? styles.statusSelected : styles.statusSelect}>
               <SvgXml width={60} height={60} xml={svgXml.status.coffee} />
-            </Pressable>
-            <Pressable onPress={()=>{setChangeStatus(false); postStatus('meal');}} style={status == 'meal' ? styles.statusSelected : styles.statusSelect}>
+            </AnimatedButton>
+            <AnimatedButton onPress={()=>{setChangeStatus(false); postStatus('meal');}} style={status == 'meal' ? styles.statusSelected : styles.statusSelect}>
               <SvgXml width={60} height={60} xml={svgXml.status.meal} />
-            </Pressable>
-            <Pressable onPress={()=>{setChangeStatus(false); postStatus('alcohol');}} style={status == 'alcohol' ? styles.statusSelected : styles.statusSelect}>
+            </AnimatedButton>
+            <AnimatedButton onPress={()=>{setChangeStatus(false); postStatus('alcohol');}} style={status == 'alcohol' ? styles.statusSelected : styles.statusSelect}>
               <SvgXml width={60} height={60} xml={svgXml.status.alcohol} />
-            </Pressable>
-            <Pressable onPress={()=>{setChangeStatus(false); postStatus('chicken');}} style={status == 'chicken' ? styles.statusSelected : styles.statusSelect}>
+            </AnimatedButton>
+            <AnimatedButton onPress={()=>{setChangeStatus(false); postStatus('chicken');}} style={status == 'chicken' ? styles.statusSelected : styles.statusSelect}>
               <SvgXml width={60} height={60} xml={svgXml.status.chicken} />
-            </Pressable>
-            <Pressable onPress={()=>{setChangeStatus(false); postStatus('sleep');}} style={status == 'sleep' ? styles.statusSelected : styles.statusSelect}>
+            </AnimatedButton>
+            <AnimatedButton onPress={()=>{setChangeStatus(false); postStatus('sleep');}} style={status == 'sleep' ? styles.statusSelected : styles.statusSelect}>
               <SvgXml width={60} height={60} xml={svgXml.status.sleep} />
-            </Pressable>
-            <Pressable onPress={()=>{setChangeStatus(false); postStatus('work');}} style={status == 'work' ? styles.statusSelected : styles.statusSelect}>
+            </AnimatedButton>
+            <AnimatedButton onPress={()=>{setChangeStatus(false); postStatus('work');}} style={status == 'work' ? styles.statusSelected : styles.statusSelect}>
               <SvgXml width={60} height={60} xml={svgXml.status.work} />
-            </Pressable>
-            <Pressable onPress={()=>{setChangeStatus(false); postStatus('study');}} style={status == 'study' ? styles.statusSelected : styles.statusSelect}>
+            </AnimatedButton>
+            <AnimatedButton onPress={()=>{setChangeStatus(false); postStatus('study');}} style={status == 'study' ? styles.statusSelected : styles.statusSelect}>
               <SvgXml width={60} height={60} xml={svgXml.status.study} />
-            </Pressable>
-            <Pressable onPress={()=>{setChangeStatus(false); postStatus('movie');}} style={status == 'movie' ? styles.statusSelected : styles.statusSelect}>
+            </AnimatedButton>
+            <AnimatedButton onPress={()=>{setChangeStatus(false); postStatus('movie');}} style={status == 'movie' ? styles.statusSelected : styles.statusSelect}>
               <SvgXml width={60} height={60} xml={svgXml.status.movie} />
-            </Pressable>
-            <Pressable onPress={()=>{setChangeStatus(false); postStatus('move');}} style={status == 'move' ? styles.statusSelected : styles.statusSelect}>
+            </AnimatedButton>
+            <AnimatedButton onPress={()=>{setChangeStatus(false); postStatus('move');}} style={status == 'move' ? styles.statusSelected : styles.statusSelect}>
               <SvgXml width={60} height={60} xml={svgXml.status.move} />
-            </Pressable>
-            <Pressable onPress={()=>{setChangeStatus(false); postStatus('dance');}} style={status == 'dance' ? styles.statusSelected : styles.statusSelect}>
+            </AnimatedButton>
+            <AnimatedButton onPress={()=>{setChangeStatus(false); postStatus('dance');}} style={status == 'dance' ? styles.statusSelected : styles.statusSelect}>
               <SvgXml width={60} height={60} xml={svgXml.status.dance} />
-            </Pressable>
-            <Pressable onPress={()=>{setChangeStatus(false); postStatus('read');}} style={status == 'read' ? styles.statusSelected : styles.statusSelect}>
+            </AnimatedButton>
+            <AnimatedButton onPress={()=>{setChangeStatus(false); postStatus('read');}} style={status == 'read' ? styles.statusSelected : styles.statusSelect}>
               <SvgXml width={60} height={60} xml={svgXml.status.read} />
-            </Pressable>
-            <Pressable onPress={()=>{setChangeStatus(false); postStatus('walk');}} style={status == 'walk' ? styles.statusSelected : styles.statusSelect}>
+            </AnimatedButton>
+            <AnimatedButton onPress={()=>{setChangeStatus(false); postStatus('walk');}} style={status == 'walk' ? styles.statusSelected : styles.statusSelect}>
               <SvgXml width={60} height={60} xml={svgXml.status.walk} />
-            </Pressable>
-            <Pressable onPress={()=>{setChangeStatus(false); postStatus('travel');}} style={status == 'travel' ? styles.statusSelected : styles.statusSelect}>
+            </AnimatedButton>
+            <AnimatedButton onPress={()=>{setChangeStatus(false); postStatus('travel');}} style={status == 'travel' ? styles.statusSelected : styles.statusSelect}>
               <SvgXml width={60} height={60} xml={svgXml.status.travel} />
-            </Pressable>
-          </Pressable>
-        </Pressable>
+            </AnimatedButton>
+          </AnimatedButton>
+        </AnimatedButton>
       </Modal> */}
-      {/* modal for sending msg */}
-      {/* <Modal isVisible={whoseProfile == 1 ? writeNote : askFriendMsg} onBackButtonPress={()=>{if (whoseProfile == 1) setWriteNote(false); else setAskFriendMsg(false)}} avoidKeyboard={true} backdropColor='#222222' backdropOpacity={0.5} onModalShow={()=>{inp2?.current?.focus();}}>
-        <Pressable style={styles.modalBGView} onPress={()=>{Keyboard.dismiss(); if(whoseProfile == 1) setWriteNote(false); else setAskFriendMsg(false);}}>
-          <Pressable onPress={(e)=>e.stopPropagation()} style={styles.modalView}>
+        {/* modal for sending msg */}
+        {/* <Modal isVisible={whoseProfile == 1 ? writeNote : askFriendMsg} onBackButtonPress={()=>{if (whoseProfile == 1) setWriteNote(false); else setAskFriendMsg(false)}} avoidKeyboard={true} backdropColor='#222222' backdropOpacity={0.5} onModalShow={()=>{inp2?.current?.focus();}}>
+        <AnimatedButton style={styles.modalBGView} onPress={()=>{Keyboard.dismiss(); if(whoseProfile == 1) setWriteNote(false); else setAskFriendMsg(false);}}>
+          <AnimatedButton onPress={(e)=>e.stopPropagation()} style={styles.modalView}>
             {whoseProfile == 1 && <Text style={styles.modalTitleTxt}>익명 쪽지 보내기</Text>}
             {whoseProfile == 2 && <Text style={styles.modalTitleTxt}>{name}</Text>}
             {whoseProfile == 2 && <Text style={styles.modalContentTxt}>친구가 나를 알아볼 수 있도록 인사를 건네주세요!</Text>}
@@ -719,22 +729,22 @@ export default function MyProfile() {
               />
             </View>
             <View style={styles.modalBtnView}>
-              <Pressable style={styles.btnWhite} onPress={()=>{
+              <AnimatedButton style={styles.btnWhite} onPress={()=>{
                 if (whoseProfile == 1) setWriteNote(false);
                 else setAskFriendMsg(false);
               }}>
                 {whoseProfile == 1 && <Text style={styles.btnWhiteTxt}>취소</Text>}
                 {whoseProfile == 2 && <Text style={styles.btnWhiteTxt}>닫기</Text>}
-              </Pressable>
-              {whoseProfile == 1 && <Pressable style={styles.btnYellow} onPress={()=>{if (writeNoteVal != '') sendNote();}}>
+              </AnimatedButton>
+              {whoseProfile == 1 && <AnimatedButton style={styles.btnYellow} onPress={()=>{if (writeNoteVal != '') sendNote();}}>
                 <Text style={styles.btnYellowTxt}>완료</Text>
-              </Pressable>}
-              {whoseProfile == 2 && <Pressable style={styles.btnYellowBig} onPress={()=>{if (askFriendMsgVal != '') askFriend();}}>
+              </AnimatedButton>}
+              {whoseProfile == 2 && <AnimatedButton style={styles.btnYellowBig} onPress={()=>{if (askFriendMsgVal != '') askFriend();}}>
                 <Text style={styles.btnYellowTxt}>친구요청 보내기</Text>
-              </Pressable>}
+              </AnimatedButton>}
             </View>
-          </Pressable>
-        </Pressable>
+          </AnimatedButton>
+        </AnimatedButton>
       </Modal>
       {whoseProfile == 1 && popup && <ToastScreen
         height = {21}
@@ -748,7 +758,21 @@ export default function MyProfile() {
         onClose={()=>setPopup(false)}
         message={`${name}님께 친구 요청을 보냈어요!`}
       />} */}
-    </ScrollView>
+      </ScrollView>
+      <View
+        style={{
+          alignItems: 'center',
+        }}>
+        {whichPopup == 'copyId' && (
+          <ToastScreen
+            height={21}
+            marginBottom={48}
+            onClose={() => setWhichPopup('')}
+            message={`Id가 클립보드에 복사되었어요!`}
+          />
+        )}
+      </View>
+    </>
   );
 }
 

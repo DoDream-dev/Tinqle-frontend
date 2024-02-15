@@ -1,7 +1,6 @@
 /* eslint-disable react/no-unstable-nested-components */
 import React, {useEffect, useState, useCallback, useRef} from 'react';
 import {
-  Pressable,
   View,
   Alert,
   StyleSheet,
@@ -29,6 +28,7 @@ import Config from 'react-native-config';
 import {useNavigation} from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import messaging from '@react-native-firebase/messaging';
+import AnimatedButton from '../components/AnimatedButton';
 
 export type FeedStackParamList = {
   FeedList: undefined;
@@ -265,9 +265,9 @@ export default function FeedNavigation() {
           // ),
           // headerTitleAlign: 'center',
           // headerLeft: () => (
-          //   <Pressable onPress={()=>navigation.navigate('SearchFriends')} style={{marginLeft:2}}>
+          //   <AnimatedButton onPress={()=>navigation.navigate('SearchFriends')} style={{marginLeft:2}}>
           //     <SvgXml width={24} height={24} xml={svgXml.icon.addfriend}/>
-          //   </Pressable>
+          //   </AnimatedButton>
           // ),
           // headerStyle: {
           //   backgroundColor: '#202020',
@@ -286,9 +286,9 @@ export default function FeedNavigation() {
           title: '',
           headerRight: () => <View></View>,
           headerLeft: () => (
-            <Pressable onPress={() => navigation.goBack()}>
+            <AnimatedButton onPress={() => navigation.goBack()}>
               <AntDesign name="arrowleft" size={24} color={'#F0F0F0'} />
-            </Pressable>
+            </AnimatedButton>
           ),
           headerStyle: {
             backgroundColor: '#202020',
@@ -308,16 +308,16 @@ export default function FeedNavigation() {
           },
           headerShadowVisible: true,
           headerLeft: () => (
-            <Pressable
+            <AnimatedButton
               onPress={() => {
                 navigation.goBack();
                 // setIsEnabled(!isEnabled);
               }}>
               <AntDesign name="arrowleft" size={24} color={'#848484'} />
-            </Pressable>
+            </AnimatedButton>
           ),
           headerRight: () => (
-            <Pressable
+            <AnimatedButton
               onPress={() => {
                 pushNotiChange();
               }}
@@ -338,7 +338,7 @@ export default function FeedNavigation() {
                   <Text style={styles.toggleInactiveTxt}>OFF</Text>
                 </>
               )}
-            </Pressable>
+            </AnimatedButton>
           ),
           headerStyle: {
             backgroundColor: '#202020',

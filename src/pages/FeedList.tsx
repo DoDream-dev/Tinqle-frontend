@@ -38,6 +38,7 @@ import LottieView from 'lottie-react-native';
 import {StatusBarHeight} from '../components/Safe';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {fcmService} from '../push_fcm';
+import AnimatedButton from '../components/AnimatedButton';
 
 type FeedListScreenProps = NativeStackScreenProps<
   RootStackParamList,
@@ -156,14 +157,14 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
               <View style={{marginLeft: 16, width: 24}}></View>
               <SvgXml width={60.8} height={30} xml={svgXml.logo.tincle} />
               <View style={{marginRight: 16}}>
-                <Pressable onPress={() => navigation.navigate('Notis')}>
+                <AnimatedButton onPress={() => navigation.navigate('Notis')}>
                   {!(noti || newNotis) && (
                     <SvgXml width={24} height={24} xml={svgXml.icon.noti} />
                   )}
                   {(noti || newNotis) && (
                     <SvgXml width={24} height={24} xml={svgXml.icon.notiYes} />
                   )}
-                </Pressable>
+                </AnimatedButton>
                 {/* <Pressable style={{marginRight:3}} onPress={()=>navigation.navigate('MyProfile')}>
               {status == 'smile' && <SvgXml width={24} height={24} xml={svgXml.status.smile}/>}
               {status == 'happy' && <SvgXml width={24} height={24} xml={svgXml.status.happy}/>}
@@ -650,7 +651,7 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
                 // onLayout={()=>scrollToEnd()}
                 renderItem={({item}: itemProps) => {
                   return (
-                    <Pressable
+                    <AnimatedButton
                       style={styles.feed}
                       onPress={() =>
                         navigation.navigate('FeedDetail', {feedId: item.feedId})
@@ -678,7 +679,7 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
                         setDeleteFeedId={setDeleteFeedId}
                         setRefresh={setRefresh}
                       />
-                    </Pressable>
+                    </AnimatedButton>
                   );
                 }}
               />
@@ -686,7 +687,7 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
             <View style={[styles.newFeedAll, {width: windowWidth}]}>
               {selectImg && (
                 <View style={[styles.newFeedImgView, {width: windowWidth}]}>
-                  <Pressable
+                  <AnimatedButton
                     onPress={() => {
                       setSelectImg(false);
                       setImgData({uri: '', type: ''});
@@ -702,12 +703,12 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
                       xml={svgXml.icon.imageX}
                       style={styles.xBtn}
                     />
-                  </Pressable>
+                  </AnimatedButton>
                 </View>
               )}
               {/* <View style={{height: Math.max(60, KBsize + 10)}} /> */}
               <View style={styles.newFeedView}>
-                <Pressable
+                <AnimatedButton
                   style={{
                     width: 48,
                     height: 48,
@@ -781,7 +782,7 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
                   {status == 'travel' && (
                     <SvgXml width={32} height={32} xml={svgXml.status.travel} />
                   )}
-                </Pressable>
+                </AnimatedButton>
                 <View
                   style={[
                     styles.newFeedTxtInputContain,
@@ -838,7 +839,7 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
                     }}
                   />
                 </View>
-                <Pressable
+                <AnimatedButton
                   style={styles.addPhoto}
                   onPress={() => {
                     setImagePicking(true);
@@ -852,8 +853,8 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
                   ) : (
                     <SvgXml width={24} height={24} xml={svgXml.icon.addphoto} />
                   )}
-                </Pressable>
-                <Pressable
+                </AnimatedButton>
+                <AnimatedButton
                   style={
                     (feedContent.trim() == '' && !selectImg) || uploadBtnLoading
                       ? styles.sendNewFeed
@@ -887,7 +888,7 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
                   ) : (
                     <Feather name="check" size={24} style={{color: 'white'}} />
                   )}
-                </Pressable>
+                </AnimatedButton>
               </View>
             </View>
 
@@ -899,10 +900,10 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
               onSwipeComplete={() => setShowBottomSheet(false)}
               swipeDirection={'down'}
               style={{justifyContent: 'flex-end', margin: 0}}>
-              <Pressable
+              <AnimatedButton
                 style={styles.modalBGView}
                 onPress={() => setShowBottomSheet(false)}>
-                <Pressable
+                <AnimatedButton
                   style={styles.modalView}
                   onPress={e => e.stopPropagation()}>
                   <View style={styles.whoReacted}>
@@ -957,27 +958,27 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
                             .replace(/ /g, '\u00A0')}
                     </Text>
                   </View>
-                </Pressable>
-              </Pressable>
+                </AnimatedButton>
+              </AnimatedButton>
             </Modal>
 
             <Modal
               isVisible={changeStatus}
               backdropColor="#101010"
               backdropOpacity={0.5}
-              swipeDirection={'down'}
+              swipeDirection={['down', 'left', 'right', 'up']}
               onSwipeComplete={() => setChangeStatus(false)}
               onBackButtonPress={() => setChangeStatus(false)}>
-              <Pressable
+              <AnimatedButton
                 style={styles.modalBGView2}
                 onPress={() => {
                   Keyboard.dismiss();
                   setChangeStatus(false);
                 }}>
-                <Pressable
+                <AnimatedButton
                   onPress={e => e.stopPropagation()}
                   style={styles.modalView2}>
-                  <Pressable
+                  <AnimatedButton
                     onPress={() => {
                       setChangeStatus(false);
                       postStatus('smile');
@@ -988,8 +989,8 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
                         : styles.statusSelect
                     }>
                     <SvgXml width={60} height={60} xml={svgXml.status.smile} />
-                  </Pressable>
-                  <Pressable
+                  </AnimatedButton>
+                  <AnimatedButton
                     onPress={() => {
                       setChangeStatus(false);
                       postStatus('happy');
@@ -1000,8 +1001,8 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
                         : styles.statusSelect
                     }>
                     <SvgXml width={60} height={60} xml={svgXml.status.happy} />
-                  </Pressable>
-                  <Pressable
+                  </AnimatedButton>
+                  <AnimatedButton
                     onPress={() => {
                       setChangeStatus(false);
                       postStatus('sad');
@@ -1012,8 +1013,8 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
                         : styles.statusSelect
                     }>
                     <SvgXml width={60} height={60} xml={svgXml.status.sad} />
-                  </Pressable>
-                  <Pressable
+                  </AnimatedButton>
+                  <AnimatedButton
                     onPress={() => {
                       setChangeStatus(false);
                       postStatus('mad');
@@ -1024,8 +1025,8 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
                         : styles.statusSelect
                     }>
                     <SvgXml width={60} height={60} xml={svgXml.status.mad} />
-                  </Pressable>
-                  <Pressable
+                  </AnimatedButton>
+                  <AnimatedButton
                     onPress={() => {
                       setChangeStatus(false);
                       postStatus('exhausted');
@@ -1040,8 +1041,8 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
                       height={60}
                       xml={svgXml.status.exhauseted}
                     />
-                  </Pressable>
-                  <Pressable
+                  </AnimatedButton>
+                  <AnimatedButton
                     onPress={() => {
                       setChangeStatus(false);
                       postStatus('coffee');
@@ -1052,8 +1053,8 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
                         : styles.statusSelect
                     }>
                     <SvgXml width={60} height={60} xml={svgXml.status.coffee} />
-                  </Pressable>
-                  <Pressable
+                  </AnimatedButton>
+                  <AnimatedButton
                     onPress={() => {
                       setChangeStatus(false);
                       postStatus('meal');
@@ -1064,8 +1065,8 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
                         : styles.statusSelect
                     }>
                     <SvgXml width={60} height={60} xml={svgXml.status.meal} />
-                  </Pressable>
-                  <Pressable
+                  </AnimatedButton>
+                  <AnimatedButton
                     onPress={() => {
                       setChangeStatus(false);
                       postStatus('alcohol');
@@ -1080,8 +1081,8 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
                       height={60}
                       xml={svgXml.status.alcohol}
                     />
-                  </Pressable>
-                  <Pressable
+                  </AnimatedButton>
+                  <AnimatedButton
                     onPress={() => {
                       setChangeStatus(false);
                       postStatus('chicken');
@@ -1096,8 +1097,8 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
                       height={60}
                       xml={svgXml.status.chicken}
                     />
-                  </Pressable>
-                  <Pressable
+                  </AnimatedButton>
+                  <AnimatedButton
                     onPress={() => {
                       setChangeStatus(false);
                       postStatus('sleep');
@@ -1108,8 +1109,8 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
                         : styles.statusSelect
                     }>
                     <SvgXml width={60} height={60} xml={svgXml.status.sleep} />
-                  </Pressable>
-                  <Pressable
+                  </AnimatedButton>
+                  <AnimatedButton
                     onPress={() => {
                       setChangeStatus(false);
                       postStatus('work');
@@ -1120,8 +1121,8 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
                         : styles.statusSelect
                     }>
                     <SvgXml width={60} height={60} xml={svgXml.status.work} />
-                  </Pressable>
-                  <Pressable
+                  </AnimatedButton>
+                  <AnimatedButton
                     onPress={() => {
                       setChangeStatus(false);
                       postStatus('study');
@@ -1132,8 +1133,8 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
                         : styles.statusSelect
                     }>
                     <SvgXml width={60} height={60} xml={svgXml.status.study} />
-                  </Pressable>
-                  <Pressable
+                  </AnimatedButton>
+                  <AnimatedButton
                     onPress={() => {
                       setChangeStatus(false);
                       postStatus('movie');
@@ -1144,8 +1145,8 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
                         : styles.statusSelect
                     }>
                     <SvgXml width={60} height={60} xml={svgXml.status.movie} />
-                  </Pressable>
-                  <Pressable
+                  </AnimatedButton>
+                  <AnimatedButton
                     onPress={() => {
                       setChangeStatus(false);
                       postStatus('move');
@@ -1156,8 +1157,8 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
                         : styles.statusSelect
                     }>
                     <SvgXml width={60} height={60} xml={svgXml.status.move} />
-                  </Pressable>
-                  <Pressable
+                  </AnimatedButton>
+                  <AnimatedButton
                     onPress={() => {
                       setChangeStatus(false);
                       postStatus('dance');
@@ -1168,8 +1169,8 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
                         : styles.statusSelect
                     }>
                     <SvgXml width={60} height={60} xml={svgXml.status.dance} />
-                  </Pressable>
-                  <Pressable
+                  </AnimatedButton>
+                  <AnimatedButton
                     onPress={() => {
                       setChangeStatus(false);
                       postStatus('read');
@@ -1180,8 +1181,8 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
                         : styles.statusSelect
                     }>
                     <SvgXml width={60} height={60} xml={svgXml.status.read} />
-                  </Pressable>
-                  <Pressable
+                  </AnimatedButton>
+                  <AnimatedButton
                     onPress={() => {
                       setChangeStatus(false);
                       postStatus('walk');
@@ -1192,8 +1193,8 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
                         : styles.statusSelect
                     }>
                     <SvgXml width={60} height={60} xml={svgXml.status.walk} />
-                  </Pressable>
-                  <Pressable
+                  </AnimatedButton>
+                  <AnimatedButton
                     onPress={() => {
                       setChangeStatus(false);
                       postStatus('travel');
@@ -1204,9 +1205,9 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
                         : styles.statusSelect
                     }>
                     <SvgXml width={60} height={60} xml={svgXml.status.travel} />
-                  </Pressable>
-                </Pressable>
-              </Pressable>
+                  </AnimatedButton>
+                </AnimatedButton>
+              </AnimatedButton>
             </Modal>
             {deleted && (
               <ToastScreen
