@@ -27,6 +27,7 @@ import FriendProfileModal from '../components/FriendProfileModal';
 import {Dimensions} from 'react-native';
 import ImageModal from 'react-native-image-modal';
 import {useNavigation} from '@react-navigation/native';
+import AnimatedButton from '../components/AnimatedButton';
 
 type friendListItemProps = {
   item: {
@@ -344,18 +345,18 @@ export default function SearchFriends() {
                 placeholderTextColor={'#888888'}
               />
               {(!placeholder || searchCode) && (
-                <Pressable
+                <AnimatedButton
                   onPress={() => {
                     setSearchCode('');
                     setReset(!reset);
                   }}
                   style={styles.clearBtn}>
                   <SvgXml width={20} height={20} xml={svgXml.icon.textInputX} />
-                </Pressable>
+                </AnimatedButton>
               )}
             </View>
             <View style={styles.myCodeView}>
-              <Pressable
+              <AnimatedButton
                 style={styles.myCodeBtn}
                 onPress={() => Clipboard.setString(myCode)}>
                 <Text style={styles.myCodeTxt}>내 아이디: {myCode}</Text>
@@ -365,7 +366,7 @@ export default function SearchFriends() {
                   xml={svgXml.icon.copyIcon}
                   style={styles.copyIcon}
                 />
-              </Pressable>
+              </AnimatedButton>
             </View>
           </View>
         }
@@ -374,7 +375,7 @@ export default function SearchFriends() {
         renderItem={({item}: friendListItemProps) => {
           if (item.friendshipId == 0)
             return (
-              <Pressable
+              <AnimatedButton
                 style={[
                   styles.friendView,
                   {width: (Dimensions.get('window').width - 40) / 2},
@@ -383,7 +384,7 @@ export default function SearchFriends() {
                   navigation.navigate('MyProfile');
                   // console.log(myStatus)
                 }}>
-                <Pressable style={styles.friendProfileImg}>
+                <AnimatedButton style={styles.friendProfileImg}>
                   {item.profileImageUrl == null ? (
                     <SvgXml width={32} height={32} xml={svgXml.profile.null} />
                   ) : (
@@ -392,7 +393,7 @@ export default function SearchFriends() {
                       style={{width: 32, height: 32, borderRadius: 16}}
                     />
                   )}
-                </Pressable>
+                </AnimatedButton>
                 <View style={styles.friendmiddle}>
                   <Text style={styles.friendName}>{item.friendNickname}</Text>
                 </View>
@@ -464,11 +465,11 @@ export default function SearchFriends() {
                     <SvgXml width={40} height={40} xml={svgXml.status.travel} />
                   )}
                 </View>
-              </Pressable>
+              </AnimatedButton>
             );
           if (item.friendshipId == -1)
             return (
-              <Pressable
+              <AnimatedButton
                 style={[
                   styles.friendView,
                   {width: (Dimensions.get('window').width - 40) / 2},
@@ -476,7 +477,7 @@ export default function SearchFriends() {
                 onPress={() => {
                   setShowWhoseModal(item.accountId);
                 }}>
-                <Pressable style={styles.friendProfileImg}>
+                <AnimatedButton style={styles.friendProfileImg}>
                   {item.profileImageUrl == null ? (
                     <SvgXml width={32} height={32} xml={svgXml.profile.null} />
                   ) : (
@@ -485,11 +486,11 @@ export default function SearchFriends() {
                       style={{width: 32, height: 32, borderRadius: 16}}
                     />
                   )}
-                </Pressable>
+                </AnimatedButton>
                 <View style={styles.friendmiddle}>
                   <Text style={styles.friendName}>{item.friendNickname}</Text>
                 </View>
-                <Pressable
+                <AnimatedButton
                   style={styles.nonFriendProfileStatus}
                   onPress={() => {
                     askFriend(
@@ -499,12 +500,12 @@ export default function SearchFriends() {
                     );
                   }}>
                   <SvgXml width={24} height={24} xml={svgXml.icon.addfriend} />
-                </Pressable>
-              </Pressable>
+                </AnimatedButton>
+              </AnimatedButton>
             );
           if (item.friendshipId == -2)
             return (
-              <Pressable
+              <AnimatedButton
                 style={[
                   styles.friendView,
                   {width: (Dimensions.get('window').width - 40) / 2},
@@ -512,7 +513,7 @@ export default function SearchFriends() {
                 onPress={() => {
                   setShowWhoseModal(item.accountId);
                 }}>
-                <Pressable style={styles.friendProfileImg}>
+                <AnimatedButton style={styles.friendProfileImg}>
                   {item.profileImageUrl == null ? (
                     <SvgXml width={32} height={32} xml={svgXml.profile.null} />
                   ) : (
@@ -521,18 +522,18 @@ export default function SearchFriends() {
                       style={{width: 32, height: 32, borderRadius: 16}}
                     />
                   )}
-                </Pressable>
+                </AnimatedButton>
                 <View style={styles.friendmiddle}>
                   <Text style={styles.friendName}>{item.friendNickname}</Text>
                 </View>
-                <Pressable style={styles.waitingFriendProfileStatus}>
+                <AnimatedButton style={styles.waitingFriendProfileStatus}>
                   <SvgXml width={24} height={24} xml={svgXml.icon.sendfriend} />
-                </Pressable>
-              </Pressable>
+                </AnimatedButton>
+              </AnimatedButton>
             );
           if (item.friendshipId == -3)
             return (
-              <Pressable
+              <AnimatedButton
                 style={[
                   styles.friendView,
                   {width: (Dimensions.get('window').width - 40) / 2},
@@ -540,7 +541,7 @@ export default function SearchFriends() {
                 onPress={() => {
                   setShowWhoseModal(item.accountId);
                 }}>
-                <Pressable style={styles.friendProfileImg}>
+                <AnimatedButton style={styles.friendProfileImg}>
                   {item.profileImageUrl == null ? (
                     <SvgXml width={32} height={32} xml={svgXml.profile.null} />
                   ) : (
@@ -549,21 +550,21 @@ export default function SearchFriends() {
                       style={{width: 32, height: 32, borderRadius: 16}}
                     />
                   )}
-                </Pressable>
+                </AnimatedButton>
                 <View style={styles.friendmiddle}>
                   <Text style={styles.friendName}>{item.friendNickname}</Text>
                 </View>
-                <Pressable style={styles.requestFriendProfileStatus}>
+                <AnimatedButton style={styles.requestFriendProfileStatus}>
                   <SvgXml
                     width={24}
                     height={24}
                     xml={svgXml.icon.requestfriend}
                   />
-                </Pressable>
-              </Pressable>
+                </AnimatedButton>
+              </AnimatedButton>
             );
           return (
-            <Pressable
+            <AnimatedButton
               style={[
                 styles.friendView,
                 {width: (Dimensions.get('window').width - 40) / 2},
@@ -652,10 +653,10 @@ export default function SearchFriends() {
                   <SvgXml width={40} height={40} xml={svgXml.status.travel} />
                 )}
               </View>
-              {/* <Pressable style={styles.deleteBtn}>
+              {/* <AnimatedButton style={styles.deleteBtn}>
                 <Text style={styles.deleteBtnTxt}>삭제</Text>
-              </Pressable> */}
-            </Pressable>
+              </AnimatedButton> */}
+            </AnimatedButton>
           );
         }}
       />
@@ -677,13 +678,13 @@ export default function SearchFriends() {
           inp.current?.focus();
         }}>
         {otherUser.isFriend == 2 && (
-          <Pressable
+          <AnimatedButton
             style={styles.modalBGView}
             onPress={() => {
               Keyboard.dismiss();
               setOtherUser({accountId: -1, nickname: '', isFriend: 0});
             }}>
-            <Pressable
+            <AnimatedButton
               onPress={e => e.stopPropagation()}
               style={styles.modalView}>
               <View>
@@ -701,14 +702,14 @@ export default function SearchFriends() {
                 />
               </View>
               <View style={styles.btnView}>
-                <Pressable
+                <AnimatedButton
                   style={styles.searchViewCloseBtn}
                   onPress={() =>
                     setOtherUser({accountId: -1, nickname: '', isFriend: 0})
                   }>
                   <Text style={styles.searchViewCloseTxt}>닫기</Text>
-                </Pressable>
-                <Pressable
+                </AnimatedButton>
+                <AnimatedButton
                   style={styles.searchViewAskFriendBtn}
                   onPress={() => {
                     askFriend();
@@ -716,19 +717,19 @@ export default function SearchFriends() {
                   <Text style={styles.searchViewAskFriendTxt}>
                     친구 요청 보내기
                   </Text>
-                </Pressable>
+                </AnimatedButton>
               </View>
-            </Pressable>
-          </Pressable>
+            </AnimatedButton>
+          </AnimatedButton>
         )}
         {otherUser.isFriend == 1 && (
-          <Pressable
+          <AnimatedButton
             style={styles.modalBGView}
             onPress={() => {
               Keyboard.dismiss();
               setOtherUser({accountId: -1, nickname: '', isFriend: 0});
             }}>
-            <Pressable
+            <AnimatedButton
               onPress={e => e.stopPropagation()}
               style={styles.modalView}>
               <View>
@@ -738,16 +739,16 @@ export default function SearchFriends() {
                 </Text>
               </View>
               <View style={styles.btnViewFriend}>
-                <Pressable
+                <AnimatedButton
                   style={styles.searchViewCloseBtnFriend}
                   onPress={() =>
                     setOtherUser({accountId: -1, nickname: '', isFriend: 0})
                   }>
                   <Text style={styles.searchViewAskFriendTxt}>닫기</Text>
-                </Pressable>
+                </AnimatedButton>
               </View>
-            </Pressable>
-          </Pressable>
+            </AnimatedButton>
+          </AnimatedButton>
         )}
       </Modal> */}
       {whichPopup === 'noCode' && (

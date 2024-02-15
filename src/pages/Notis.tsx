@@ -437,7 +437,7 @@ export default function Notis({}: NotisScreenProps) {
           }
           renderItem={({item, index}: itemProps) => {
             return (
-              <Pressable
+              <AnimatedButton
                 style={
                   item.isClicked === false
                     ? styles.eachNotis_notRead
@@ -458,7 +458,7 @@ export default function Notis({}: NotisScreenProps) {
                 }}>
                 <View style={styles.notisView}>
                   {!item.notificationType.includes('MESSAGE') && (
-                    <Pressable
+                    <AnimatedButton
                       style={styles.notisProfile}
                       onPress={() => {
                         // navigation.navigate('Profile', {
@@ -480,7 +480,7 @@ export default function Notis({}: NotisScreenProps) {
                           resizeMode="contain"
                         />
                       )}
-                    </Pressable>
+                    </AnimatedButton>
                   )}
                   <View style={styles.notisTextView}>
                     <Text
@@ -499,7 +499,7 @@ export default function Notis({}: NotisScreenProps) {
                 </View>
                 {
                   item.notificationType === 'CREATE_FRIENDSHIP_REQUEST' ? (
-                    <Pressable
+                    <AnimatedButton
                       style={styles.notisCheckBtn}
                       onPress={() => {
                         approveFriendship(
@@ -513,18 +513,18 @@ export default function Notis({}: NotisScreenProps) {
                         // setmodalDataId(item.redirectTargetId);
                       }}>
                       <Text style={styles.notisCheckBtnTxt}>수락하기</Text>
-                    </Pressable>
+                    </AnimatedButton>
                   ) : item.notificationType === 'SEND_KNOCK' ? (
-                    <Pressable
+                    <AnimatedButton
                       style={styles.notisCheckBtn}
                       onPress={() => {
                         writeKnock(item.notificationId);
                       }}>
                       <Text style={styles.notisCheckBtnTxt}>글쓰기</Text>
-                    </Pressable>
-                  ) : null // </Pressable> //   <Text style={styles.notisCheckBtnTxt}>글쓰기</Text> //   }}> //     console.log('글쓰기'); //   onPress={() => { //   style={styles.notisCheckBtn} // <Pressable
+                    </AnimatedButton>
+                  ) : null // </AnimatedButton> //   <Text style={styles.notisCheckBtnTxt}>글쓰기</Text> //   }}> //     console.log('글쓰기'); //   onPress={() => { //   style={styles.notisCheckBtn} // <AnimatedButton
                 }
-                <Pressable
+                <AnimatedButton
                   style={styles.xBtn}
                   onPress={() => {
                     if (item.notificationType === 'CREATE_FRIENDSHIP_REQUEST') {
@@ -534,8 +534,8 @@ export default function Notis({}: NotisScreenProps) {
                     }
                   }}>
                   <SvgXml width={24} height={24} xml={svgXml.icon.notisX} />
-                </Pressable>
-              </Pressable>
+                </AnimatedButton>
+              </AnimatedButton>
             );
           }}
         />
@@ -550,12 +550,12 @@ export default function Notis({}: NotisScreenProps) {
         onBackButtonPress={() => setShowModal(false)}
         backdropColor="#222222"
         backdropOpacity={0.5}>
-        <Pressable
+        <AnimatedButton
           style={styles.modalBGView}
           onPress={() => {
             setShowModal(false);
           }}>
-          <Pressable
+          <AnimatedButton
             style={styles.modalView}
             onPress={e => e.stopPropagation()}>
             <Text style={styles.modalTitleTxt}>친구 요청 메시지</Text>
@@ -570,15 +570,15 @@ export default function Notis({}: NotisScreenProps) {
               </Text>
             </View>
             <View style={styles.modalBtnView}>
-              <Pressable
+              <AnimatedButton
                 style={styles.btnWhite}
                 onPress={() => {
                   setShowModal(false);
                   setmodalData('');
                 }}>
                 <Text style={styles.btnWhiteTxt}>닫기</Text>
-              </Pressable>
-              <Pressable
+              </AnimatedButton>
+              <AnimatedButton
                 style={styles.btnYellow}
                 onPress={() => {
                   approveFriendship(modalDataId);
@@ -587,10 +587,10 @@ export default function Notis({}: NotisScreenProps) {
                   setmodalDataId(-1);
                 }}>
                 <Text style={styles.btnYellowTxt}>수락하기</Text>
-              </Pressable>
+              </AnimatedButton>
             </View>
-          </Pressable>
-        </Pressable>
+          </AnimatedButton>
+        </AnimatedButton>
       </Modal> */}
       {popup == 'deleted' && (
         <ToastScreen

@@ -30,6 +30,7 @@ import EncryptedStorage from 'react-native-encrypted-storage';
 import Profile from '../components/Profile';
 import ServicePolicyModal from '../components/ServicePolicyModal';
 import PersonalPolicyModal from '../components/PersonalPolicyModal';
+import AnimatedButton from '../components/AnimatedButton';
 
 // type ProfileScreenProps = NativeStackScreenProps<RootStackParamList, 'Profile'>;
 
@@ -333,7 +334,7 @@ export default function MyProfile() {
           friendshipRelation="me"
         />
         <View style={styles.myCodeView}>
-          <Pressable
+          <AnimatedButton
             style={styles.myCodeBtn}
             onPress={() => Clipboard.setString(myCode)}>
             <Text style={styles.myCodeTxt}>내 아이디: {myCode}</Text>
@@ -343,37 +344,37 @@ export default function MyProfile() {
               xml={svgXml.icon.copyIcon}
               style={styles.copyIcon}
             />
-          </Pressable>
+          </AnimatedButton>
         </View>
         {/* {whoseProfile == 0 && <View style={styles.btnView}>
-          <Pressable style={styles.btnWhite} onPress={()=>navigation.navigate('MyFriendList')}>
+          <AnimatedButton style={styles.btnWhite} onPress={()=>navigation.navigate('MyFriendList')}>
             <Text style={styles.btnWhiteTxt}>친구 관리</Text>
-          </Pressable>
-          <Pressable style={styles.btnYellow} onPress={()=>navigation.navigate('NoteBox')}>
+          </AnimatedButton>
+          <AnimatedButton style={styles.btnYellow} onPress={()=>navigation.navigate('NoteBox')}>
             <Text style={styles.btnYellowTxt}>익명 쪽지함</Text>
-          </Pressable>
+          </AnimatedButton>
         </View>}
         {whoseProfile == 1 && <View style={styles.btnView}>
           <View style={{flex:0.4}}></View>
-          <Pressable style={styles.btnYellow} onPress={()=>setWriteNote(true)}>
+          <AnimatedButton style={styles.btnYellow} onPress={()=>setWriteNote(true)}>
             <Text style={styles.btnYellowTxt}>익명 쪽지 보내기</Text>
-          </Pressable>
+          </AnimatedButton>
           <View style={{flex:0.4}}></View>
         </View>}
         {whoseProfile == 2 && <View style={styles.btnView}>
           <View style={{flex:0.4}}></View>
-          {alreadyRequestFriend == 1 ? <Pressable style={styles.btnWhite} disabled={true}>
+          {alreadyRequestFriend == 1 ? <AnimatedButton style={styles.btnWhite} disabled={true}>
             <Text style={styles.btnWhiteTxt}>친구 수락 대기 중</Text>
-          </Pressable> :
-          <Pressable style={styles.btnYellow} onPress={()=>setAskFriendMsg(true)}>
+          </AnimatedButton> :
+          <AnimatedButton style={styles.btnYellow} onPress={()=>setAskFriendMsg(true)}>
             <Text style={styles.btnYellowTxt}>친구 요청하기</Text>
-          </Pressable>}
+          </AnimatedButton>}
           <View style={{flex:0.4}}></View>
         </View>} */}
       </View>
 
       <View style={styles.settingView}>
-        <Pressable
+        <AnimatedButton
           style={styles.settingBtn}
           onPress={() =>
             Linking.openURL(
@@ -381,8 +382,8 @@ export default function MyProfile() {
             )
           }>
           <Text style={styles.settingBtnTxt}>공지사항</Text>
-        </Pressable>
-        <Pressable
+        </AnimatedButton>
+        <AnimatedButton
           style={styles.settingBtn}
           onPress={() =>
             Linking.openURL(
@@ -390,11 +391,13 @@ export default function MyProfile() {
             )
           }>
           <Text style={styles.settingBtnTxt}>의견 남기기</Text>
-        </Pressable>
-        <Pressable style={styles.settingBtn} onPress={() => setChangeId(true)}>
+        </AnimatedButton>
+        <AnimatedButton
+          style={styles.settingBtn}
+          onPress={() => setChangeId(true)}>
           <Text style={styles.settingBtnTxt}>내 아이디 변경하기</Text>
-        </Pressable>
-        <Pressable
+        </AnimatedButton>
+        <AnimatedButton
           style={styles.settingBtn}
           onPress={() =>
             Linking.openURL(
@@ -402,30 +405,30 @@ export default function MyProfile() {
             )
           }>
           <Text style={styles.settingBtnTxt}>신고하기</Text>
-        </Pressable>
-        <Pressable
+        </AnimatedButton>
+        <AnimatedButton
           style={styles.settingBtn}
           onPress={() => {
             setPolicy('service');
           }}>
           <Text style={styles.settingBtnTxt}>서비스 이용약관</Text>
-        </Pressable>
-        <Pressable
+        </AnimatedButton>
+        <AnimatedButton
           style={styles.settingBtn}
           onPress={() => {
             setPolicy('personal');
           }}>
           <Text style={styles.settingBtnTxt}>개인정보 처리방침</Text>
-        </Pressable>
-        <Pressable style={styles.settingBtn} onPress={LogOut}>
+        </AnimatedButton>
+        <AnimatedButton style={styles.settingBtn} onPress={LogOut}>
           <Text style={styles.settingBtnTxt}>로그아웃</Text>
-        </Pressable>
-        <Pressable
+        </AnimatedButton>
+        <AnimatedButton
           style={styles.settingBtn}
           onPress={() => setDeleteAccount(true)}>
           <Text style={styles.settingBtnTxt}>계정 삭제</Text>
-        </Pressable>
-        <Pressable
+        </AnimatedButton>
+        <AnimatedButton
           style={[
             styles.settingBtn,
             {flexDirection: 'row', justifyContent: 'space-between'},
@@ -434,7 +437,7 @@ export default function MyProfile() {
           <Text style={[styles.settingBtnTxt, {color: '#888888'}]}>
             {version}
           </Text>
-        </Pressable>
+        </AnimatedButton>
       </View>
 
       {/* modal for policy */}
@@ -453,13 +456,13 @@ export default function MyProfile() {
             inp1.current.focus();
           }
         }}>
-        <Pressable
+        <AnimatedButton
           style={styles.modalBGView}
           onPress={() => {
             setChangeName(false);
             Keyboard.dismiss();
           }}>
-          <Pressable
+          <AnimatedButton
             style={styles.modalView}
             onPress={e => e.stopPropagation()}>
             <Text style={styles.modalTitleTxt}>내 이름 변경하기</Text>
@@ -481,16 +484,16 @@ export default function MyProfile() {
               />
             </View>
             <View style={styles.modalBtnView}>
-              <Pressable
+              <AnimatedButton
                 style={styles.btnGray}
                 onPress={() => {
                   setChangeName(false);
                   setChangeNameVal(name);
                 }}>
                 <Text style={styles.btnTxt}>취소</Text>
-              </Pressable>
+              </AnimatedButton>
               <View style={{width: 8}}></View>
-              <Pressable
+              <AnimatedButton
                 style={styles.btn}
                 disabled={changeNameVal.trim() == ''}
                 onPress={() => {
@@ -503,10 +506,10 @@ export default function MyProfile() {
                   }
                 }}>
                 <Text style={styles.btnTxt}>완료</Text>
-              </Pressable>
+              </AnimatedButton>
             </View>
-          </Pressable>
-        </Pressable>
+          </AnimatedButton>
+        </AnimatedButton>
       </Modal>
       <Modal
         isVisible={deleteAccount}
@@ -514,36 +517,36 @@ export default function MyProfile() {
         avoidKeyboard={true}
         backdropColor="#101010"
         backdropOpacity={0.5}>
-        <Pressable
+        <AnimatedButton
           style={styles.modalBGView}
           onPress={() => {
             setDeleteAccount(false);
             Keyboard.dismiss();
           }}>
-          <Pressable
+          <AnimatedButton
             style={styles.modalView}
             onPress={e => e.stopPropagation()}>
             <Text style={styles.modalTitleTxt}>계정을 삭제하시겠어요?</Text>
             <Text style={styles.modalContentTxt}>떠나신다니 아쉬워요.</Text>
             <View style={styles.modalBtnView}>
-              <Pressable
+              <AnimatedButton
                 style={styles.btnGray}
                 onPress={() => {
                   setDeleteAccount(false);
                 }}>
                 <Text style={styles.btnTxt}>취소</Text>
-              </Pressable>
+              </AnimatedButton>
               <View style={{width: 8}}></View>
-              <Pressable
+              <AnimatedButton
                 style={styles.btn}
                 onPress={() => {
                   revoke();
                 }}>
                 <Text style={styles.btnTxt}>네, 삭제할게요.</Text>
-              </Pressable>
+              </AnimatedButton>
             </View>
-          </Pressable>
-        </Pressable>
+          </AnimatedButton>
+        </AnimatedButton>
       </Modal>
       <Modal
         isVisible={changeId}
@@ -556,10 +559,10 @@ export default function MyProfile() {
         animationInTiming={600}
         onDismiss={() => setChangeId(false)}
         style={{margin: 0}}>
-        <Pressable
+        <AnimatedButton
           onPress={() => setChangeId(false)}
           style={styles.modalBGView2}>
-          <Pressable
+          <AnimatedButton
             style={[styles.modalView2 /*{width:windowWidth}*/]}
             onPress={e => e.stopPropagation()}>
             <View style={styles.idModalHeader}>
@@ -583,13 +586,13 @@ export default function MyProfile() {
                 // }}
                 style={styles.idModalBodyTxtInp}
               />
-              <Pressable
+              <AnimatedButton
                 style={styles.idModalBodyBtn}
                 onPress={() => {
                   checkDuplicate();
                 }}>
                 <Text style={styles.idModalBodyBtnTxt}>중복확인</Text>
-              </Pressable>
+              </AnimatedButton>
             </View>
             {duplicate == 'YET' && <View style={{height: 12}}></View>}
             {duplicate == 'CANNOT' && (
@@ -612,7 +615,7 @@ export default function MyProfile() {
                 사용할 수 있는 아이디예요.
               </Text>
             )}
-            <Pressable
+            <AnimatedButton
               style={
                 duplicate == 'CAN' || duplicate == 'SAME'
                   ? styles.idModalFooterBtnActive
@@ -627,75 +630,75 @@ export default function MyProfile() {
               }}
               disabled={duplicate != 'CAN' && duplicate != 'SAME'}>
               <Text style={styles.idModalFooterBtnTxt}>완료</Text>
-            </Pressable>
-          </Pressable>
-        </Pressable>
+            </AnimatedButton>
+          </AnimatedButton>
+        </AnimatedButton>
       </Modal>
       {/* modal for changin status */}
       {/* <Modal isVisible={changeStatus} backdropColor='#222222' backdropOpacity={0.5} onBackButtonPress={()=>setChangeStatus(false)}>
-        <Pressable style={styles.modalBGView} onPress={()=>{Keyboard.dismiss(); setChangeStatus(false);}}>
-          <Pressable onPress={(e)=>e.stopPropagation()} style={styles.modalView2}>
-            <Pressable onPress={()=>{setChangeStatus(false); postStatus('smile');}} style={status == 'smile' ? styles.statusSelected : styles.statusSelect}>
+        <AnimatedButton style={styles.modalBGView} onPress={()=>{Keyboard.dismiss(); setChangeStatus(false);}}>
+          <AnimatedButton onPress={(e)=>e.stopPropagation()} style={styles.modalView2}>
+            <AnimatedButton onPress={()=>{setChangeStatus(false); postStatus('smile');}} style={status == 'smile' ? styles.statusSelected : styles.statusSelect}>
               <SvgXml width={60} height={60} xml={svgXml.status.smile} />
-            </Pressable>
-            <Pressable onPress={()=>{setChangeStatus(false); postStatus('happy');}} style={status == 'happy' ? styles.statusSelected : styles.statusSelect}>
+            </AnimatedButton>
+            <AnimatedButton onPress={()=>{setChangeStatus(false); postStatus('happy');}} style={status == 'happy' ? styles.statusSelected : styles.statusSelect}>
               <SvgXml width={60} height={60} xml={svgXml.status.happy} />
-            </Pressable>
-            <Pressable onPress={()=>{setChangeStatus(false); postStatus('sad');}} style={status == 'sad' ? styles.statusSelected : styles.statusSelect}>
+            </AnimatedButton>
+            <AnimatedButton onPress={()=>{setChangeStatus(false); postStatus('sad');}} style={status == 'sad' ? styles.statusSelected : styles.statusSelect}>
               <SvgXml width={60} height={60} xml={svgXml.status.sad} />
-            </Pressable>
-            <Pressable onPress={()=>{setChangeStatus(false); postStatus('mad');}} style={status == 'mad' ? styles.statusSelected : styles.statusSelect}>
+            </AnimatedButton>
+            <AnimatedButton onPress={()=>{setChangeStatus(false); postStatus('mad');}} style={status == 'mad' ? styles.statusSelected : styles.statusSelect}>
               <SvgXml width={60} height={60} xml={svgXml.status.mad} />
-            </Pressable>
-            <Pressable onPress={()=>{setChangeStatus(false); postStatus('exhausted');}} style={status == 'exhausted' ? styles.statusSelected : styles.statusSelect}>
+            </AnimatedButton>
+            <AnimatedButton onPress={()=>{setChangeStatus(false); postStatus('exhausted');}} style={status == 'exhausted' ? styles.statusSelected : styles.statusSelect}>
               <SvgXml width={60} height={60} xml={svgXml.status.exhauseted} />
-            </Pressable>
-            <Pressable onPress={()=>{setChangeStatus(false); postStatus('coffee');}} style={status == 'coffee' ? styles.statusSelected : styles.statusSelect}>
+            </AnimatedButton>
+            <AnimatedButton onPress={()=>{setChangeStatus(false); postStatus('coffee');}} style={status == 'coffee' ? styles.statusSelected : styles.statusSelect}>
               <SvgXml width={60} height={60} xml={svgXml.status.coffee} />
-            </Pressable>
-            <Pressable onPress={()=>{setChangeStatus(false); postStatus('meal');}} style={status == 'meal' ? styles.statusSelected : styles.statusSelect}>
+            </AnimatedButton>
+            <AnimatedButton onPress={()=>{setChangeStatus(false); postStatus('meal');}} style={status == 'meal' ? styles.statusSelected : styles.statusSelect}>
               <SvgXml width={60} height={60} xml={svgXml.status.meal} />
-            </Pressable>
-            <Pressable onPress={()=>{setChangeStatus(false); postStatus('alcohol');}} style={status == 'alcohol' ? styles.statusSelected : styles.statusSelect}>
+            </AnimatedButton>
+            <AnimatedButton onPress={()=>{setChangeStatus(false); postStatus('alcohol');}} style={status == 'alcohol' ? styles.statusSelected : styles.statusSelect}>
               <SvgXml width={60} height={60} xml={svgXml.status.alcohol} />
-            </Pressable>
-            <Pressable onPress={()=>{setChangeStatus(false); postStatus('chicken');}} style={status == 'chicken' ? styles.statusSelected : styles.statusSelect}>
+            </AnimatedButton>
+            <AnimatedButton onPress={()=>{setChangeStatus(false); postStatus('chicken');}} style={status == 'chicken' ? styles.statusSelected : styles.statusSelect}>
               <SvgXml width={60} height={60} xml={svgXml.status.chicken} />
-            </Pressable>
-            <Pressable onPress={()=>{setChangeStatus(false); postStatus('sleep');}} style={status == 'sleep' ? styles.statusSelected : styles.statusSelect}>
+            </AnimatedButton>
+            <AnimatedButton onPress={()=>{setChangeStatus(false); postStatus('sleep');}} style={status == 'sleep' ? styles.statusSelected : styles.statusSelect}>
               <SvgXml width={60} height={60} xml={svgXml.status.sleep} />
-            </Pressable>
-            <Pressable onPress={()=>{setChangeStatus(false); postStatus('work');}} style={status == 'work' ? styles.statusSelected : styles.statusSelect}>
+            </AnimatedButton>
+            <AnimatedButton onPress={()=>{setChangeStatus(false); postStatus('work');}} style={status == 'work' ? styles.statusSelected : styles.statusSelect}>
               <SvgXml width={60} height={60} xml={svgXml.status.work} />
-            </Pressable>
-            <Pressable onPress={()=>{setChangeStatus(false); postStatus('study');}} style={status == 'study' ? styles.statusSelected : styles.statusSelect}>
+            </AnimatedButton>
+            <AnimatedButton onPress={()=>{setChangeStatus(false); postStatus('study');}} style={status == 'study' ? styles.statusSelected : styles.statusSelect}>
               <SvgXml width={60} height={60} xml={svgXml.status.study} />
-            </Pressable>
-            <Pressable onPress={()=>{setChangeStatus(false); postStatus('movie');}} style={status == 'movie' ? styles.statusSelected : styles.statusSelect}>
+            </AnimatedButton>
+            <AnimatedButton onPress={()=>{setChangeStatus(false); postStatus('movie');}} style={status == 'movie' ? styles.statusSelected : styles.statusSelect}>
               <SvgXml width={60} height={60} xml={svgXml.status.movie} />
-            </Pressable>
-            <Pressable onPress={()=>{setChangeStatus(false); postStatus('move');}} style={status == 'move' ? styles.statusSelected : styles.statusSelect}>
+            </AnimatedButton>
+            <AnimatedButton onPress={()=>{setChangeStatus(false); postStatus('move');}} style={status == 'move' ? styles.statusSelected : styles.statusSelect}>
               <SvgXml width={60} height={60} xml={svgXml.status.move} />
-            </Pressable>
-            <Pressable onPress={()=>{setChangeStatus(false); postStatus('dance');}} style={status == 'dance' ? styles.statusSelected : styles.statusSelect}>
+            </AnimatedButton>
+            <AnimatedButton onPress={()=>{setChangeStatus(false); postStatus('dance');}} style={status == 'dance' ? styles.statusSelected : styles.statusSelect}>
               <SvgXml width={60} height={60} xml={svgXml.status.dance} />
-            </Pressable>
-            <Pressable onPress={()=>{setChangeStatus(false); postStatus('read');}} style={status == 'read' ? styles.statusSelected : styles.statusSelect}>
+            </AnimatedButton>
+            <AnimatedButton onPress={()=>{setChangeStatus(false); postStatus('read');}} style={status == 'read' ? styles.statusSelected : styles.statusSelect}>
               <SvgXml width={60} height={60} xml={svgXml.status.read} />
-            </Pressable>
-            <Pressable onPress={()=>{setChangeStatus(false); postStatus('walk');}} style={status == 'walk' ? styles.statusSelected : styles.statusSelect}>
+            </AnimatedButton>
+            <AnimatedButton onPress={()=>{setChangeStatus(false); postStatus('walk');}} style={status == 'walk' ? styles.statusSelected : styles.statusSelect}>
               <SvgXml width={60} height={60} xml={svgXml.status.walk} />
-            </Pressable>
-            <Pressable onPress={()=>{setChangeStatus(false); postStatus('travel');}} style={status == 'travel' ? styles.statusSelected : styles.statusSelect}>
+            </AnimatedButton>
+            <AnimatedButton onPress={()=>{setChangeStatus(false); postStatus('travel');}} style={status == 'travel' ? styles.statusSelected : styles.statusSelect}>
               <SvgXml width={60} height={60} xml={svgXml.status.travel} />
-            </Pressable>
-          </Pressable>
-        </Pressable>
+            </AnimatedButton>
+          </AnimatedButton>
+        </AnimatedButton>
       </Modal> */}
       {/* modal for sending msg */}
       {/* <Modal isVisible={whoseProfile == 1 ? writeNote : askFriendMsg} onBackButtonPress={()=>{if (whoseProfile == 1) setWriteNote(false); else setAskFriendMsg(false)}} avoidKeyboard={true} backdropColor='#222222' backdropOpacity={0.5} onModalShow={()=>{inp2?.current?.focus();}}>
-        <Pressable style={styles.modalBGView} onPress={()=>{Keyboard.dismiss(); if(whoseProfile == 1) setWriteNote(false); else setAskFriendMsg(false);}}>
-          <Pressable onPress={(e)=>e.stopPropagation()} style={styles.modalView}>
+        <AnimatedButton style={styles.modalBGView} onPress={()=>{Keyboard.dismiss(); if(whoseProfile == 1) setWriteNote(false); else setAskFriendMsg(false);}}>
+          <AnimatedButton onPress={(e)=>e.stopPropagation()} style={styles.modalView}>
             {whoseProfile == 1 && <Text style={styles.modalTitleTxt}>익명 쪽지 보내기</Text>}
             {whoseProfile == 2 && <Text style={styles.modalTitleTxt}>{name}</Text>}
             {whoseProfile == 2 && <Text style={styles.modalContentTxt}>친구가 나를 알아볼 수 있도록 인사를 건네주세요!</Text>}
@@ -719,22 +722,22 @@ export default function MyProfile() {
               />
             </View>
             <View style={styles.modalBtnView}>
-              <Pressable style={styles.btnWhite} onPress={()=>{
+              <AnimatedButton style={styles.btnWhite} onPress={()=>{
                 if (whoseProfile == 1) setWriteNote(false);
                 else setAskFriendMsg(false);
               }}>
                 {whoseProfile == 1 && <Text style={styles.btnWhiteTxt}>취소</Text>}
                 {whoseProfile == 2 && <Text style={styles.btnWhiteTxt}>닫기</Text>}
-              </Pressable>
-              {whoseProfile == 1 && <Pressable style={styles.btnYellow} onPress={()=>{if (writeNoteVal != '') sendNote();}}>
+              </AnimatedButton>
+              {whoseProfile == 1 && <AnimatedButton style={styles.btnYellow} onPress={()=>{if (writeNoteVal != '') sendNote();}}>
                 <Text style={styles.btnYellowTxt}>완료</Text>
-              </Pressable>}
-              {whoseProfile == 2 && <Pressable style={styles.btnYellowBig} onPress={()=>{if (askFriendMsgVal != '') askFriend();}}>
+              </AnimatedButton>}
+              {whoseProfile == 2 && <AnimatedButton style={styles.btnYellowBig} onPress={()=>{if (askFriendMsgVal != '') askFriend();}}>
                 <Text style={styles.btnYellowTxt}>친구요청 보내기</Text>
-              </Pressable>}
+              </AnimatedButton>}
             </View>
-          </Pressable>
-        </Pressable>
+          </AnimatedButton>
+        </AnimatedButton>
       </Modal>
       {whoseProfile == 1 && popup && <ToastScreen
         height = {21}

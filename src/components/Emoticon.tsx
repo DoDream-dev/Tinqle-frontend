@@ -2,6 +2,7 @@ import React, {useEffect, useState} from 'react';
 import {StyleSheet, Text, Pressable} from 'react-native';
 import {svgXml} from '../../assets/image/svgXml';
 import {SvgXml} from 'react-native-svg';
+import AnimatedButton from './AnimatedButton';
 type EmoticonProps = {
   emotion: string;
   count: number;
@@ -28,7 +29,7 @@ export default function Emoticon(props: EmoticonProps) {
   };
 
   return (
-    <Pressable
+    <AnimatedButton
       style={[
         styles.entire,
         mine
@@ -63,7 +64,7 @@ export default function Emoticon(props: EmoticonProps) {
           {count}
         </Text>
       )}
-    </Pressable>
+    </AnimatedButton>
   );
 }
 

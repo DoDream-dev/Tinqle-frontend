@@ -177,14 +177,14 @@ export default function CommentItem(props: CommentItemProps) {
             {content}
           </Text>
           {childData != null && accountId != null && (
-            <Pressable onPress={() => setWriteChildCmt(index)}>
+            <AnimatedButton onPress={() => setWriteChildCmt(index)}>
               <SvgXml width={24} height={24} xml={svgXml.icon.newCommentIcon} />
-            </Pressable>
+            </AnimatedButton>
           )}
         </View>
         {accountId != null && (
           <View style={styles.btnView}>
-            <Pressable
+            <AnimatedButton
               style={[
                 styles.reactToComment,
                 props.isReactEmoticon
@@ -204,13 +204,13 @@ export default function CommentItem(props: CommentItemProps) {
                   {props.emoticonCount}
                 </Text>
               )}
-            </Pressable>
+            </AnimatedButton>
             {isAuthor && (
-              <Pressable
+              <AnimatedButton
                 style={{marginLeft: 4}}
                 onPress={() => setShowContextModal(commentId)}>
                 <SvgXml width={24} height={24} xml={svgXml.icon.menu} />
-              </Pressable>
+              </AnimatedButton>
             )}
           </View>
         )}
@@ -276,7 +276,7 @@ export default function CommentItem(props: CommentItemProps) {
         >
       </Modal> */}
       {showContextModal == commentId && (
-        <Pressable
+        <AnimatedButton
           style={{zIndex: 1, flex: 1, position: 'absolute', right: 25, top: 20}}
           onPress={e => {
             e.stopPropagation();
@@ -285,7 +285,7 @@ export default function CommentItem(props: CommentItemProps) {
           <View style={[styles.modalView]}>
             <Text style={styles.modalText}>삭제하기</Text>
           </View>
-        </Pressable>
+        </AnimatedButton>
       )}
     </AnimatedButton>
   );
