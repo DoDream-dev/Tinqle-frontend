@@ -156,10 +156,14 @@ export default function AppInner() {
               size: number;
             }) => (
               <SvgXml
-                fill={props.focused ? '#A55FFF' : '#888888'}
+                // fill={props.focused ? '#A55FFF' : '#888888'}
                 width={28}
                 height={28}
-                xml={svgXml.bottomTab.feed}
+                xml={
+                  props.focused
+                    ? svgXml.bottomTab.feedColor
+                    : svgXml.bottomTab.feed
+                }
               />
             ),
           }}
@@ -187,10 +191,14 @@ export default function AppInner() {
               size: number;
             }) => (
               <SvgXml
-                fill={props.focused ? '#A55FFF' : '#888888'}
+                // fill={props.focused ? '#A55FFF' : '#888888'}
                 width={28}
                 height={28}
-                xml={svgXml.bottomTab.friend}
+                xml={
+                  props.focused
+                    ? svgXml.bottomTab.friendColor
+                    : svgXml.bottomTab.friend
+                }
               />
             ),
           }}
@@ -228,10 +236,14 @@ export default function AppInner() {
               size: number;
             }) => (
               <SvgXml
-                fill={props.focused ? '#A55FFF' : '#888888'}
+                // fill={props.focused ? '#A55FFF' : '#888888'}
                 width={28}
                 height={28}
-                xml={svgXml.bottomTab.profile}
+                xml={
+                  props.focused
+                    ? svgXml.bottomTab.profileColor
+                    : svgXml.bottomTab.profile
+                }
               />
             ),
           }}
