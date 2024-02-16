@@ -587,6 +587,12 @@ export default function SearchFriends() {
                       uri: item.profileImageUrl,
                     }}
                   />
+                  //   <Image
+                  //   style={{width: 32, height: 32, borderRadius: 16}}
+                  //   source={{
+                  //     uri: item.profileImageUrl,
+                  //   }}
+                  // />
                 )}
               </View>
               <View style={styles.friendmiddle}>
