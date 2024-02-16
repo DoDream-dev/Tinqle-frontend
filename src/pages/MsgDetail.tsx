@@ -73,7 +73,7 @@ export default function MsgDetail({navigation, route}:MsgDetailScreenProps) {
 
   const data=[
     {isAuthor:false, content:'넵', createdAt:'13:10'},
-    {isAuthor:false, content:'아연님 디자인 좀 빨리 하시죠', createdAt:'13:10'},
+    {isAuthor:false, content:'아연님 디자인 좀 빨리 하시죠.', createdAt:'13:10'},
     {isAuthor:true, content:'제가 릴스를 보겠다는데 왜 방해합니까?', createdAt:'13:14'},
     {isAuthor:false, content:'제가 개발을 하겠다는데 왜 방해합니까? 승주님도 전력 질주중입니다', createdAt:'13:14'},
     {isAuthor:true, content:'미안합니다. 정신 차리겠습니다', createdAt:'13:15'},
