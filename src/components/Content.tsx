@@ -39,6 +39,7 @@ type ContentProps = {
   feedId: number;
   deleteFeedId: number;
   setDeleteFeedId: React.Dispatch<React.SetStateAction<number>>;
+  isKnock: boolean;
 };
 
 export default function Content(props: ContentProps) {
@@ -53,10 +54,11 @@ export default function Content(props: ContentProps) {
   const showWhoseModal = props.showWhoseModal;
   const setShowWhoseModal = props.setShowWhoseModal;
   const setWhichPopup = props.setWhichPopup;
+  const isKnock = props.isKnock;
 
   return (
     <View style={styles.entire}>
-      <ContentProfile 
+      <ContentProfile
         nickname={nickname}
         status={status}
         createdAt={createdAt}
@@ -73,6 +75,7 @@ export default function Content(props: ContentProps) {
 
       {content != '' && (
         <View style={styles.content}>
+          {isKnock ? <Text style={styles.isKnockText}>지금 뭐해?</Text> : null}
           <Text style={styles.contentTxt}>{content}</Text>
         </View>
       )}
@@ -147,8 +150,6 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingLeft: 8,
     // backgroundColor:'red'
-    // flexDirection: 'row',
-    // justifyContent: 'space-between',
   },
   txtNickname: {
     // backgroundColor: 'blue',
@@ -168,8 +169,8 @@ const styles = StyleSheet.create({
     color: '#848484',
   },
   content: {
-    justifyContent: 'center',
-    alignItems: 'flex-start',
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
     alignContent: 'center',
     marginTop: 10,
     // backgroundColor: 'blue',
@@ -190,6 +191,13 @@ const styles = StyleSheet.create({
     color: '#F0F0F0',
     // includeFontPadding:true
     // paddingBottom:5
+  },
+  isKnockText: {
+    fontWeight: '500',
+    fontSize: 13,
+    lineHeight: 21,
+    color: '#A55FFF',
+    marginRight: 4,
   },
   recomment: {
     marginTop: 8,

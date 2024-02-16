@@ -173,7 +173,7 @@ export default function FeedNavigation() {
     } else if (type == 'CREATE_FRIENDSHIP_REQUEST') {
       navigation.navigate('Notis');
     } else if (type == 'SEND_KNOCK') {
-      navigation.navigate('Notis');
+      navigation.navigate('FeedList', {isKnock: true});
     } else if (type == 'REACT_EMOTICON_ON_COMMENT') {
       navigation.navigate('FeedDetail', {feedId: redirectTargetId});
     } else if (type == 'CREATE_KNOCK_FEED') {
@@ -188,9 +188,9 @@ export default function FeedNavigation() {
     );
     // console.log('type : ', type);
     // console.log('redirectTargetId : ', redirectTargetId);
-    if (type !== null && redirectTargetId !== null) {
-      noticeNavigation(type, redirectTargetId);
 
+    if (type && redirectTargetId) {
+      noticeNavigation(type, redirectTargetId);
       // read_notification
       const notificationId = await AsyncStorage.getItem('pushNot_id');
       try {
@@ -292,6 +292,7 @@ export default function FeedNavigation() {
           ),
           headerStyle: {
             backgroundColor: '#202020',
+            // backgroundColor: 'blue',
           },
         })}
       />

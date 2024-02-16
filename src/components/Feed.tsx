@@ -1,14 +1,15 @@
+/* eslint-disable prettier/prettier */
 import React, {useState} from 'react';
 import {Pressable, StyleSheet, Text, View} from 'react-native';
 import ContentFeedBottom from './ContentFeedBottom';
 import Content from './Content';
 import _ from 'lodash';
 import Config from 'react-native-config';
-import axios, { AxiosError } from 'axios';
-import { throttleTime } from '../hooks/Throttle';
+import axios, {AxiosError} from 'axios';
+import {throttleTime} from '../hooks/Throttle';
 import userSlice from '../slices/user';
-import { useNavigation } from '@react-navigation/native';
-import { Shadow } from 'react-native-shadow-2';
+import {useNavigation} from '@react-navigation/native';
+import {Shadow} from 'react-native-shadow-2';
 
 type EmoticonsProps = {
   smileEmoticonCount: number;
@@ -23,6 +24,7 @@ type EmoticonsProps = {
 type FeedProps = {
   mine: boolean;
   detail: boolean;
+  isKnock: boolean;
   commentCnt: number;
   createdAt: string;
   content: string;
@@ -50,6 +52,7 @@ export default function Feed(props: FeedProps) {
   const mine = props.mine;
   const content = props.content;
   const detail = props.detail;
+  const isKnock = props.isKnock;
   const commentCnt = props.commentCnt;
   const emoticons = props.emoticons;
   const createdAt = props.createdAt;
@@ -110,7 +113,14 @@ export default function Feed(props: FeedProps) {
   }, throttleTime);
 
   return (
-    <View style={styles.entire}>
+    <View
+      style={[
+        styles.entire,
+        {
+          borderWidth: isKnock ? 1 : undefined,
+          borderColor: isKnock ? '#A55FFF' : undefined,
+        },
+      ]}>
       <Content
         nickname={nickname}
         status={status}
@@ -126,6 +136,7 @@ export default function Feed(props: FeedProps) {
         feedId={props.feedId}
         deleteFeedId={props.deleteFeedId}
         setDeleteFeedId={props.setDeleteFeedId}
+        isKnock={isKnock}
       />
       <ContentFeedBottom
         mine={mine}
@@ -136,14 +147,20 @@ export default function Feed(props: FeedProps) {
         feedId={props.feedId}
         whoReact={props.whoReact}
       />
-      {props.deleteFeedId == props.feedId && <Pressable 
-        style={{zIndex:1,flex:1, position:'absolute', right:25, top:20}}
-        onPress={(e) => {e.stopPropagation(); deleteFeed();}}
-      >
-        <Shadow distance={2} startColor="rgba(0, 0, 0, 0.10)">
-          <View style={[styles.modalView]}><Text style={styles.modalText}>삭제하기</Text></View>
-        </Shadow>
-      </Pressable>}
+      {props.deleteFeedId === props.feedId ? (
+        <Pressable
+          style={{zIndex: 1, flex: 1, position: 'absolute', right: 25, top: 20}}
+          onPress={e => {
+            e.stopPropagation();
+            deleteFeed();
+          }}>
+          <Shadow distance={2} startColor="rgba(0, 0, 0, 0.10)">
+            <View style={[styles.modalView]}>
+              <Text style={styles.modalText}>삭제하기</Text>
+            </View>
+          </Shadow>
+        </Pressable>
+      ) : null}
     </View>
   );
 }
@@ -152,21 +169,21 @@ const styles = StyleSheet.create({
   entire: {
     paddingBottom: 12,
     width: '100%',
+    borderRadius: 10,
   },
-  modalView:{
-    backgroundColor:'#202020',
-    paddingHorizontal:12,
-    paddingVertical:9,
-    borderRadius:5,
-    elevation:1
+  modalView: {
+    backgroundColor: '#202020',
+    paddingHorizontal: 12,
+    paddingVertical: 9,
+    borderRadius: 5,
+    elevation: 1,
   },
-  modalText:{
-    color:'#F0F0F0',
-    fontSize:15,
-    fontWeight:'400'
-  }
+  modalText: {
+    color: '#F0F0F0',
+    fontSize: 15,
+    fontWeight: '400',
+  },
 });
-function dispatch(arg0: { payload: any; type: "user/setToken"; }) {
+function dispatch(arg0: {payload: any; type: 'user/setToken'}) {
   throw new Error('Function not implemented.');
 }
-

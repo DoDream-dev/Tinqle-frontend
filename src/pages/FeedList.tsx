@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unstable-nested-components */
 /* eslint-disable react-native/no-inline-styles */
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import React, {useCallback, useState, useRef, useEffect} from 'react';
@@ -68,6 +69,8 @@ type itemProps = {
 };
 
 export default function FeedList({navigation, route}: FeedListScreenProps) {
+  const textInputRef = useRef(null);
+
   const dispatch = useAppDispatch();
   const deleted = useSelector((state: RootState) => !!state.user.deleted);
   const setDeleted = () => {
@@ -111,8 +114,9 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
   const [whichPopup, setWhichPopup] = useState('');
   const [uploadBtnLoading, setUploadBtnLoading] = useState(false);
   const [onFocus, setOnFocus] = useState(false);
-
+  const [isKnock, setIsKnock] = useState(false);
   const [deleteFeedId, setDeleteFeedId] = useState(-1);
+  const [imagePicking, setImagePicking] = useState(false);
 
   // useEffect(() => {
   //   const keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', (event) => {
@@ -234,9 +238,34 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
   // Effect for make new feed
   useEffect(() => {
     if (uploadBtnLoading) {
-      sendNewFeed();
+      if (isKnock) {
+        sendNewKnock();
+      } else {
+        sendNewFeed();
+      }
     }
   }, [uploadBtnLoading]);
+
+  // useFocusEffect hook to write Knock
+  useFocusEffect(
+    React.useCallback(() => {
+      try {
+        if (route.params?.isKnock) {
+          console.log('Screen focused: ', route.params?.isKnock);
+          setIsKnock(route.params?.isKnock);
+          setPlaceholder('지금 뭐해?에 답변하기');
+          textInputRef.current.focus();
+          route.params.isKnock = false;
+        }
+      } catch (error) {
+        console.log(error);
+      }
+
+      return () => {
+        console.log('Screen lost focus');
+      };
+    }, [route]),
+  );
 
   useFocusEffect(
     useCallback(() => {
@@ -277,6 +306,13 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
       },
     );
   }, []);
+
+  // useEffect for image picking & not cancel isKnock
+  useEffect(() => {
+    if (imagePicking) {
+      imagePick();
+    }
+  }, [imagePicking]);
 
   const getData = async () => {
     if (!isLast) {
@@ -354,7 +390,62 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
     }
   }, throttleTime);
 
-  const pressEmoticon = async (feedId: number, emoticon: string) => {
+  const sendNewKnock = _.throttle(async () => {
+    console.log('sendNewKnock');
+    try {
+      if (selectImg) {
+        const response = await axios.post(
+          `${Config.API_URL}/images/single`,
+          uploadImage,
+          {
+            headers: {'Content-Type': 'multipart/form-data'},
+            transformRequest: (data, headers) => {
+              return data;
+            },
+          },
+        );
+        // console.log(response.data.data.files[0].fileUrl);
+        const response2 = await axios.post(`${Config.API_URL}/feeds/knock`, {
+          content: feedContent,
+          feedImageUrl: [response.data.data.files[0].fileUrl],
+        });
+        // console.log(response2.data.data);
+        setFeedContent('');
+        setSelectImg(false);
+        setImgData({uri: '', type: ''});
+        setUploadImage(undefined);
+        setIsKnock(false);
+        setRefresh(!refresh);
+        setUploadBtnLoading(false);
+      } else {
+        const response = await axios.post(`${Config.API_URL}/feeds/knock`, {
+          content: feedContent,
+          feedImageUrl: [],
+        });
+        // console.log(response.data.data);
+        setFeedContent('');
+        setSelectImg(false);
+        setImgData({uri: '', type: ''});
+        setUploadImage(undefined);
+        setIsKnock(false);
+        setRefresh(!refresh);
+        setUploadBtnLoading(false);
+      }
+      setKBsize(0);
+    } catch (error) {
+      const errorResponse = (error as AxiosError<{message: string}>).response;
+      console.log(errorResponse.data);
+      setIsKnock(false);
+      setFeedContent('');
+      setSelectImg(false);
+      setImgData({uri: '', type: ''});
+      setUploadImage(undefined);
+      setIsKnock(false);
+      setUploadBtnLoading(false);
+    }
+  }, throttleTime);
+
+  const pressEmoticon = _.debounce(async (feedId: number, emoticon: string) => {
     try {
       const response = await axios.put(
         `${Config.API_URL}/emoticons/feeds/${feedId}`,
@@ -375,10 +466,10 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
             deleted: true,
           }),
         );
-        setRefresh(!refresh);
+        // setRefresh(!refresh);
       }
     }
-  };
+  }, throttleTimeEmoticon);
 
   const whoReact = _.throttle(async (feedId: number) => {
     try {
@@ -447,6 +538,39 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
     // setRefresh(!refresh)
     // startRefresh()
     setRefresh(!refresh);
+  };
+
+  const imagePick = async () => {
+    ImagePicker.openPicker({
+      multiple: false,
+      mediaType: 'photo',
+      // cropping:true,
+    })
+      .then(image => {
+        // console.log(image)
+        let name = image.path.split('/');
+        const imageFormData = new FormData();
+        let file = {
+          uri: image.path,
+          type: image.mime,
+          name: name[name.length - 1],
+        };
+        imageFormData.append('file', file);
+        // console.log(file)
+        setImgData({
+          uri: image.path,
+          type: image.mime,
+        });
+        setSelectImg(true);
+        imageFormData.append('type', 'feed');
+        setUploadImage(imageFormData);
+      })
+      .then(() => {
+        setImagePicking(false);
+      })
+      .catch(() => {
+        setImagePicking(false);
+      });
   };
 
   return (
@@ -534,6 +658,7 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
                       <Feed
                         mine={item.isAuthor}
                         detail={false}
+                        isKnock={item.isKnock}
                         commentCnt={item.commentCount}
                         createdAt={item.createdAt}
                         content={item.content}
@@ -657,10 +782,18 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
                     <SvgXml width={32} height={32} xml={svgXml.status.travel} />
                   )}
                 </Pressable>
-                <View style={[styles.newFeedTxtInputContain]}>
+                <View
+                  style={[
+                    styles.newFeedTxtInputContain,
+                    {
+                      borderWidth: isKnock ? 1 : undefined,
+                      borderColor: isKnock ? '#A55FFF' : undefined,
+                    },
+                  ]}>
                   <TextInput
+                    ref={textInputRef}
                     placeholder={placeholder}
-                    placeholderTextColor={'#888888'}
+                    placeholderTextColor={isKnock ? '#A55FFF' : '#888888'}
                     style={[
                       styles.newFeedTxtInput,
                       {
@@ -672,11 +805,18 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
                     ]}
                     onFocus={() => {
                       setOnFocus(true);
-                      setPlaceholder('');
+                      // setPlaceholder('');
                     }}
                     onBlur={() => {
                       setOnFocus(false);
-                      setPlaceholder('지금 기분이 어때요?');
+                      if (
+                        !imagePicking &&
+                        feedContent.trim() == '' &&
+                        !selectImg
+                      ) {
+                        setIsKnock(false);
+                        setPlaceholder('지금 기분이 어때요?');
+                      }
                     }}
                     onChangeText={(text: string) => {
                       setFeedContent(text);
@@ -700,32 +840,18 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
                 </View>
                 <Pressable
                   style={styles.addPhoto}
-                  onPress={() =>
-                    ImagePicker.openPicker({
-                      multiple: false,
-                      mediaType: 'photo',
-                      // cropping:true,
-                    }).then(image => {
-                      // console.log(image)
-                      let name = image.path.split('/');
-                      const imageFormData = new FormData();
-                      let file = {
-                        uri: image.path,
-                        type: image.mime,
-                        name: name[name.length - 1],
-                      };
-                      imageFormData.append('file', file);
-                      // console.log(file)
-                      setImgData({
-                        uri: image.path,
-                        type: image.mime,
-                      });
-                      setSelectImg(true);
-                      imageFormData.append('type', 'feed');
-                      setUploadImage(imageFormData);
-                    })
-                  }>
-                  <SvgXml width={24} height={24} xml={svgXml.icon.addphoto} />
+                  onPress={() => {
+                    setImagePicking(true);
+                  }}>
+                  {isKnock ? (
+                    <SvgXml
+                      width={24}
+                      height={24}
+                      xml={svgXml.icon.addphotocolor}
+                    />
+                  ) : (
+                    <SvgXml width={24} height={24} xml={svgXml.icon.addphoto} />
+                  )}
                 </Pressable>
                 <Pressable
                   style={
@@ -839,7 +965,7 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
               isVisible={changeStatus}
               backdropColor="#101010"
               backdropOpacity={0.5}
-              swipeDirection={'down'}
+              swipeDirection={['down', 'left', 'right', 'up']}
               onSwipeComplete={() => setChangeStatus(false)}
               onBackButtonPress={() => setChangeStatus(false)}>
               <Pressable
@@ -1191,6 +1317,7 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: '400',
     flex: 1,
+    maxHeight: 80,
     // backgroundColor: '#333333',
     // backgroundColor: 'blue',
   },
