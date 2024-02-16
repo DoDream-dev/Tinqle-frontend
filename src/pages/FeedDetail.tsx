@@ -515,6 +515,17 @@ export default function FeedDetail({navigation, route}: FeedDetailScreenProps) {
 
   const flatListRef = useRef(null);
 
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  const handleFlatListScroll = event => {
+    const yOffset = event.nativeEvent.contentOffset.y;
+    if (yOffset === 0) {
+      setIsScrolled(false);
+    } else {
+      setIsScrolled(true);
+    }
+  };
+
   return (
     <Pressable
       style={{flex: 1}}
@@ -535,20 +546,22 @@ export default function FeedDetail({navigation, route}: FeedDetailScreenProps) {
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         keyboardVerticalOffset={StatusBarHeight + 44}>
         <View style={styles.entire}>
-          <LinearGradient
-            colors={['#202020', '#20202000']}
-            start={{x: 0, y: 0}}
-            end={{x: 0, y: 1}}
-            style={{
-              height: 16,
-              width: '100%',
-              // backgroundColor: 'red',
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              zIndex: 100,
-            }}
-          />
+          {isScrolled ? (
+            <LinearGradient
+              colors={['#202020', '#20202000']}
+              start={{x: 0, y: 0}}
+              end={{x: 0, y: 1}}
+              style={{
+                height: 16,
+                width: '100%',
+                // backgroundColor: 'red',
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                zIndex: 100,
+              }}
+            />
+          ) : null}
           <View
             style={{
               paddingHorizontal: 16,
@@ -560,6 +573,8 @@ export default function FeedDetail({navigation, route}: FeedDetailScreenProps) {
             }}>
             <View style={styles.commentView}>
               <FlatList
+                onScroll={handleFlatListScroll}
+                scrollEventThrottle={20}
                 refreshControl={
                   <RefreshControl
                     refreshing={refreshing}
