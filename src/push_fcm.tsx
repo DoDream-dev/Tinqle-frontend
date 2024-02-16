@@ -114,6 +114,7 @@ class FCMService {
       .then(remoteMessage => {
         if (remoteMessage) {
           const notification = remoteMessage.notification;
+          // console.log('!!!! getInitialNotification : ', notification);
           onOpenNotification(notification);
         }
       })
@@ -136,6 +137,10 @@ class FCMService {
           const data = remoteMessage.data;
           onOpenNotification(data);
         }
+        // else {
+        //   console.log('1, #####', remoteMessage);
+        //   onOpenNotification(remoteMessage);
+        // }
 
         onNotification(notification);
       }

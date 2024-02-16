@@ -18,13 +18,23 @@ class LocalNotificationService {
       onNotification: function (notification) {
         // 앱내 알림 시 오는 부분
         if (notification.userInteraction) {
-          console.log('Notification was pressed!', notification);
-          AsyncStorage.setItem(
-            'pushNoti_redirectTargetId',
-            notification.data.redirectTargetId,
-          );
-          AsyncStorage.setItem('pushNot_type', notification.data.type);
-          AsyncStorage.setItem('pushNot_id', notification.data.notificationId);
+          console.log('@@ Notification was pressed!', notification);
+
+          if (
+            notification.data &&
+            notification.data.redirectTargetId &&
+            notification.data.type
+          ) {
+            AsyncStorage.setItem(
+              'pushNoti_redirectTargetId',
+              notification.data.redirectTargetId,
+            );
+            AsyncStorage.setItem('pushNot_type', notification.data.type);
+            AsyncStorage.setItem(
+              'pushNot_id',
+              notification.data.notificationId,
+            );
+          }
         }
 
         console.log('[LocalNotificationService] onNotification ', notification);
@@ -75,22 +85,20 @@ class LocalNotificationService {
   ) => {
     // console.log('TEST : ', id, title, message, data, options);
 
-    if (Platform.OS === 'ios') {
-      PushNotification.localNotification({
-        // Android only Properties
-        ...this.buildAndroidNotification(id, title, message, data, options),
+    PushNotification.localNotification({
+      // Android only Properties
+      ...this.buildAndroidNotification(id, title, message, data, options),
 
-        // IOS and Android properties
-        ...this.buildIOSNotification(id, title, message, data, options),
+      // IOS and Android properties
+      ...this.buildIOSNotification(id, title, message, data, options),
 
-        // IOS and Android properties
-        title: title || '',
-        message: message || '',
-        playSound: options.playSound || false,
-        soundName: options.soundName || 'default',
-        userInteraction: false,
-      });
-    }
+      // IOS and Android properties
+      title: title || '',
+      message: message || '',
+      playSound: options.playSound || false,
+      soundName: options.soundName || 'default',
+      userInteraction: false,
+    });
   };
 
   buildAndroidNotification = (

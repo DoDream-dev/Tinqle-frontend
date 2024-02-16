@@ -265,6 +265,15 @@ export default function Notis({}: NotisScreenProps) {
     }
   };
 
+  const writeKnock = async (notificationId: number) => {
+    try {
+      navigation.navigate('FeedList', {isKnock: true});
+      deleteNotis(notificationId);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   const goToFeed = (feedId: number) => {
     navigation.navigate('FeedDetail', {feedId: feedId});
   };
@@ -342,7 +351,7 @@ export default function Notis({}: NotisScreenProps) {
     } else if (notificationType == 'CREATE_FRIENDSHIP_REQUEST') {
       setShowProfileModal(accountId);
     } else if (notificationType == 'SEND_KNOCK') {
-      navigation.navigate('FeedList');
+      // navigation.navigate('FeedList');
     } else if (notificationType == 'REACT_EMOTICON_ON_COMMENT') {
       goToFeed(redirectTargetId);
     } else if (notificationType == 'CREATE_KNOCK_FEED') {
@@ -435,6 +444,9 @@ export default function Notis({}: NotisScreenProps) {
                     : styles.eachNotis
                 }
                 onPress={async () => {
+                  if (item.notificationType === 'SEND_KNOCK') {
+                    return;
+                  }
                   noticeClicked(index, item.notificationId);
 
                   notiNavigation(
@@ -502,7 +514,15 @@ export default function Notis({}: NotisScreenProps) {
                       }}>
                       <Text style={styles.notisCheckBtnTxt}>수락하기</Text>
                     </Pressable>
-                  ) : item.notificationType === 'SEND_KNOCK' ? null : null // </Pressable> //   <Text style={styles.notisCheckBtnTxt}>글쓰기</Text> //   }}> //     console.log('글쓰기'); //   onPress={() => { //   style={styles.notisCheckBtn} // <Pressable
+                  ) : item.notificationType === 'SEND_KNOCK' ? (
+                    <Pressable
+                      style={styles.notisCheckBtn}
+                      onPress={() => {
+                        writeKnock(item.notificationId);
+                      }}>
+                      <Text style={styles.notisCheckBtnTxt}>글쓰기</Text>
+                    </Pressable>
+                  ) : null // </Pressable> //   <Text style={styles.notisCheckBtnTxt}>글쓰기</Text> //   }}> //     console.log('글쓰기'); //   onPress={() => { //   style={styles.notisCheckBtn} // <Pressable
                 }
                 <Pressable
                   style={styles.xBtn}

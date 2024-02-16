@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react-native/no-inline-styles */
 /* eslint-disable react/no-unstable-nested-components */
 import React, {useEffect, useState} from 'react';
@@ -25,6 +26,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios, {AxiosError} from 'axios';
 import Config from 'react-native-config';
 import NetInfo, {useNetInfo} from '@react-native-community/netinfo';
+import {StatusBarHeight} from './src/components/Safe';
 
 export type NotificationProps = {
   title: string;
@@ -54,7 +56,7 @@ export default function App() {
     } else if (type == 'CREATE_FRIENDSHIP_REQUEST') {
       navigation.navigate('Notis');
     } else if (type == 'SEND_KNOCK') {
-      navigation.navigate('Notis');
+      navigation.navigate('FeedList', {isKnock: true});
     } else if (type == 'REACT_EMOTICON_ON_COMMENT') {
       navigation.navigate('FeedDetail', {feedId: redirectTargetId});
     } else if (type == 'CREATE_KNOCK_FEED') {
@@ -126,7 +128,7 @@ export default function App() {
       } else if (type == 'CREATE_FRIENDSHIP_REQUEST') {
         navigation.navigate('Notis');
       } else if (type == 'SEND_KNOCK') {
-        navigation.navigate('Notis');
+        navigation.navigate('FeedList', {isKnock: true});
       } else if (type == 'REACT_EMOTICON_ON_COMMENT') {
         navigation.navigate('FeedDetail', {feedId: redirectTargetId});
       } else if (type == 'CREATE_KNOCK_FEED') {
@@ -172,6 +174,36 @@ export default function App() {
     ) : null;
   };
 
+  //notification
+  const NetworkComponent = () => {
+    const translateY = useSharedValue(-10);
+    const opacity = useSharedValue(0);
+
+    useEffect(() => {
+      if (!network) {
+        translateY.value = withSpring(0, {mass: 0.1});
+        opacity.value = withTiming(1, {
+          duration: 500,
+          easing: Easing.out(Easing.exp),
+        });
+      }
+    }, [network]);
+
+    const animatedStyle = useAnimatedStyle(() => {
+      'worklet';
+      return {
+        transform: [{translateY: translateY.value}],
+        opacity: opacity.value,
+      };
+    });
+
+    return !network ? (
+      <Animated.View style={[styles.networkAlert, animatedStyle]}>
+        <Text style={styles.networkText}>네트워크 연결이 불안정합니다.</Text>
+      </Animated.View>
+    ) : null;
+  };
+
   const onNotification = (notify: any) => {
     console.log('[onNotification] notify 알림 왔을 때 :', notify);
     const options = {
@@ -179,8 +211,8 @@ export default function App() {
       playSound: true,
     };
 
-    if (Platform.OS === 'android' && notify !== undefined) {
-      // console.log('1. [onNotification] notify.body :', notify);
+    if (Platform.OS === 'android' && notify) {
+      console.log('1. [onNotification] notify.body :', notify);
       // console.log('1. [onNotification] notify.body :', notify.body);
       localNotificationService.showNotification(
         0,
@@ -240,23 +272,14 @@ export default function App() {
       };
       setNotiData(data);
 
-      PushNotification.localNotification({
-        title: notify.title,
-        message: notify.message,
-      });
+      // PushNotification.localNotification({
+      //   title: notify.title,
+      //   message: notify.message,
+      // });
 
       PushNotification.configure({
         onNotification: function (notification) {
-          // console.log('NOTIFICATION:', notification);
-
-          if (notification.userInteraction) {
-            // console.log('Notification was pressed!');
-            noticeNavigation_inapp_and(
-              notify.data.type,
-              notify.data.redirectTargetId,
-              notify.data.notificationId,
-            );
-          }
+          navigation.navigate('Notis');
         },
       });
     }
@@ -295,6 +318,7 @@ export default function App() {
     fcmService.register(onRegister, onNotification, onOpenNotification);
     localNotificationService.configure(onOpenNotification);
   }, []);
+  // }, [onOpenNotification]);
 
   useEffect(() => {
     PushNotification.popInitialNotification(notification => {
@@ -325,13 +349,9 @@ export default function App() {
 
   return (
     <Provider store={store}>
-      {/* {network ? null : (
-        <View style={{height: 200, backgroundColor: 'white'}}>
-          <Text>"네트워크 없음!!"</Text>
-        </View>
-      )} */}
       {Platform.OS === 'ios' ? (
         <>
+          <NetworkComponent />
           <NotificationComponent
             title={notiData.title}
             message={notiData.body}
@@ -340,6 +360,7 @@ export default function App() {
         </>
       ) : (
         <SafeAreaProvider>
+          <NetworkComponent />
           <AppInner />
         </SafeAreaProvider>
       )}
@@ -391,5 +412,28 @@ const styles = StyleSheet.create({
   now: {
     fontWeight: 'normal',
     color: '#3F3F3F',
+  },
+  networkAlert: {
+    position: 'absolute',
+    top: Platform.OS === 'ios' ? StatusBarHeight + 44 : 44,
+    left: 0,
+    right: 0,
+    zIndex: 100,
+    justifyContent: 'center',
+    width: '100%',
+    height: 32,
+    backgroundColor: '#333333',
+  },
+  networkText: {
+    color: '#F0F0F0',
+    textAlign: 'center',
+    fontFamily: 'Pretendard',
+    fontSize: 13,
+    fontStyle: 'normal',
+    fontWeight: '500',
+    lineHeight: 16,
+    // lineHeight: 'normal',
+    letterSpacing: -0.26,
+    textDecorationLine: 'underline',
   },
 });
