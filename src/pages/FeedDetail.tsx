@@ -574,7 +574,7 @@ export default function FeedDetail({navigation, route}: FeedDetailScreenProps) {
             <View style={styles.commentView}>
               <FlatList
                 onScroll={handleFlatListScroll}
-                scrollEventThrottle={20}
+                scrollEventThrottle={200}
                 refreshControl={
                   <RefreshControl
                     refreshing={refreshing}
