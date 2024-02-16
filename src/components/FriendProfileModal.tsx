@@ -68,7 +68,7 @@ export default function FriendProfileModal(props: ProfileProps) {
       setFriendshipRequestId(response.data.data.friendshipRequestId);
     } catch (error) {
       const errorResponse = (error as AxiosError<{message: string}>).response;
-      console.log(errorResponse.data);
+      // console.log(errorResponse.data);
     }
   };
 

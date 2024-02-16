@@ -97,12 +97,12 @@ export default function CommentItem(props: CommentItemProps) {
       const response = await axios.put(
         `${Config.API_URL}/emoticons/comments/${commentId}`,
       );
-      console.log(response.data);
+      // console.log(response.data);
       setRefresh(true);
       setRefresh(false);
     } catch (error) {
       const errorResponse = (error as AxiosError<{message: string}>).response;
-      console.log(errorResponse.data);
+      // console.log(errorResponse.data);
     }
   };
 
