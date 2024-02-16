@@ -8,7 +8,6 @@ import {
   Text,
   StyleSheet,
   Pressable,
-  Modal as M,
   TextInput,
   FlatList,
   KeyboardAvoidingView,
@@ -36,6 +35,7 @@ import {useHeaderHeight} from '@react-navigation/elements';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import LottieView from 'lottie-react-native';
 import CommentItem from '../components/CommentItem';
+import LinearGradient from 'react-native-linear-gradient';
 
 type FeedDetailScreenProps = NativeStackScreenProps<
   RootStackParamList,
@@ -515,6 +515,17 @@ export default function FeedDetail({navigation, route}: FeedDetailScreenProps) {
 
   const flatListRef = useRef(null);
 
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  const handleFlatListScroll = event => {
+    const yOffset = event.nativeEvent.contentOffset.y;
+    if (yOffset === 0) {
+      setIsScrolled(false);
+    } else {
+      setIsScrolled(true);
+    }
+  };
+
   return (
     <Pressable
       style={{flex: 1}}
@@ -535,6 +546,22 @@ export default function FeedDetail({navigation, route}: FeedDetailScreenProps) {
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         keyboardVerticalOffset={StatusBarHeight + 44}>
         <View style={styles.entire}>
+          {isScrolled ? (
+            <LinearGradient
+              colors={['#202020', '#20202000']}
+              start={{x: 0, y: 0}}
+              end={{x: 0, y: 1}}
+              style={{
+                height: 16,
+                width: '100%',
+                // backgroundColor: 'red',
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                zIndex: 100,
+              }}
+            />
+          ) : null}
           <View
             style={{
               paddingHorizontal: 16,
@@ -546,6 +573,8 @@ export default function FeedDetail({navigation, route}: FeedDetailScreenProps) {
             }}>
             <View style={styles.commentView}>
               <FlatList
+                onScroll={handleFlatListScroll}
+                scrollEventThrottle={20}
                 refreshControl={
                   <RefreshControl
                     refreshing={refreshing}
@@ -809,7 +838,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#202020',
     // paddingHorizontal:16,
-    paddingTop: 10,
+    // paddingTop: 10,
     flexDirection: 'row',
   },
   feedView: {
@@ -817,7 +846,7 @@ const styles = StyleSheet.create({
     // marginTop:10,
     // paddingHorizontal: 12,
     // width: '100%',
-    // paddingTop: 9,
+    marginTop: 10,
     width: '100%',
     borderRadius: 10,
     backgroundColor: '#333333',
@@ -826,7 +855,7 @@ const styles = StyleSheet.create({
   commentView: {
     width: '100%',
     flex: 1,
-    paddingTop: 12,
+    // paddingTop: 12,
     // paddingVertical: 12,
     borderRadius: 10,
   },

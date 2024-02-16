@@ -292,6 +292,7 @@ export default function FeedNavigation() {
           ),
           headerStyle: {
             backgroundColor: '#202020',
+            // backgroundColor: 'blue',
           },
         })}
       />

@@ -37,6 +37,7 @@
     "react-native-image-crop-picker": "^0.40.0",
     "react-native-image-modal": "^2.0.4",
     "react-native-image-slider-box": "^2.0.7",
+    "react-native-linear-gradient": "^2.8.3",
     "react-native-modal": "^13.0.1",
     "react-native-permissions": "^4.0.4",
     "react-native-push-notification": "^8.1.1",
