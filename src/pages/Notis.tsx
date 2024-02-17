@@ -360,8 +360,6 @@ export default function Notis({}: NotisScreenProps) {
       // navigation.navigate('FeedList');
     } else if (notificationType == 'REACT_EMOTICON_ON_COMMENT') {
       goToFeed(redirectTargetId);
-    } else if (notificationType == 'CREATE_KNOCK_FEED') {
-      goToFeed(redirectTargetId);
     } else {
     }
   };
