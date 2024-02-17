@@ -359,7 +359,12 @@ export default function Notis({}: NotisScreenProps) {
     } else if (notificationType == 'SEND_KNOCK') {
       // navigation.navigate('FeedList');
     } else if (notificationType == 'REACT_EMOTICON_ON_COMMENT') {
-      goToFeed(redirectTargetId);
+      if (await isDeleted(redirectTargetId)) {
+        setPopup('deleted');
+        deleteNotis(notificationId);
+      } else {
+        goToFeed(redirectTargetId);
+      }
     } else {
     }
   };
