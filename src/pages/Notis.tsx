@@ -301,7 +301,11 @@ export default function Notis({}: NotisScreenProps) {
   const isDeleted = async (feedId: number) => {
     try {
       const response = await axios.get(`${Config.API_URL}/feeds/${feedId}`);
-      if (response.data.data) return false;
+      if (response.data.data) {
+        return false;
+      } else {
+        return true;
+      }
     } catch (error) {
       const errorResponse = (error as AxiosError<{message: string}>).response;
       if (
@@ -309,8 +313,10 @@ export default function Notis({}: NotisScreenProps) {
         errorResponse?.data.statusCode == 4010
       ) {
         return true;
+      } else {
+        console.log(errorResponse.data);
+        return false;
       }
-      console.log(errorResponse.data);
     }
   };
 
@@ -356,6 +362,7 @@ export default function Notis({}: NotisScreenProps) {
       goToFeed(redirectTargetId);
     } else if (notificationType == 'CREATE_KNOCK_FEED') {
       goToFeed(redirectTargetId);
+    } else {
     }
   };
 
