@@ -279,7 +279,9 @@ export default function App() {
 
       PushNotification.configure({
         onNotification: function (notification) {
-          navigation.navigate('Notis');
+          if (notification.userInteraction) {
+            navigation.navigate('Notis');
+          }
         },
       });
     }
