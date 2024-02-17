@@ -422,7 +422,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     width: '100%',
     height: 32,
-    backgroundColor: '#333333',
+    backgroundColor: '#B02121',
   },
   networkText: {
     color: '#F0F0F0',
