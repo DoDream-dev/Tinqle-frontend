@@ -122,9 +122,9 @@ export default function CommentItem(props: CommentItemProps) {
 
   return (
     <AnimatedButton
-      disabled={childData && accountId}
+      disabled={childData && accountId ? true : false}
       onPress={() => {
-        if (!childData || !accountId) {
+        if (!childData || accountId) {
           console.log('EEE');
         }
       }}
