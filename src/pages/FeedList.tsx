@@ -786,7 +786,7 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
                   style={[
                     styles.newFeedTxtInputContain,
                     {
-                      borderRadius: isKnock ? 10 : undefined,
+                      borderRadius: 10,
                       borderWidth: isKnock ? 1 : undefined,
                       borderColor: isKnock ? '#A55FFF' : undefined,
                     },
