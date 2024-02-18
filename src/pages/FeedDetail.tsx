@@ -212,7 +212,7 @@ export default function FeedDetail({navigation, route}: FeedDetailScreenProps) {
   // Effect for make new feed
   useEffect(() => {
     if (uploadBtnLoading) {
-      if (writeChildCmt === -1) {
+      if (writeChildCmt[0] === -1) {
         sendNewCmt();
       } else {
         sendNewChildCmt();
@@ -235,7 +235,7 @@ export default function FeedDetail({navigation, route}: FeedDetailScreenProps) {
 
   useEffect(() => {
     const handleKeyboardDismiss = () => {
-      setWriteChildCmt(-1);
+      setWriteChildCmt([-1, -1]);
     };
     const KeyboardDidHideListener = Keyboard.addListener(
       'keyboardDidHide',
@@ -398,7 +398,7 @@ export default function FeedDetail({navigation, route}: FeedDetailScreenProps) {
   }, throttleTime);
 
   const sendNewChildCmt = _.throttle(async () => {
-    const replyId = cmtData[writeChildCmt].commentId;
+    const replyId = cmtData[writeChildCmt[0]].commentId;
 
     try {
       const response = await axios.post(
@@ -410,7 +410,7 @@ export default function FeedDetail({navigation, route}: FeedDetailScreenProps) {
       setKBsize(0);
       setRefresh(!refresh);
       setIsLast(false);
-      setWriteChildCmt(-1);
+      setWriteChildCmt([-1, -1]);
       setUploadBtnLoading(false);
     } catch (error) {
       const errorResponse = (error as AxiosError<{message: string}>).response;
@@ -502,10 +502,11 @@ export default function FeedDetail({navigation, route}: FeedDetailScreenProps) {
   };
 
   const inputRef = useRef();
-  const [writeChildCmt, setWriteChildCmt] = useState(-1);
-
+  const [writeChildCmt, setWriteChildCmt] = useState<[number, number]>([
+    -1, -1,
+  ]);
   useEffect(() => {
-    if (writeChildCmt != -1) {
+    if (writeChildCmt[0] != -1) {
       setPlaceholder('대댓글을 적어주세요.');
       inputRef.current.focus();
     } else {
@@ -665,13 +666,13 @@ export default function FeedDetail({navigation, route}: FeedDetailScreenProps) {
               <TextInput
                 onFocus={() => {
                   setOnFocus(true);
-                  if (writeChildCmt === -1) {
+                  if (writeChildCmt[0] === -1) {
                     return;
                   }
 
                   const delayedScroll = () => {
                     flatListRef.current.scrollToIndex({
-                      index: writeChildCmt,
+                      index: writeChildCmt[0],
                       animated: true,
                     });
                   };
@@ -695,7 +696,7 @@ export default function FeedDetail({navigation, route}: FeedDetailScreenProps) {
                 ]}
                 onBlur={() => {
                   setOnFocus(false);
-                  setWriteChildCmt(-1);
+                  setWriteChildCmt([-1, -1]);
                 }}
                 onChangeText={(text: string) => {
                   setCmtContent(text);
@@ -877,6 +878,7 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   cmtList: {
+    borderRadius: 10,
     // borderBottomWidth:1,
     // borderBottomColor:'#ECECEC',
     // backgroundColor:'red',
