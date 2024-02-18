@@ -744,7 +744,17 @@ export default function FeedDetail({navigation, route}: FeedDetailScreenProps) {
                 }
                 Keyboard.dismiss();
               }}>
-              {onFocus && cmtContent.trim() == '' ? (
+              {uploadBtnLoading ? (
+                <LottieView
+                  source={require('../animations/loading_black.json')}
+                  style={{
+                    width: 30,
+                    height: 30,
+                  }}
+                  autoPlay
+                  loop
+                />
+              ) : onFocus && cmtContent.trim() == '' ? (
                 <Feather
                   name="chevron-down"
                   size={24}
