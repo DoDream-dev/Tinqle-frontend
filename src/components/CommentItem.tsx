@@ -206,11 +206,15 @@ export default function CommentItem(props: CommentItemProps) {
             ]}>
             {content}
           </Text>
-          {childData != null && accountId != null && (
+          <View>
+            <SvgXml width={24} height={24} xml={svgXml.icon.newCommentIcon} />
+          </View>
+
+          {/* {childData != null && accountId != null && (
             <Pressable onPress={() => setWriteChildCmt([index, -1])}>
               <SvgXml width={24} height={24} xml={svgXml.icon.newCommentIcon} />
             </Pressable>
-          )}
+          )} */}
         </View>
         {accountId != null && (
           <View style={styles.btnView}>
