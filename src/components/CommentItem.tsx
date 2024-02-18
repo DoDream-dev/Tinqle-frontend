@@ -52,8 +52,8 @@ type CommentItemProps = {
   isReactEmoticon: boolean;
   emoticonCount: number;
   setRefresh: React.Dispatch<React.SetStateAction<boolean>>;
-  writeChildCmt: number;
-  setWriteChildCmt: React.Dispatch<React.SetStateAction<number>>;
+  writeChildCmt: number[];
+  setWriteChildCmt: React.Dispatch<React.SetStateAction<number[]>>;
   cmtCount: number | undefined;
   showContextModal: number;
   setShowContextModal: React.Dispatch<React.SetStateAction<number>>;
@@ -122,20 +122,13 @@ export default function CommentItem(props: CommentItemProps) {
 
   return (
     <AnimatedButton
-      disabled={childData && accountId ? true : false}
+      disabled={childData && accountId ? false : true}
       onPress={() => {
-        if (!childData || accountId) {
-          console.log('EEE');
-        }
+        setWriteChildCmt([index, -1]);
       }}
       style={[
-        writeChildCmt == index && childData != null
-          ? {
-              backgroundColor: '#A55FFF33',
-            }
-          : {
-              backgroundColor: '#333333',
-            },
+        {backgroundColor: '#333333'},
+        !childData && {borderRadius: 10},
         index == 0 && {
           borderTopLeftRadius: 10,
           borderTopRightRadius: 10,
@@ -145,7 +138,44 @@ export default function CommentItem(props: CommentItemProps) {
           borderBottomRightRadius: 10,
         },
       ]}>
-      <View style={{flexDirection: 'row', padding: 12}}>
+      {writeChildCmt[0] === index &&
+      writeChildCmt[1] === -1 &&
+      childData != null ? (
+        <View
+          style={[
+            {
+              ...StyleSheet.absoluteFillObject,
+              zIndex: 200,
+              backgroundColor: '#A55FFF33',
+            },
+            index == 0 && {
+              borderTopLeftRadius: 10,
+              borderTopRightRadius: 10,
+            },
+            index == props.cmtCount - 1 && {
+              borderBottomLeftRadius: 10,
+              borderBottomRightRadius: 10,
+            },
+          ]}
+        />
+      ) : null}
+      {writeChildCmt[1] === commentId && childData == null ? (
+        <View
+          style={{
+            ...StyleSheet.absoluteFillObject,
+            zIndex: 200,
+            backgroundColor: '#A55FFF33',
+            borderRadius: 10,
+          }}
+        />
+      ) : null}
+
+      <View
+        style={{
+          flexDirection: 'row',
+          padding: 12,
+          borderRadius: 10,
+        }}>
         <View style={styles.profileView}>
           {accountId != null ? (
             <ContentProfile
@@ -176,11 +206,15 @@ export default function CommentItem(props: CommentItemProps) {
             ]}>
             {content}
           </Text>
-          {childData != null && accountId != null && (
-            <Pressable onPress={() => setWriteChildCmt(index)}>
+          <View>
+            <SvgXml width={24} height={24} xml={svgXml.icon.newCommentIcon} />
+          </View>
+
+          {/* {childData != null && accountId != null && (
+            <Pressable onPress={() => setWriteChildCmt([index, -1])}>
               <SvgXml width={24} height={24} xml={svgXml.icon.newCommentIcon} />
             </Pressable>
-          )}
+          )} */}
         </View>
         {accountId != null && (
           <View style={styles.btnView}>
@@ -220,12 +254,16 @@ export default function CommentItem(props: CommentItemProps) {
           <FlatList
             data={childData}
             // style={{borderTopWidth:1, borderTopColor:'#ECECEC',}}
-            renderItem={({item, index}) => {
+            renderItem={({item}) => {
               return (
-                <View
+                <AnimatedButton
+                  onPress={() => {
+                    console.log('대댓글', item.commentId);
+                    setWriteChildCmt([index, item.commentId]);
+                  }}
                   style={[
                     styles.childCmt,
-                    index == childData.length - 1 && {
+                    index == props.cmtCount - 1 && {
                       borderBottomLeftRadius: 10,
                       borderBottomRightRadius: 10,
                     },
@@ -254,7 +292,7 @@ export default function CommentItem(props: CommentItemProps) {
                     showContextModal={showContextModal}
                     setShowContextModal={setShowContextModal}
                   />
-                </View>
+                </AnimatedButton>
               );
             }}
           />
@@ -327,6 +365,7 @@ const styles = StyleSheet.create({
   childCmt: {
     paddingLeft: 40,
     backgroundColor: '#333333',
+    // backgroundColor: 'red',
   },
   modalView: {
     backgroundColor: '#202020',
