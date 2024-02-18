@@ -212,7 +212,7 @@ export default function FeedDetail({navigation, route}: FeedDetailScreenProps) {
   // Effect for make new feed
   useEffect(() => {
     if (uploadBtnLoading) {
-      if (writeChildCmt === -1) {
+      if (writeChildCmt[0] === -1) {
         sendNewCmt();
       } else {
         sendNewChildCmt();
@@ -235,7 +235,7 @@ export default function FeedDetail({navigation, route}: FeedDetailScreenProps) {
 
   useEffect(() => {
     const handleKeyboardDismiss = () => {
-      setWriteChildCmt(-1);
+      setWriteChildCmt([-1, -1]);
     };
     const KeyboardDidHideListener = Keyboard.addListener(
       'keyboardDidHide',
@@ -398,19 +398,28 @@ export default function FeedDetail({navigation, route}: FeedDetailScreenProps) {
   }, throttleTime);
 
   const sendNewChildCmt = _.throttle(async () => {
-    const replyId = cmtData[writeChildCmt].commentId;
+    const replyId = cmtData[writeChildCmt[0]].commentId;
+    const reReplyId = writeChildCmt[1];
 
     try {
-      const response = await axios.post(
-        `${Config.API_URL}/feeds/${feedData.feedId}/comments/${replyId}/children`,
-        {content: cmtContent},
-      );
+      if (reReplyId === -1) {
+        await axios.post(
+          `${Config.API_URL}/feeds/${feedData.feedId}/comments/${replyId}/children`,
+          {content: cmtContent},
+        );
+      } else {
+        await axios.post(
+          `${Config.API_URL}/feeds/${feedData.feedId}/children/${reReplyId}`,
+          {content: cmtContent},
+        );
+      }
+
       // console.log(response.data.data);
       setCmtContent('');
       setKBsize(0);
       setRefresh(!refresh);
       setIsLast(false);
-      setWriteChildCmt(-1);
+      setWriteChildCmt([-1, -1]);
       setUploadBtnLoading(false);
     } catch (error) {
       const errorResponse = (error as AxiosError<{message: string}>).response;
@@ -434,6 +443,7 @@ export default function FeedDetail({navigation, route}: FeedDetailScreenProps) {
           }),
         );
       }
+      setCmtContent('');
       setUploadBtnLoading(false);
     }
   }, throttleTime);
@@ -502,10 +512,12 @@ export default function FeedDetail({navigation, route}: FeedDetailScreenProps) {
   };
 
   const inputRef = useRef();
-  const [writeChildCmt, setWriteChildCmt] = useState(-1);
+  const [writeChildCmt, setWriteChildCmt] = useState<[number, number]>([
+    -1, -1,
+  ]);
 
   useEffect(() => {
-    if (writeChildCmt != -1) {
+    if (writeChildCmt[0] != -1) {
       setPlaceholder('대댓글을 적어주세요.');
       inputRef.current.focus();
     } else {
@@ -665,13 +677,13 @@ export default function FeedDetail({navigation, route}: FeedDetailScreenProps) {
               <TextInput
                 onFocus={() => {
                   setOnFocus(true);
-                  if (writeChildCmt === -1) {
+                  if (writeChildCmt[0] === -1) {
                     return;
                   }
 
                   const delayedScroll = () => {
                     flatListRef.current.scrollToIndex({
-                      index: writeChildCmt,
+                      index: writeChildCmt[0],
                       animated: true,
                     });
                   };
@@ -695,7 +707,7 @@ export default function FeedDetail({navigation, route}: FeedDetailScreenProps) {
                 ]}
                 onBlur={() => {
                   setOnFocus(false);
-                  setWriteChildCmt(-1);
+                  setWriteChildCmt([-1, -1]);
                 }}
                 onChangeText={(text: string) => {
                   setCmtContent(text);
@@ -732,7 +744,17 @@ export default function FeedDetail({navigation, route}: FeedDetailScreenProps) {
                 }
                 Keyboard.dismiss();
               }}>
-              {onFocus && cmtContent.trim() == '' ? (
+              {uploadBtnLoading ? (
+                <LottieView
+                  source={require('../animations/loading_black.json')}
+                  style={{
+                    width: 30,
+                    height: 30,
+                  }}
+                  autoPlay
+                  loop
+                />
+              ) : onFocus && cmtContent.trim() == '' ? (
                 <Feather
                   name="chevron-down"
                   size={24}
@@ -877,6 +899,7 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   cmtList: {
+    borderRadius: 10,
     // borderBottomWidth:1,
     // borderBottomColor:'#ECECEC',
     // backgroundColor:'red',
