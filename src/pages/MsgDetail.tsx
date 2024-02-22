@@ -45,7 +45,7 @@ export default function MsgDetail({navigation, route}:MsgDetailScreenProps) {
               <Pressable style={styles.headerProfileView}>
                 <SvgXml width={32} height={32} xml={svgXml.profile.null} />
                 <Text style={styles.headerProfileTxt}>김영서</Text>
-                <SvgXml width={18} height={18} xml={svgXml.status.chicken} />
+                <SvgXml width={18} height={18} xml={svgXml.status.vacation} />
               </Pressable>
             </View>
             <Pressable><Text style={styles.headerRightTxt}>나가기</Text></Pressable>

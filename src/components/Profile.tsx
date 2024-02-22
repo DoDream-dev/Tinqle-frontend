@@ -162,6 +162,31 @@ export default function Profile(props: ProfileProps) {
         ) : (
           <Pressable
             style={[styles.addProfileImgBtn, {backgroundColor:'#202020'}]}>
+            {status == 'work' && (
+              <SvgXml width={23} height={23} xml={svgXml.status.work} />
+            )}
+            {status == 'study' && (
+              <SvgXml width={23} height={23} xml={svgXml.status.study} />
+            )}
+            {status == 'transport' && (
+              <SvgXml width={23} height={23} xml={svgXml.status.transport} />
+            )}
+            {status == 'eat' && (
+              <SvgXml width={23} height={23} xml={svgXml.status.eat} />
+            )}
+            {status == 'workout' && (
+              <SvgXml
+                width={23}
+                height={23}
+                xml={svgXml.status.workout}
+              />
+            )}
+            {status == 'walk' && (
+              <SvgXml width={23} height={23} xml={svgXml.status.walk} />
+            )}
+            {status == 'sleep' && (
+              <SvgXml width={23} height={23} xml={svgXml.status.sleep} />
+            )}
             {status == 'smile' && (
               <SvgXml width={23} height={23} xml={svgXml.status.smile} />
             )}
@@ -174,51 +199,44 @@ export default function Profile(props: ProfileProps) {
             {status == 'mad' && (
               <SvgXml width={23} height={23} xml={svgXml.status.mad} />
             )}
+            {status == 'panic' && (
+              <SvgXml width={23} height={23} xml={svgXml.status.panic} />
+            )}
             {status == 'exhausted' && (
-              <SvgXml
-                width={23}
-                height={23}
-                xml={svgXml.status.exhauseted}
-              />
+              <SvgXml width={23} height={23} xml={svgXml.status.exhausted} />
             )}
-            {status == 'coffee' && (
-              <SvgXml width={23} height={23} xml={svgXml.status.coffee} />
+            {status == 'excited' && (
+              <SvgXml width={23} height={23} xml={svgXml.status.excited} />
             )}
-            {status == 'meal' && (
-              <SvgXml width={23} height={23} xml={svgXml.status.meal} />
+            {status == 'sick' && (
+              <SvgXml width={23} height={23} xml={svgXml.status.sick} />
             )}
-            {status == 'alcohol' && (
-              <SvgXml width={23} height={23} xml={svgXml.status.alcohol} />
+            {status == 'vacation' && (
+              <SvgXml width={23} height={23} xml={svgXml.status.vacation} />
             )}
-            {status == 'chicken' && (
-              <SvgXml width={23} height={23} xml={svgXml.status.chicken} />
+            {status == 'date' && (
+              <SvgXml width={23} height={23} xml={svgXml.status.date} />
             )}
-            {status == 'sleep' && (
-              <SvgXml width={23} height={23} xml={svgXml.status.sleep} />
+            {status == 'computer' && (
+              <SvgXml width={23} height={23} xml={svgXml.status.computer} />
             )}
-            {status == 'work' && (
-              <SvgXml width={23} height={23} xml={svgXml.status.work} />
-            )}
-            {status == 'study' && (
-              <SvgXml width={23} height={23} xml={svgXml.status.study} />
+            {status == 'cafe' && (
+              <SvgXml width={23} height={23} xml={svgXml.status.cafe} />
             )}
             {status == 'movie' && (
               <SvgXml width={23} height={23} xml={svgXml.status.movie} />
             )}
-            {status == 'move' && (
-              <SvgXml width={23} height={23} xml={svgXml.status.move} />
-            )}
-            {status == 'dance' && (
-              <SvgXml width={23} height={23} xml={svgXml.status.dance} />
-            )}
             {status == 'read' && (
               <SvgXml width={23} height={23} xml={svgXml.status.read} />
             )}
-            {status == 'walk' && (
-              <SvgXml width={23} height={23} xml={svgXml.status.walk} />
+            {status == 'alcohol' && (
+              <SvgXml width={23} height={23} xml={svgXml.status.alcohol} />
             )}
-            {status == 'travel' && (
-              <SvgXml width={23} height={23} xml={svgXml.status.travel} />
+            {status == 'music' && (
+              <SvgXml width={23} height={23} xml={svgXml.status.music} />
+            )}
+            {status == 'birthday' && (
+              <SvgXml width={23} height={23} xml={svgXml.status.birthday} />
             )}
           </Pressable>
         )}

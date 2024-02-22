@@ -97,7 +97,7 @@ export default function MsgList({navigation, route}:MsgListScreenProps) {
                   <Pressable style={styles.profileView}>
                     <SvgXml width={32} height={32} xml={svgXml.profile.null} />
                     <Text style={newmsg ? styles.profileTxtBold : styles.profileTxt}>김영서</Text>
-                    <SvgXml width={18} height={18} xml={svgXml.status.chicken} />
+                    <SvgXml width={18} height={18} xml={svgXml.status.work} />
                   </Pressable>
                   <Text style={newmsg ? styles.msgContentBold : styles.msgContent}>{item.message}</Text>
                 </Pressable>
