@@ -69,7 +69,7 @@ export default function ContentProfile(props: ContentProfileProps) {
       console.log(errorResponse.data);
     }
   };
-
+  const statusSize = 16;
   return (
     <View style={styles.profileSection}>
       <View style={{flexDirection: 'row'}}>
@@ -107,80 +107,80 @@ export default function ContentProfile(props: ContentProfileProps) {
             {feedId != -1 && (
               <View>
                 {status == 'work'.toUpperCase() && (
-                  <SvgXml width={18} height={18} xml={svgXml.status.work} />
+                  <SvgXml width={statusSize} height={statusSize} xml={svgXml.status.work} />
                 )}
                 {status == 'study'.toUpperCase() && (
-                  <SvgXml width={18} height={18} xml={svgXml.status.study} />
+                  <SvgXml width={statusSize} height={statusSize} xml={svgXml.status.study} />
                 )}
                 {status == 'transport'.toUpperCase() && (
-                  <SvgXml width={18} height={18} xml={svgXml.status.transport} />
+                  <SvgXml width={statusSize} height={statusSize} xml={svgXml.status.transport} />
                 )}
                 {status == 'eat'.toUpperCase() && (
-                  <SvgXml width={18} height={18} xml={svgXml.status.eat} />
+                  <SvgXml width={statusSize} height={statusSize} xml={svgXml.status.eat} />
                 )}
                 {status == 'workout'.toUpperCase() && (
                   <SvgXml
-                    width={18}
-                    height={18}
+                    width={statusSize}
+                    height={statusSize}
                     xml={svgXml.status.workout}
                   />
                 )}
                 {status == 'walk'.toUpperCase() && (
-                  <SvgXml width={18} height={18} xml={svgXml.status.walk} />
+                  <SvgXml width={statusSize} height={statusSize} xml={svgXml.status.walk} />
                 )}
                 {status == 'sleep'.toUpperCase() && (
-                  <SvgXml width={18} height={18} xml={svgXml.status.sleep} />
+                  <SvgXml width={statusSize} height={statusSize} xml={svgXml.status.sleep} />
                 )}
                 {status == 'smile'.toUpperCase() && (
-                  <SvgXml width={18} height={18} xml={svgXml.status.smile} />
+                  <SvgXml width={statusSize} height={statusSize} xml={svgXml.status.smile} />
                 )}
                 {status == 'happy'.toUpperCase() && (
-                  <SvgXml width={18} height={18} xml={svgXml.status.happy} />
+                  <SvgXml width={statusSize} height={statusSize} xml={svgXml.status.happy} />
                 )}
                 {status == 'sad'.toUpperCase() && (
-                  <SvgXml width={18} height={18} xml={svgXml.status.sad} />
+                  <SvgXml width={statusSize} height={statusSize} xml={svgXml.status.sad} />
                 )}
                 {status == 'mad'.toUpperCase() && (
-                  <SvgXml width={18} height={18} xml={svgXml.status.mad} />
+                  <SvgXml width={statusSize} height={statusSize} xml={svgXml.status.mad} />
                 )}
                 {status == 'panic'.toUpperCase() && (
-                  <SvgXml width={18} height={18} xml={svgXml.status.panic} />
+                  <SvgXml width={statusSize} height={statusSize} xml={svgXml.status.panic} />
                 )}
                 {status == 'exhausted'.toUpperCase() && (
-                  <SvgXml width={18} height={18} xml={svgXml.status.exhausted} />
+                  <SvgXml width={statusSize} height={statusSize} xml={svgXml.status.exhausted} />
                 )}
                 {status == 'excited'.toUpperCase() && (
-                  <SvgXml width={18} height={18} xml={svgXml.status.excited} />
+                  <SvgXml width={statusSize} height={statusSize} xml={svgXml.status.excited} />
                 )}
                 {status == 'sick'.toUpperCase() && (
-                  <SvgXml width={18} height={18} xml={svgXml.status.sick} />
+                  <SvgXml width={statusSize} height={statusSize} xml={svgXml.status.sick} />
                 )}
                 {status == 'vacation'.toUpperCase() && (
-                  <SvgXml width={18} height={18} xml={svgXml.status.vacation} />
+                  <SvgXml width={statusSize} height={statusSize} xml={svgXml.status.vacation} />
                 )}
                 {status == 'date'.toUpperCase() && (
-                  <SvgXml width={18} height={18} xml={svgXml.status.date} />
+                  <SvgXml width={statusSize} height={statusSize} xml={svgXml.status.date} />
                 )}
                 {status == 'computer'.toUpperCase() && (
-                  <SvgXml width={18} height={18} xml={svgXml.status.computer} />
+                  <SvgXml width={statusSize} height={statusSize} xml={svgXml.status.computer} />
                 )}
                 {status == 'cafe'.toUpperCase() && (
-                  <SvgXml width={18} height={18} xml={svgXml.status.cafe} />
+                  <SvgXml width={statusSize} height={statusSize} xml={svgXml.status.cafe} />
                 )}
                 {status == 'movie'.toUpperCase() && (
-                  <SvgXml width={18} height={18} xml={svgXml.status.movie} />
+                  <SvgXml width={statusSize} height={statusSize} xml={svgXml.status.movie} />
                 )}
                 {status == 'read'.toUpperCase() && (
-                  <SvgXml width={18} height={18} xml={svgXml.status.read} />
+                  <SvgXml width={statusSize} height={statusSize} xml={svgXml.status.read} />
                 )}
                 {status == 'alcohol'.toUpperCase() && (
-                  <SvgXml width={18} height={18} xml={svgXml.status.alcohol} />
+                  <SvgXml width={statusSize} height={statusSize} xml={svgXml.status.alcohol} />
                 )}
                 {status == 'music'.toUpperCase() && (
-                  <SvgXml width={18} height={18} xml={svgXml.status.music} />
+                  <SvgXml width={statusSize} height={statusSize} xml={svgXml.status.music} />
                 )}
                 {status == 'birthday'.toUpperCase() && (
-                  <SvgXml width={18} height={18} xml={svgXml.status.birthday} />
+                  <SvgXml width={statusSize} height={statusSize} xml={svgXml.status.birthday} />
                 )}
               </View>
             )}

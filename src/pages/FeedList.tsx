@@ -572,7 +572,8 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
         setImagePicking(false);
       });
   };
-
+  const statusSize = 30;
+  const statusSizeModal = 48;
   return (
     <Pressable
       style={{flex: 1}}
@@ -716,88 +717,88 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
                   }}
                   onPress={() => setChangeStatus(true)}>
                   {status == 'work' && (
-                    <SvgXml width={32} height={32} xml={svgXml.status.work} />
+                    <SvgXml width={statusSize} height={statusSize} xml={svgXml.status.work} />
                   )}
                   {status == 'study' && (
-                    <SvgXml width={32} height={32} xml={svgXml.status.study} />
+                    <SvgXml width={statusSize} height={statusSize} xml={svgXml.status.study} />
                   )}
                   {status == 'transport' && (
-                    <SvgXml width={32} height={32} xml={svgXml.status.transport} />
+                    <SvgXml width={statusSize} height={statusSize} xml={svgXml.status.transport} />
                   )}
                   {status == 'eat' && (
-                    <SvgXml width={32} height={32} xml={svgXml.status.eat} />
+                    <SvgXml width={statusSize} height={statusSize} xml={svgXml.status.eat} />
                   )}
                   {status == 'workout' && (
                     <SvgXml
-                      width={32}
-                      height={32}
+                      width={statusSize}
+                      height={statusSize}
                       xml={svgXml.status.workout}
                     />
                   )}
                   {status == 'walk' && (
-                    <SvgXml width={32} height={32} xml={svgXml.status.walk} />
+                    <SvgXml width={statusSize} height={statusSize} xml={svgXml.status.walk} />
                   )}
                   {status == 'sleep' && (
-                    <SvgXml width={32} height={32} xml={svgXml.status.sleep} />
+                    <SvgXml width={statusSize} height={statusSize} xml={svgXml.status.sleep} />
                   )}
                   {status == 'smile' && (
                     <SvgXml
-                      width={32}
-                      height={32}
+                      width={statusSize}
+                      height={statusSize}
                       xml={svgXml.status.smile}
                     />
                   )}
                   {status == 'happy' && (
                     <SvgXml
-                      width={32}
-                      height={32}
+                      width={statusSize}
+                      height={statusSize}
                       xml={svgXml.status.happy}
                     />
                   )}
                   {status == 'sad' && (
-                    <SvgXml width={32} height={32} xml={svgXml.status.sad} />
+                    <SvgXml width={statusSize} height={statusSize} xml={svgXml.status.sad} />
                   )}
                   {status == 'mad' && (
-                    <SvgXml width={32} height={32} xml={svgXml.status.mad} />
+                    <SvgXml width={statusSize} height={statusSize} xml={svgXml.status.mad} />
                   )}
                   {status == 'panic' && (
-                    <SvgXml width={32} height={32} xml={svgXml.status.panic} />
+                    <SvgXml width={statusSize} height={statusSize} xml={svgXml.status.panic} />
                   )}
                   {status == 'exhausted' && (
-                    <SvgXml width={32} height={32} xml={svgXml.status.exhausted} />
+                    <SvgXml width={statusSize} height={statusSize} xml={svgXml.status.exhausted} />
                   )}
                   {status == 'excited' && (
-                    <SvgXml width={32} height={32} xml={svgXml.status.excited} />
+                    <SvgXml width={statusSize} height={statusSize} xml={svgXml.status.excited} />
                   )}
                   {status == 'sick' && (
-                    <SvgXml width={32} height={32} xml={svgXml.status.sick} />
+                    <SvgXml width={statusSize} height={statusSize} xml={svgXml.status.sick} />
                   )}
                   {status == 'vacation' && (
-                    <SvgXml width={32} height={32} xml={svgXml.status.vacation} />
+                    <SvgXml width={statusSize} height={statusSize} xml={svgXml.status.vacation} />
                   )}
                   {status == 'date' && (
-                    <SvgXml width={32} height={32} xml={svgXml.status.date} />
+                    <SvgXml width={statusSize} height={statusSize} xml={svgXml.status.date} />
                   )}
                   {status == 'computer' && (
-                    <SvgXml width={32} height={32} xml={svgXml.status.computer} />
+                    <SvgXml width={statusSize} height={statusSize} xml={svgXml.status.computer} />
                   )}
                   {status == 'cafe' && (
-                    <SvgXml width={32} height={32} xml={svgXml.status.cafe} />
+                    <SvgXml width={statusSize} height={statusSize} xml={svgXml.status.cafe} />
                   )}
                   {status == 'movie' && (
-                    <SvgXml width={32} height={32} xml={svgXml.status.movie} />
+                    <SvgXml width={statusSize} height={statusSize} xml={svgXml.status.movie} />
                   )}
                   {status == 'read' && (
-                    <SvgXml width={32} height={32} xml={svgXml.status.read} />
+                    <SvgXml width={statusSize} height={statusSize} xml={svgXml.status.read} />
                   )}
                   {status == 'alcohol' && (
-                    <SvgXml width={32} height={32} xml={svgXml.status.alcohol} />
+                    <SvgXml width={statusSize} height={statusSize} xml={svgXml.status.alcohol} />
                   )}
                   {status == 'music' && (
-                    <SvgXml width={32} height={32} xml={svgXml.status.music} />
+                    <SvgXml width={statusSize} height={statusSize} xml={svgXml.status.music} />
                   )}
                   {status == 'birthday' && (
-                    <SvgXml width={32} height={32} xml={svgXml.status.birthday} />
+                    <SvgXml width={statusSize} height={statusSize} xml={svgXml.status.birthday} />
                   )}
                 </Pressable>
                 <View
@@ -999,7 +1000,7 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
                   <View style={styles.statusViewHeader}>
                     <Text style={styles.statusViewHeaderTxt}>지금 나는...</Text>
                     <Pressable onPress={()=>setChangeStatus(false)} style={styles.statusViewHeaderXBtn}>
-                      <SvgXml width={24} height={24} xml={svgXml.icon.close} />
+                      <SvgXml width={26} height={26} xml={svgXml.icon.close} />
                     </Pressable>
                   </View>
                   <View style={styles.statusView}>
@@ -1013,7 +1014,7 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
                           ? styles.statusSelected
                           : styles.statusSelect
                       }>
-                      <SvgXml width={48} height={48} xml={svgXml.status.work} />
+                      <SvgXml width={statusSizeModal} height={statusSizeModal} xml={svgXml.status.work} />
                     </Pressable>
                     <Pressable
                       onPress={() => {
@@ -1025,7 +1026,7 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
                           ? styles.statusSelected
                           : styles.statusSelect
                       }>
-                      <SvgXml width={48} height={48} xml={svgXml.status.study} />
+                      <SvgXml width={statusSizeModal} height={statusSizeModal} xml={svgXml.status.study} />
                     </Pressable>
                     <Pressable
                       onPress={() => {
@@ -1037,7 +1038,7 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
                           ? styles.statusSelected
                           : styles.statusSelect
                       }>
-                      <SvgXml width={48} height={48} xml={svgXml.status.transport} />
+                      <SvgXml width={statusSizeModal} height={statusSizeModal} xml={svgXml.status.transport} />
                     </Pressable>
                     <Pressable
                       onPress={() => {
@@ -1049,7 +1050,7 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
                           ? styles.statusSelected
                           : styles.statusSelect
                       }>
-                      <SvgXml width={48} height={48} xml={svgXml.status.eat} />
+                      <SvgXml width={statusSizeModal} height={statusSizeModal} xml={svgXml.status.eat} />
                     </Pressable>
                     <Pressable
                       onPress={() => {
@@ -1062,8 +1063,8 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
                           : styles.statusSelect
                       }>
                       <SvgXml
-                        width={48}
-                        height={48}
+                        width={statusSizeModal}
+                        height={statusSizeModal}
                         xml={svgXml.status.workout}
                       />
                     </Pressable>
@@ -1077,7 +1078,7 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
                           ? styles.statusSelected
                           : styles.statusSelect
                       }>
-                      <SvgXml width={48} height={48} xml={svgXml.status.walk} />
+                      <SvgXml width={statusSizeModal} height={statusSizeModal} xml={svgXml.status.walk} />
                     </Pressable>
                     <Pressable
                       onPress={() => {
@@ -1089,7 +1090,7 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
                           ? styles.statusSelected
                           : styles.statusSelect
                       }>
-                      <SvgXml width={48} height={48} xml={svgXml.status.sleep} />
+                      <SvgXml width={statusSizeModal} height={statusSizeModal} xml={svgXml.status.sleep} />
                     </Pressable>
                     <Pressable
                       onPress={() => {
@@ -1102,8 +1103,8 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
                           : styles.statusSelect
                       }>
                       <SvgXml
-                        width={48}
-                        height={48}
+                        width={statusSizeModal}
+                        height={statusSizeModal}
                         xml={svgXml.status.smile}
                       />
                     </Pressable>
@@ -1118,8 +1119,8 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
                           : styles.statusSelect
                       }>
                       <SvgXml
-                        width={48}
-                        height={48}
+                        width={statusSizeModal}
+                        height={statusSizeModal}
                         xml={svgXml.status.happy}
                       />
                     </Pressable>
@@ -1133,7 +1134,7 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
                           ? styles.statusSelected
                           : styles.statusSelect
                       }>
-                      <SvgXml width={48} height={48} xml={svgXml.status.sad} />
+                      <SvgXml width={statusSizeModal} height={statusSizeModal} xml={svgXml.status.sad} />
                     </Pressable>
                     <Pressable
                       onPress={() => {
@@ -1145,7 +1146,7 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
                           ? styles.statusSelected
                           : styles.statusSelect
                       }>
-                      <SvgXml width={48} height={48} xml={svgXml.status.mad} />
+                      <SvgXml width={statusSizeModal} height={statusSizeModal} xml={svgXml.status.mad} />
                     </Pressable>
                     <Pressable
                       onPress={() => {
@@ -1157,7 +1158,7 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
                           ? styles.statusSelected
                           : styles.statusSelect
                       }>
-                      <SvgXml width={48} height={48} xml={svgXml.status.panic} />
+                      <SvgXml width={statusSizeModal} height={statusSizeModal} xml={svgXml.status.panic} />
                     </Pressable>
                     <Pressable
                       onPress={() => {
@@ -1169,7 +1170,7 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
                           ? styles.statusSelected
                           : styles.statusSelect
                       }>
-                      <SvgXml width={48} height={48} xml={svgXml.status.exhausted} />
+                      <SvgXml width={statusSizeModal} height={statusSizeModal} xml={svgXml.status.exhausted} />
                     </Pressable>
                     <Pressable
                       onPress={() => {
@@ -1181,7 +1182,7 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
                           ? styles.statusSelected
                           : styles.statusSelect
                       }>
-                      <SvgXml width={48} height={48} xml={svgXml.status.excited} />
+                      <SvgXml width={statusSizeModal} height={statusSizeModal} xml={svgXml.status.excited} />
                     </Pressable>
                     <Pressable
                       onPress={() => {
@@ -1193,7 +1194,7 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
                           ? styles.statusSelected
                           : styles.statusSelect
                       }>
-                      <SvgXml width={48} height={48} xml={svgXml.status.sick} />
+                      <SvgXml width={statusSizeModal} height={statusSizeModal} xml={svgXml.status.sick} />
                     </Pressable>
                     <Pressable
                       onPress={() => {
@@ -1205,7 +1206,7 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
                           ? styles.statusSelected
                           : styles.statusSelect
                       }>
-                      <SvgXml width={48} height={48} xml={svgXml.status.vacation} />
+                      <SvgXml width={statusSizeModal} height={statusSizeModal} xml={svgXml.status.vacation} />
                     </Pressable>
                     <Pressable
                       onPress={() => {
@@ -1217,7 +1218,7 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
                           ? styles.statusSelected
                           : styles.statusSelect
                       }>
-                      <SvgXml width={48} height={48} xml={svgXml.status.date} />
+                      <SvgXml width={statusSizeModal} height={statusSizeModal} xml={svgXml.status.date} />
                     </Pressable>
                     <Pressable
                       onPress={() => {
@@ -1229,7 +1230,7 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
                           ? styles.statusSelected
                           : styles.statusSelect
                       }>
-                      <SvgXml width={48} height={48} xml={svgXml.status.computer} />
+                      <SvgXml width={statusSizeModal} height={statusSizeModal} xml={svgXml.status.computer} />
                     </Pressable>
                     <Pressable
                       onPress={() => {
@@ -1241,7 +1242,7 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
                           ? styles.statusSelected
                           : styles.statusSelect
                       }>
-                      <SvgXml width={48} height={48} xml={svgXml.status.cafe} />
+                      <SvgXml width={statusSizeModal} height={statusSizeModal} xml={svgXml.status.cafe} />
                     </Pressable>
                     <Pressable
                       onPress={() => {
@@ -1253,7 +1254,7 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
                           ? styles.statusSelected
                           : styles.statusSelect
                       }>
-                      <SvgXml width={48} height={48} xml={svgXml.status.movie} />
+                      <SvgXml width={statusSizeModal} height={statusSizeModal} xml={svgXml.status.movie} />
                     </Pressable>
                     <Pressable
                       onPress={() => {
@@ -1265,7 +1266,7 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
                           ? styles.statusSelected
                           : styles.statusSelect
                       }>
-                      <SvgXml width={48} height={48} xml={svgXml.status.read} />
+                      <SvgXml width={statusSizeModal} height={statusSizeModal} xml={svgXml.status.read} />
                     </Pressable>
                     <Pressable
                       onPress={() => {
@@ -1277,7 +1278,7 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
                           ? styles.statusSelected
                           : styles.statusSelect
                       }>
-                      <SvgXml width={48} height={48} xml={svgXml.status.alcohol} />
+                      <SvgXml width={statusSizeModal} height={statusSizeModal} xml={svgXml.status.alcohol} />
                     </Pressable>
                     <Pressable
                       onPress={() => {
@@ -1289,7 +1290,7 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
                           ? styles.statusSelected
                           : styles.statusSelect
                       }>
-                      <SvgXml width={48} height={48} xml={svgXml.status.music} />
+                      <SvgXml width={statusSizeModal} height={statusSizeModal} xml={svgXml.status.music} />
                     </Pressable>
                     <Pressable
                       onPress={() => {
@@ -1301,7 +1302,7 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
                           ? styles.statusSelected
                           : styles.statusSelect
                       }>
-                      <SvgXml width={48} height={48} xml={svgXml.status.birthday} />
+                      <SvgXml width={statusSizeModal} height={statusSizeModal} xml={svgXml.status.birthday} />
                     </Pressable>
                   </View>
                 </Pressable>
@@ -1439,11 +1440,9 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
   modalBGView2: {
-    width: '100%',
-    flex: 1,
+    flex:1,
     justifyContent: 'center',
     alignItems: 'center',
-    // paddingHorizontal: 24,
   },
   modalView: {
     borderTopLeftRadius: 20,
@@ -1458,11 +1457,13 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     borderWidth: 1,
     borderColor:'#A45FFF',
-    width: '100%',
+    width:327,
+    // width: '100%',
     // height: 580,
     // marginHorizontal: 24,
     alignItems: 'center',
-    padding:28,
+    padding:16,
+    paddingBottom:28,
     position:'relative'
   },
   statusView:{
