@@ -640,31 +640,45 @@ export default function FeedDetail({navigation, route}: FeedDetailScreenProps) {
                 // stickyHeaderIndices={[0]}
                 ListFooterComponent={<View style={{height: 22}} />}
                 renderItem={({item, index}: itemProps) => {
+                  // console.log(item.childCount)
                   return (
-                    <CommentItem
-                      commentId={item.commentId}
-                      content={item.content}
-                      childCount={item.childCount}
-                      accountId={item.accountId}
-                      friendNickname={item.friendNickname}
-                      status={item.status}
-                      isAuthor={item.isAuthor}
-                      profileImageUrl={item.profileImageUrl}
-                      createdAt={item.createdAt}
-                      childCommentCardList={item.childCommentCardList}
-                      index={index}
-                      showWhoseModal={showWhoseModal}
-                      setShowWhoseModal={setShowWhoseModal}
-                      setWhichPopup={setWhichPopup}
-                      isReactEmoticon={item.isReactEmoticon}
-                      emoticonCount={item.emoticonCount}
-                      setRefresh={setRefresh}
-                      writeChildCmt={writeChildCmt}
-                      setWriteChildCmt={setWriteChildCmt}
-                      cmtCount={cmtData.length}
-                      showContextModal={showContextModal}
-                      setShowContextModal={setShowContextModal}
-                    />
+                    <View style={[{backgroundColor:'#333333',},
+                      index == 0 && {
+                        borderTopLeftRadius: 10,
+                        borderTopRightRadius: 10,
+                        paddingTop:8
+                      },
+                      index == cmtData.length - 1 && {
+                        borderBottomLeftRadius: 10,
+                        borderBottomRightRadius: 10,
+                        paddingBottom:8
+                      },
+                    ]}>
+                      <CommentItem
+                        commentId={item.commentId}
+                        content={item.content}
+                        childCount={item.childCount}
+                        accountId={item.accountId}
+                        friendNickname={item.friendNickname}
+                        status={item.status}
+                        isAuthor={item.isAuthor}
+                        profileImageUrl={item.profileImageUrl}
+                        createdAt={item.createdAt}
+                        childCommentCardList={item.childCommentCardList}
+                        index={index}
+                        showWhoseModal={showWhoseModal}
+                        setShowWhoseModal={setShowWhoseModal}
+                        setWhichPopup={setWhichPopup}
+                        isReactEmoticon={item.isReactEmoticon}
+                        emoticonCount={item.emoticonCount}
+                        setRefresh={setRefresh}
+                        writeChildCmt={writeChildCmt}
+                        setWriteChildCmt={setWriteChildCmt}
+                        cmtCount={cmtData.length}
+                        showContextModal={showContextModal}
+                        setShowContextModal={setShowContextModal}
+                      />
+                    </View>
                   );
                 }}
               />

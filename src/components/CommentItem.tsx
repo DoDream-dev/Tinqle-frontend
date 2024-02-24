@@ -128,15 +128,7 @@ export default function CommentItem(props: CommentItemProps) {
       }}
       style={[
         {backgroundColor: '#333333'},
-        !childData && {borderRadius: 10},
-        index == 0 && {
-          borderTopLeftRadius: 10,
-          borderTopRightRadius: 10,
-        },
-        index == props.cmtCount - 1 && {
-          borderBottomLeftRadius: 10,
-          borderBottomRightRadius: 10,
-        },
+        !childData && {paddingLeft: 40,},
       ]}>
       {writeChildCmt[0] === index &&
       writeChildCmt[1] === -1 &&
@@ -148,14 +140,6 @@ export default function CommentItem(props: CommentItemProps) {
               zIndex: 200,
               backgroundColor: '#A55FFF33',
             },
-            index == 0 && {
-              borderTopLeftRadius: 10,
-              borderTopRightRadius: 10,
-            },
-            index == props.cmtCount - 1 && {
-              borderBottomLeftRadius: 10,
-              borderBottomRightRadius: 10,
-            },
           ]}
         />
       ) : null}
@@ -165,7 +149,7 @@ export default function CommentItem(props: CommentItemProps) {
             ...StyleSheet.absoluteFillObject,
             zIndex: 200,
             backgroundColor: '#A55FFF33',
-            borderRadius: 10,
+            // borderRadius: 10,
           }}
         />
       ) : null}
@@ -174,7 +158,7 @@ export default function CommentItem(props: CommentItemProps) {
         style={{
           flexDirection: 'row',
           padding: 12,
-          borderRadius: 10,
+          // borderRadius: 10,
         }}>
         <View style={styles.profileView}>
           {accountId != null ? (
@@ -206,9 +190,9 @@ export default function CommentItem(props: CommentItemProps) {
             ]}>
             {content}
           </Text>
-          <View>
+          {accountId != null && <View>
             <SvgXml width={24} height={24} xml={svgXml.icon.newCommentIcon} />
-          </View>
+          </View>}
 
           {/* {childData != null && accountId != null && (
             <Pressable onPress={() => setWriteChildCmt([index, -1])}>
@@ -363,7 +347,7 @@ const styles = StyleSheet.create({
     flexShrink: 1,
   },
   childCmt: {
-    paddingLeft: 40,
+    // paddingLeft: 40,
     backgroundColor: '#333333',
     // backgroundColor: 'red',
   },
