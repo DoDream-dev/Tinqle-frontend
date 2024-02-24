@@ -220,7 +220,7 @@ export default function AppInner() {
                 color={'#A55FFF'}
                 width={28}
                 height={28}
-                xml={props.focused ? svgXml.bottomTab.convFocused : svgXml.bottomTab.conversation}
+                xml={props.focused ? svgXml.bottomTab.talkColor : svgXml.bottomTab.talk}
               />
             ),
           }}

@@ -31,7 +31,7 @@ import {useNavigation} from '@react-navigation/native';
 type friendListItemProps = {
   item: {
     accountId: number;
-    friendNickname: string;
+    nickname: string;
     friendshipId: number;
     status: string;
     profileImageUrl: string | null;
@@ -66,8 +66,11 @@ export default function SearchFriends() {
     // }
   ]);
   const [isLast, setIsLast] = useState(false);
+  const [isLastSearchFriend, setIsLastSearchFriend] = useState(false);
   const [cursorId, setCursorId] = useState(0);
+  const [cursorIdSearchFriend, setCursorIdSearchFriend] = useState(0);
   const [loading, setLoading] = useState(false);
+  const [loadingSearchFriend, setLoadingSearchFriend] = useState(false);
 
   const [whichPopup, setWhichPopup] = useState('');
   const [popupName, setPopupName] = useState('');
@@ -95,35 +98,35 @@ export default function SearchFriends() {
       }
     };
     getMyCode();
-    const getFriendship = async () => {
-      try {
-        const response = await axios.get(
-          `${Config.API_URL}/friendships/manage`,
-        );
-        setIsLast(response.data.data.last);
-        console.log(response.data.data);
-        if (response.data.data.content.length == 0) setFriendData([]);
-        else {
-          setFriendData(response.data.data.content);
-          // console.log(response.data.data.content)
-          setCursorId(
-            response.data.data.content[response.data.data.content.length - 1]
-              .friendshipId,
-          );
-        }
-      } catch (error) {
-        const errorResponse = (error as AxiosError<{message: string}>).response;
-        console.log(errorResponse.data);
-        if (errorResponse?.data.status == 500) {
-          dispatch(
-            userSlice.actions.setToken({
-              accessToken: '',
-            }),
-          );
-        }
-      }
-    };
-    getFriendship();
+    // const getFriendship = async () => {
+    //   try {
+    //     const response = await axios.get(
+    //       `${Config.API_URL}/friendships/manage`,
+    //     );
+    //     setIsLast(response.data.data.last);
+    //     // console.log(response.data.data);
+    //     if (response.data.data.content.length == 0) setFriendData([]);
+    //     else {
+    //       setFriendData(response.data.data.content);
+    //       // console.log(response.data.data.content)
+    //       setCursorId(
+    //         response.data.data.content[response.data.data.content.length - 1]
+    //           .friendshipId,
+    //       );
+    //     }
+    //   } catch (error) {
+    //     const errorResponse = (error as AxiosError<{message: string}>).response;
+    //     console.log(errorResponse.data);
+    //     if (errorResponse?.data.status == 500) {
+    //       dispatch(
+    //         userSlice.actions.setToken({
+    //           accessToken: '',
+    //         }),
+    //       );
+    //     }
+    //   }
+    // };
+    getFriendProfile();
     const getMyProfile = async () => {
       try {
         const response = await axios.get(`${Config.API_URL}/accounts/me`);
@@ -153,58 +156,145 @@ export default function SearchFriends() {
   const getFriendProfile = _.throttle(async () => {
     try {
       const response = await axios.get(
-        `${Config.API_URL}/accounts/search/code/${searchCode}`,
+        `${Config.API_URL}/accounts/search?keyword=${searchCode}`,
       );
+      console.log(response.data.data.equalKeywordAccount);
+      console.log(response.data.data.containKeywordAccounts);
       // let friendData;
-      console.log(response.data);
-      if (response.data.data.friendshipRelation === 'me') {
-        setWhichPopup('Me');
-        // setOtherUser({accountId: -1, nickname: '', isFriend: 0});
-      } else {
-        if (response.data.data.friendshipRelation == 'true') {
-          setFriendData([
-            {
-              accountId: response.data.data.accountId,
-              friendNickname: response.data.data.nickname,
-              friendshipId: 0,
-              status: response.data.data.status,
-              profileImageUrl: response.data.data.profileImageUrl,
-            },
-          ]);
-        } else if (response.data.data.friendshipRelation == 'waiting') {
-          setFriendData([
-            {
-              accountId: response.data.data.accountId,
-              friendNickname: response.data.data.nickname,
-              friendshipId: -2,
-              status: '',
-              profileImageUrl: response.data.data.profileImageUrl,
-            },
-          ]);
-        } else if (response.data.data.friendshipRelation == 'request') {
-          setFriendData([
-            {
-              accountId: response.data.data.accountId,
-              friendNickname: response.data.data.nickname,
-              friendshipId: -3,
-              status: '',
-              profileImageUrl: response.data.data.profileImageUrl,
-            },
-          ]);
-        } else {
-          setFriendData([
-            {
-              accountId: response.data.data.accountId,
-              friendNickname: response.data.data.nickname,
-              friendshipId: -1,
-              status: '',
-              profileImageUrl: response.data.data.profileImageUrl,
-            },
-          ]);
+      setIsLastSearchFriend(response.data.data.containKeywordAccounts.content.last);
+        // console.log(response.data.data);
+      if (response.data.data.containKeywordAccounts.content.length == 0) {
+        if (response.data.data.equalKeywordAccount == null) {
+          // 존재하지 않는 아이디 (즉 일치하는 계정 없음)
+          setWhichPopup('noCode');
         }
-
-        console.log(response.data.data);
+        else {
+          if (response.data.data.equalKeywordAccount.friendshipRelation == 'me') {
+            // 나
+            setFriendData([]);
+            setWhichPopup('Me');
+          }
+          else if (response.data.data.equalKeywordAccount.friendshipRelation == 'true') {
+            // 친구
+            setFriendData([
+              {
+                accountId: response.data.data.equalKeywordAccount.accountId,
+                nickname: response.data.data.equalKeywordAccount.nickname,
+                friendshipId: 0,
+                status: response.data.data.equalKeywordAccount.status,
+                profileImageUrl: response.data.data.equalKeywordAccount.profileImageUrl,
+              },
+            ]);
+          }
+          else if (response.data.data.equalKeywordAccount.friendshipRelation == 'waiting') {
+            // 친구 요청 함
+            setFriendData([
+              {
+                accountId: response.data.data.equalKeywordAccount.accountId,
+                nickname: response.data.data.equalKeywordAccount.nickname,
+                friendshipId: -2,
+                status: '',
+                profileImageUrl: response.data.data.equalKeywordAccount.profileImageUrl,
+              },
+            ]);
+          }
+          else if (response.data.data.equalKeywordAccount.friendshipRelation == 'request') {
+            // 친구 요청 받음
+            setFriendData([
+              {
+                accountId: response.data.data.equalKeywordAccount.accountId,
+                nickname: response.data.data.equalKeywordAccount.nickname,
+                friendshipId: -3,
+                status: '',
+                profileImageUrl: response.data.data.equalKeywordAccount.profileImageUrl,
+              },
+            ]);
+          }
+          else {
+            // 모르는 사람
+            setFriendData([
+              {
+                accountId: response.data.data.equalKeywordAccount.accountId,
+                nickname: response.data.data.equalKeywordAccount.nickname,
+                friendshipId: -1,
+                status: '',
+                profileImageUrl: response.data.data.equalKeywordAccount.profileImageUrl,
+              },
+            ]);
+          }
+        }
       }
+      else {
+        if (response.data.data.equalKeywordAccount != null && response.data.data.equalKeywordAccount.friendshipRelation != 'me') {
+          // 맨앞에 추가
+          setFriendData([
+            {
+              accountId: response.data.data.equalKeywordAccount.accountId,
+              nickname: response.data.data.equalKeywordAccount.nickname,
+              friendshipId: 0,
+              status: response.data.data.equalKeywordAccount.status,
+              profileImageUrl: response.data.data.equalKeywordAccount.profileImageUrl,
+            }
+          ].concat(response.data.data.containKeywordAccounts.content));
+        }
+        else {
+          // 그냥 넣기
+          setFriendData(response.data.data.containKeywordAccounts.content);
+        }
+        setCursorIdSearchFriend(
+          response.data.data.containKeywordAccounts.content[response.data.data.containKeywordAccounts.content.length - 1]
+            .friendshipId,
+        );
+      }
+      // if (response.data.data.equalKeywordAccount)
+      // if (response.data.data.friendshipRelation === 'me') {
+      //   setWhichPopup('Me');
+      //   // setOtherUser({accountId: -1, nickname: '', isFriend: 0});
+      // } else {
+      //   if (response.data.data.friendshipRelation == 'true') {
+      //     setFriendData([
+      //       {
+      //         accountId: response.data.data.accountId,
+      //         friendNickname: response.data.data.nickname,
+      //         friendshipId: 0,
+      //         status: response.data.data.status,
+      //         profileImageUrl: response.data.data.profileImageUrl,
+      //       },
+      //     ]);
+      //   } else if (response.data.data.friendshipRelation == 'waiting') {
+      //     setFriendData([
+      //       {
+      //         accountId: response.data.data.accountId,
+      //         friendNickname: response.data.data.nickname,
+      //         friendshipId: -2,
+      //         status: '',
+      //         profileImageUrl: response.data.data.profileImageUrl,
+      //       },
+      //     ]);
+      //   } else if (response.data.data.friendshipRelation == 'request') {
+      //     setFriendData([
+      //       {
+      //         accountId: response.data.data.accountId,
+      //         friendNickname: response.data.data.nickname,
+      //         friendshipId: -3,
+      //         status: '',
+      //         profileImageUrl: response.data.data.profileImageUrl,
+      //       },
+      //     ]);
+      //   } else {
+      //     setFriendData([
+      //       {
+      //         accountId: response.data.data.accountId,
+      //         friendNickname: response.data.data.nickname,
+      //         friendshipId: -1,
+      //         status: '',
+      //         profileImageUrl: response.data.data.profileImageUrl,
+      //       },
+      //     ]);
+      //   }
+
+      //   console.log(response.data.data);
+      // }
     } catch (error) {
       const errorResponse = (error as AxiosError<{message: string}>).response;
       if (errorResponse?.data.statusCode == 2030) {
@@ -230,7 +320,7 @@ export default function SearchFriends() {
         setFriendData([
           {
             accountId: accountId,
-            friendNickname: name,
+            nickname: name,
             friendshipId: -2,
             status: '',
             profileImageUrl: profileImageUrl,
@@ -251,18 +341,40 @@ export default function SearchFriends() {
     },
     throttleTime,
   );
-  const getData = async () => {
-    if (!isLast) {
-      setLoading(true);
+  // const getData = async () => {
+  //   if (!isLast) {
+  //     setLoading(true);
+  //     try {
+  //       const response = await axios.get(
+  //         `${Config.API_URL}/friendships/manage?cursorId=${cursorId}`,
+  //       );
+  //       setIsLast(response.data.data.last);
+  //       setFriendData(friendData.concat(response.data.data.content));
+  //       if (response.data.data.content.length != 0) {
+  //         setCursorId(
+  //           response.data.data.content[response.data.data.content.length - 1]
+  //             .friendshipId,
+  //         );
+  //       }
+  //     } catch (error) {
+  //       const errorResponse = (error as AxiosError<{message: string}>).response;
+  //       console.log(errorResponse.data);
+  //     }
+  //   }
+  //   setLoading(false);
+  // };
+  const getDataSearchFriend = async () => {
+    if (!isLastSearchFriend) {
+      setLoadingSearchFriend(true);
       try {
         const response = await axios.get(
-          `${Config.API_URL}/friendships/manage?cursorId=${cursorId}`,
+          `${Config.API_URL}/accounts/search?keyword=${searchCode}?cursorId=${cursorIdSearchFriend}`,
         );
-        setIsLast(response.data.data.last);
-        setFriendData(friendData.concat(response.data.data.content));
-        if (response.data.data.content.length != 0) {
-          setCursorId(
-            response.data.data.content[response.data.data.content.length - 1]
+        setIsLastSearchFriend(response.data.data.containKeywordAccounts.last);
+        setFriendData(friendData.concat(response.data.data.containKeywordAccounts.content));
+        if (response.data.data.containKeywordAccounts.content.length != 0) {
+          setCursorIdSearchFriend(
+            response.data.data.containKeywordAccounts.content[response.data.data.containKeywordAccounts.content.length - 1]
               .friendshipId,
           );
         }
@@ -271,11 +383,16 @@ export default function SearchFriends() {
         console.log(errorResponse.data);
       }
     }
-    setLoading(false);
+    setLoadingSearchFriend(false);
   };
-  const onEndReached = () => {
-    if (!loading) {
-      getData();
+  // const onEndReached = () => {
+  //   if (!loading) {
+  //     getData();
+  //   }
+  // };
+  const onEndReachedSearchFriend = () => {
+    if (!loadingSearchFriend) {
+      getDataSearchFriend();
     }
   };
   const [refreshing, setRefreshing] = React.useState(false);
@@ -307,6 +424,7 @@ export default function SearchFriends() {
       console.log(errorResponse.data);
     }
   };
+  const statusSize = 38;
 
   return (
     <Pressable style={styles.entire} onPress={Keyboard.dismiss}>
@@ -314,14 +432,14 @@ export default function SearchFriends() {
         data={[
           {
             accountId: 0,
-            friendNickname: myName,
+            nickname: myName,
             friendshipId: 0,
             status: myStatus,
             profileImageUrl: myProfileImg,
           },
         ].concat(friendData)}
         style={styles.friendList}
-        onEndReached={onEndReached}
+        onEndReached={onEndReachedSearchFriend}
         onEndReachedThreshold={0.4}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
@@ -394,74 +512,84 @@ export default function SearchFriends() {
                   )}
                 </Pressable>
                 <View style={styles.friendmiddle}>
-                  <Text style={styles.friendName}>{item.friendNickname}</Text>
+                  <Text style={styles.friendName}>{item.nickname}</Text>
                 </View>
                 <View style={styles.friendProfileStatus}>
-                  {item.status == 'smile'.toUpperCase() && (
-                    <SvgXml width={40} height={40} xml={svgXml.status.smile} />
-                  )}
-                  {item.status == 'happy'.toUpperCase() && (
-                    <SvgXml width={40} height={40} xml={svgXml.status.happy} />
-                  )}
-                  {item.status == 'sad'.toUpperCase() && (
-                    <SvgXml width={40} height={40} xml={svgXml.status.sad} />
-                  )}
-                  {item.status == 'mad'.toUpperCase() && (
-                    <SvgXml width={40} height={40} xml={svgXml.status.mad} />
-                  )}
-                  {item.status == 'exhausted'.toUpperCase() && (
-                    <SvgXml
-                      width={40}
-                      height={40}
-                      xml={svgXml.status.exhauseted}
-                    />
-                  )}
-                  {item.status == 'coffee'.toUpperCase() && (
-                    <SvgXml width={40} height={40} xml={svgXml.status.coffee} />
-                  )}
-                  {item.status == 'meal'.toUpperCase() && (
-                    <SvgXml width={40} height={40} xml={svgXml.status.meal} />
-                  )}
-                  {item.status == 'alcohol'.toUpperCase() && (
-                    <SvgXml
-                      width={40}
-                      height={40}
-                      xml={svgXml.status.alcohol}
-                    />
-                  )}
-                  {item.status == 'chicken'.toUpperCase() && (
-                    <SvgXml
-                      width={40}
-                      height={40}
-                      xml={svgXml.status.chicken}
-                    />
-                  )}
-                  {item.status == 'sleep'.toUpperCase() && (
-                    <SvgXml width={40} height={40} xml={svgXml.status.sleep} />
-                  )}
                   {item.status == 'work'.toUpperCase() && (
-                    <SvgXml width={40} height={40} xml={svgXml.status.work} />
+                    <SvgXml width={statusSize} height={statusSize} xml={svgXml.status.work} />
                   )}
                   {item.status == 'study'.toUpperCase() && (
-                    <SvgXml width={40} height={40} xml={svgXml.status.study} />
+                    <SvgXml width={statusSize} height={statusSize} xml={svgXml.status.study} />
                   )}
-                  {item.status == 'movie'.toUpperCase() && (
-                    <SvgXml width={40} height={40} xml={svgXml.status.movie} />
+                  {item.status == 'transport'.toUpperCase() && (
+                    <SvgXml width={statusSize} height={statusSize} xml={svgXml.status.transport} />
                   )}
-                  {item.status == 'move'.toUpperCase() && (
-                    <SvgXml width={40} height={40} xml={svgXml.status.move} />
+                  {item.status == 'eat'.toUpperCase() && (
+                    <SvgXml width={statusSize} height={statusSize} xml={svgXml.status.eat} />
                   )}
-                  {item.status == 'dance'.toUpperCase() && (
-                    <SvgXml width={40} height={40} xml={svgXml.status.dance} />
-                  )}
-                  {item.status == 'read'.toUpperCase() && (
-                    <SvgXml width={40} height={40} xml={svgXml.status.read} />
+                  {item.status == 'workout'.toUpperCase() && (
+                    <SvgXml
+                      width={statusSize}
+                      height={statusSize}
+                      xml={svgXml.status.workout}
+                    />
                   )}
                   {item.status == 'walk'.toUpperCase() && (
-                    <SvgXml width={40} height={40} xml={svgXml.status.walk} />
+                    <SvgXml width={statusSize} height={statusSize} xml={svgXml.status.walk} />
                   )}
-                  {item.status == 'travel'.toUpperCase() && (
-                    <SvgXml width={40} height={40} xml={svgXml.status.travel} />
+                  {item.status == 'sleep'.toUpperCase() && (
+                    <SvgXml width={statusSize} height={statusSize} xml={svgXml.status.sleep} />
+                  )}
+                  {item.status == 'smile'.toUpperCase() && (
+                    <SvgXml width={statusSize} height={statusSize} xml={svgXml.status.smile} />
+                  )}
+                  {item.status == 'happy'.toUpperCase() && (
+                    <SvgXml width={statusSize} height={statusSize} xml={svgXml.status.happy} />
+                  )}
+                  {item.status == 'sad'.toUpperCase() && (
+                    <SvgXml width={statusSize} height={statusSize} xml={svgXml.status.sad} />
+                  )}
+                  {item.status == 'mad'.toUpperCase() && (
+                    <SvgXml width={statusSize} height={statusSize} xml={svgXml.status.mad} />
+                  )}
+                  {item.status == 'panic'.toUpperCase() && (
+                    <SvgXml width={statusSize} height={statusSize} xml={svgXml.status.panic} />
+                  )}
+                  {item.status == 'exhausted'.toUpperCase() && (
+                    <SvgXml width={statusSize} height={statusSize} xml={svgXml.status.exhausted} />
+                  )}
+                  {item.status == 'excited'.toUpperCase() && (
+                    <SvgXml width={statusSize} height={statusSize} xml={svgXml.status.excited} />
+                  )}
+                  {item.status == 'sick'.toUpperCase() && (
+                    <SvgXml width={statusSize} height={statusSize} xml={svgXml.status.sick} />
+                  )}
+                  {item.status == 'vacation'.toUpperCase() && (
+                    <SvgXml width={statusSize} height={statusSize} xml={svgXml.status.vacation} />
+                  )}
+                  {item.status == 'date'.toUpperCase() && (
+                    <SvgXml width={statusSize} height={statusSize} xml={svgXml.status.date} />
+                  )}
+                  {item.status == 'computer'.toUpperCase() && (
+                    <SvgXml width={statusSize} height={statusSize} xml={svgXml.status.computer} />
+                  )}
+                  {item.status == 'cafe'.toUpperCase() && (
+                    <SvgXml width={statusSize} height={statusSize} xml={svgXml.status.cafe} />
+                  )}
+                  {item.status == 'movie'.toUpperCase() && (
+                    <SvgXml width={statusSize} height={statusSize} xml={svgXml.status.movie} />
+                  )}
+                  {item.status == 'read'.toUpperCase() && (
+                    <SvgXml width={statusSize} height={statusSize} xml={svgXml.status.read} />
+                  )}
+                  {item.status == 'alcohol'.toUpperCase() && (
+                    <SvgXml width={statusSize} height={statusSize} xml={svgXml.status.alcohol} />
+                  )}
+                  {item.status == 'music'.toUpperCase() && (
+                    <SvgXml width={statusSize} height={statusSize} xml={svgXml.status.music} />
+                  )}
+                  {item.status == 'birthday'.toUpperCase() && (
+                    <SvgXml width={statusSize} height={statusSize} xml={svgXml.status.birthday} />
                   )}
                 </View>
               </Pressable>
@@ -487,14 +615,14 @@ export default function SearchFriends() {
                   )}
                 </Pressable>
                 <View style={styles.friendmiddle}>
-                  <Text style={styles.friendName}>{item.friendNickname}</Text>
+                  <Text style={styles.friendName}>{item.nickname}</Text>
                 </View>
                 <Pressable
                   style={styles.nonFriendProfileStatus}
                   onPress={() => {
                     askFriend(
                       item.accountId,
-                      item.friendNickname,
+                      item.nickname,
                       item.profileImageUrl,
                     );
                   }}>
@@ -523,7 +651,7 @@ export default function SearchFriends() {
                   )}
                 </Pressable>
                 <View style={styles.friendmiddle}>
-                  <Text style={styles.friendName}>{item.friendNickname}</Text>
+                  <Text style={styles.friendName}>{item.nickname}</Text>
                 </View>
                 <Pressable style={styles.waitingFriendProfileStatus}>
                   <SvgXml width={24} height={24} xml={svgXml.icon.sendfriend} />
@@ -551,7 +679,7 @@ export default function SearchFriends() {
                   )}
                 </Pressable>
                 <View style={styles.friendmiddle}>
-                  <Text style={styles.friendName}>{item.friendNickname}</Text>
+                  <Text style={styles.friendName}>{item.nickname}</Text>
                 </View>
                 <Pressable style={styles.requestFriendProfileStatus}>
                   <SvgXml
@@ -596,67 +724,85 @@ export default function SearchFriends() {
                 )}
               </View>
               <View style={styles.friendmiddle}>
-                <Text style={styles.friendName}>{item.friendNickname}</Text>
+                <Text style={styles.friendName}>{item.nickname}</Text>
               </View>
               <View style={styles.friendProfileStatus}>
-                {item.status == 'smile'.toUpperCase() && (
-                  <SvgXml width={40} height={40} xml={svgXml.status.smile} />
-                )}
-                {item.status == 'happy'.toUpperCase() && (
-                  <SvgXml width={40} height={40} xml={svgXml.status.happy} />
-                )}
-                {item.status == 'sad'.toUpperCase() && (
-                  <SvgXml width={40} height={40} xml={svgXml.status.sad} />
-                )}
-                {item.status == 'mad'.toUpperCase() && (
-                  <SvgXml width={40} height={40} xml={svgXml.status.mad} />
-                )}
-                {item.status == 'exhausted'.toUpperCase() && (
-                  <SvgXml
-                    width={40}
-                    height={40}
-                    xml={svgXml.status.exhauseted}
-                  />
-                )}
-                {item.status == 'coffee'.toUpperCase() && (
-                  <SvgXml width={40} height={40} xml={svgXml.status.coffee} />
-                )}
-                {item.status == 'meal'.toUpperCase() && (
-                  <SvgXml width={40} height={40} xml={svgXml.status.meal} />
-                )}
-                {item.status == 'alcohol'.toUpperCase() && (
-                  <SvgXml width={40} height={40} xml={svgXml.status.alcohol} />
-                )}
-                {item.status == 'chicken'.toUpperCase() && (
-                  <SvgXml width={40} height={40} xml={svgXml.status.chicken} />
-                )}
-                {item.status == 'sleep'.toUpperCase() && (
-                  <SvgXml width={40} height={40} xml={svgXml.status.sleep} />
-                )}
-                {item.status == 'work'.toUpperCase() && (
-                  <SvgXml width={40} height={40} xml={svgXml.status.work} />
-                )}
-                {item.status == 'study'.toUpperCase() && (
-                  <SvgXml width={40} height={40} xml={svgXml.status.study} />
-                )}
-                {item.status == 'movie'.toUpperCase() && (
-                  <SvgXml width={40} height={40} xml={svgXml.status.movie} />
-                )}
-                {item.status == 'move'.toUpperCase() && (
-                  <SvgXml width={40} height={40} xml={svgXml.status.move} />
-                )}
-                {item.status == 'dance'.toUpperCase() && (
-                  <SvgXml width={40} height={40} xml={svgXml.status.dance} />
-                )}
-                {item.status == 'read'.toUpperCase() && (
-                  <SvgXml width={40} height={40} xml={svgXml.status.read} />
-                )}
-                {item.status == 'walk'.toUpperCase() && (
-                  <SvgXml width={40} height={40} xml={svgXml.status.walk} />
-                )}
-                {item.status == 'travel'.toUpperCase() && (
-                  <SvgXml width={40} height={40} xml={svgXml.status.travel} />
-                )}
+              {item.status == 'work'.toUpperCase() && (
+                <SvgXml width={statusSize} height={statusSize} xml={svgXml.status.work} />
+              )}
+              {item.status == 'study'.toUpperCase() && (
+                <SvgXml width={statusSize} height={statusSize} xml={svgXml.status.study} />
+              )}
+              {item.status == 'transport'.toUpperCase() && (
+                <SvgXml width={statusSize} height={statusSize} xml={svgXml.status.transport} />
+              )}
+              {item.status == 'eat'.toUpperCase() && (
+                <SvgXml width={statusSize} height={statusSize} xml={svgXml.status.eat} />
+              )}
+              {item.status == 'workout'.toUpperCase() && (
+                <SvgXml
+                  width={statusSize}
+                  height={statusSize}
+                  xml={svgXml.status.workout}
+                />
+              )}
+              {item.status == 'walk'.toUpperCase() && (
+                <SvgXml width={statusSize} height={statusSize} xml={svgXml.status.walk} />
+              )}
+              {item.status == 'sleep'.toUpperCase() && (
+                <SvgXml width={statusSize} height={statusSize} xml={svgXml.status.sleep} />
+              )}
+              {item.status == 'smile'.toUpperCase() && (
+                <SvgXml width={statusSize} height={statusSize} xml={svgXml.status.smile} />
+              )}
+              {item.status == 'happy'.toUpperCase() && (
+                <SvgXml width={statusSize} height={statusSize} xml={svgXml.status.happy} />
+              )}
+              {item.status == 'sad'.toUpperCase() && (
+                <SvgXml width={statusSize} height={statusSize} xml={svgXml.status.sad} />
+              )}
+              {item.status == 'mad'.toUpperCase() && (
+                <SvgXml width={statusSize} height={statusSize} xml={svgXml.status.mad} />
+              )}
+              {item.status == 'panic'.toUpperCase() && (
+                <SvgXml width={statusSize} height={statusSize} xml={svgXml.status.panic} />
+              )}
+              {item.status == 'exhausted'.toUpperCase() && (
+                <SvgXml width={statusSize} height={statusSize} xml={svgXml.status.exhausted} />
+              )}
+              {item.status == 'excited'.toUpperCase() && (
+                <SvgXml width={statusSize} height={statusSize} xml={svgXml.status.excited} />
+              )}
+              {item.status == 'sick'.toUpperCase() && (
+                <SvgXml width={statusSize} height={statusSize} xml={svgXml.status.sick} />
+              )}
+              {item.status == 'vacation'.toUpperCase() && (
+                <SvgXml width={statusSize} height={statusSize} xml={svgXml.status.vacation} />
+              )}
+              {item.status == 'date'.toUpperCase() && (
+                <SvgXml width={statusSize} height={statusSize} xml={svgXml.status.date} />
+              )}
+              {item.status == 'computer'.toUpperCase() && (
+                <SvgXml width={statusSize} height={statusSize} xml={svgXml.status.computer} />
+              )}
+              {item.status == 'cafe'.toUpperCase() && (
+                <SvgXml width={statusSize} height={statusSize} xml={svgXml.status.cafe} />
+              )}
+              {item.status == 'movie'.toUpperCase() && (
+                <SvgXml width={statusSize} height={statusSize} xml={svgXml.status.movie} />
+              )}
+              {item.status == 'read'.toUpperCase() && (
+                <SvgXml width={statusSize} height={statusSize} xml={svgXml.status.read} />
+              )}
+              {item.status == 'alcohol'.toUpperCase() && (
+                <SvgXml width={statusSize} height={statusSize} xml={svgXml.status.alcohol} />
+              )}
+              {item.status == 'music'.toUpperCase() && (
+                <SvgXml width={statusSize} height={statusSize} xml={svgXml.status.music} />
+              )}
+              {item.status == 'birthday'.toUpperCase() && (
+                <SvgXml width={statusSize} height={statusSize} xml={svgXml.status.birthday} />
+              )}
               </View>
               {/* <Pressable style={styles.deleteBtn}>
                 <Text style={styles.deleteBtnTxt}>삭제</Text>

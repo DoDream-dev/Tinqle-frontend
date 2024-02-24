@@ -572,7 +572,8 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
         setImagePicking(false);
       });
   };
-
+  const statusSize = 30;
+  const statusSizeModal = 48;
   return (
     <Pressable
       style={{flex: 1}}
@@ -715,71 +716,89 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
                     alignItems: 'center',
                   }}
                   onPress={() => setChangeStatus(true)}>
-                  {status == 'smile' && (
-                    <SvgXml width={32} height={32} xml={svgXml.status.smile} />
-                  )}
-                  {status == 'happy' && (
-                    <SvgXml width={32} height={32} xml={svgXml.status.happy} />
-                  )}
-                  {status == 'sad' && (
-                    <SvgXml width={32} height={32} xml={svgXml.status.sad} />
-                  )}
-                  {status == 'mad' && (
-                    <SvgXml width={32} height={32} xml={svgXml.status.mad} />
-                  )}
-                  {status == 'exhausted' && (
-                    <SvgXml
-                      width={32}
-                      height={32}
-                      xml={svgXml.status.exhauseted}
-                    />
-                  )}
-                  {status == 'coffee' && (
-                    <SvgXml width={32} height={32} xml={svgXml.status.coffee} />
-                  )}
-                  {status == 'meal' && (
-                    <SvgXml width={32} height={32} xml={svgXml.status.meal} />
-                  )}
-                  {status == 'alcohol' && (
-                    <SvgXml
-                      width={32}
-                      height={32}
-                      xml={svgXml.status.alcohol}
-                    />
-                  )}
-                  {status == 'chicken' && (
-                    <SvgXml
-                      width={32}
-                      height={32}
-                      xml={svgXml.status.chicken}
-                    />
-                  )}
-                  {status == 'sleep' && (
-                    <SvgXml width={32} height={32} xml={svgXml.status.sleep} />
-                  )}
                   {status == 'work' && (
-                    <SvgXml width={32} height={32} xml={svgXml.status.work} />
+                    <SvgXml width={statusSize} height={statusSize} xml={svgXml.status.work} />
                   )}
                   {status == 'study' && (
-                    <SvgXml width={32} height={32} xml={svgXml.status.study} />
+                    <SvgXml width={statusSize} height={statusSize} xml={svgXml.status.study} />
                   )}
-                  {status == 'movie' && (
-                    <SvgXml width={32} height={32} xml={svgXml.status.movie} />
+                  {status == 'transport' && (
+                    <SvgXml width={statusSize} height={statusSize} xml={svgXml.status.transport} />
                   )}
-                  {status == 'move' && (
-                    <SvgXml width={32} height={32} xml={svgXml.status.move} />
+                  {status == 'eat' && (
+                    <SvgXml width={statusSize} height={statusSize} xml={svgXml.status.eat} />
                   )}
-                  {status == 'dance' && (
-                    <SvgXml width={32} height={32} xml={svgXml.status.dance} />
-                  )}
-                  {status == 'read' && (
-                    <SvgXml width={32} height={32} xml={svgXml.status.read} />
+                  {status == 'workout' && (
+                    <SvgXml
+                      width={statusSize}
+                      height={statusSize}
+                      xml={svgXml.status.workout}
+                    />
                   )}
                   {status == 'walk' && (
-                    <SvgXml width={32} height={32} xml={svgXml.status.walk} />
+                    <SvgXml width={statusSize} height={statusSize} xml={svgXml.status.walk} />
                   )}
-                  {status == 'travel' && (
-                    <SvgXml width={32} height={32} xml={svgXml.status.travel} />
+                  {status == 'sleep' && (
+                    <SvgXml width={statusSize} height={statusSize} xml={svgXml.status.sleep} />
+                  )}
+                  {status == 'smile' && (
+                    <SvgXml
+                      width={statusSize}
+                      height={statusSize}
+                      xml={svgXml.status.smile}
+                    />
+                  )}
+                  {status == 'happy' && (
+                    <SvgXml
+                      width={statusSize}
+                      height={statusSize}
+                      xml={svgXml.status.happy}
+                    />
+                  )}
+                  {status == 'sad' && (
+                    <SvgXml width={statusSize} height={statusSize} xml={svgXml.status.sad} />
+                  )}
+                  {status == 'mad' && (
+                    <SvgXml width={statusSize} height={statusSize} xml={svgXml.status.mad} />
+                  )}
+                  {status == 'panic' && (
+                    <SvgXml width={statusSize} height={statusSize} xml={svgXml.status.panic} />
+                  )}
+                  {status == 'exhausted' && (
+                    <SvgXml width={statusSize} height={statusSize} xml={svgXml.status.exhausted} />
+                  )}
+                  {status == 'excited' && (
+                    <SvgXml width={statusSize} height={statusSize} xml={svgXml.status.excited} />
+                  )}
+                  {status == 'sick' && (
+                    <SvgXml width={statusSize} height={statusSize} xml={svgXml.status.sick} />
+                  )}
+                  {status == 'vacation' && (
+                    <SvgXml width={statusSize} height={statusSize} xml={svgXml.status.vacation} />
+                  )}
+                  {status == 'date' && (
+                    <SvgXml width={statusSize} height={statusSize} xml={svgXml.status.date} />
+                  )}
+                  {status == 'computer' && (
+                    <SvgXml width={statusSize} height={statusSize} xml={svgXml.status.computer} />
+                  )}
+                  {status == 'cafe' && (
+                    <SvgXml width={statusSize} height={statusSize} xml={svgXml.status.cafe} />
+                  )}
+                  {status == 'movie' && (
+                    <SvgXml width={statusSize} height={statusSize} xml={svgXml.status.movie} />
+                  )}
+                  {status == 'read' && (
+                    <SvgXml width={statusSize} height={statusSize} xml={svgXml.status.read} />
+                  )}
+                  {status == 'alcohol' && (
+                    <SvgXml width={statusSize} height={statusSize} xml={svgXml.status.alcohol} />
+                  )}
+                  {status == 'music' && (
+                    <SvgXml width={statusSize} height={statusSize} xml={svgXml.status.music} />
+                  )}
+                  {status == 'birthday' && (
+                    <SvgXml width={statusSize} height={statusSize} xml={svgXml.status.birthday} />
                   )}
                 </Pressable>
                 <View
@@ -981,142 +1000,10 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
                   <View style={styles.statusViewHeader}>
                     <Text style={styles.statusViewHeaderTxt}>지금 나는...</Text>
                     <Pressable onPress={()=>setChangeStatus(false)} style={styles.statusViewHeaderXBtn}>
-                      <SvgXml width={24} height={24} xml={svgXml.icon.close} />
+                      <SvgXml width={26} height={26} xml={svgXml.icon.close} />
                     </Pressable>
                   </View>
                   <View style={styles.statusView}>
-                    <Pressable
-                      onPress={() => {
-                        setChangeStatus(false);
-                        postStatus('smile');
-                      }}
-                      style={
-                        status == 'smile'
-                          ? styles.statusSelected
-                          : styles.statusSelect
-                      }>
-                      <SvgXml width={48} height={48} xml={svgXml.status.smile} />
-                    </Pressable>
-                    <Pressable
-                      onPress={() => {
-                        setChangeStatus(false);
-                        postStatus('happy');
-                      }}
-                      style={
-                        status == 'happy'
-                          ? styles.statusSelected
-                          : styles.statusSelect
-                      }>
-                      <SvgXml width={48} height={48} xml={svgXml.status.happy} />
-                    </Pressable>
-                    <Pressable
-                      onPress={() => {
-                        setChangeStatus(false);
-                        postStatus('sad');
-                      }}
-                      style={
-                        status == 'sad'
-                          ? styles.statusSelected
-                          : styles.statusSelect
-                      }>
-                      <SvgXml width={48} height={48} xml={svgXml.status.sad} />
-                    </Pressable>
-                    <Pressable
-                      onPress={() => {
-                        setChangeStatus(false);
-                        postStatus('mad');
-                      }}
-                      style={
-                        status == 'mad'
-                          ? styles.statusSelected
-                          : styles.statusSelect
-                      }>
-                      <SvgXml width={48} height={48} xml={svgXml.status.mad} />
-                    </Pressable>
-                    <Pressable
-                      onPress={() => {
-                        setChangeStatus(false);
-                        postStatus('exhausted');
-                      }}
-                      style={
-                        status == 'exhausted'
-                          ? styles.statusSelected
-                          : styles.statusSelect
-                      }>
-                      <SvgXml
-                        width={48}
-                        height={48}
-                        xml={svgXml.status.exhauseted}
-                      />
-                    </Pressable>
-                    <Pressable
-                      onPress={() => {
-                        setChangeStatus(false);
-                        postStatus('coffee');
-                      }}
-                      style={
-                        status == 'coffee'
-                          ? styles.statusSelected
-                          : styles.statusSelect
-                      }>
-                      <SvgXml width={48} height={48} xml={svgXml.status.coffee} />
-                    </Pressable>
-                    <Pressable
-                      onPress={() => {
-                        setChangeStatus(false);
-                        postStatus('meal');
-                      }}
-                      style={
-                        status == 'meal'
-                          ? styles.statusSelected
-                          : styles.statusSelect
-                      }>
-                      <SvgXml width={48} height={48} xml={svgXml.status.meal} />
-                    </Pressable>
-                    <Pressable
-                      onPress={() => {
-                        setChangeStatus(false);
-                        postStatus('alcohol');
-                      }}
-                      style={
-                        status == 'alcohol'
-                          ? styles.statusSelected
-                          : styles.statusSelect
-                      }>
-                      <SvgXml
-                        width={48}
-                        height={48}
-                        xml={svgXml.status.alcohol}
-                      />
-                    </Pressable>
-                    <Pressable
-                      onPress={() => {
-                        setChangeStatus(false);
-                        postStatus('chicken');
-                      }}
-                      style={
-                        status == 'chicken'
-                          ? styles.statusSelected
-                          : styles.statusSelect
-                      }>
-                      <SvgXml
-                        width={48}
-                        height={48}
-                        xml={svgXml.status.chicken}
-                      />
-                    </Pressable>
-                    <Pressable
-                      onPress={() => {
-                        setChangeStatus(false);
-                        postStatus('sleep');
-                      }}
-                      style={
-                        status == 'sleep'
-                          ? styles.statusSelected
-                          : styles.statusSelect
-                      }>
-                      <SvgXml width={48} height={48} xml={svgXml.status.sleep} />
-                    </Pressable>
                     <Pressable
                       onPress={() => {
                         setChangeStatus(false);
@@ -1127,7 +1014,7 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
                           ? styles.statusSelected
                           : styles.statusSelect
                       }>
-                      <SvgXml width={48} height={48} xml={svgXml.status.work} />
+                      <SvgXml width={statusSizeModal} height={statusSizeModal} xml={svgXml.status.work} />
                     </Pressable>
                     <Pressable
                       onPress={() => {
@@ -1139,55 +1026,47 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
                           ? styles.statusSelected
                           : styles.statusSelect
                       }>
-                      <SvgXml width={48} height={48} xml={svgXml.status.study} />
+                      <SvgXml width={statusSizeModal} height={statusSizeModal} xml={svgXml.status.study} />
                     </Pressable>
                     <Pressable
                       onPress={() => {
                         setChangeStatus(false);
-                        postStatus('movie');
+                        postStatus('transport');
                       }}
                       style={
-                        status == 'movie'
+                        status == 'transport'
                           ? styles.statusSelected
                           : styles.statusSelect
                       }>
-                      <SvgXml width={48} height={48} xml={svgXml.status.movie} />
+                      <SvgXml width={statusSizeModal} height={statusSizeModal} xml={svgXml.status.transport} />
                     </Pressable>
                     <Pressable
                       onPress={() => {
                         setChangeStatus(false);
-                        postStatus('move');
+                        postStatus('eat');
                       }}
                       style={
-                        status == 'move'
+                        status == 'eat'
                           ? styles.statusSelected
                           : styles.statusSelect
                       }>
-                      <SvgXml width={48} height={48} xml={svgXml.status.move} />
+                      <SvgXml width={statusSizeModal} height={statusSizeModal} xml={svgXml.status.eat} />
                     </Pressable>
                     <Pressable
                       onPress={() => {
                         setChangeStatus(false);
-                        postStatus('dance');
+                        postStatus('workout');
                       }}
                       style={
-                        status == 'dance'
+                        status == 'workout'
                           ? styles.statusSelected
                           : styles.statusSelect
                       }>
-                      <SvgXml width={48} height={48} xml={svgXml.status.dance} />
-                    </Pressable>
-                    <Pressable
-                      onPress={() => {
-                        setChangeStatus(false);
-                        postStatus('read');
-                      }}
-                      style={
-                        status == 'read'
-                          ? styles.statusSelected
-                          : styles.statusSelect
-                      }>
-                      <SvgXml width={48} height={48} xml={svgXml.status.read} />
+                      <SvgXml
+                        width={statusSizeModal}
+                        height={statusSizeModal}
+                        xml={svgXml.status.workout}
+                      />
                     </Pressable>
                     <Pressable
                       onPress={() => {
@@ -1199,19 +1078,231 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
                           ? styles.statusSelected
                           : styles.statusSelect
                       }>
-                      <SvgXml width={48} height={48} xml={svgXml.status.walk} />
+                      <SvgXml width={statusSizeModal} height={statusSizeModal} xml={svgXml.status.walk} />
                     </Pressable>
                     <Pressable
                       onPress={() => {
                         setChangeStatus(false);
-                        postStatus('travel');
+                        postStatus('sleep');
                       }}
                       style={
-                        status == 'travel'
+                        status == 'sleep'
                           ? styles.statusSelected
                           : styles.statusSelect
                       }>
-                      <SvgXml width={48} height={48} xml={svgXml.status.travel} />
+                      <SvgXml width={statusSizeModal} height={statusSizeModal} xml={svgXml.status.sleep} />
+                    </Pressable>
+                    <Pressable
+                      onPress={() => {
+                        setChangeStatus(false);
+                        postStatus('smile');
+                      }}
+                      style={
+                        status == 'smile'
+                          ? styles.statusSelected
+                          : styles.statusSelect
+                      }>
+                      <SvgXml
+                        width={statusSizeModal}
+                        height={statusSizeModal}
+                        xml={svgXml.status.smile}
+                      />
+                    </Pressable>
+                    <Pressable
+                      onPress={() => {
+                        setChangeStatus(false);
+                        postStatus('happy');
+                      }}
+                      style={
+                        status == 'happy'
+                          ? styles.statusSelected
+                          : styles.statusSelect
+                      }>
+                      <SvgXml
+                        width={statusSizeModal}
+                        height={statusSizeModal}
+                        xml={svgXml.status.happy}
+                      />
+                    </Pressable>
+                    <Pressable
+                      onPress={() => {
+                        setChangeStatus(false);
+                        postStatus('sad');
+                      }}
+                      style={
+                        status == 'sad'
+                          ? styles.statusSelected
+                          : styles.statusSelect
+                      }>
+                      <SvgXml width={statusSizeModal} height={statusSizeModal} xml={svgXml.status.sad} />
+                    </Pressable>
+                    <Pressable
+                      onPress={() => {
+                        setChangeStatus(false);
+                        postStatus('mad');
+                      }}
+                      style={
+                        status == 'mad'
+                          ? styles.statusSelected
+                          : styles.statusSelect
+                      }>
+                      <SvgXml width={statusSizeModal} height={statusSizeModal} xml={svgXml.status.mad} />
+                    </Pressable>
+                    <Pressable
+                      onPress={() => {
+                        setChangeStatus(false);
+                        postStatus('panic');
+                      }}
+                      style={
+                        status == 'panic'
+                          ? styles.statusSelected
+                          : styles.statusSelect
+                      }>
+                      <SvgXml width={statusSizeModal} height={statusSizeModal} xml={svgXml.status.panic} />
+                    </Pressable>
+                    <Pressable
+                      onPress={() => {
+                        setChangeStatus(false);
+                        postStatus('exhausted');
+                      }}
+                      style={
+                        status == 'exhausted'
+                          ? styles.statusSelected
+                          : styles.statusSelect
+                      }>
+                      <SvgXml width={statusSizeModal} height={statusSizeModal} xml={svgXml.status.exhausted} />
+                    </Pressable>
+                    <Pressable
+                      onPress={() => {
+                        setChangeStatus(false);
+                        postStatus('excited');
+                      }}
+                      style={
+                        status == 'excited'
+                          ? styles.statusSelected
+                          : styles.statusSelect
+                      }>
+                      <SvgXml width={statusSizeModal} height={statusSizeModal} xml={svgXml.status.excited} />
+                    </Pressable>
+                    <Pressable
+                      onPress={() => {
+                        setChangeStatus(false);
+                        postStatus('sick');
+                      }}
+                      style={
+                        status == 'sick'
+                          ? styles.statusSelected
+                          : styles.statusSelect
+                      }>
+                      <SvgXml width={statusSizeModal} height={statusSizeModal} xml={svgXml.status.sick} />
+                    </Pressable>
+                    <Pressable
+                      onPress={() => {
+                        setChangeStatus(false);
+                        postStatus('vacation');
+                      }}
+                      style={
+                        status == 'vacation'
+                          ? styles.statusSelected
+                          : styles.statusSelect
+                      }>
+                      <SvgXml width={statusSizeModal} height={statusSizeModal} xml={svgXml.status.vacation} />
+                    </Pressable>
+                    <Pressable
+                      onPress={() => {
+                        setChangeStatus(false);
+                        postStatus('date');
+                      }}
+                      style={
+                        status == 'date'
+                          ? styles.statusSelected
+                          : styles.statusSelect
+                      }>
+                      <SvgXml width={statusSizeModal} height={statusSizeModal} xml={svgXml.status.date} />
+                    </Pressable>
+                    <Pressable
+                      onPress={() => {
+                        setChangeStatus(false);
+                        postStatus('computer');
+                      }}
+                      style={
+                        status == 'computer'
+                          ? styles.statusSelected
+                          : styles.statusSelect
+                      }>
+                      <SvgXml width={statusSizeModal} height={statusSizeModal} xml={svgXml.status.computer} />
+                    </Pressable>
+                    <Pressable
+                      onPress={() => {
+                        setChangeStatus(false);
+                        postStatus('cafe');
+                      }}
+                      style={
+                        status == 'cafe'
+                          ? styles.statusSelected
+                          : styles.statusSelect
+                      }>
+                      <SvgXml width={statusSizeModal} height={statusSizeModal} xml={svgXml.status.cafe} />
+                    </Pressable>
+                    <Pressable
+                      onPress={() => {
+                        setChangeStatus(false);
+                        postStatus('movie');
+                      }}
+                      style={
+                        status == 'movie'
+                          ? styles.statusSelected
+                          : styles.statusSelect
+                      }>
+                      <SvgXml width={statusSizeModal} height={statusSizeModal} xml={svgXml.status.movie} />
+                    </Pressable>
+                    <Pressable
+                      onPress={() => {
+                        setChangeStatus(false);
+                        postStatus('read');
+                      }}
+                      style={
+                        status == 'read'
+                          ? styles.statusSelected
+                          : styles.statusSelect
+                      }>
+                      <SvgXml width={statusSizeModal} height={statusSizeModal} xml={svgXml.status.read} />
+                    </Pressable>
+                    <Pressable
+                      onPress={() => {
+                        setChangeStatus(false);
+                        postStatus('alcohol');
+                      }}
+                      style={
+                        status == 'alcohol'
+                          ? styles.statusSelected
+                          : styles.statusSelect
+                      }>
+                      <SvgXml width={statusSizeModal} height={statusSizeModal} xml={svgXml.status.alcohol} />
+                    </Pressable>
+                    <Pressable
+                      onPress={() => {
+                        setChangeStatus(false);
+                        postStatus('music');
+                      }}
+                      style={
+                        status == 'music'
+                          ? styles.statusSelected
+                          : styles.statusSelect
+                      }>
+                      <SvgXml width={statusSizeModal} height={statusSizeModal} xml={svgXml.status.music} />
+                    </Pressable>
+                    <Pressable
+                      onPress={() => {
+                        setChangeStatus(false);
+                        postStatus('birthday');
+                      }}
+                      style={
+                        status == 'birthday'
+                          ? styles.statusSelected
+                          : styles.statusSelect
+                      }>
+                      <SvgXml width={statusSizeModal} height={statusSizeModal} xml={svgXml.status.birthday} />
                     </Pressable>
                   </View>
                 </Pressable>
@@ -1349,11 +1440,9 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
   modalBGView2: {
-    width: '100%',
-    flex: 1,
+    flex:1,
     justifyContent: 'center',
     alignItems: 'center',
-    paddingHorizontal: 24,
   },
   modalView: {
     borderTopLeftRadius: 20,
@@ -1368,18 +1457,20 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     borderWidth: 1,
     borderColor:'#A45FFF',
-    width: '100%',
+    width:327,
+    // width: '100%',
     // height: 580,
-    marginHorizontal: 24,
-    // justifyContent: 'space-between',
+    // marginHorizontal: 24,
     alignItems: 'center',
-    padding: 16,
+    padding:16,
+    paddingBottom:28,
     position:'relative'
   },
   statusView:{
     flexWrap: 'wrap',
     flexDirection: 'row',
-    paddingHorizontal:10,
+    // paddingHorizontal:10,
+    justifyContent:'center'
   },
   statusViewHeader:{
     width:'100%',
@@ -1398,22 +1489,22 @@ const styles = StyleSheet.create({
     top:0
   },
   statusSelect: {
-    borderRadius: 20,
+    borderRadius: 10,
     width: 60,
-    height: 60,
-    backgroundColor: '#333333',
-    marginBottom: 12,
-    marginHorizontal:3,
+    height: 54,
+    backgroundColor: '#202020',
+    marginBottom: 4,
+    marginHorizontal:4,
     justifyContent: 'center',
     alignItems: 'center',
   },
   statusSelected: {
-    borderRadius: 20,
+    borderRadius: 10,
     width: 60,
-    height: 60,
+    height: 54,
     backgroundColor: '#A55FFF',
-    marginHorizontal:3,
-    marginBottom: 12,
+    marginHorizontal:4,
+    marginBottom: 4,
     justifyContent: 'center',
     alignItems: 'center',
   },
