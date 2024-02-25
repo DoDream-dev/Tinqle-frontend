@@ -38,6 +38,7 @@ import LottieView from 'lottie-react-native';
 import {StatusBarHeight} from '../components/Safe';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {fcmService} from '../push_fcm';
+import AnimatedButton from '../components/AnimatedButton';
 
 type FeedListScreenProps = NativeStackScreenProps<
   RootStackParamList,
@@ -941,6 +942,16 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
                       setKBsize(e.nativeEvent.contentSize.height);
                     }}
                   />
+                  {isKnock ? (
+                    <AnimatedButton
+                      style={styles.knockDelete}
+                      onPress={() => {
+                        setIsKnock(false);
+                        setPlaceholder('지금 기분이 어때요?');
+                      }}>
+                      <Text style={styles.knockDeleteText}>{'취소'}</Text>
+                    </AnimatedButton>
+                  ) : null}
                 </View>
                 <Pressable
                   style={styles.addPhoto}
@@ -1572,13 +1583,15 @@ const styles = StyleSheet.create({
   },
   newFeedTxtInputContain: {
     flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'center',
     backgroundColor: '#333333',
     // backgroundColor: 'red',
     marginVertical: 6,
     marginRight: 4,
     borderRadius: 10,
     paddingVertical: Platform.OS === 'ios' ? 3 : 0,
-    paddingRight: 10,
+    paddingRight: 8,
     paddingLeft: 40,
     // maxHeight:'4vh'
   },
@@ -1588,8 +1601,23 @@ const styles = StyleSheet.create({
     fontWeight: '400',
     flex: 1,
     maxHeight: 80,
-    // backgroundColor: '#333333',
+    textAlignVertical: 'center',
+    backgroundColor: '#333333',
     // backgroundColor: 'blue',
+  },
+  knockDelete: {
+    marginVertical: 3,
+    width: 40,
+    padding: 8,
+    paddingVertical: 5,
+    backgroundColor: '#A55FFF',
+    borderRadius: 5,
+    justifyContent: 'center',
+  },
+  knockDeleteText: {
+    color: '#F0F0F0',
+    textAlign: 'center',
+    fontSize: 13,
   },
   sendNewFeed: {
     backgroundColor: '#888888',
