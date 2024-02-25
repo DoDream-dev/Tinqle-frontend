@@ -153,7 +153,7 @@ export default function SearchFriends() {
     getFriendProfile();
   }, [showWhoseModal]);
 
-  const getFriendProfile = _.throttle(async () => {
+  const getFriendProfile = async () => {
     try {
       const response = await axios.get(
         `${Config.API_URL}/accounts/search?keyword=${searchCode}`,
@@ -337,7 +337,7 @@ export default function SearchFriends() {
         setWhichPopup('noCode');
       }
     }
-  }, throttleTime);
+  };
   const askFriend = _.throttle(
     async (accountId: number, name: string, profileImageUrl: string) => {
       try {
