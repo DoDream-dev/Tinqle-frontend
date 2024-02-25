@@ -268,7 +268,7 @@ export default function Notis({}: NotisScreenProps) {
   const writeKnock = async (notificationId: number) => {
     try {
       navigation.navigate('FeedList', {isKnock: true});
-      deleteNotis(notificationId);
+      // deleteNotis(notificationId);
     } catch (error) {
       console.log(error);
     }
@@ -528,6 +528,7 @@ export default function Notis({}: NotisScreenProps) {
                     <Pressable
                       style={styles.notisCheckBtn}
                       onPress={() => {
+                        noticeClicked(index, item.notificationId);
                         writeKnock(item.notificationId);
                       }}>
                       <Text style={styles.notisCheckBtnTxt}>글쓰기</Text>
