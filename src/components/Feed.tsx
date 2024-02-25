@@ -117,9 +117,9 @@ export default function Feed(props: FeedProps) {
       style={[
         styles.entire,
         {
-          borderRadius: 10,
           borderWidth: isKnock ? 1 : undefined,
           borderColor: isKnock ? '#A55FFF' : undefined,
+          borderRadius: isKnock ? 10 : 10,
         },
       ]}>
       <Content
@@ -171,6 +171,7 @@ const styles = StyleSheet.create({
     paddingBottom: 12,
     width: '100%',
     borderRadius: 10,
+    // backgroundColor: 'red',
   },
   modalView: {
     backgroundColor: '#202020',
