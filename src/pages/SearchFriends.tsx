@@ -352,15 +352,7 @@ export default function SearchFriends() {
         // popup: 이도님께 친구 요청을 보냈어요!
         setWhichPopup('send');
         setPopupName(name);
-        setFriendData([
-          {
-            accountId: accountId,
-            nickname: name,
-            friendshipId: -2,
-            status: '',
-            profileImageUrl: profileImageUrl,
-          },
-        ]);
+        getFriendProfile();
       } catch (error) {
         const errorResponse = (error as AxiosError<{message: string}>).response;
         console.log(errorResponse.data);
