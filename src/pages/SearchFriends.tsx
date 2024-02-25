@@ -180,7 +180,7 @@ export default function SearchFriends() {
               {
                 accountId: response.data.data.equalKeywordAccount.accountId,
                 nickname: response.data.data.equalKeywordAccount.nickname,
-                friendshipId: 0,
+                friendshipId: response.data.data.equalKeywordAccount.friendshipId,
                 status: response.data.data.equalKeywordAccount.status,
                 profileImageUrl: response.data.data.equalKeywordAccount.profileImageUrl,
               },
@@ -227,15 +227,50 @@ export default function SearchFriends() {
       else {
         if (response.data.data.equalKeywordAccount != null && response.data.data.equalKeywordAccount.friendshipRelation != 'me') {
           // 맨앞에 추가
-          setFriendData([
-            {
-              accountId: response.data.data.equalKeywordAccount.accountId,
-              nickname: response.data.data.equalKeywordAccount.nickname,
-              friendshipId: 0,
-              status: response.data.data.equalKeywordAccount.status,
-              profileImageUrl: response.data.data.equalKeywordAccount.profileImageUrl,
-            }
-          ].concat(response.data.data.containKeywordAccounts.content));
+          if (response.data.data.equalKeywordAccount.friendshipRelation == 'true') {
+            setFriendData([
+              {
+                accountId: response.data.data.equalKeywordAccount.accountId,
+                nickname: response.data.data.equalKeywordAccount.nickname,
+                friendshipId: response.data.data.equalKeywordAccount.friendshipId,
+                status: response.data.data.equalKeywordAccount.status,
+                profileImageUrl: response.data.data.equalKeywordAccount.profileImageUrl,
+              }
+            ].concat(response.data.data.containKeywordAccounts.content));
+          }
+          else if (response.data.data.equalKeywordAccount.friendshipRelation == 'request') {
+            setFriendData([
+              {
+                accountId: response.data.data.equalKeywordAccount.accountId,
+                nickname: response.data.data.equalKeywordAccount.nickname,
+                friendshipId: -3,
+                status: response.data.data.equalKeywordAccount.status,
+                profileImageUrl: response.data.data.equalKeywordAccount.profileImageUrl,
+              }
+            ].concat(response.data.data.containKeywordAccounts.content));
+          }
+          else if (response.data.data.equalKeywordAccount.friendshipRelation == 'waiting') {
+            setFriendData([
+              {
+                accountId: response.data.data.equalKeywordAccount.accountId,
+                nickname: response.data.data.equalKeywordAccount.nickname,
+                friendshipId: -2,
+                status: response.data.data.equalKeywordAccount.status,
+                profileImageUrl: response.data.data.equalKeywordAccount.profileImageUrl,
+              }
+            ].concat(response.data.data.containKeywordAccounts.content));
+          }
+          else {
+            setFriendData([
+              {
+                accountId: response.data.data.equalKeywordAccount.accountId,
+                nickname: response.data.data.equalKeywordAccount.nickname,
+                friendshipId: -1,
+                status: response.data.data.equalKeywordAccount.status,
+                profileImageUrl: response.data.data.equalKeywordAccount.profileImageUrl,
+              }
+            ].concat(response.data.data.containKeywordAccounts.content));
+          }
         }
         else {
           // 그냥 넣기
