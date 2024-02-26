@@ -887,14 +887,11 @@ export default function FeedList({navigation, route}: FeedListScreenProps) {
                   )}
                 </Pressable>
                 <View
-                  style={[
-                    styles.newFeedTxtInputContain,
-                    {
-                      borderRadius: 10,
-                      borderWidth: isKnock ? 1 : undefined,
-                      borderColor: isKnock ? '#A55FFF' : undefined,
-                    },
-                  ]}>
+                  style={
+                    isKnock
+                      ? styles.newFeedTxtInputContain_isKnock
+                      : styles.newFeedTxtInputContain
+                  }>
                   <View style={{flex: 1, flexDirection: 'row'}}>
                     <TextInput
                       ref={textInputRef}
@@ -1596,6 +1593,22 @@ const styles = StyleSheet.create({
     paddingRight: 8,
     paddingLeft: 40,
     // maxHeight:'4vh'
+  },
+  newFeedTxtInputContain_isKnock: {
+    flex: 1,
+    // flexDirection: 'row',
+    justifyContent: 'center',
+    backgroundColor: '#333333',
+    // backgroundColor: 'red',
+    marginVertical: 6,
+    marginRight: 4,
+    borderRadius: 10,
+    paddingVertical: Platform.OS === 'ios' ? 3 : 0,
+    paddingRight: 8,
+    paddingLeft: 40,
+    // maxHeight:'4vh'
+    borderWidth: 1,
+    borderColor: '#A55FFF',
   },
   newFeedTxtInput: {
     color: '#F0F0F0',

@@ -642,18 +642,20 @@ export default function FeedDetail({navigation, route}: FeedDetailScreenProps) {
                 renderItem={({item, index}: itemProps) => {
                   // console.log(item.childCount)
                   return (
-                    <View style={[{backgroundColor:'#333333',},
-                      index == 0 && {
-                        borderTopLeftRadius: 10,
-                        borderTopRightRadius: 10,
-                        paddingTop:8
-                      },
-                      index == cmtData.length - 1 && {
-                        borderBottomLeftRadius: 10,
-                        borderBottomRightRadius: 10,
-                        paddingBottom:8
-                      },
-                    ]}>
+                    <View
+                      style={[
+                        {backgroundColor: '#333333'},
+                        index == 0 && {
+                          borderTopLeftRadius: 10,
+                          borderTopRightRadius: 10,
+                          paddingTop: 8,
+                        },
+                        index == cmtData.length - 1 && {
+                          borderBottomLeftRadius: 10,
+                          borderBottomRightRadius: 10,
+                          paddingBottom: 8,
+                        },
+                      ]}>
                       <CommentItem
                         commentId={item.commentId}
                         content={item.content}

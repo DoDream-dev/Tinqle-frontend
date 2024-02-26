@@ -113,15 +113,7 @@ export default function Feed(props: FeedProps) {
   }, throttleTime);
 
   return (
-    <View
-      style={[
-        styles.entire,
-        {
-          borderRadius: 10,
-          borderWidth: isKnock ? 1 : undefined,
-          borderColor: isKnock ? '#A55FFF' : undefined,
-        },
-      ]}>
+    <View style={isKnock ? styles.entire_knock : styles.entire}>
       <Content
         nickname={nickname}
         status={status}
@@ -171,6 +163,15 @@ const styles = StyleSheet.create({
     paddingBottom: 12,
     width: '100%',
     borderRadius: 10,
+    backgroundColor: '#202020',
+  },
+  entire_knock: {
+    paddingBottom: 12,
+    width: '100%',
+    borderRadius: 10,
+    backgroundColor: '#202020',
+    borderWidth: 1,
+    borderColor: '#A55FFF',
   },
   modalView: {
     backgroundColor: '#202020',
@@ -185,6 +186,7 @@ const styles = StyleSheet.create({
     fontWeight: '400',
   },
 });
+
 function dispatch(arg0: {payload: any; type: 'user/setToken'}) {
   throw new Error('Function not implemented.');
 }
