@@ -130,17 +130,13 @@ export default function SearchFriends() {
       );
       console.log(response.data.data.equalKeywordAccount);
       console.log(response.data.data.containKeywordAccounts);
-      if (searchCode == '') {
-        setFriendData(response.data.data.containKeywordAccounts.content);
-        return;
-      }
       // let friendData;
       setIsLast(response.data.data.containKeywordAccounts.content.last);
       // console.log(response.data.data);
       if (response.data.data.containKeywordAccounts.content.length == 0) {
         if (response.data.data.equalKeywordAccount == null) {
           // 존재하지 않는 아이디 (즉 일치하는 계정 없음)
-          setWhichPopup('noCode');
+          if (searchCode != '') setWhichPopup('noCode');
         } else {
           if (
             response.data.data.equalKeywordAccount.friendshipRelation == 'me'
