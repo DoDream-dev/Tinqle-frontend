@@ -97,14 +97,17 @@ export default function AppInner() {
           console.log('no RefreshToken');
           return;
         }
+
         const response = await axios.post(`${Config.API_URL}/auth/reissue`, {
           refreshToken: token,
         });
+
         dispatch(
           userSlice.actions.setToken({
             accessToken: response.data.data.accessToken,
           }),
         );
+
         await EncryptedStorage.setItem(
           'refreshToken',
           response.data.data.refreshToken,
