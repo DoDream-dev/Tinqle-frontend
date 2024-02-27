@@ -87,6 +87,7 @@ export default function AppInner() {
     SplashScreen.hide();
   }, []);
 
+  //TODO : refreshToken 수정
   useEffect(() => {
     const getRefreshTokenAgain = async () => {
       try {
@@ -96,14 +97,17 @@ export default function AppInner() {
           console.log('no RefreshToken');
           return;
         }
+
         const response = await axios.post(`${Config.API_URL}/auth/reissue`, {
           refreshToken: token,
         });
+
         dispatch(
           userSlice.actions.setToken({
             accessToken: response.data.data.accessToken,
           }),
         );
+
         await EncryptedStorage.setItem(
           'refreshToken',
           response.data.data.refreshToken,
@@ -209,7 +213,7 @@ export default function AppInner() {
           name="NoteNavigation"
           component={NoteNavigation}
           options={{
-            headerShown:false,
+            headerShown: false,
             tabBarLabel: 'Profile',
             tabBarIcon: (props: {
               focused: boolean;
@@ -220,7 +224,11 @@ export default function AppInner() {
                 color={'#A55FFF'}
                 width={28}
                 height={28}
-                xml={props.focused ? svgXml.bottomTab.talkColor : svgXml.bottomTab.talk}
+                xml={
+                  props.focused
+                    ? svgXml.bottomTab.talkColor
+                    : svgXml.bottomTab.talk
+                }
               />
             ),
           }}
