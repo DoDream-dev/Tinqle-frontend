@@ -113,7 +113,14 @@ export default function Feed(props: FeedProps) {
   }, throttleTime);
 
   return (
-    <View style={isKnock ? styles.entire_knock : styles.entire}>
+    <View
+      style={{
+        borderRadius: 10,
+        paddingBottom: 12,
+        width: '100%',
+        borderWidth: 1,
+        borderColor: isKnock ? '#A55FFF' : '#202020',
+      }}>
       <Content
         nickname={nickname}
         status={status}
@@ -159,20 +166,6 @@ export default function Feed(props: FeedProps) {
 }
 
 const styles = StyleSheet.create({
-  entire: {
-    paddingBottom: 12,
-    width: '100%',
-    borderRadius: 10,
-    // backgroundColor: '#202020',
-  },
-  entire_knock: {
-    paddingBottom: 12,
-    width: '100%',
-    borderRadius: 10,
-    // backgroundColor: '#202020',
-    borderWidth: 1,
-    borderColor: '#A55FFF',
-  },
   modalView: {
     backgroundColor: '#202020',
     paddingHorizontal: 12,
