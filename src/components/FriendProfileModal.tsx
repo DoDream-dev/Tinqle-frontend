@@ -22,6 +22,9 @@ import {svgXml} from '../../assets/image/svgXml';
 import {throttleTime} from '../hooks/Throttle';
 import ToastScreen from './ToastScreen';
 import {AugmentedAIRuntime} from 'aws-sdk';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../../AppInner';
 
 type ProfileProps = {
   showWhoseModal: number;
@@ -46,6 +49,9 @@ export default function FriendProfileModal(props: ProfileProps) {
   const [settingModal, setSettingModal] = useState(false);
 
   const inp1 = useRef();
+
+  const navigation =
+  useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
   useEffect(() => {
     setTimeout(() => {
@@ -202,6 +208,25 @@ export default function FriendProfileModal(props: ProfileProps) {
     }
   };
 
+  const createRoom = async () => {
+    try {
+      const response = await axios.post(
+        `${Config.API_URL}/rooms`,
+        {
+          targetAccountId:showWhoseModal
+        }
+      );
+      console.log(response.data);
+      setShowWhoseModal(0);
+      navigation.navigate('NoteNavigation', {screen: 'MsgList'});
+      navigation.navigate('NoteNavigation', {screen: 'MsgDetail', params: {roomId: response.data.data.roomId}});
+      
+    } catch (error) {
+      const errorResponse = (error as AxiosError<{message: string}>).response;
+      console.log(errorResponse.data);
+    }
+  };
+
   return (
     <Modal
       isVisible={showWhoseModal != 0 && showWhoseModal != undefined}
@@ -253,6 +278,7 @@ export default function FriendProfileModal(props: ProfileProps) {
                 style={styles.btn}
                 onPress={async () => {
                   console.log('1:1 대화 기능 넣어야함');
+                  createRoom();
                 }}>
                 <Text style={styles.btnTxt}>대화 하기</Text>
               </Pressable>

@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { View, Text, StyleSheet, FlatList, Pressable, TextInput, Platform, Keyboard } from 'react-native';
+import { View, Text, StyleSheet, FlatList, Pressable, TextInput, Platform, Keyboard, BackHandler } from 'react-native';
 import axios, {AxiosError} from 'axios';
 import Config from 'react-native-config';
 import userSlice from '../slices/user';
@@ -10,6 +10,10 @@ import { RootStackParamList } from '../../AppInner';
 import { SvgXml } from 'react-native-svg';
 import { svgXml } from '../../assets/image/svgXml';
 import Feather from 'react-native-vector-icons/Feather';
+import { NoteStackParamList } from '../navigations/NoteNavigation';
+import SockJs from 'sockjs-client';
+import * as StompJs from "@stomp/stompjs";
+import TextEncodingPolyfill from 'text-encoding';
 
 type itemProps = {
   item:{
@@ -20,9 +24,14 @@ type itemProps = {
 }
 
 type MsgDetailScreenProps = NativeStackScreenProps<
-  RootStackParamList,
+  NoteStackParamList,
   'MsgDetail'
 >;
+
+Object.assign('global', {
+  TextEncoder: TextEncodingPolyfill.TextEncoder,
+  TextDecoder: TextEncodingPolyfill.TextDecoder,
+});
 
 export default function MsgDetail({navigation, route}:MsgDetailScreenProps) {
   const [placeholder, setPlaceholder] = useState('대화를 보내보세요.');
@@ -32,6 +41,8 @@ export default function MsgDetail({navigation, route}:MsgDetailScreenProps) {
   const [uploadBtnLoading, setUploadBtnLoading] = useState(false);
   const inputRef = useRef();
   const flatListRef = useRef(null);
+
+  const sockJS = useRef();
 
   useFocusEffect(
     useCallback(()=>{
@@ -55,6 +66,50 @@ export default function MsgDetail({navigation, route}:MsgDetailScreenProps) {
     }, []),
   );
 
+  // useFocusEffect(
+  //   useCallback(() => {
+  //     const unsubscribeBLUR = navigation.addListener('blur', () => {
+  //       console.log('unfocused')
+  //       clientData.deactivate();
+  //     });
+
+  //     const unsubscribeBACKPREESS = BackHandler.addEventListener('hardwareBackPress', () => {
+  //       console.log('unfocused')
+  //       navigation.goBack();
+  //       clientData.reconnectDelay = 0;
+  //       clientData.deactivate();
+  //       return true;
+  //     });
+
+  //     console.log('roomDetail', route.params.roomId);
+  //     // sockJS.current = new SockJs('wss://tincle.store/connection');
+  //     let clientData = new StompJs.Client({
+  //       brokerURL: 'wss://tincle.store/connection',
+  //       connectHeaders: {},
+  //       debug: function (str:string) {
+  //         console.log(str);
+  //       },
+  //       reconnectDelay: 5000,
+  //       heartbeatIncoming: 0,
+  //       heartbeatOutgoing: 0,
+  //     });
+
+  //     clientData.onConnect = function () {
+  //       clientData.subscribe(`ws/rooms/${route.params.roomId}/message`, onMessage);
+  //     };
+
+  //     clientData.activate();
+
+  //     const onMessage = function (message: { body: string; }) {
+  //       if (message.body) {
+  //         let msg = JSON.parse(message.body);
+  //         console.log(msg);
+  //       }
+  //     };
+  //   }, [navigation]),
+  // );
+
+
   useEffect(() => {
     const keyboardDidHideListener = Keyboard.addListener(
       'keyboardDidHide',
@@ -72,13 +127,12 @@ export default function MsgDetail({navigation, route}:MsgDetailScreenProps) {
   };
 
   const data=[
-    {isAuthor:false, content:'넵', createdAt:'13:10'},
-    {isAuthor:false, content:'아연님 디자인 좀 빨리 하시죠.', createdAt:'13:10'},
-    {isAuthor:true, content:'제가 릴스를 보겠다는데 왜 방해합니까?', createdAt:'13:14'},
-    {isAuthor:false, content:'제가 개발을 하겠다는데 왜 방해합니까? 승주님도 전력 질주중입니다', createdAt:'13:14'},
-    {isAuthor:true, content:'미안합니다. 정신 차리겠습니다', createdAt:'13:15'},
-    {isAuthor:false, content:'ㅋㅋㅋㅋㅋㅋㅋㅋㅋ알겠습니다', createdAt:'13:16'},
-
+    {isAuthor:false, content:'넵', createdAt:'2024-02-27 13:10:00'},
+    {isAuthor:false, content:'아연님 디자인 좀 빨리 하시죠.', createdAt:'2024-02-28 13:10:30'},
+    {isAuthor:true, content:'제가 릴스를 보겠다는데 왜 방해합니까?', createdAt:'2024-02-28 13:14:30'},
+    {isAuthor:false, content:'제가 개발을 하겠다는데 왜 방해합니까? 승주님도 전력 질주중입니다', createdAt:'2024-02-28 13:14:30'},
+    {isAuthor:true, content:'미안합니다. 정신 차리겠습니다', createdAt:'2024-02-28 13:15:30'},
+    {isAuthor:false, content:'ㅋㅋㅋㅋㅋㅋㅋㅋㅋ알겠습니다', createdAt:'2024-02-28 13:16:30'},
   ];
   return (
     <View style={styles.entire}>
@@ -90,14 +144,30 @@ export default function MsgDetail({navigation, route}:MsgDetailScreenProps) {
         // onEndReachedThreshold={0.4}
         // refreshControl={}
         keyboardShouldPersistTaps={'always'}
-        renderItem={({item}:itemProps) => {
+        renderItem={({item, index}:itemProps) => {
+          function formatDateWithDay(inputDate:string) {
+            const daysOfWeek = ['일', '월', '화', '수', '목', '금', '토'];
+            const date = new Date(inputDate);
+            const month = date.getMonth() + 1; // 월은 0부터 시작하므로 +1 해줌
+            const day = date.getDate();
+            const dayOfWeek = daysOfWeek[date.getDay()]; // 요일을 가져옴
+        
+            return `${month}월 ${day}일 (${dayOfWeek})`;
+          }
           return (
-            <View style={[styles.eachMsg, item.isAuthor ? {justifyContent:'flex-end'} : {justifyContent:'flex-start'}]}>
-              {item.isAuthor && <Text style={styles.createdAt}>{item.createdAt}</Text>}
-              <View style={item.isAuthor ? styles.msgMine : styles.msgNotMine}>
-                <Text style={styles.msgTxt}>{item.content}</Text>
+            <View>
+              {index != 0 && data[index-1].createdAt.split(' ')[0] != item.createdAt.split(' ')[0] && <View style={styles.nextDayView}>
+                <Text style={styles.nextDayTxt}>
+                  {formatDateWithDay(item.createdAt)}
+                </Text>
+              </View>}
+              <View style={[styles.eachMsg, item.isAuthor ? {justifyContent:'flex-end'} : {justifyContent:'flex-start'}]}>
+                {item.isAuthor && <Text style={styles.createdAt}>{item.createdAt.split(' ')[1].split(':')[0]+':'+item.createdAt.split(' ')[1].split(':')[1]}</Text>}
+                <View style={item.isAuthor ? styles.msgMine : styles.msgNotMine}>
+                  <Text style={styles.msgTxt}>{item.content}</Text>
+                </View>
+                {!item.isAuthor && <Text style={styles.createdAt}>{item.createdAt.split(' ')[1].split(':')[0]+':'+item.createdAt.split(' ')[1].split(':')[1]}</Text>}
               </View>
-              {!item.isAuthor && <Text style={styles.createdAt}>{item.createdAt}</Text>}
             </View>
           );
         }}
@@ -251,6 +321,17 @@ const styles = StyleSheet.create({
     fontWeight:'400'
   },
   createdAt:{
+    color:'#888888',
+    fontSize:13,
+    fontWeight:'500'
+  },
+  nextDayView:{
+    width:'100%',
+    justifyContent:'center',
+    alignItems:'center',
+    marginVertical:12
+  },
+  nextDayTxt:{
     color:'#888888',
     fontSize:13,
     fontWeight:'500'

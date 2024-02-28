@@ -8,6 +8,8 @@ import { SvgXml } from 'react-native-svg';
 import { svgXml } from '../../assets/image/svgXml';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../AppInner';
+import { useFocusEffect } from '@react-navigation/native';
+import { NoteStackParamList } from '../navigations/NoteNavigation';
 
 type itemProps = {
   item:{
@@ -18,7 +20,7 @@ type itemProps = {
 }
 
 type MsgListScreenProps = NativeStackScreenProps<
-  RootStackParamList,
+  NoteStackParamList,
   'MsgList'
 >;
 
@@ -30,38 +32,38 @@ export default function MsgList({navigation, route}:MsgListScreenProps) {
   const [msgData, setMsgData] = useState([]);
   const dispatch = useAppDispatch();
 
-  useEffect(()=>{
-    const getNoteContent = async () => {
-      try {
-        const response = await axios.get(`${Config.API_URL}/accounts/me/message`);
-        console.log(response.data.data);
-        if (response.data.data.content.length == 0) {
-          setEmpty(true)
-        }
-        else {
-          setIsLast(response.data.data.last);
-          setMsgData(response.data.data.content);
-          setCursorId(response.data.data.content[response.data.data.content.length-1].messageBoxId);
-        }
-      } catch(error) {
-        const errorResponse = (error as AxiosError<{message: string}>).response;
-        console.log(errorResponse.data);
-        if (errorResponse?.data.status == 500) {
-          dispatch(
-            userSlice.actions.setToken({
-              accessToken:'',
-            }),
-          );
-        }
+  const getNoteContent = async () => {
+    try {
+      const response = await axios.get(`${Config.API_URL}/rooms`);
+      console.log(response.data.data);
+      if (response.data.data.length == 0) {
+        setEmpty(true)
       }
-    };
-    getNoteContent();
-  },[]);
+      else {
+        setIsLast(response.data.data.last);
+        setMsgData(response.data.data.content);
+        setCursorId(response.data.data.content[response.data.data.content.length-1].messageBoxId);
+      }
+    } catch(error) {
+      const errorResponse = (error as AxiosError<{message: string}>).response;
+      console.log(errorResponse.data);
+      if (errorResponse?.data.status == 500) {
+        dispatch(
+          userSlice.actions.setToken({
+            accessToken:'',
+          }),
+        );
+      }
+    }
+  };
+  // useEffect(()=>{
+  //   getNoteContent();
+  // },[]);
   const getData = async () => {
     if (!isLast) {
       setLoading(true);
       try {
-        const response = await axios.get(`${Config.API_URL}/friendships/manage?cursorId=${cursorId}`,);
+        const response = await axios.get(`${Config.API_URL}/rooms?cursorId=${cursorId}`,);
         setIsLast(response.data.data.last);
         setMsgData(msgData.concat(response.data.data.content));
         if (response.data.data.content.length != 0) {
@@ -78,6 +80,46 @@ export default function MsgList({navigation, route}:MsgListScreenProps) {
     if (!loading) {getData();}
   };
 
+  useFocusEffect(
+    useCallback(() => {
+      // const getFeed = async () => {
+      //   try {
+      //     const response = await axios.get(
+      //       `${Config.API_URL}/feeds/${route.params.feedId}`,
+      //     );
+      //     setFeedData(response.data.data);
+      //   } catch (error) {
+      //     const errorResponse = (error as AxiosError<{message: string}>)
+      //       .response;
+      //     console.log(errorResponse.data);
+      //     if (
+      //       errorResponse?.data.statusCode == 4030 ||
+      //       errorResponse?.data.statusCode == 4010
+      //     ) {
+      //       console.log('삭제된 글');
+      //       dispatch(
+      //         userSlice.actions.setDeleted({
+      //           deleted: true,
+      //         }),
+      //       );
+      //       navigation.navigate('FeedList');
+      //     }
+      //     if (errorResponse?.data.status == 500) {
+      //       dispatch(
+      //         userSlice.actions.setToken({
+      //           accessToken: '',
+      //         }),
+      //       );
+      //     }
+      //   }
+      // };
+      // if (route.params) console.log('roomDetail', route.params.action);
+      // else 
+      console.log('roomList')
+      getNoteContent();
+    }, []),
+  );
+
   return (
       <View style={styles.entire}>
         {empty && <View style={styles.emptyView}>
@@ -92,7 +134,7 @@ export default function MsgList({navigation, route}:MsgListScreenProps) {
           renderItem={({item}:itemProps) => {
             const newmsg = false;
             return (
-              <Pressable style={[styles.eachMsg, newmsg && {backgroundColor:'#A55FFF4D'}]} onPress={()=>navigation.navigate('MsgDetail')}>
+              <Pressable style={[styles.eachMsg, newmsg && {backgroundColor:'#A55FFF4D'}]} onPress={()=>{}}>
                 <Pressable style={styles.mainView}>
                   <Pressable style={styles.profileView}>
                     <SvgXml width={32} height={32} xml={svgXml.profile.null} />
