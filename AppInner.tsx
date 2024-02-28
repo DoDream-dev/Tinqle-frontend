@@ -38,6 +38,7 @@ import messaging from '@react-native-firebase/messaging';
 import FeedNavigation from './src/navigations/FeedNavigation';
 import NoteNavigation from './src/navigations/NoteNavigation';
 import {Safe} from './src/components/Safe';
+import {Pressable} from 'react-native';
 
 export type RootStackParamList = {
   FeedList: undefined;
@@ -81,7 +82,6 @@ export default function AppInner() {
   const isLoggedIn = useSelector(
     (state: RootState) => !!state.user.accessToken,
   );
-  const [deleteFeedId, setDeleteFeedId] = useState(-1);
 
   useEffect(() => {
     SplashScreen.hide();
@@ -89,6 +89,7 @@ export default function AppInner() {
 
   //TODO : refreshToken 수정
   useEffect(() => {
+    console.log('refreshToken use!!');
     const getRefreshTokenAgain = async () => {
       try {
         // await EncryptedStorage.removeItem('refreshToken')
@@ -127,7 +128,7 @@ export default function AppInner() {
       }
     };
     getRefreshTokenAgain();
-  }, [dispatch]);
+  }, [dispatch, isLoggedIn]);
 
   // useEffect(() => {
   //   // const unsubscribe = messaging().onMessage(async remoteMessage => {
