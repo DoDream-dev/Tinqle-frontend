@@ -189,6 +189,8 @@ const styles = StyleSheet.create({
     fontWeight: '400',
     fontSize: 15,
     color: '#F0F0F0',
+    flex: 1,
+    // backgroundColor: 'red',
     // includeFontPadding:true
     // paddingBottom:5
   },

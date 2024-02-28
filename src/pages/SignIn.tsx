@@ -223,12 +223,12 @@ export default function SignIn() {
   };
 
   const Signup = async (signToken: string) => {
-    console.log('signToken ', signToken);
-    console.log('serviceP ', serviceP);
-    console.log('ageP ', ageP);
-    console.log('personalP ', personalP);
-    console.log('fcm ', fcm);
-    console.log('id ', id);
+    // console.log('signToken ', signToken);
+    // console.log('serviceP ', serviceP);
+    // console.log('ageP ', ageP);
+    // console.log('personalP ', personalP);
+    // console.log('fcm ', fcm);
+    // console.log('id ', id);
 
     let token = signToken;
     if (token === undefined || token === '' || token == null) {
@@ -769,6 +769,11 @@ const styles = StyleSheet.create({
   idModalHeaderTxt: {
     color: '#F0F0F0',
     fontWeight: '600',
+    fontSize: 15,
+  },
+  idModalContentTxt: {
+    color: '#F0F0F0',
+    fontWeight: '400',
     fontSize: 15,
   },
   idModalBody: {
