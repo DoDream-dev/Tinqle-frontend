@@ -12,6 +12,7 @@ const store = configureStore({
     return getDefaultMiddleware();
   },
 });
+
 export default store;
 
 export type RootState = ReturnType<typeof store.getState>;
