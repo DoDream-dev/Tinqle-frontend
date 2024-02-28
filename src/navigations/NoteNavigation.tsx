@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { Pressable, View, Alert, Text, StyleSheet } from 'react-native';
+import React, { useEffect, useRef, useState } from "react";
+import { Pressable, View, Alert, Text, StyleSheet, AppState } from 'react-native';
 import { NativeStackNavigationProp, createNativeStackNavigator } from "@react-navigation/native-stack";
 import { SvgXml } from 'react-native-svg';
 import { svgXml } from "../../assets/image/svgXml";
@@ -9,7 +9,7 @@ import MsgDetail from "../pages/MsgDetail";
 
 export type NoteStackParamList = {
   MsgList: undefined;
-  MsgDetail: undefined;
+  MsgDetail: {roomId:number};
 };
 
 export type NoteStackNavigationProps = NativeStackNavigationProp<NoteStackParamList>;
@@ -17,6 +17,29 @@ export type NoteStackNavigationProps = NativeStackNavigationProp<NoteStackParamL
 const Stack = createNativeStackNavigator<NoteStackParamList>();
 
 export default function NoteNavigation() {
+  // const appState = useRef(AppState.currentState);
+
+  // useEffect(() => {
+  //   // Function to run when the component mounts
+  //   const onMount = () => {
+  //     console.log('Component mounted');
+  //   };
+
+  //   // Function to run when the app state changes
+  //   const handleAppStateChange = async nextAppState => {
+  //     if (
+  //       appState.current.match(/inactive|background/) 
+  //     ) {
+  //       console.log('App lost');
+
+        
+  //     }
+  //     appState.current = nextAppState;
+  //   };
+
+  //   onMount();
+  //   AppState.addEventListener('change', handleAppStateChange);
+  // }, []);
   return (
     <Stack.Navigator>
       <Stack.Screen 

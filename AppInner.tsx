@@ -55,6 +55,7 @@ export type RootStackParamList = {
   SearchFriends: undefined;
   MsgList: undefined;
   MsgDetail: undefined;
+  NoteNavigation: undefined;
   // Setting: undefined;
   Notis: undefined;
   SignIn: undefined;
