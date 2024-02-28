@@ -52,6 +52,7 @@
     "react-native-swipe-gestures": "^1.0.5",
     "react-native-switch-selector": "^2.3.0",
     "react-native-vector-icons": "^10.0.0",
+    "react-native-version-check": "^3.4.7",
     "react-navigation": "^5.0.0",
     "react-redux": "^8.1.2",
     "redux-flipper": "^2.0.2"

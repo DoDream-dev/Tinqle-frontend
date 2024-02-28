@@ -51,7 +51,6 @@ export default function SignIn() {
   const [fcm, setFcm] = useState('');
   const [policy, setPolicy] = useState('');
   const [signUpToekn, setSignUpToken] = useState('');
-  const [updateModal, setUpdateModal] = useState(false);
 
   const requestUserPermissionForFCM = async () => {
     const authStatus = await messaging().requestPermission();
@@ -633,44 +632,6 @@ export default function SignIn() {
         </Modal>
       </Modal>
       {/* modal for policy */}
-
-      <Modal
-        isVisible={updateModal}
-        animationIn="fadeIn"
-        animationInTiming={600}
-        onDismiss={() => {}}
-        style={{margin: 0}}>
-        <View style={styles.modalBGView2}>
-          <View style={styles.modalView2}>
-            <View style={styles.idModalHeader}>
-              <Text style={styles.idModalHeaderTxt}>
-                {'최신 버전으로 업데이트가 필요해요.'}
-              </Text>
-            </View>
-            <View style={styles.idModalHeader}>
-              <Text style={styles.idModalContentTxt}>
-                {'더 나아진 팅클을 경험해 보세요!'}
-              </Text>
-            </View>
-            <Pressable
-              style={styles.idModalFooterBtnActive}
-              onPress={() => {
-                console.log('링크');
-                if (Platform.OS === 'ios') {
-                  Linking.openURL(
-                    'https://apps.apple.com/kr/app/%ED%8C%85%ED%81%B4-tincle/id6476099936',
-                  );
-                } else {
-                  Linking.openURL(
-                    'https://play.google.com/store/apps/details?id=com.tinqle&pcampaignid=web_share',
-                  );
-                }
-              }}>
-              <Text style={styles.idModalFooterBtnTxt}>{'업데이트하기'}</Text>
-            </Pressable>
-          </View>
-        </View>
-      </Modal>
     </View>
   );
 }
