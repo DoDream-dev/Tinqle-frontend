@@ -273,7 +273,7 @@ export default function FriendProfileModal(props: ProfileProps) {
           {/* 여기에 friendshipId 필요 */}
           {friendshipRelation == 'true' && (
             <>
-              <Pressable
+              {/* <Pressable
                 style={styles.btn}
                 onPress={async () => {
                   console.log('1:1 대화 기능 넣어야함');
@@ -282,7 +282,7 @@ export default function FriendProfileModal(props: ProfileProps) {
                 <Text style={styles.btnTxt}>대화 하기</Text>
               </Pressable>
 
-              <View style={{width: 8}}></View>
+              <View style={{width: 8}}></View> */}
 
               <Pressable
                 style={styles.btn}

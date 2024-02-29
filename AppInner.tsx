@@ -240,7 +240,7 @@ export default function AppInner() {
                 ),
               }}
             />
-            <Tab.Screen
+            {/* <Tab.Screen
               name="NoteNavigation"
               component={NoteNavigation}
               options={{
@@ -263,7 +263,7 @@ export default function AppInner() {
                   />
                 ),
               }}
-            />
+            /> */}
             <Tab.Screen
               name="MyProfile"
               component={MyProfile}

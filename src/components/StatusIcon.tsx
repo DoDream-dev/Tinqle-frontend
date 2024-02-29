@@ -17,6 +17,7 @@ export default function StatucIcon(props: StatucIconProps) {
     <View
       style={{
         flexDirection: 'column',
+        justifyContent:'center',
         alignItems: 'center',
         height: 64,
       }}>
