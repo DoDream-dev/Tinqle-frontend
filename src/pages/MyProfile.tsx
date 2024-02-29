@@ -23,7 +23,6 @@ import {SvgXml} from 'react-native-svg';
 import _ from 'lodash';
 import {throttleTime, throttleTimeEmoticon} from '../hooks/Throttle';
 import userSlice from '../slices/user';
-import Clipboard from '@react-native-clipboard/clipboard';
 import {useAppDispatch} from '../store';
 import {version} from '../../package.json';
 
@@ -31,7 +30,6 @@ import EncryptedStorage from 'react-native-encrypted-storage';
 import Profile from '../components/Profile';
 import ServicePolicyModal from '../components/ServicePolicyModal';
 import PersonalPolicyModal from '../components/PersonalPolicyModal';
-import AnimatedButton from '../components/AnimatedButton';
 
 // type ProfileScreenProps = NativeStackScreenProps<RootStackParamList, 'Profile'>;
 
@@ -82,6 +80,7 @@ export default function MyProfile() {
     const getMyProfile = async () => {
       try {
         const response = await axios.get(`${Config.API_URL}/accounts/me`);
+        console.log('#### : ', response.data.data);
         setName(response.data.data.nickname);
         setChangeNameVal(response.data.data.nickname);
         setStatus(response.data.data.status.toLowerCase());
@@ -336,48 +335,9 @@ export default function MyProfile() {
             profileImg={profileImg}
             setProfileImg={setProfileImg}
             friendshipRelation="me"
+            myCode={myCode}
+            setWhichPopup={setWhichPopup}
           />
-          <View style={styles.myCodeView}>
-            <AnimatedButton
-              style={styles.myCodeBtn}
-              onPress={() => {
-                Clipboard.setString(myCode);
-                setWhichPopup('copyId');
-              }}>
-              <Text style={styles.myCodeTxt}>내 아이디: {myCode}</Text>
-              <SvgXml
-                width="15"
-                height="15"
-                xml={svgXml.icon.copyIcon}
-                style={styles.copyIcon}
-              />
-            </AnimatedButton>
-          </View>
-          {/* {whoseProfile == 0 && <View style={styles.btnView}>
-          <Pressable style={styles.btnWhite} onPress={()=>navigation.navigate('MyFriendList')}>
-            <Text style={styles.btnWhiteTxt}>친구 관리</Text>
-          </Pressable>
-          <Pressable style={styles.btnYellow} onPress={()=>navigation.navigate('NoteBox')}>
-            <Text style={styles.btnYellowTxt}>익명 쪽지함</Text>
-          </Pressable>
-        </View>}
-        {whoseProfile == 1 && <View style={styles.btnView}>
-          <View style={{flex:0.4}}></View>
-          <Pressable style={styles.btnYellow} onPress={()=>setWriteNote(true)}>
-            <Text style={styles.btnYellowTxt}>익명 쪽지 보내기</Text>
-          </Pressable>
-          <View style={{flex:0.4}}></View>
-        </View>}
-        {whoseProfile == 2 && <View style={styles.btnView}>
-          <View style={{flex:0.4}}></View>
-          {alreadyRequestFriend == 1 ? <Pressable style={styles.btnWhite} disabled={true}>
-            <Text style={styles.btnWhiteTxt}>친구 수락 대기 중</Text>
-          </Pressable> :
-          <Pressable style={styles.btnYellow} onPress={()=>setAskFriendMsg(true)}>
-            <Text style={styles.btnYellowTxt}>친구 요청하기</Text>
-          </Pressable>}
-          <View style={{flex:0.4}}></View>
-        </View>} */}
         </View>
 
         <View style={styles.settingView}>
@@ -641,123 +601,6 @@ export default function MyProfile() {
             </Pressable>
           </Pressable>
         </Modal>
-        {/* modal for changin status */}
-        {/* <Modal isVisible={changeStatus} backdropColor='#222222' backdropOpacity={0.5} onBackButtonPress={()=>setChangeStatus(false)}>
-        <Pressable style={styles.modalBGView} onPress={()=>{Keyboard.dismiss(); setChangeStatus(false);}}>
-          <Pressable onPress={(e)=>e.stopPropagation()} style={styles.modalView2}>
-            <Pressable onPress={()=>{setChangeStatus(false); postStatus('smile');}} style={status == 'smile' ? styles.statusSelected : styles.statusSelect}>
-              <SvgXml width={60} height={60} xml={svgXml.status.smile} />
-            </Pressable>
-            <Pressable onPress={()=>{setChangeStatus(false); postStatus('happy');}} style={status == 'happy' ? styles.statusSelected : styles.statusSelect}>
-              <SvgXml width={60} height={60} xml={svgXml.status.happy} />
-            </Pressable>
-            <Pressable onPress={()=>{setChangeStatus(false); postStatus('sad');}} style={status == 'sad' ? styles.statusSelected : styles.statusSelect}>
-              <SvgXml width={60} height={60} xml={svgXml.status.sad} />
-            </Pressable>
-            <Pressable onPress={()=>{setChangeStatus(false); postStatus('mad');}} style={status == 'mad' ? styles.statusSelected : styles.statusSelect}>
-              <SvgXml width={60} height={60} xml={svgXml.status.mad} />
-            </Pressable>
-            <Pressable onPress={()=>{setChangeStatus(false); postStatus('exhausted');}} style={status == 'exhausted' ? styles.statusSelected : styles.statusSelect}>
-              <SvgXml width={60} height={60} xml={svgXml.status.exhauseted} />
-            </Pressable>
-            <Pressable onPress={()=>{setChangeStatus(false); postStatus('coffee');}} style={status == 'coffee' ? styles.statusSelected : styles.statusSelect}>
-              <SvgXml width={60} height={60} xml={svgXml.status.coffee} />
-            </Pressable>
-            <Pressable onPress={()=>{setChangeStatus(false); postStatus('meal');}} style={status == 'meal' ? styles.statusSelected : styles.statusSelect}>
-              <SvgXml width={60} height={60} xml={svgXml.status.meal} />
-            </Pressable>
-            <Pressable onPress={()=>{setChangeStatus(false); postStatus('alcohol');}} style={status == 'alcohol' ? styles.statusSelected : styles.statusSelect}>
-              <SvgXml width={60} height={60} xml={svgXml.status.alcohol} />
-            </Pressable>
-            <Pressable onPress={()=>{setChangeStatus(false); postStatus('chicken');}} style={status == 'chicken' ? styles.statusSelected : styles.statusSelect}>
-              <SvgXml width={60} height={60} xml={svgXml.status.chicken} />
-            </Pressable>
-            <Pressable onPress={()=>{setChangeStatus(false); postStatus('sleep');}} style={status == 'sleep' ? styles.statusSelected : styles.statusSelect}>
-              <SvgXml width={60} height={60} xml={svgXml.status.sleep} />
-            </Pressable>
-            <Pressable onPress={()=>{setChangeStatus(false); postStatus('work');}} style={status == 'work' ? styles.statusSelected : styles.statusSelect}>
-              <SvgXml width={60} height={60} xml={svgXml.status.work} />
-            </Pressable>
-            <Pressable onPress={()=>{setChangeStatus(false); postStatus('study');}} style={status == 'study' ? styles.statusSelected : styles.statusSelect}>
-              <SvgXml width={60} height={60} xml={svgXml.status.study} />
-            </Pressable>
-            <Pressable onPress={()=>{setChangeStatus(false); postStatus('movie');}} style={status == 'movie' ? styles.statusSelected : styles.statusSelect}>
-              <SvgXml width={60} height={60} xml={svgXml.status.movie} />
-            </Pressable>
-            <Pressable onPress={()=>{setChangeStatus(false); postStatus('move');}} style={status == 'move' ? styles.statusSelected : styles.statusSelect}>
-              <SvgXml width={60} height={60} xml={svgXml.status.move} />
-            </Pressable>
-            <Pressable onPress={()=>{setChangeStatus(false); postStatus('dance');}} style={status == 'dance' ? styles.statusSelected : styles.statusSelect}>
-              <SvgXml width={60} height={60} xml={svgXml.status.dance} />
-            </Pressable>
-            <Pressable onPress={()=>{setChangeStatus(false); postStatus('read');}} style={status == 'read' ? styles.statusSelected : styles.statusSelect}>
-              <SvgXml width={60} height={60} xml={svgXml.status.read} />
-            </Pressable>
-            <Pressable onPress={()=>{setChangeStatus(false); postStatus('walk');}} style={status == 'walk' ? styles.statusSelected : styles.statusSelect}>
-              <SvgXml width={60} height={60} xml={svgXml.status.walk} />
-            </Pressable>
-            <Pressable onPress={()=>{setChangeStatus(false); postStatus('travel');}} style={status == 'travel' ? styles.statusSelected : styles.statusSelect}>
-              <SvgXml width={60} height={60} xml={svgXml.status.travel} />
-            </Pressable>
-          </Pressable>
-        </Pressable>
-      </Modal> */}
-        {/* modal for sending msg */}
-        {/* <Modal isVisible={whoseProfile == 1 ? writeNote : askFriendMsg} onBackButtonPress={()=>{if (whoseProfile == 1) setWriteNote(false); else setAskFriendMsg(false)}} avoidKeyboard={true} backdropColor='#222222' backdropOpacity={0.5} onModalShow={()=>{inp2?.current?.focus();}}>
-        <Pressable style={styles.modalBGView} onPress={()=>{Keyboard.dismiss(); if(whoseProfile == 1) setWriteNote(false); else setAskFriendMsg(false);}}>
-          <Pressable onPress={(e)=>e.stopPropagation()} style={styles.modalView}>
-            {whoseProfile == 1 && <Text style={styles.modalTitleTxt}>익명 쪽지 보내기</Text>}
-            {whoseProfile == 2 && <Text style={styles.modalTitleTxt}>{name}</Text>}
-            {whoseProfile == 2 && <Text style={styles.modalContentTxt}>친구가 나를 알아볼 수 있도록 인사를 건네주세요!</Text>}
-            <View style={styles.changeView}>
-              <TextInput 
-                ref={inp2}
-                style={whoseProfile == 1 ? styles.noteTxtInput : styles.askFriendMsgInput}
-                onChangeText={(text:string)=>{
-                  if (whoseProfile == 1) setwriteNoteVal(text);
-                  else setAskFriendMsgVal(text);
-                }}
-                blurOnSubmit={true}
-                placeholder={whoseProfile == 2 ? '우리 친구해요!' : ''}
-                placeholderTextColor={'#848484'}
-                maxLength={whoseProfile == 1 ? 100 : 30}
-                value={whoseProfile == 1 ? writeNoteVal : askFriendMsgVal}
-                autoFocus={true}
-                onSubmitEditing={()=>{
-                  Keyboard.dismiss();
-                }}
-              />
-            </View>
-            <View style={styles.modalBtnView}>
-              <Pressable style={styles.btnWhite} onPress={()=>{
-                if (whoseProfile == 1) setWriteNote(false);
-                else setAskFriendMsg(false);
-              }}>
-                {whoseProfile == 1 && <Text style={styles.btnWhiteTxt}>취소</Text>}
-                {whoseProfile == 2 && <Text style={styles.btnWhiteTxt}>닫기</Text>}
-              </Pressable>
-              {whoseProfile == 1 && <Pressable style={styles.btnYellow} onPress={()=>{if (writeNoteVal != '') sendNote();}}>
-                <Text style={styles.btnYellowTxt}>완료</Text>
-              </Pressable>}
-              {whoseProfile == 2 && <Pressable style={styles.btnYellowBig} onPress={()=>{if (askFriendMsgVal != '') askFriend();}}>
-                <Text style={styles.btnYellowTxt}>친구요청 보내기</Text>
-              </Pressable>}
-            </View>
-          </Pressable>
-        </Pressable>
-      </Modal>
-      {whoseProfile == 1 && popup && <ToastScreen
-        height = {21}
-        marginBottom={48}
-        onClose={()=>setPopup(false)}
-        message={`${name}님께 쪽지를 전해드렸어요!`}
-      />}
-      {whoseProfile == 2 && popup && <ToastScreen
-        height = {21}
-        marginBottom={48}
-        onClose={()=>setPopup(false)}
-        message={`${name}님께 친구 요청을 보냈어요!`}
-      />} */}
       </ScrollView>
       <View
         style={{
@@ -787,10 +630,12 @@ const styles = StyleSheet.create({
   profileView: {
     width: '100%',
     backgroundColor: '#333333',
-    paddingVertical: 40,
+    // backgroundColor: 'red',
     alignItems: 'center',
     borderRadius: 10,
     position: 'relative',
+    paddingHorizontal: 16,
+    paddingVertical: 34,
   },
   myCodeView: {},
   myCodeTxt: {
