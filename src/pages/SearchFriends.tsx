@@ -1,7 +1,7 @@
 /* eslint-disable eqeqeq */
 /* eslint-disable react-native/no-inline-styles */
 import axios, {AxiosError} from 'axios';
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {
   View,
   Text,
@@ -28,7 +28,7 @@ import userSlice from '../slices/user';
 import FriendProfileModal from '../components/FriendProfileModal';
 import {Dimensions} from 'react-native';
 import ImageModal from 'react-native-image-modal';
-import {useNavigation} from '@react-navigation/native';
+import {useFocusEffect, useNavigation} from '@react-navigation/native';
 import StatucIcon from '../components/StatusIcon';
 
 type friendListItemProps = {
@@ -99,27 +99,33 @@ export default function SearchFriends() {
     };
     getMyCode();
     getFriendProfile();
-    const getMyProfile = async () => {
-      try {
-        const response = await axios.get(`${Config.API_URL}/accounts/me`);
-        setMyName(response.data.data.nickname);
-        setMyStatus(response.data.data.status);
-        setMyProfileImg(response.data.data.profileImageUrl);
-        // console.log('내 프로필 조회')
-      } catch (error) {
-        const errorResponse = (error as AxiosError<{message: string}>).response;
-        console.log(errorResponse?.data);
-        if (errorResponse?.data.status == 500) {
-          dispatch(
-            userSlice.actions.setToken({
-              accessToken: '',
-            }),
-          );
-        }
-      }
-    };
     getMyProfile();
   }, [isLast, reset]);
+
+  useFocusEffect(useCallback(()=>{
+    getMyProfile();
+    getFriendProfile();
+  }, [searchCode]));
+
+  const getMyProfile = async () => {
+    try {
+      const response = await axios.get(`${Config.API_URL}/accounts/me`);
+      setMyName(response.data.data.nickname);
+      setMyStatus(response.data.data.status);
+      setMyProfileImg(response.data.data.profileImageUrl);
+      // console.log('내 프로필 조회')
+    } catch (error) {
+      const errorResponse = (error as AxiosError<{message: string}>).response;
+      console.log(errorResponse?.data);
+      if (errorResponse?.data.status == 500) {
+        dispatch(
+          userSlice.actions.setToken({
+            accessToken: '',
+          }),
+        );
+      }
+    }
+  };
 
   useEffect(() => {
     getFriendProfile();
