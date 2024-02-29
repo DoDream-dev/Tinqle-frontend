@@ -1,3 +1,5 @@
+/* eslint-disable eqeqeq */
+/* eslint-disable react-native/no-inline-styles */
 import axios, {AxiosError} from 'axios';
 import React, {useEffect, useRef, useState} from 'react';
 import {
@@ -27,6 +29,7 @@ import FriendProfileModal from '../components/FriendProfileModal';
 import {Dimensions} from 'react-native';
 import ImageModal from 'react-native-image-modal';
 import {useNavigation} from '@react-navigation/native';
+import StatucIcon from '../components/StatusIcon';
 
 type friendListItemProps = {
   item: {
@@ -444,14 +447,15 @@ export default function SearchFriends() {
           </View>
         }
         keyExtractor={(item, index) => index}
-        numColumns={2}
+        // numColumns={2}
         renderItem={({item}: friendListItemProps) => {
           if (item.friendshipId == 0)
+            // eslint-disable-next-line curly
             return (
               <Pressable
                 style={[
                   styles.friendView,
-                  {width: (Dimensions.get('window').width - 40) / 2},
+                  {width: Dimensions.get('window').width - 40},
                 ]}
                 onPress={() => {
                   navigation.navigate('MyProfile');
@@ -471,183 +475,16 @@ export default function SearchFriends() {
                   <Text style={styles.friendName}>{item.nickname}</Text>
                 </View>
                 <View style={styles.friendProfileStatus}>
-                  {item.status == 'work'.toUpperCase() && (
-                    <SvgXml
-                      width={statusSize}
-                      height={statusSize}
-                      xml={svgXml.status.work}
-                    />
-                  )}
-                  {item.status == 'study'.toUpperCase() && (
-                    <SvgXml
-                      width={statusSize}
-                      height={statusSize}
-                      xml={svgXml.status.study}
-                    />
-                  )}
-                  {item.status == 'transport'.toUpperCase() && (
-                    <SvgXml
-                      width={statusSize}
-                      height={statusSize}
-                      xml={svgXml.status.transport}
-                    />
-                  )}
-                  {item.status == 'eat'.toUpperCase() && (
-                    <SvgXml
-                      width={statusSize}
-                      height={statusSize}
-                      xml={svgXml.status.eat}
-                    />
-                  )}
-                  {item.status == 'workout'.toUpperCase() && (
-                    <SvgXml
-                      width={statusSize}
-                      height={statusSize}
-                      xml={svgXml.status.workout}
-                    />
-                  )}
-                  {item.status == 'walk'.toUpperCase() && (
-                    <SvgXml
-                      width={statusSize}
-                      height={statusSize}
-                      xml={svgXml.status.walk}
-                    />
-                  )}
-                  {item.status == 'sleep'.toUpperCase() && (
-                    <SvgXml
-                      width={statusSize}
-                      height={statusSize}
-                      xml={svgXml.status.sleep}
-                    />
-                  )}
-                  {item.status == 'smile'.toUpperCase() && (
-                    <SvgXml
-                      width={statusSize}
-                      height={statusSize}
-                      xml={svgXml.status.smile}
-                    />
-                  )}
-                  {item.status == 'happy'.toUpperCase() && (
-                    <SvgXml
-                      width={statusSize}
-                      height={statusSize}
-                      xml={svgXml.status.happy}
-                    />
-                  )}
-                  {item.status == 'sad'.toUpperCase() && (
-                    <SvgXml
-                      width={statusSize}
-                      height={statusSize}
-                      xml={svgXml.status.sad}
-                    />
-                  )}
-                  {item.status == 'mad'.toUpperCase() && (
-                    <SvgXml
-                      width={statusSize}
-                      height={statusSize}
-                      xml={svgXml.status.mad}
-                    />
-                  )}
-                  {item.status == 'panic'.toUpperCase() && (
-                    <SvgXml
-                      width={statusSize}
-                      height={statusSize}
-                      xml={svgXml.status.panic}
-                    />
-                  )}
-                  {item.status == 'exhausted'.toUpperCase() && (
-                    <SvgXml
-                      width={statusSize}
-                      height={statusSize}
-                      xml={svgXml.status.exhausted}
-                    />
-                  )}
-                  {item.status == 'excited'.toUpperCase() && (
-                    <SvgXml
-                      width={statusSize}
-                      height={statusSize}
-                      xml={svgXml.status.excited}
-                    />
-                  )}
-                  {item.status == 'sick'.toUpperCase() && (
-                    <SvgXml
-                      width={statusSize}
-                      height={statusSize}
-                      xml={svgXml.status.sick}
-                    />
-                  )}
-                  {item.status == 'vacation'.toUpperCase() && (
-                    <SvgXml
-                      width={statusSize}
-                      height={statusSize}
-                      xml={svgXml.status.vacation}
-                    />
-                  )}
-                  {item.status == 'date'.toUpperCase() && (
-                    <SvgXml
-                      width={statusSize}
-                      height={statusSize}
-                      xml={svgXml.status.date}
-                    />
-                  )}
-                  {item.status == 'computer'.toUpperCase() && (
-                    <SvgXml
-                      width={statusSize}
-                      height={statusSize}
-                      xml={svgXml.status.computer}
-                    />
-                  )}
-                  {item.status == 'cafe'.toUpperCase() && (
-                    <SvgXml
-                      width={statusSize}
-                      height={statusSize}
-                      xml={svgXml.status.cafe}
-                    />
-                  )}
-                  {item.status == 'movie'.toUpperCase() && (
-                    <SvgXml
-                      width={statusSize}
-                      height={statusSize}
-                      xml={svgXml.status.movie}
-                    />
-                  )}
-                  {item.status == 'read'.toUpperCase() && (
-                    <SvgXml
-                      width={statusSize}
-                      height={statusSize}
-                      xml={svgXml.status.read}
-                    />
-                  )}
-                  {item.status == 'alcohol'.toUpperCase() && (
-                    <SvgXml
-                      width={statusSize}
-                      height={statusSize}
-                      xml={svgXml.status.alcohol}
-                    />
-                  )}
-                  {item.status == 'music'.toUpperCase() && (
-                    <SvgXml
-                      width={statusSize}
-                      height={statusSize}
-                      xml={svgXml.status.music}
-                    />
-                  )}
-                  {item.status == 'birthday'.toUpperCase() && (
-                    <SvgXml
-                      width={statusSize}
-                      height={statusSize}
-                      xml={svgXml.status.birthday}
-                    />
-                  )}
+                  <StatucIcon time="1시간" status={item.status.toLowerCase()} />
                 </View>
               </Pressable>
             );
-          if (item.friendshipId == -1)
+          if (item.friendshipId == -1) {
             return (
               <Pressable
                 style={[
                   styles.friendView,
-                  {width: (Dimensions.get('window').width - 40) / 2},
+                  {width: Dimensions.get('window').width - 40},
                 ]}
                 onPress={() => {
                   setShowWhoseModal(item.accountId);
@@ -678,12 +515,14 @@ export default function SearchFriends() {
                 </Pressable>
               </Pressable>
             );
+          }
           if (item.friendshipId == -2)
+            // eslint-disable-next-line curly
             return (
               <Pressable
                 style={[
                   styles.friendView,
-                  {width: (Dimensions.get('window').width - 40) / 2},
+                  {width: Dimensions.get('window').width - 40},
                 ]}
                 onPress={() => {
                   setShowWhoseModal(item.accountId);
@@ -711,7 +550,7 @@ export default function SearchFriends() {
               <Pressable
                 style={[
                   styles.friendView,
-                  {width: (Dimensions.get('window').width - 40) / 2},
+                  {width: Dimensions.get('window').width - 40},
                 ]}
                 onPress={() => {
                   setShowWhoseModal(item.accountId);
@@ -742,7 +581,7 @@ export default function SearchFriends() {
             <Pressable
               style={[
                 styles.friendView,
-                {width: (Dimensions.get('window').width - 40) / 2},
+                {width: Dimensions.get('window').width - 40},
               ]}
               onPress={() => {
                 setShowWhoseModal(item.accountId);
@@ -775,174 +614,7 @@ export default function SearchFriends() {
                 <Text style={styles.friendName}>{item.nickname}</Text>
               </View>
               <View style={styles.friendProfileStatus}>
-                {item.status == 'work'.toUpperCase() && (
-                  <SvgXml
-                    width={statusSize}
-                    height={statusSize}
-                    xml={svgXml.status.work}
-                  />
-                )}
-                {item.status == 'study'.toUpperCase() && (
-                  <SvgXml
-                    width={statusSize}
-                    height={statusSize}
-                    xml={svgXml.status.study}
-                  />
-                )}
-                {item.status == 'transport'.toUpperCase() && (
-                  <SvgXml
-                    width={statusSize}
-                    height={statusSize}
-                    xml={svgXml.status.transport}
-                  />
-                )}
-                {item.status == 'eat'.toUpperCase() && (
-                  <SvgXml
-                    width={statusSize}
-                    height={statusSize}
-                    xml={svgXml.status.eat}
-                  />
-                )}
-                {item.status == 'workout'.toUpperCase() && (
-                  <SvgXml
-                    width={statusSize}
-                    height={statusSize}
-                    xml={svgXml.status.workout}
-                  />
-                )}
-                {item.status == 'walk'.toUpperCase() && (
-                  <SvgXml
-                    width={statusSize}
-                    height={statusSize}
-                    xml={svgXml.status.walk}
-                  />
-                )}
-                {item.status == 'sleep'.toUpperCase() && (
-                  <SvgXml
-                    width={statusSize}
-                    height={statusSize}
-                    xml={svgXml.status.sleep}
-                  />
-                )}
-                {item.status == 'smile'.toUpperCase() && (
-                  <SvgXml
-                    width={statusSize}
-                    height={statusSize}
-                    xml={svgXml.status.smile}
-                  />
-                )}
-                {item.status == 'happy'.toUpperCase() && (
-                  <SvgXml
-                    width={statusSize}
-                    height={statusSize}
-                    xml={svgXml.status.happy}
-                  />
-                )}
-                {item.status == 'sad'.toUpperCase() && (
-                  <SvgXml
-                    width={statusSize}
-                    height={statusSize}
-                    xml={svgXml.status.sad}
-                  />
-                )}
-                {item.status == 'mad'.toUpperCase() && (
-                  <SvgXml
-                    width={statusSize}
-                    height={statusSize}
-                    xml={svgXml.status.mad}
-                  />
-                )}
-                {item.status == 'panic'.toUpperCase() && (
-                  <SvgXml
-                    width={statusSize}
-                    height={statusSize}
-                    xml={svgXml.status.panic}
-                  />
-                )}
-                {item.status == 'exhausted'.toUpperCase() && (
-                  <SvgXml
-                    width={statusSize}
-                    height={statusSize}
-                    xml={svgXml.status.exhausted}
-                  />
-                )}
-                {item.status == 'excited'.toUpperCase() && (
-                  <SvgXml
-                    width={statusSize}
-                    height={statusSize}
-                    xml={svgXml.status.excited}
-                  />
-                )}
-                {item.status == 'sick'.toUpperCase() && (
-                  <SvgXml
-                    width={statusSize}
-                    height={statusSize}
-                    xml={svgXml.status.sick}
-                  />
-                )}
-                {item.status == 'vacation'.toUpperCase() && (
-                  <SvgXml
-                    width={statusSize}
-                    height={statusSize}
-                    xml={svgXml.status.vacation}
-                  />
-                )}
-                {item.status == 'date'.toUpperCase() && (
-                  <SvgXml
-                    width={statusSize}
-                    height={statusSize}
-                    xml={svgXml.status.date}
-                  />
-                )}
-                {item.status == 'computer'.toUpperCase() && (
-                  <SvgXml
-                    width={statusSize}
-                    height={statusSize}
-                    xml={svgXml.status.computer}
-                  />
-                )}
-                {item.status == 'cafe'.toUpperCase() && (
-                  <SvgXml
-                    width={statusSize}
-                    height={statusSize}
-                    xml={svgXml.status.cafe}
-                  />
-                )}
-                {item.status == 'movie'.toUpperCase() && (
-                  <SvgXml
-                    width={statusSize}
-                    height={statusSize}
-                    xml={svgXml.status.movie}
-                  />
-                )}
-                {item.status == 'read'.toUpperCase() && (
-                  <SvgXml
-                    width={statusSize}
-                    height={statusSize}
-                    xml={svgXml.status.read}
-                  />
-                )}
-                {item.status == 'alcohol'.toUpperCase() && (
-                  <SvgXml
-                    width={statusSize}
-                    height={statusSize}
-                    xml={svgXml.status.alcohol}
-                  />
-                )}
-                {item.status == 'music'.toUpperCase() && (
-                  <SvgXml
-                    width={statusSize}
-                    height={statusSize}
-                    xml={svgXml.status.music}
-                  />
-                )}
-                {item.status == 'birthday'.toUpperCase() && (
-                  <SvgXml
-                    width={statusSize}
-                    height={statusSize}
-                    xml={svgXml.status.birthday}
-                  />
-                )}
+                <StatucIcon time="1시간" status={item.status.toLowerCase()} />
               </View>
               {/* <Pressable style={styles.deleteBtn}>
                 <Text style={styles.deleteBtnTxt}>삭제</Text>
@@ -1146,12 +818,13 @@ const styles = StyleSheet.create({
   friendList: {
     flex: 1,
     width: '100%',
+    // backgroundColor: 'blue',
   },
   friendView: {
     alignItems: 'center',
     justifyContent: 'space-between',
     flexDirection: 'row',
-    paddingVertical: 7,
+    paddingVertical: 6,
     paddingHorizontal: 10,
     backgroundColor: '#333333',
     borderRadius: 5,
