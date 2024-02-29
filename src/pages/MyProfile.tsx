@@ -80,7 +80,7 @@ export default function MyProfile() {
     const getMyProfile = async () => {
       try {
         const response = await axios.get(`${Config.API_URL}/accounts/me`);
-        console.log('#### : ', response.data.data);
+        // console.log('#### : ', response.data.data);
         setName(response.data.data.nickname);
         setChangeNameVal(response.data.data.nickname);
         setStatus(response.data.data.status.toLowerCase());
@@ -337,6 +337,7 @@ export default function MyProfile() {
             friendshipRelation="me"
             myCode={myCode}
             setWhichPopup={setWhichPopup}
+            setStatus={setStatus}
           />
         </View>
 
