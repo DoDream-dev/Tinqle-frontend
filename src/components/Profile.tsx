@@ -1,3 +1,4 @@
+/* eslint-disable react-native/no-inline-styles */
 import React, {useState} from 'react';
 import {StyleSheet, Text, Pressable, View, Image} from 'react-native';
 import MaterialCommunity from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -8,6 +9,8 @@ import ImageModal from 'react-native-image-modal';
 import ImagePicker from 'react-native-image-crop-picker';
 import axios, {AxiosError} from 'axios';
 import Config from 'react-native-config';
+import AnimatedButton from '../components/AnimatedButton';
+import Clipboard from '@react-native-clipboard/clipboard';
 
 type ProfileProps = {
   status: string;
@@ -16,7 +19,10 @@ type ProfileProps = {
   setProfileImg: React.Dispatch<React.SetStateAction<string | null>>;
   renameModal: React.Dispatch<React.SetStateAction<boolean>>;
   friendshipRelation: string;
+  myCode: string;
+  setWhichPopup: React.Dispatch<React.SetStateAction<string | null>>;
 };
+
 export default function Profile(props: ProfileProps) {
   const status = props.status;
   const profileImage = props.profileImg;
@@ -24,10 +30,11 @@ export default function Profile(props: ProfileProps) {
   const name = props.name;
   const renameModal = props.renameModal;
   const friendshipRelation = props.friendshipRelation;
-  const imsi = true; // 상태변화없나?
+  const myCode = props.myCode;
+  const setWhichPopup = props.setWhichPopup;
+  // const imsi = true; // 상태변화없나?
 
   const [deleteProfileImg, setDeleteProfileImg] = useState(false);
-
   // const [chageName, setChangeName] = useState(false);
   // const [changeStatus, setChangeStatus] = useState(false);
 
@@ -111,151 +118,183 @@ export default function Profile(props: ProfileProps) {
 
   return (
     <View style={styles.entire}>
-      <View style={styles.statusView}>
-        {/* <Pressable style={styles.statusBtn} disabled={imsi} onPress={()=>restatusModal(true)}>
-          {status == 'smile' && <SvgXml width={90} height={90} xml={svgXml.status.smile} />}
-          {status == 'happy' && <SvgXml width={90} height={90} xml={svgXml.status.happy} />}
-          {status == 'sad' && <SvgXml width={90} height={90} xml={svgXml.status.sad} />}
-          {status == 'mad' && <SvgXml width={90} height={90} xml={svgXml.status.mad} />}
-          {status == 'exhausted' && <SvgXml width={90} height={90} xml={svgXml.status.exhauseted} />}
-          {status == 'coffee' && <SvgXml width={90} height={90} xml={svgXml.status.coffee} />}
-          {status == 'meal' && <SvgXml width={90} height={90} xml={svgXml.status.meal} />}
-          {status == 'alcohol' && <SvgXml width={90} height={90} xml={svgXml.status.alcohol} />}
-          {status == 'chicken' && <SvgXml width={90} height={90} xml={svgXml.status.chicken} />}
-          {status == 'sleep' && <SvgXml width={90} height={90} xml={svgXml.status.sleep} />}
-          {status == 'work' && <SvgXml width={90} height={90} xml={svgXml.status.work} />}
-          {status == 'study' && <SvgXml width={90} height={90} xml={svgXml.status.study} />}
-          {status == 'movie' && <SvgXml width={90} height={90} xml={svgXml.status.movie} />}
-          {status == 'move' && <SvgXml width={90} height={90} xml={svgXml.status.move} />}
-          {status == 'dance' && <SvgXml width={90} height={90} xml={svgXml.status.dance} />}
-          {status == 'read' && <SvgXml width={90} height={90} xml={svgXml.status.read} />}
-          {status == 'walk' && <SvgXml width={90} height={90} xml={svgXml.status.walk} />}
-          {status == 'travel' && <SvgXml width={90} height={90} xml={svgXml.status.travel} />}
-        </Pressable> */}
-        {profileImage == null ? (
-          <SvgXml width={120} height={120} xml={svgXml.profile.null} />
-        ) : (
-          <View style={{width: 120, height: 120, borderRadius: 60}}>
-            <ImageModal
-              modalImageResizeMode="contain"
-              swipeToDismiss={true}
-              // resizeMode="contain"
-              resizeMode="cover"
-              imageBackgroundColor="transparent"
-              overlayBackgroundColor="rgba(32, 32, 32, 0.9)"
-              style={{width: 120, height: 120, borderRadius: 60}}
-              source={{
-                uri: profileImage,
-              }}
-            />
-          </View>
-        )}
-        {friendshipRelation == 'me' ? (
+      <View style={{flexDirection: 'row', alignItems: 'center'}}>
+        {/* image */}
+        <View style={styles.statusView}>
+          {profileImage == null ? (
+            <SvgXml width={72} height={72} xml={svgXml.profile.null} />
+          ) : (
+            <View style={{width: 72, height: 72, borderRadius: 36}}>
+              <ImageModal
+                modalImageResizeMode="contain"
+                swipeToDismiss={true}
+                // resizeMode="contain"
+                resizeMode="cover"
+                imageBackgroundColor="transparent"
+                overlayBackgroundColor="rgba(32, 32, 32, 0.9)"
+                style={{width: 72, height: 72, borderRadius: 36}}
+                source={{
+                  uri: profileImage,
+                }}
+              />
+            </View>
+          )}
           <Pressable
-            style={[styles.addProfileImgBtn, {backgroundColor:'#101010'}]}
+            style={[styles.addProfileImgBtn, {backgroundColor: '#101010'}]}
             onPress={async () => {
               if (profileImage == null) await uploadProfileImage();
               else setDeleteProfileImg(true);
             }}>
-            <SvgXml width={24} height={24} xml={svgXml.icon.photo} />
+            <SvgXml width={20} height={20} xml={svgXml.icon.photo} />
           </Pressable>
-        ) : (
-          <Pressable
-            style={[styles.addProfileImgBtn, {backgroundColor:'#202020'}]}>
+        </View>
+
+        <View
+          style={{
+            alignItems: 'flex-start',
+            justifyContent: 'center',
+            paddingLeft: 20,
+            flex: 1,
+          }}>
+          <View style={styles.nameView}>
+            <Text style={styles.nameTxt} onPress={() => renameModal(true)}>
+              {name}
+            </Text>
+            {(friendshipRelation == 'true' || friendshipRelation == 'me') && (
+              <Pressable
+                style={styles.changeNameBtn}
+                onPress={() => renameModal(true)}>
+                <MaterialCommunity
+                  name="pencil-outline"
+                  size={14}
+                  color={'#888888'}
+                />
+              </Pressable>
+            )}
+          </View>
+
+          <View style={styles.myCodeView}>
+            <AnimatedButton
+              style={styles.myCodeBtn}
+              onPress={() => {
+                Clipboard.setString(myCode);
+                setWhichPopup('copyId');
+              }}>
+              <Text style={styles.myCodeTxt}>내 아이디: {myCode}</Text>
+              <SvgXml
+                width="15"
+                height="15"
+                xml={svgXml.icon.copyIcon}
+                style={styles.copyIcon}
+              />
+            </AnimatedButton>
+          </View>
+        </View>
+
+        <View
+          style={{
+            flexDirection: 'column',
+            alignItems: 'center',
+            height: 64,
+          }}>
+          <View
+            style={{
+              backgroundColor: '#202020',
+              width: 54,
+              height: 54,
+              borderRadius: 27,
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}>
             {status == 'work' && (
-              <SvgXml width={23} height={23} xml={svgXml.status.work} />
+              <SvgXml width={36} height={36} xml={svgXml.status.work} />
             )}
             {status == 'study' && (
-              <SvgXml width={23} height={23} xml={svgXml.status.study} />
+              <SvgXml width={36} height={36} xml={svgXml.status.study} />
             )}
             {status == 'transport' && (
-              <SvgXml width={23} height={23} xml={svgXml.status.transport} />
+              <SvgXml width={36} height={36} xml={svgXml.status.transport} />
             )}
             {status == 'eat' && (
-              <SvgXml width={23} height={23} xml={svgXml.status.eat} />
+              <SvgXml width={36} height={36} xml={svgXml.status.eat} />
             )}
             {status == 'workout' && (
-              <SvgXml
-                width={23}
-                height={23}
-                xml={svgXml.status.workout}
-              />
+              <SvgXml width={36} height={36} xml={svgXml.status.workout} />
             )}
             {status == 'walk' && (
-              <SvgXml width={23} height={23} xml={svgXml.status.walk} />
+              <SvgXml width={36} height={36} xml={svgXml.status.walk} />
             )}
             {status == 'sleep' && (
-              <SvgXml width={23} height={23} xml={svgXml.status.sleep} />
+              <SvgXml width={36} height={36} xml={svgXml.status.sleep} />
             )}
             {status == 'smile' && (
-              <SvgXml width={23} height={23} xml={svgXml.status.smile} />
+              <SvgXml width={36} height={36} xml={svgXml.status.smile} />
             )}
             {status == 'happy' && (
-              <SvgXml width={23} height={23} xml={svgXml.status.happy} />
+              <SvgXml width={36} height={36} xml={svgXml.status.happy} />
             )}
             {status == 'sad' && (
-              <SvgXml width={23} height={23} xml={svgXml.status.sad} />
+              <SvgXml width={36} height={36} xml={svgXml.status.sad} />
             )}
             {status == 'mad' && (
-              <SvgXml width={23} height={23} xml={svgXml.status.mad} />
+              <SvgXml width={36} height={36} xml={svgXml.status.mad} />
             )}
             {status == 'panic' && (
-              <SvgXml width={23} height={23} xml={svgXml.status.panic} />
+              <SvgXml width={36} height={36} xml={svgXml.status.panic} />
             )}
             {status == 'exhausted' && (
-              <SvgXml width={23} height={23} xml={svgXml.status.exhausted} />
+              <SvgXml width={36} height={36} xml={svgXml.status.exhausted} />
             )}
             {status == 'excited' && (
-              <SvgXml width={23} height={23} xml={svgXml.status.excited} />
+              <SvgXml width={36} height={36} xml={svgXml.status.excited} />
             )}
             {status == 'sick' && (
-              <SvgXml width={23} height={23} xml={svgXml.status.sick} />
+              <SvgXml width={36} height={36} xml={svgXml.status.sick} />
             )}
             {status == 'vacation' && (
-              <SvgXml width={23} height={23} xml={svgXml.status.vacation} />
+              <SvgXml width={36} height={36} xml={svgXml.status.vacation} />
             )}
             {status == 'date' && (
-              <SvgXml width={23} height={23} xml={svgXml.status.date} />
+              <SvgXml width={36} height={36} xml={svgXml.status.date} />
             )}
             {status == 'computer' && (
-              <SvgXml width={23} height={23} xml={svgXml.status.computer} />
+              <SvgXml width={36} height={36} xml={svgXml.status.computer} />
             )}
             {status == 'cafe' && (
-              <SvgXml width={23} height={23} xml={svgXml.status.cafe} />
+              <SvgXml width={36} height={36} xml={svgXml.status.cafe} />
             )}
             {status == 'movie' && (
-              <SvgXml width={23} height={23} xml={svgXml.status.movie} />
+              <SvgXml width={36} height={36} xml={svgXml.status.movie} />
             )}
             {status == 'read' && (
-              <SvgXml width={23} height={23} xml={svgXml.status.read} />
+              <SvgXml width={36} height={36} xml={svgXml.status.read} />
             )}
             {status == 'alcohol' && (
-              <SvgXml width={23} height={23} xml={svgXml.status.alcohol} />
+              <SvgXml width={36} height={36} xml={svgXml.status.alcohol} />
             )}
             {status == 'music' && (
-              <SvgXml width={23} height={23} xml={svgXml.status.music} />
+              <SvgXml width={36} height={36} xml={svgXml.status.music} />
             )}
             {status == 'birthday' && (
-              <SvgXml width={23} height={23} xml={svgXml.status.birthday} />
+              <SvgXml width={36} height={36} xml={svgXml.status.birthday} />
             )}
-          </Pressable>
-        )}
-      </View>
-      <View style={styles.nameView}>
-        <Text style={styles.nameTxt} onPress={() => renameModal(true)}>
-          {name}
-        </Text>
-        {(friendshipRelation == 'true' || friendshipRelation == 'me') && (
-          <Pressable
-            style={styles.changeNameBtn}
-            onPress={() => renameModal(true)}>
-            <MaterialCommunity
-              name="pencil-outline"
-              size={14}
-              color={'#888888'}
-            />
-          </Pressable>
-        )}
+          </View>
+          <View
+            style={{
+              backgroundColor: '#101010',
+              width: 42,
+              height: 17,
+              borderRadius: 10,
+              position: 'absolute',
+              top: 47,
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}>
+            <Text style={{color: '#A55FFF', fontSize: 11, fontWeight: '500'}}>
+              {'1시간'}
+            </Text>
+          </View>
+        </View>
       </View>
       {/* modal for deleting profileimg */}
       <Modal
@@ -287,10 +326,11 @@ export default function Profile(props: ProfileProps) {
 const styles = StyleSheet.create({
   entire: {
     alignItems: 'center',
+    justifyContent: 'center',
   },
   statusView: {
-    width: 120,
-    height: 120,
+    width: 72,
+    height: 72,
     justifyContent: 'center',
     alignItems: 'center',
     position: 'relative',
@@ -305,8 +345,8 @@ const styles = StyleSheet.create({
   },
   nameView: {
     flexDirection: 'row',
-    marginTop: 16,
-    marginBottom: 8,
+    // marginTop: 16,
+    marginBottom: 4,
     justifyContent: 'center',
     alignItems: 'baseline',
   },
@@ -315,18 +355,18 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     fontSize: 22,
     marginRight: 2,
-    marginLeft: 16,
+    // marginLeft: 16,
   },
   addProfileImgBtn: {
     position: 'absolute',
-    width:30,
-    height:30,
+    width: 28,
+    height: 28,
     bottom: 0,
-    right: 0,
-    borderRadius: 15,
-    padding: 3,
-    justifyContent:'center',
-    alignItems:'center'
+    right: -8,
+    borderRadius: 14,
+    padding: 2,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   modalBGView: {
     width: '100%',
@@ -351,4 +391,18 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   changeNameBtn: {},
+  myCodeView: {},
+  myCodeTxt: {
+    color: '#848484',
+    fontSize: 13,
+    fontWeight: '500',
+  },
+  myCodeBtn: {
+    flexDirection: 'row',
+  },
+  copyIcon: {
+    marginLeft: 4,
+    height: 14,
+    top: 1,
+  },
 });

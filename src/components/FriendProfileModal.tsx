@@ -14,7 +14,7 @@ import {
 import axios, {AxiosError} from 'axios';
 import Modal from 'react-native-modal';
 import Config from 'react-native-config';
-import Profile from './Profile';
+import FriendProfile from './FriendProfile';
 import _ from 'lodash';
 import AnimatedButton from './AnimatedButton';
 import {SvgXml} from 'react-native-svg';
@@ -22,9 +22,9 @@ import {svgXml} from '../../assets/image/svgXml';
 import {throttleTime} from '../hooks/Throttle';
 import ToastScreen from './ToastScreen';
 import {AugmentedAIRuntime} from 'aws-sdk';
-import { useNavigation } from '@react-navigation/native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { RootStackParamList } from '../../AppInner';
+import {useNavigation} from '@react-navigation/native';
+import {NativeStackNavigationProp} from '@react-navigation/native-stack';
+import {RootStackParamList} from '../../AppInner';
 
 type ProfileProps = {
   showWhoseModal: number;
@@ -51,7 +51,7 @@ export default function FriendProfileModal(props: ProfileProps) {
   const inp1 = useRef();
 
   const navigation =
-  useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+    useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
   useEffect(() => {
     setTimeout(() => {
@@ -210,17 +210,16 @@ export default function FriendProfileModal(props: ProfileProps) {
 
   const createRoom = async () => {
     try {
-      const response = await axios.post(
-        `${Config.API_URL}/rooms`,
-        {
-          targetAccountId:showWhoseModal
-        }
-      );
+      const response = await axios.post(`${Config.API_URL}/rooms`, {
+        targetAccountId: showWhoseModal,
+      });
       console.log(response.data);
       setShowWhoseModal(0);
       navigation.navigate('NoteNavigation', {screen: 'MsgList'});
-      navigation.navigate('NoteNavigation', {screen: 'MsgDetail', params: {roomId: response.data.data.roomId}});
-      
+      navigation.navigate('NoteNavigation', {
+        screen: 'MsgDetail',
+        params: {roomId: response.data.data.roomId},
+      });
     } catch (error) {
       const errorResponse = (error as AxiosError<{message: string}>).response;
       console.log(errorResponse.data);
@@ -260,7 +259,7 @@ export default function FriendProfileModal(props: ProfileProps) {
         ) : null}
 
         <View style={styles.profileView}>
-          <Profile
+          <FriendProfile
             name={name}
             status={status}
             profileImg={profileImg}
