@@ -8,6 +8,7 @@ import ImageModal from 'react-native-image-modal';
 import ImagePicker from 'react-native-image-crop-picker';
 import axios, {AxiosError} from 'axios';
 import Config from 'react-native-config';
+import StatucIcon from './StatusIcon';
 
 type ProfileProps = {
   status: string;
@@ -46,81 +47,10 @@ export default function FriendProfile(props: ProfileProps) {
             />
           </View>
         )}
-        <Pressable
-          style={[styles.addProfileImgBtn, {backgroundColor: '#202020'}]}>
-          {status == 'work' && (
-            <SvgXml width={23} height={23} xml={svgXml.status.work} />
-          )}
-          {status == 'study' && (
-            <SvgXml width={23} height={23} xml={svgXml.status.study} />
-          )}
-          {status == 'transport' && (
-            <SvgXml width={23} height={23} xml={svgXml.status.transport} />
-          )}
-          {status == 'eat' && (
-            <SvgXml width={23} height={23} xml={svgXml.status.eat} />
-          )}
-          {status == 'workout' && (
-            <SvgXml width={23} height={23} xml={svgXml.status.workout} />
-          )}
-          {status == 'walk' && (
-            <SvgXml width={23} height={23} xml={svgXml.status.walk} />
-          )}
-          {status == 'sleep' && (
-            <SvgXml width={23} height={23} xml={svgXml.status.sleep} />
-          )}
-          {status == 'smile' && (
-            <SvgXml width={23} height={23} xml={svgXml.status.smile} />
-          )}
-          {status == 'happy' && (
-            <SvgXml width={23} height={23} xml={svgXml.status.happy} />
-          )}
-          {status == 'sad' && (
-            <SvgXml width={23} height={23} xml={svgXml.status.sad} />
-          )}
-          {status == 'mad' && (
-            <SvgXml width={23} height={23} xml={svgXml.status.mad} />
-          )}
-          {status == 'panic' && (
-            <SvgXml width={23} height={23} xml={svgXml.status.panic} />
-          )}
-          {status == 'exhausted' && (
-            <SvgXml width={23} height={23} xml={svgXml.status.exhausted} />
-          )}
-          {status == 'excited' && (
-            <SvgXml width={23} height={23} xml={svgXml.status.excited} />
-          )}
-          {status == 'sick' && (
-            <SvgXml width={23} height={23} xml={svgXml.status.sick} />
-          )}
-          {status == 'vacation' && (
-            <SvgXml width={23} height={23} xml={svgXml.status.vacation} />
-          )}
-          {status == 'date' && (
-            <SvgXml width={23} height={23} xml={svgXml.status.date} />
-          )}
-          {status == 'computer' && (
-            <SvgXml width={23} height={23} xml={svgXml.status.computer} />
-          )}
-          {status == 'cafe' && (
-            <SvgXml width={23} height={23} xml={svgXml.status.cafe} />
-          )}
-          {status == 'movie' && (
-            <SvgXml width={23} height={23} xml={svgXml.status.movie} />
-          )}
-          {status == 'read' && (
-            <SvgXml width={23} height={23} xml={svgXml.status.read} />
-          )}
-          {status == 'alcohol' && (
-            <SvgXml width={23} height={23} xml={svgXml.status.alcohol} />
-          )}
-          {status == 'music' && (
-            <SvgXml width={23} height={23} xml={svgXml.status.music} />
-          )}
-          {status == 'birthday' && (
-            <SvgXml width={23} height={23} xml={svgXml.status.birthday} />
-          )}
-        </Pressable>
+
+        <View style={{position: 'absolute', bottom: 0, right: -27}}>
+          <StatucIcon time="1시간" status={status} />
+        </View>
       </View>
       <View style={styles.nameView}>
         <Text style={styles.nameTxt} onPress={() => renameModal(true)}>
@@ -147,6 +77,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   statusView: {
+    // backgroundColor: 'blue',
     width: 120,
     height: 120,
     justifyContent: 'center',
