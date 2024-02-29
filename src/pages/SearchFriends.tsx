@@ -455,7 +455,7 @@ export default function SearchFriends() {
               <Pressable
                 style={[
                   styles.friendView,
-                  {width: Dimensions.get('window').width - 40},
+                  {width: Dimensions.get('window').width - 32},
                 ]}
                 onPress={() => {
                   navigation.navigate('MyProfile');
@@ -484,7 +484,7 @@ export default function SearchFriends() {
               <Pressable
                 style={[
                   styles.friendView,
-                  {width: Dimensions.get('window').width - 40},
+                  {width: Dimensions.get('window').width - 32},
                 ]}
                 onPress={() => {
                   setShowWhoseModal(item.accountId);
@@ -522,7 +522,7 @@ export default function SearchFriends() {
               <Pressable
                 style={[
                   styles.friendView,
-                  {width: Dimensions.get('window').width - 40},
+                  {width: Dimensions.get('window').width - 32},
                 ]}
                 onPress={() => {
                   setShowWhoseModal(item.accountId);
@@ -550,7 +550,7 @@ export default function SearchFriends() {
               <Pressable
                 style={[
                   styles.friendView,
-                  {width: Dimensions.get('window').width - 40},
+                  {width: Dimensions.get('window').width - 32},
                 ]}
                 onPress={() => {
                   setShowWhoseModal(item.accountId);
@@ -581,7 +581,7 @@ export default function SearchFriends() {
             <Pressable
               style={[
                 styles.friendView,
-                {width: Dimensions.get('window').width - 40},
+                {width: Dimensions.get('window').width - 32},
               ]}
               onPress={() => {
                 setShowWhoseModal(item.accountId);
