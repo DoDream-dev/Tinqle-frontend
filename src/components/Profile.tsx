@@ -11,6 +11,7 @@ import axios, {AxiosError} from 'axios';
 import Config from 'react-native-config';
 import AnimatedButton from '../components/AnimatedButton';
 import Clipboard from '@react-native-clipboard/clipboard';
+import StatucIcon from './StatusIcon';
 
 type ProfileProps = {
   status: string;
@@ -191,110 +192,7 @@ export default function Profile(props: ProfileProps) {
           </View>
         </View>
 
-        <View
-          style={{
-            flexDirection: 'column',
-            alignItems: 'center',
-            height: 64,
-          }}>
-          <View
-            style={{
-              backgroundColor: '#202020',
-              width: 54,
-              height: 54,
-              borderRadius: 27,
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}>
-            {status == 'work' && (
-              <SvgXml width={36} height={36} xml={svgXml.status.work} />
-            )}
-            {status == 'study' && (
-              <SvgXml width={36} height={36} xml={svgXml.status.study} />
-            )}
-            {status == 'transport' && (
-              <SvgXml width={36} height={36} xml={svgXml.status.transport} />
-            )}
-            {status == 'eat' && (
-              <SvgXml width={36} height={36} xml={svgXml.status.eat} />
-            )}
-            {status == 'workout' && (
-              <SvgXml width={36} height={36} xml={svgXml.status.workout} />
-            )}
-            {status == 'walk' && (
-              <SvgXml width={36} height={36} xml={svgXml.status.walk} />
-            )}
-            {status == 'sleep' && (
-              <SvgXml width={36} height={36} xml={svgXml.status.sleep} />
-            )}
-            {status == 'smile' && (
-              <SvgXml width={36} height={36} xml={svgXml.status.smile} />
-            )}
-            {status == 'happy' && (
-              <SvgXml width={36} height={36} xml={svgXml.status.happy} />
-            )}
-            {status == 'sad' && (
-              <SvgXml width={36} height={36} xml={svgXml.status.sad} />
-            )}
-            {status == 'mad' && (
-              <SvgXml width={36} height={36} xml={svgXml.status.mad} />
-            )}
-            {status == 'panic' && (
-              <SvgXml width={36} height={36} xml={svgXml.status.panic} />
-            )}
-            {status == 'exhausted' && (
-              <SvgXml width={36} height={36} xml={svgXml.status.exhausted} />
-            )}
-            {status == 'excited' && (
-              <SvgXml width={36} height={36} xml={svgXml.status.excited} />
-            )}
-            {status == 'sick' && (
-              <SvgXml width={36} height={36} xml={svgXml.status.sick} />
-            )}
-            {status == 'vacation' && (
-              <SvgXml width={36} height={36} xml={svgXml.status.vacation} />
-            )}
-            {status == 'date' && (
-              <SvgXml width={36} height={36} xml={svgXml.status.date} />
-            )}
-            {status == 'computer' && (
-              <SvgXml width={36} height={36} xml={svgXml.status.computer} />
-            )}
-            {status == 'cafe' && (
-              <SvgXml width={36} height={36} xml={svgXml.status.cafe} />
-            )}
-            {status == 'movie' && (
-              <SvgXml width={36} height={36} xml={svgXml.status.movie} />
-            )}
-            {status == 'read' && (
-              <SvgXml width={36} height={36} xml={svgXml.status.read} />
-            )}
-            {status == 'alcohol' && (
-              <SvgXml width={36} height={36} xml={svgXml.status.alcohol} />
-            )}
-            {status == 'music' && (
-              <SvgXml width={36} height={36} xml={svgXml.status.music} />
-            )}
-            {status == 'birthday' && (
-              <SvgXml width={36} height={36} xml={svgXml.status.birthday} />
-            )}
-          </View>
-          <View
-            style={{
-              backgroundColor: '#101010',
-              width: 42,
-              height: 17,
-              borderRadius: 10,
-              position: 'absolute',
-              top: 47,
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}>
-            <Text style={{color: '#A55FFF', fontSize: 11, fontWeight: '500'}}>
-              {'1시간'}
-            </Text>
-          </View>
-        </View>
+        <StatucIcon status={status} time={'1시간'} />
       </View>
       {/* modal for deleting profileimg */}
       <Modal
