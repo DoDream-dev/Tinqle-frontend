@@ -102,7 +102,7 @@ export default function StatucIcon(props: StatucIconProps) {
           <SvgXml width={36} height={36} xml={svgXml.status.birthday} />
         )}
       </View>
-      {/* <View
+      <View
         style={{
           backgroundColor: '#101010',
           width: 42,
@@ -116,7 +116,7 @@ export default function StatucIcon(props: StatucIconProps) {
         <Text style={{color: '#A55FFF', fontSize: 11, fontWeight: '500'}}>
           {time}
         </Text>
-      </View> */}
+      </View>
     </View>
   );
 }

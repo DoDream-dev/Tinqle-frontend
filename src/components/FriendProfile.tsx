@@ -17,6 +17,7 @@ type ProfileProps = {
   setProfileImg: React.Dispatch<React.SetStateAction<string | null>>;
   renameModal: React.Dispatch<React.SetStateAction<boolean>>;
   friendshipRelation: string;
+  lastChangeStatusAt: string;
 };
 export default function FriendProfile(props: ProfileProps) {
   const status = props.status;
@@ -24,6 +25,7 @@ export default function FriendProfile(props: ProfileProps) {
   const name = props.name;
   const renameModal = props.renameModal;
   const friendshipRelation = props.friendshipRelation;
+  const lastChangeStatusAt = props.lastChangeStatusAt;
   // const imsi = true; // 상태변화없나?
 
   return (
@@ -49,7 +51,7 @@ export default function FriendProfile(props: ProfileProps) {
         )}
 
         <View style={{position: 'absolute', bottom: 0, right: -27}}>
-          <StatucIcon time="1시간" status={status} />
+          <StatucIcon time={lastChangeStatusAt} status={status} />
         </View>
       </View>
       <View style={styles.nameView}>

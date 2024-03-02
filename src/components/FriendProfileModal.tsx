@@ -38,6 +38,7 @@ export default function FriendProfileModal(props: ProfileProps) {
   const [chageName, setChangeName] = useState(false);
   const [chageNameVal, setChangeNameVal] = useState('');
   const [status, setStatus] = useState('');
+  const [lastChangeStatusAt, setLastChangeStatusAt] = useState('');
   const [name, setName] = useState('');
   const [friendshipRelation, setFriendshipRelation] = useState('');
   const [friendshipId, setFriendshipId] = useState(-1);
@@ -68,6 +69,7 @@ export default function FriendProfileModal(props: ProfileProps) {
       setName(response.data.data.nickname);
       setChangeNameVal(response.data.data.nickname);
       setStatus(response.data.data.status.toLowerCase());
+      setLastChangeStatusAt(response.data.data.lastChangeStatusAt);
       setProfileImg(response.data.data.profileImageUrl);
       setFriendshipRelation(response.data.data.friendshipRelation);
       setFriendshipId(response.data.data.friendshipId);
@@ -266,6 +268,7 @@ export default function FriendProfileModal(props: ProfileProps) {
             setProfileImg={setProfileImg}
             renameModal={setChangeName}
             friendshipRelation={friendshipRelation}
+            lastChangeStatusAt={lastChangeStatusAt}
           />
         </View>
 
