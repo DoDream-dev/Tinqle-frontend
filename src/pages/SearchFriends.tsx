@@ -38,6 +38,7 @@ type friendListItemProps = {
     friendshipId: number;
     status: string;
     profileImageUrl: string | null;
+    lastChangeStatusAt: string;
   };
 };
 
@@ -48,6 +49,7 @@ export default function SearchFriends() {
   const [myCode, setMyCode] = useState('');
   const [myName, setMyName] = useState('');
   const [myStatus, setMyStatus] = useState('');
+  const [myLastChangeStatusAt, setMyLastChangeStatusAt] = useState('');
   const [myProfileImg, setMyProfileImg] = useState<string | null>('');
   const [placeholder, setPlaceholder] = useState('아이디로 친구 찾기');
   const [searchCode, setSearchCode] = useState('');
@@ -102,10 +104,12 @@ export default function SearchFriends() {
     getMyProfile();
   }, [isLast, reset]);
 
-  useFocusEffect(useCallback(()=>{
-    getMyProfile();
-    getFriendProfile();
-  }, [searchCode]));
+  useFocusEffect(
+    useCallback(() => {
+      getMyProfile();
+      getFriendProfile();
+    }, [searchCode]),
+  );
 
   const getMyProfile = async () => {
     try {
@@ -113,6 +117,7 @@ export default function SearchFriends() {
       setMyName(response.data.data.nickname);
       setMyStatus(response.data.data.status);
       setMyProfileImg(response.data.data.profileImageUrl);
+      setMyLastChangeStatusAt(response.data.data.lastChangeStatusAt);
       // console.log('내 프로필 조회')
     } catch (error) {
       const errorResponse = (error as AxiosError<{message: string}>).response;
@@ -401,6 +406,7 @@ export default function SearchFriends() {
             friendshipId: 0,
             status: myStatus,
             profileImageUrl: myProfileImg,
+            lastChangeStatusAt: myLastChangeStatusAt,
           },
         ].concat(friendData)}
         style={styles.friendList}
@@ -481,7 +487,10 @@ export default function SearchFriends() {
                   <Text style={styles.friendName}>{item.nickname}</Text>
                 </View>
                 <View style={styles.friendProfileStatus}>
-                  <StatucIcon time="1시간" status={item.status.toLowerCase()} />
+                  <StatucIcon
+                    time={item.lastChangeStatusAt}
+                    status={item.status.toLowerCase()}
+                  />
                 </View>
               </Pressable>
             );
@@ -551,7 +560,7 @@ export default function SearchFriends() {
                 </Pressable>
               </Pressable>
             );
-          if (item.friendshipId == -3)
+          if (item.friendshipId == -3) {
             return (
               <Pressable
                 style={[
@@ -583,6 +592,7 @@ export default function SearchFriends() {
                 </Pressable>
               </Pressable>
             );
+          }
           return (
             <Pressable
               style={[
@@ -620,7 +630,10 @@ export default function SearchFriends() {
                 <Text style={styles.friendName}>{item.nickname}</Text>
               </View>
               <View style={styles.friendProfileStatus}>
-                <StatucIcon time="1시간" status={item.status.toLowerCase()} />
+                <StatucIcon
+                  time={item.lastChangeStatusAt}
+                  status={item.status.toLowerCase()}
+                />
               </View>
               {/* <Pressable style={styles.deleteBtn}>
                 <Text style={styles.deleteBtnTxt}>삭제</Text>
@@ -846,7 +859,7 @@ const styles = StyleSheet.create({
     marginLeft: 8,
   },
   friendProfileStatus: {
-    marginVertical: 7,
+    // marginVertical: 3,
   },
   nonFriendProfileStatus: {
     marginVertical: 7,

@@ -63,6 +63,7 @@ export default function MyProfile() {
 
   // original value
   const [status, setStatus] = useState('');
+  const [lastChangeStatusAt, setLastChangeStatusAt] = useState('');
   const [name, setName] = useState('');
   const [profileImg, setProfileImg] = useState(null);
 
@@ -84,6 +85,7 @@ export default function MyProfile() {
         setName(response.data.data.nickname);
         setChangeNameVal(response.data.data.nickname);
         setStatus(response.data.data.status.toLowerCase());
+        setLastChangeStatusAt(response.data.data.lastChangeStatusAt);
         setProfileImg(response.data.data.profileImageUrl);
         // console.log('내 프로필 조회')
       } catch (error) {
@@ -149,12 +151,35 @@ export default function MyProfile() {
     // }
   }, [name, status, profileImg, reset]);
 
-  // useFocusEffect(
-  //   useCallback(()=>{
-  //     setWhoseProfile(whose);
-  //     setAcoountId(acId);
-  //   },[whose, acId, status])
-  // );
+  useFocusEffect(
+    useCallback(() => {
+      const getMyProfile = async () => {
+        try {
+          const response = await axios.get(`${Config.API_URL}/accounts/me`);
+          // console.log('#### : ', response.data.data);
+          setName(response.data.data.nickname);
+          setChangeNameVal(response.data.data.nickname);
+          setStatus(response.data.data.status.toLowerCase());
+          setLastChangeStatusAt(response.data.data.lastChangeStatusAt);
+          setProfileImg(response.data.data.profileImageUrl);
+          // console.log('내 프로필 조회')
+        } catch (error) {
+          const errorResponse = (error as AxiosError<{message: string}>)
+            .response;
+          console.log(errorResponse?.data);
+          if (errorResponse?.data.status == 500) {
+            dispatch(
+              userSlice.actions.setToken({
+                accessToken: '',
+              }),
+            );
+          }
+        }
+      };
+
+      getMyProfile();
+    }, []),
+  );
 
   const postStatus = _.throttle(async (stat: string) => {
     if (stat == status) {
@@ -338,6 +363,7 @@ export default function MyProfile() {
             myCode={myCode}
             setWhichPopup={setWhichPopup}
             setStatus={setStatus}
+            lastChangeStatusAt={lastChangeStatusAt}
           />
         </View>
 

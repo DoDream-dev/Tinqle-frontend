@@ -25,6 +25,7 @@ type ProfileProps = {
   friendshipRelation: string;
   myCode: string;
   setWhichPopup: React.Dispatch<React.SetStateAction<string>>;
+  lastChangeStatusAt: string;
 };
 
 export default function Profile(props: ProfileProps) {
@@ -37,11 +38,11 @@ export default function Profile(props: ProfileProps) {
   const friendshipRelation = props.friendshipRelation;
   const myCode = props.myCode;
   const setWhichPopup = props.setWhichPopup;
+  const lastChangeStatusAt = props.lastChangeStatusAt;
   // const imsi = true; // 상태변화없나?
   const statusSizeModal = 48;
   const [deleteProfileImg, setDeleteProfileImg] = useState(false);
   const [changeStatus, setChangeStatus] = useState(false);
-  const [time, setTime] = useState('');
   // const [chageName, setChangeName] = useState(false);
   // const [changeStatus, setChangeStatus] = useState(false);
 
@@ -132,7 +133,6 @@ export default function Profile(props: ProfileProps) {
           `${Config.API_URL}/accounts/me/status/${stat.toUpperCase()}`,
         );
         setStatus(response.data.status);
-        setTime('방금');
         // setRefresh(!refresh);
         // console.log(response.data)
       } catch (error) {
@@ -218,7 +218,7 @@ export default function Profile(props: ProfileProps) {
         </View>
 
         <Pressable onPress={() => setChangeStatus(true)}>
-          <StatucIcon status={status} time={time} />
+          <StatucIcon status={status} time={lastChangeStatusAt} />
         </Pressable>
       </View>
       {/* modal for deleting profileimg */}
