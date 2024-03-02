@@ -63,6 +63,7 @@ export default function MyProfile() {
 
   // original value
   const [status, setStatus] = useState('');
+  const [lastChangeStatusAt, setLastChangeStatusAt] = useState('');
   const [name, setName] = useState('');
   const [profileImg, setProfileImg] = useState(null);
 
@@ -84,6 +85,7 @@ export default function MyProfile() {
         setName(response.data.data.nickname);
         setChangeNameVal(response.data.data.nickname);
         setStatus(response.data.data.status.toLowerCase());
+        setLastChangeStatusAt(response.data.data.lastChangeStatusAt);
         setProfileImg(response.data.data.profileImageUrl);
         // console.log('내 프로필 조회')
       } catch (error) {
@@ -338,6 +340,7 @@ export default function MyProfile() {
             myCode={myCode}
             setWhichPopup={setWhichPopup}
             setStatus={setStatus}
+            lastChangeStatusAt={lastChangeStatusAt}
           />
         </View>
 
