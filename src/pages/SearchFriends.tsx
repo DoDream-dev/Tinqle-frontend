@@ -859,7 +859,7 @@ const styles = StyleSheet.create({
     marginLeft: 8,
   },
   friendProfileStatus: {
-    marginVertical: 7,
+    // marginVertical: 3,
   },
   nonFriendProfileStatus: {
     marginVertical: 7,
