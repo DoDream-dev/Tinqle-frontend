@@ -47,6 +47,11 @@ export default function MsgDetail({navigation, route}:MsgDetailScreenProps) {
   const [yourAccountId, setYourAccountId] = useState(0);
   const [yourProfileImageUrl, setYourProfileImageUrl] = useState(null);
 
+  const [isLast, setIsLast] = useState(false);
+  const [cursorId, setCursorId] = useState(0);
+  const [loading, setLoading] = useState(false);
+  const [msgData, setMsgData] = useState([]);
+
   const inputRef = useRef();
   const flatListRef = useRef(null);
 
@@ -57,7 +62,27 @@ export default function MsgDetail({navigation, route}:MsgDetailScreenProps) {
 
   useFocusEffect(
     useCallback(()=>{
+      const getOutRoom = async () => {
+        try {
+          const response = await axios.delete(`${Config.API_URL}/rooms/${route.params.roomId}`);
+          console.log(response.data.data)
+          navigation.goBack();
+        } catch (error) {
+          const errorResponse = (error as AxiosError<{message: string}>).response;
+          console.log(errorResponse?.data);
+          if (errorResponse?.data.status == 500) {
+            dispatch(
+              userSlice.actions.setToken({
+                accessToken: '',
+              }),
+            );
+          }
+        }
+      };
+
       getInfo();
+      getMessage();
+
       navigation.setOptions({
         header: props => (
           <View style={styles.header}>
@@ -155,13 +180,13 @@ export default function MsgDetail({navigation, route}:MsgDetailScreenProps) {
                 )}
               </Pressable>
             </View>
-            <Pressable><Text style={styles.headerRightTxt}>나가기</Text></Pressable>
+            <Pressable onPress={()=>getOutRoom}><Text style={styles.headerRightTxt}>나가기</Text></Pressable>
           </View>
         ),
       });
     }, [yourName, yourAccountId, yourProfileImageUrl, yourStatus]),
   );
-
+  
   const getInfo = async () => {
     try {
       const response = await axios.get(`${Config.API_URL}/rooms/${route.params.roomId}/info`);
@@ -182,6 +207,73 @@ export default function MsgDetail({navigation, route}:MsgDetailScreenProps) {
       }
     }
   };
+
+  const getMessage = async () => {
+    try {
+      const response = await axios.get(`${Config.API_URL}/rooms/${route.params.roomId}`);
+      setIsLast(response.data.data.last);
+      setMsgData(response.data.data.content);
+      if (response.data.data.content.length != 0) {
+        setCursorId(
+          response.data.data.content[response.data.data.content.length - 1].messageId
+        );
+      }
+      console.log(response.data.data)
+    } catch (error) {
+      const errorResponse = (error as AxiosError<{message: string}>).response;
+      console.log(errorResponse?.data);
+      if (errorResponse?.data.status == 500) {
+        dispatch(
+          userSlice.actions.setToken({
+            accessToken: '',
+          }),
+        );
+      }
+    }
+  };
+
+  const getData = async () => {
+    if (!isLast) {
+      setLoading(true);
+      try {
+        const response = await axios.get(
+          `${Config.API_URL}/rooms/${route.params.roomId}?cursorId=${cursorId}`,
+        );
+        setIsLast(response.data.data.last);
+        setMsgData(
+          msgData.concat(response.data.data.content),
+        );
+        if (response.data.data.content.length != 0) {
+          setCursorId(
+            response.data.data.content[
+              response.data.data.content.length - 1
+            ].messageId,
+          );
+        }
+      } catch (error) {
+        const errorResponse = (error as AxiosError<{message: string}>).response;
+        console.log(errorResponse.data);
+      }
+    }
+    setLoading(false);
+  };
+
+  const onEndReached = () => {
+    if (!loading) {
+      getData();
+    }
+  };
+  // const [refreshing, setRefreshing] = React.useState(false);
+
+  // const onRefresh = () => {
+  //   setRefreshing(true);
+  //   setTimeout(() => {
+  //     setRefreshing(false);
+  //   }, 1000);
+  //   setReset(!reset);
+  //   setSearchCode('');
+  // };
+
 
   // useFocusEffect(
   //   useCallback(() => {
@@ -243,47 +335,57 @@ export default function MsgDetail({navigation, route}:MsgDetailScreenProps) {
     inputRef.current.blur();
   };
 
-  const data=[
-    {isAuthor:false, content:'넵', createdAt:'2024-02-27 13:10:00'},
-    {isAuthor:false, content:'아연님 디자인 좀 빨리 하시죠.', createdAt:'2024-02-28 13:10:30'},
-    {isAuthor:true, content:'제가 릴스를 보겠다는데 왜 방해합니까?', createdAt:'2024-02-28 13:14:30'},
-    {isAuthor:false, content:'제가 개발을 하겠다는데 왜 방해합니까? 승주님도 전력 질주중입니다', createdAt:'2024-02-28 13:14:30'},
-    {isAuthor:true, content:'미안합니다. 정신 차리겠습니다', createdAt:'2024-02-28 13:15:30'},
-    {isAuthor:false, content:'ㅋㅋㅋㅋㅋㅋㅋㅋㅋ알겠습니다', createdAt:'2024-02-28 13:16:30'},
-  ];
+  // const data=[
+  //   {isAuthor:false, content:'넵', createdAt:'2024-02-27T13:10:00.065Z'},
+  //   {isAuthor:false, content:'아연님 디자인 좀 빨리 하시죠.', createdAt:'2024-02-28T13:10:30.065Z'},
+  //   {isAuthor:true, content:'제가 릴스를 보겠다는데 왜 방해합니까?', createdAt:'2024-02-28T13:14:30.065Z'},
+  //   {isAuthor:false, content:'제가 개발을 하겠다는데 왜 방해합니까? 승주님도 전력 질주중입니다', createdAt:'2024-02-28T13:14:30.065Z'},
+  //   {isAuthor:true, content:'미안합니다. 정신 차리겠습니다', createdAt:'2024-02-28T13:15:30.065Z'},
+  //   {isAuthor:false, content:'ㅋㅋㅋㅋㅋㅋㅋㅋㅋ알겠습니다', createdAt:'2024-02-28T13:16:30.065Z'},
+  // ];
   return (
     <View style={styles.entire}>
       <FlatList 
-        data={data}
+        data={msgData}
         style={{width:'100%'}}
         ref={flatListRef}
-        // onEndReached={}
-        // onEndReachedThreshold={0.4}
+        onEndReached={onEndReached}
+        onEndReachedThreshold={0.4}
         // refreshControl={}
         keyboardShouldPersistTaps={'always'}
         renderItem={({item, index}:itemProps) => {
           function formatDateWithDay(inputDate:string) {
             const daysOfWeek = ['일', '월', '화', '수', '목', '금', '토'];
             const date = new Date(inputDate);
+            // const year = date.getFullYear();
             const month = date.getMonth() + 1; // 월은 0부터 시작하므로 +1 해줌
             const day = date.getDate();
+            // const hours = date.getHours();
+            // const minutes = date.getMinutes();
+            // const seconds = date.getSeconds();
+            // const milliseconds = date.getMilliseconds();
             const dayOfWeek = daysOfWeek[date.getDay()]; // 요일을 가져옴
         
             return `${month}월 ${day}일 (${dayOfWeek})`;
-          }
+        }
           return (
             <View>
-              {index != 0 && data[index-1].createdAt.split(' ')[0] != item.createdAt.split(' ')[0] && <View style={styles.nextDayView}>
+              {index != 0 && msgData[index-1].createdAt.split('T')[0] != item.createdAt.split('T')[0] && <View style={styles.nextDayView}>
+                <Text style={styles.nextDayTxt}>
+                  {formatDateWithDay(item.createdAt)}
+                </Text>
+              </View>}
+              {index == 0 && <View style={styles.nextDayView}>
                 <Text style={styles.nextDayTxt}>
                   {formatDateWithDay(item.createdAt)}
                 </Text>
               </View>}
               <View style={[styles.eachMsg, item.isAuthor ? {justifyContent:'flex-end'} : {justifyContent:'flex-start'}]}>
-                {item.isAuthor && <Text style={styles.createdAt}>{item.createdAt.split(' ')[1].split(':')[0]+':'+item.createdAt.split(' ')[1].split(':')[1]}</Text>}
+                {item.isAuthor && <Text style={styles.createdAt}>{item.createdAt.split('T')[1].split('.')[0].split(':')[0]+':'+item.createdAt.split('T')[1].split('.')[0].split(':')[1]}</Text>}
                 <View style={item.isAuthor ? styles.msgMine : styles.msgNotMine}>
                   <Text style={styles.msgTxt}>{item.content}</Text>
                 </View>
-                {!item.isAuthor && <Text style={styles.createdAt}>{item.createdAt.split(' ')[1].split(':')[0]+':'+item.createdAt.split(' ')[1].split(':')[1]}</Text>}
+                {!item.isAuthor && <Text style={styles.createdAt}>{item.createdAt.split('T')[1].split('.')[0].split(':')[0]+':'+item.createdAt.split('T')[1].split('.')[0].split(':')[1]}</Text>}
               </View>
             </View>
           );
