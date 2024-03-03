@@ -158,16 +158,24 @@ export default function AppInner() {
 
   const checkVersion = async () => {
     const currentVersion = await VersionCheck.getCurrentVersion();
-    const os = Platform.OS;
+    let os;
+    if (Platform.OS === 'ios') {
+      os = 'apple';
+    } else {
+      os = 'android';
+    }
 
     try {
-      console.log('currentVersion', currentVersion);
-      console.log('os', os);
+      // console.log('currentVersion', currentVersion);
+      // console.log('os', os);
 
-      // const response = await axios.post(`${Config.API_URL}/app/version`);
-      // if (response.data.data === false) {
-      //   setUpdateModal(true);
-      // }
+      const response = await axios.get(
+        `${Config.API_URL}/auth/version?deviceType=${os}&version=${currentVersion}`,
+      );
+
+      if (!response.data.data.isAccessible) {
+        setUpdateModal(true);
+      }
     } catch (error) {
       const errorResponse = (error as AxiosError<{message: string}>).response;
       console.log(errorResponse.data);
