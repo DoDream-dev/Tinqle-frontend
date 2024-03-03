@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { View, Text, StyleSheet, FlatList, Pressable, TextInput, Platform, Keyboard, BackHandler } from 'react-native';
+import { View, Text, StyleSheet, FlatList, Pressable, TextInput, Platform, Keyboard, BackHandler, Image } from 'react-native';
 import axios, {AxiosError} from 'axios';
 import Config from 'react-native-config';
 import userSlice from '../slices/user';
@@ -34,18 +34,30 @@ Object.assign('global', {
 });
 
 export default function MsgDetail({navigation, route}:MsgDetailScreenProps) {
+  const dispatch = useAppDispatch();
+
   const [placeholder, setPlaceholder] = useState('대화를 보내보세요.');
   const [msgContent, setMsgContent] = useState('');
   const [KBsize, setKBsize] = useState(0);
   const [onFocus, setOnFocus] = useState(false);
   const [uploadBtnLoading, setUploadBtnLoading] = useState(false);
+
+  const [yourName, setYourName] = useState('');
+  const [yourStatus, setYourStatus] = useState('');
+  const [yourAccountId, setYourAccountId] = useState(0);
+  const [yourProfileImageUrl, setYourProfileImageUrl] = useState(null);
+
   const inputRef = useRef();
   const flatListRef = useRef(null);
 
   const sockJS = useRef();
 
+  const statusSize = 18;
+  const statusSizeTxt = 28;
+
   useFocusEffect(
     useCallback(()=>{
+      getInfo();
       navigation.setOptions({
         header: props => (
           <View style={styles.header}>
@@ -54,17 +66,122 @@ export default function MsgDetail({navigation, route}:MsgDetailScreenProps) {
                 <SvgXml width={24} height={24} xml={svgXml.icon.goBack} />
               </Pressable>
               <Pressable style={styles.headerProfileView}>
-                <SvgXml width={32} height={32} xml={svgXml.profile.null} />
-                <Text style={styles.headerProfileTxt}>김영서</Text>
-                <SvgXml width={18} height={18} xml={svgXml.status.vacation} />
+                <Pressable style={styles.friendProfileImg}>
+                  {yourProfileImageUrl == null ? (
+                    <SvgXml width={32} height={32} xml={svgXml.profile.null} />
+                  ) : (
+                    <Image
+                      source={{uri: yourProfileImageUrl}}
+                      style={{width: 32, height: 32, borderRadius: 16}}
+                    />
+                  )}
+                </Pressable>
+                <Text style={styles.headerProfileTxt}>{yourName}</Text>
+                {yourStatus == 'work'.toUpperCase() && (
+                  <SvgXml width={statusSizeTxt} height={statusSize} xml={svgXml.status.workWide} />
+                )}
+                {yourStatus == 'study'.toUpperCase() && (
+                  <SvgXml width={statusSizeTxt} height={statusSize} xml={svgXml.status.studyWide} />
+                )}
+                {yourStatus == 'transport'.toUpperCase() && (
+                  <SvgXml width={statusSizeTxt} height={statusSize} xml={svgXml.status.transportWide} />
+                )}
+                {yourStatus == 'eat'.toUpperCase() && (
+                  <SvgXml width={statusSizeTxt} height={statusSize} xml={svgXml.status.eatWide} />
+                )}
+                {yourStatus == 'workout'.toUpperCase() && (
+                  <SvgXml
+                    width={statusSizeTxt}
+                    height={statusSize}
+                    xml={svgXml.status.workoutWide}
+                  />
+                )}
+                {yourStatus == 'walk'.toUpperCase() && (
+                  <SvgXml width={statusSizeTxt} height={statusSize} xml={svgXml.status.walkWide} />
+                )}
+                {yourStatus == 'sleep'.toUpperCase() && (
+                  <SvgXml width={statusSizeTxt} height={statusSize} xml={svgXml.status.sleepWide} />
+                )}
+                {yourStatus == 'smile'.toUpperCase() && (
+                  <SvgXml width={statusSize} height={statusSize} xml={svgXml.status.smile} />
+                )}
+                {yourStatus == 'happy'.toUpperCase() && (
+                  <SvgXml width={statusSize} height={statusSize} xml={svgXml.status.happy} />
+                )}
+                {yourStatus == 'sad'.toUpperCase() && (
+                  <SvgXml width={statusSize} height={statusSize} xml={svgXml.status.sad} />
+                )}
+                {yourStatus == 'mad'.toUpperCase() && (
+                  <SvgXml width={statusSize} height={statusSize} xml={svgXml.status.mad} />
+                )}
+                {yourStatus == 'panic'.toUpperCase() && (
+                  <SvgXml width={statusSize} height={statusSize} xml={svgXml.status.panic} />
+                )}
+                {yourStatus == 'exhausted'.toUpperCase() && (
+                  <SvgXml width={statusSize} height={statusSize} xml={svgXml.status.exhausted} />
+                )}
+                {yourStatus == 'excited'.toUpperCase() && (
+                  <SvgXml width={statusSize} height={statusSize} xml={svgXml.status.excited} />
+                )}
+                {yourStatus == 'sick'.toUpperCase() && (
+                  <SvgXml width={statusSize} height={statusSize} xml={svgXml.status.sick} />
+                )}
+                {yourStatus == 'vacation'.toUpperCase() && (
+                  <SvgXml width={statusSize} height={statusSize} xml={svgXml.status.vacation} />
+                )}
+                {yourStatus == 'date'.toUpperCase() && (
+                  <SvgXml width={statusSize} height={statusSize} xml={svgXml.status.date} />
+                )}
+                {yourStatus == 'computer'.toUpperCase() && (
+                  <SvgXml width={statusSize} height={statusSize} xml={svgXml.status.computer} />
+                )}
+                {yourStatus == 'cafe'.toUpperCase() && (
+                  <SvgXml width={statusSize} height={statusSize} xml={svgXml.status.cafe} />
+                )}
+                {yourStatus == 'movie'.toUpperCase() && (
+                  <SvgXml width={statusSize} height={statusSize} xml={svgXml.status.movie} />
+                )}
+                {yourStatus == 'read'.toUpperCase() && (
+                  <SvgXml width={statusSize} height={statusSize} xml={svgXml.status.read} />
+                )}
+                {yourStatus == 'alcohol'.toUpperCase() && (
+                  <SvgXml width={statusSize} height={statusSize} xml={svgXml.status.alcohol} />
+                )}
+                {yourStatus == 'music'.toUpperCase() && (
+                  <SvgXml width={statusSize} height={statusSize} xml={svgXml.status.music} />
+                )}
+                {yourStatus == 'birthday'.toUpperCase() && (
+                  <SvgXml width={statusSize} height={statusSize} xml={svgXml.status.birthday} />
+                )}
               </Pressable>
             </View>
             <Pressable><Text style={styles.headerRightTxt}>나가기</Text></Pressable>
           </View>
         ),
       });
-    }, []),
+    }, [yourName, yourAccountId, yourProfileImageUrl, yourStatus]),
   );
+
+  const getInfo = async () => {
+    try {
+      const response = await axios.get(`${Config.API_URL}/rooms/${route.params.roomId}/info`);
+      setYourName(response.data.data.nickname);
+      setYourStatus(response.data.data.status);
+      setYourProfileImageUrl(response.data.data.profileImageUrl);
+      setYourAccountId(response.data.data.accountId);
+      console.log(response.data.data)
+    } catch (error) {
+      const errorResponse = (error as AxiosError<{message: string}>).response;
+      console.log(errorResponse?.data);
+      if (errorResponse?.data.status == 500) {
+        dispatch(
+          userSlice.actions.setToken({
+            accessToken: '',
+          }),
+        );
+      }
+    }
+  };
 
   // useFocusEffect(
   //   useCallback(() => {
