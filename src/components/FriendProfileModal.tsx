@@ -55,9 +55,9 @@ export default function FriendProfileModal(props: ProfileProps) {
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
   useEffect(() => {
-    setTimeout(() => {
-      getProfile();
-    }, 1000);
+    // setTimeout(() => {
+    // }, 1000);
+    getProfile();
   }, [friendshipRelation, name]);
 
   const getProfile = async () => {
