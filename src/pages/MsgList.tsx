@@ -25,7 +25,7 @@ type itemProps = {
   };
 };
 
-type MsgListScreenProps = NativeStackScreenProps<NoteStackParamList, 'MsgList'>;
+type MsgListScreenProps = NativeStackScreenProps<RootStackParamList, 'MsgList'>;
 
 export default function MsgList({navigation, route}: MsgListScreenProps) {
   const [empty, setEmpty] = useState(false);
@@ -47,6 +47,7 @@ export default function MsgList({navigation, route}: MsgListScreenProps) {
         // setIsLast(response.data.data.last);
         // setMsgData(response.data.data.content);
         setMsgData(response.data.data);
+        setEmpty(false);
         // setCursorId(
         //   response.data.data.content[response.data.data.content.length - 1]
         //     .messageBoxId,
@@ -64,43 +65,41 @@ export default function MsgList({navigation, route}: MsgListScreenProps) {
       }
     }
   };
-  // useEffect(()=>{
-  //   getNoteContent();
-  // },[]);
-  const getData = async () => {
-    if (!isLast) {
-      setLoading(true);
-      try {
-        const response = await axios.get(
-          `${Config.API_URL}/rooms?cursorId=${cursorId}`,
-        );
-        setIsLast(response.data.data.last);
-        setMsgData(msgData.concat(response.data.data.content));
-        if (response.data.data.content.length != 0) {
-          setCursorId(
-            response.data.data.content[response.data.data.content.length - 1]
-              .messageBoxId,
-          );
-        }
-      } catch (error) {
-        const errorResponse = (error as AxiosError<{message: string}>).response;
-        console.log(errorResponse.data);
-      }
-    }
-    setLoading(false);
-  };
-  const onEndReached = () => {
-    if (!loading) {
-      getData();
-    }
-  };
 
-  useFocusEffect(
-    useCallback(() => {
-      console.log('roomList');
+  useEffect(() => {
+    const focus = navigation.addListener('focus', () => {
       getNoteContent();
-    }, []),
-  );
+      console.log('focused');
+    });
+  }, []);
+
+  // const getData = async () => {
+  //   if (!isLast) {
+  //     setLoading(true);
+  //     try {
+  //       const response = await axios.get(
+  //         `${Config.API_URL}/rooms?cursorId=${cursorId}`,
+  //       );
+  //       setIsLast(response.data.data.last);
+  //       setMsgData(msgData.concat(response.data.data.content));
+  //       if (response.data.data.content.length != 0) {
+  //         setCursorId(
+  //           response.data.data.content[response.data.data.content.length - 1]
+  //             .messageBoxId,
+  //         );
+  //       }
+  //     } catch (error) {
+  //       const errorResponse = (error as AxiosError<{message: string}>).response;
+  //       console.log(errorResponse.data);
+  //     }
+  //   }
+  //   setLoading(false);
+  // };
+  // const onEndReached = () => {
+  //   if (!loading) {
+  //     getData();
+  //   }
+  // };
 
   return (
     <View style={styles.entire}>
@@ -114,17 +113,20 @@ export default function MsgList({navigation, route}: MsgListScreenProps) {
       {empty && <View style={styles.emptyViewDown}></View>}
       {!empty && (
         <FlatList
-          data={msgData}
+          data={msgData.filter(element => element !== undefined)}
           style={styles.messageView}
-          onEndReached={onEndReached}
-          onEndReachedThreshold={0.4}
+          // onEndReached={onEndReached}
+          // onEndReachedThreshold={0.4}
           renderItem={({item}: itemProps) => {
-            const newmsg = item.unreadCount != 0;
+            // console.log(item, index);
+            console.log(msgData);
+            // const newmsg = item.unreadCount != 0;
+            // if (item != undefined)
             return (
               <Pressable
                 style={[
                   styles.eachMsg,
-                  newmsg && {backgroundColor: '#A55FFF4D'},
+                  item.unreadCount != 0 && {backgroundColor: '#A55FFF4D'},
                 ]}
                 onPress={() => {
                   navigation.navigate('MsgDetail', {roomId: item.roomId});
@@ -149,7 +151,9 @@ export default function MsgList({navigation, route}: MsgListScreenProps) {
                     )}
                     <Text
                       style={
-                        newmsg ? styles.profileTxtBold : styles.profileTxt
+                        item.unreadCount != 0
+                          ? styles.profileTxtBold
+                          : styles.profileTxt
                       }>
                       {item.nickname}
                     </Text>
@@ -161,10 +165,14 @@ export default function MsgList({navigation, route}: MsgListScreenProps) {
                   </Pressable>
                   <Text
                     numberOfLines={1}
-                    style={newmsg ? styles.msgContentBold : styles.msgContent}>
+                    style={
+                      item.unreadCount != 0
+                        ? styles.msgContentBold
+                        : styles.msgContent
+                    }>
                     {item.content}
                   </Text>
-                  {newmsg && (
+                  {item.unreadCount != 0 && (
                     <View style={styles.msgCnt}>
                       <Text style={styles.msgCntTxt}>{item.unreadCount}</Text>
                     </View>
@@ -172,7 +180,11 @@ export default function MsgList({navigation, route}: MsgListScreenProps) {
                 </Pressable>
                 <View style={styles.subView}>
                   <Text
-                    style={newmsg ? styles.createdAtBold : styles.createdAt}>
+                    style={
+                      item.unreadCount != 0
+                        ? styles.createdAtBold
+                        : styles.createdAt
+                    }>
                     {item.messageCreatedAt}
                   </Text>
                 </View>
@@ -254,12 +266,10 @@ const styles = StyleSheet.create({
     color: '#888888',
     fontSize: 15,
     fontWeight: '500',
-    // maxWidth: 160,
   },
   msgContentBold: {
     color: '#F0F0F0',
     fontSize: 15,
-    // maxWidth: 160,
     fontWeight: '600',
   },
   subView: {

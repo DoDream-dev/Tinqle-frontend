@@ -317,6 +317,7 @@ export default function MsgDetail({navigation, route}: MsgDetailScreenProps) {
       const response = await axios.get(
         `${Config.API_URL}/rooms/${route.params.roomId}`,
       );
+      console.log(response.data);
       setIsLast(response.data.data.last);
       setMsgData(response.data.data.content);
       if (response.data.data.content.length != 0) {
@@ -426,7 +427,7 @@ export default function MsgDetail({navigation, route}: MsgDetailScreenProps) {
         'hardwareBackPress',
         () => {
           console.log('unfocused');
-          navigation.goBack();
+          navigation.pop();
           // clientData.reconnectDelay = 0;
           client.current?.forceDisconnect();
           // sub.current?.unsubscribe();
@@ -471,6 +472,11 @@ export default function MsgDetail({navigation, route}: MsgDetailScreenProps) {
         if (message.body) {
           let msg = JSON.parse(message.body);
           console.log(msg);
+          console.log(msg.messageResponse);
+          // setMsgData(prev => {
+          //   return [msg.mssageResponse, ...prev];
+          // });
+          if (msg.messageResponse) getMessage();
         }
       };
       // client.current.onConnect =

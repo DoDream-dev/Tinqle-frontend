@@ -8,8 +8,8 @@ import MsgList from "../pages/MsgList";
 import MsgDetail from "../pages/MsgDetail";
 
 export type NoteStackParamList = {
-  MsgList: undefined;
-  MsgDetail: {roomId:number};
+  MsgList: {roomId: number};
+  MsgDetail: {roomId: number};
 };
 
 export type NoteStackNavigationProps = NativeStackNavigationProp<NoteStackParamList>;

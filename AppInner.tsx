@@ -53,7 +53,7 @@ export type RootStackParamList = {
   MyProfile: undefined;
   // MyFriendList: undefined;
   SearchFriends: undefined;
-  MsgList: undefined;
+  MsgList: {roomId: number};
   MsgDetail: undefined;
   NoteNavigation: undefined;
   // Setting: undefined;
@@ -91,6 +91,7 @@ export default function AppInner() {
     (state: RootState) => !!state.user.accessToken,
   );
   const [updateModal, setUpdateModal] = useState(false);
+  const [newChat, setNewChat] = useState(1);
 
   useEffect(() => {
     SplashScreen.hide();
@@ -259,16 +260,40 @@ export default function AppInner() {
                   color: string;
                   size: number;
                 }) => (
-                  <SvgXml
-                    color={'#A55FFF'}
-                    width={28}
-                    height={28}
-                    xml={
-                      props.focused
-                        ? svgXml.bottomTab.talkColor
-                        : svgXml.bottomTab.talk
-                    }
-                  />
+                  <View>
+                    {newChat != 0 && (
+                      <View
+                        style={{
+                          position: 'absolute',
+                          right: -(5 + 5 * newChat.toString().length),
+                          top: -10,
+                          paddingVertical: 2,
+                          paddingHorizontal: 6,
+                          borderRadius: 20,
+                          zIndex: 1,
+                          backgroundColor: '#A55FFF',
+                        }}>
+                        <Text
+                          style={{
+                            color: '#F0F0F0',
+                            fontSize: 13,
+                            fontWeight: '500',
+                          }}>
+                          {newChat}
+                        </Text>
+                      </View>
+                    )}
+                    <SvgXml
+                      color={'#A55FFF'}
+                      width={28}
+                      height={28}
+                      xml={
+                        props.focused
+                          ? svgXml.bottomTab.talkColor
+                          : svgXml.bottomTab.talk
+                      }
+                    />
+                  </View>
                 ),
               }}
             />
