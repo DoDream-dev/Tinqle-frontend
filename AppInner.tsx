@@ -141,6 +141,21 @@ export default function AppInner() {
     getRefreshTokenAgain();
   }, [dispatch, isLoggedIn]);
 
+  useEffect(() => {
+    try {
+      const getUnReadMsgCnt = async () => {
+        const response = await axios.get(`${Config.API_URL}/messages/count`);
+        setNewChat(response.data.data.count);
+      };
+      getUnReadMsgCnt();
+    } catch (error) {
+      const errorResponse = (error as AxiosError<{message: string}>).response;
+      if (errorResponse?.data.statusCode == 1070) {
+        console.log('reLogin');
+      }
+    }
+  }, []);
+
   // useEffect(() => {
   //   // const unsubscribe = messaging().onMessage(async remoteMessage => {
   //   //   Alert.alert('alarm', JSON.stringify(remoteMessage));

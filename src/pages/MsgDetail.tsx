@@ -43,11 +43,13 @@ export default function MsgDetail({navigation, route}: MsgDetailScreenProps) {
   const [KBsize, setKBsize] = useState(0);
   const [onFocus, setOnFocus] = useState(false);
   const [uploadBtnLoading, setUploadBtnLoading] = useState(false);
-
+  
+  const [myAccountId, setMyAccountId] = useState(0);
   const [yourName, setYourName] = useState('');
   const [yourStatus, setYourStatus] = useState('');
   const [yourAccountId, setYourAccountId] = useState(0);
   const [yourProfileImageUrl, setYourProfileImageUrl] = useState(null);
+  const [friendshipRelation, setFriendshipRelation] = useState('');
   const [showWhoseModal, setShowWhoseModal] = useState(0);
 
   const [isLast, setIsLast] = useState(false);
@@ -294,11 +296,17 @@ export default function MsgDetail({navigation, route}: MsgDetailScreenProps) {
       const response = await axios.get(
         `${Config.API_URL}/rooms/${route.params.roomId}/info`,
       );
-      setYourName(response.data.data.nickname);
-      setYourStatus(response.data.data.status);
-      setYourProfileImageUrl(response.data.data.profileImageUrl);
-      setYourAccountId(response.data.data.accountId);
-      // console.log(response.data.data);
+      setMyAccountId(response.data.data.accountId);
+      setFriendshipRelation(
+        response.data.data.othersAccountInfoResponse.friendshipRelation,
+      );
+      setYourName(response.data.data.othersAccountInfoResponse.nickname);
+      setYourStatus(response.data.data.othersAccountInfoResponse.status);
+      setYourProfileImageUrl(
+        response.data.data.othersAccountInfoResponse.profileImageUrl,
+      );
+      setYourAccountId(response.data.data.othersAccountInfoResponse.accountId);
+      console.log(response.data.data);
     } catch (error) {
       const errorResponse = (error as AxiosError<{message: string}>).response;
       console.log(errorResponse?.data);
@@ -387,6 +395,7 @@ export default function MsgDetail({navigation, route}: MsgDetailScreenProps) {
 
   useFocusEffect(
     useCallback(() => {
+      // if (friendshipRelation != 'true') return;
       // const socket = new SockJS('https://tincle.store/connection');
 
       // client.current = StompJs.Stomp.over(function () {
@@ -427,7 +436,7 @@ export default function MsgDetail({navigation, route}: MsgDetailScreenProps) {
         'hardwareBackPress',
         () => {
           console.log('unfocused');
-          navigation.pop();
+          navigation.goBack();
           // clientData.reconnectDelay = 0;
           client.current?.forceDisconnect();
           // sub.current?.unsubscribe();
@@ -498,7 +507,7 @@ export default function MsgDetail({navigation, route}: MsgDetailScreenProps) {
             Authorization: `Bearer ${accessToken}`,
           },
           body: JSON.stringify({
-            accountId: yourAccountId,
+            accountId: myAccountId,
             content: msgContent,
           }),
         });
@@ -554,7 +563,7 @@ export default function MsgDetail({navigation, route}: MsgDetailScreenProps) {
           data={msgData}
           style={{
             width: '100%',
-            marginBottom: Math.min(80, Math.max(40, KBsize)) + 10,
+            marginBottom: Math.min(80, Math.max(40, KBsize)) + 15,
           }}
           ref={flatListRef}
           onEndReached={onEndReached}
@@ -600,15 +609,15 @@ export default function MsgDetail({navigation, route}: MsgDetailScreenProps) {
             }
             return (
               <View>
-                {/* {index != 0 &&
-                msgData[index - 1].createdAt.split(' ')[0] !=
-                  item.createdAt.split(' ')[0] && (
-                  <View style={styles.nextDayView}>
-                    <Text style={styles.nextDayTxt}>
-                      {formatDateWithDay(item.createdAt)}
-                    </Text>
-                  </View>
-                )} */}
+                {index != msgData.length - 1 &&
+                  msgData[index + 1].createdAt.split(' ')[0] !=
+                    item.createdAt.split(' ')[0] && (
+                    <View style={styles.nextDayView}>
+                      <Text style={styles.nextDayTxt}>
+                        {formatDateWithDay(item.createdAt)}
+                      </Text>
+                    </View>
+                  )}
                 {index == msgData.length - 1 && (
                   <View style={styles.nextDayView}>
                     <Text style={styles.nextDayTxt}>
@@ -646,6 +655,7 @@ export default function MsgDetail({navigation, route}: MsgDetailScreenProps) {
       <View style={styles.newMsgView}>
         <View style={styles.newMsgInputContain}>
           <TextInput
+            editable={friendshipRelation == 'true'}
             onFocus={() => {
               setOnFocus(true);
               // const delayedScroll = () => {
@@ -663,7 +673,11 @@ export default function MsgDetail({navigation, route}: MsgDetailScreenProps) {
               // Cleanup the timeout to avoid memory leaks
               // return () => clearTimeout(timeoutId);
             }}
-            placeholder={placeholder}
+            placeholder={
+              friendshipRelation == 'true'
+                ? placeholder
+                : '더 이상 대화를 할 수 없어요.'
+            }
             placeholderTextColor={'#888888'}
             style={[
               styles.newMsgTxtInput,
