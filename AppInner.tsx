@@ -91,12 +91,13 @@ export default function AppInner() {
     (state: RootState) => !!state.user.accessToken,
   );
   const [updateModal, setUpdateModal] = useState(false);
-  const [newChat, setNewChat] = useState(1);
+  const [newChat, setNewChat] = useState(0);
 
   useEffect(() => {
     SplashScreen.hide();
 
     checkVersion();
+    getUnReadMsgCnt();
   }, []);
 
   useEffect(() => {
@@ -141,20 +142,18 @@ export default function AppInner() {
     getRefreshTokenAgain();
   }, [dispatch, isLoggedIn]);
 
-  useEffect(() => {
+  const getUnReadMsgCnt = async () => {
     try {
-      const getUnReadMsgCnt = async () => {
-        const response = await axios.get(`${Config.API_URL}/messages/count`);
-        setNewChat(response.data.data.count);
-      };
-      getUnReadMsgCnt();
+      const response = await axios.get(`${Config.API_URL}/messages/count`);
+      setNewChat(response.data.data.count);
+      console.log(response.data.data);
     } catch (error) {
       const errorResponse = (error as AxiosError<{message: string}>).response;
       if (errorResponse?.data.statusCode == 1070) {
         console.log('reLogin');
       }
     }
-  }, []);
+  };
 
   // useEffect(() => {
   //   // const unsubscribe = messaging().onMessage(async remoteMessage => {
