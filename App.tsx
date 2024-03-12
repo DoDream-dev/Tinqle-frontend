@@ -335,10 +335,11 @@ export default function App() {
 
   useEffect(() => {
     const handleConnectivityChange = newState => {
-      if (newState.isConnected) {
-        setNetwork(true);
-      } else {
+      console.log('### : ', newState);
+      if (!newState.isConnected || !newState.isInternetReachable) {
         setNetwork(false);
+      } else {
+        setNetwork(true);
       }
     };
     handleConnectivityChange(netInfo);
