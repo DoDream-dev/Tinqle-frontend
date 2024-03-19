@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {View, Text, StyleSheet, FlatList, Pressable, Image} from 'react-native';
 import axios, {AxiosError} from 'axios';
 import Config from 'react-native-config';
@@ -148,7 +148,7 @@ export default function MsgList({navigation, route}: MsgListScreenProps) {
                 onPress={() => {
                   navigation.navigate('MsgDetail', {roomId: item.roomId});
                 }}>
-                <Pressable style={styles.mainView}>
+                <View style={styles.mainView}>
                   <Pressable
                     style={styles.profileView}
                     onPress={() => {
@@ -194,7 +194,7 @@ export default function MsgList({navigation, route}: MsgListScreenProps) {
                       <Text style={styles.msgCntTxt}>{item.unreadCount}</Text>
                     </View>
                   )}
-                </Pressable>
+                </View>
                 <View style={styles.subView}>
                   <Text
                     style={
