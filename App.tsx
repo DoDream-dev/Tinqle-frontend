@@ -252,7 +252,7 @@ export default function App() {
       PushNotification.configure({
         onNotification: function (notification) {
           if (notification.userInteraction) {
-            if (notification.bigText.includes('메세지를')) {
+            if (notification.bigText.includes('님이 메세지를 보냈어요')) {
               navigation.navigate('NoteNavigation');
             } else {
               navigation.navigate('Notis');
