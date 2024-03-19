@@ -86,12 +86,6 @@ const screenoptions = () => {
 const Stack = createNativeStackNavigator<RootStackParamList>();
 const Tab = createBottomTabNavigator();
 
-const onOpenNotification = (notify: any) => {
-  //앱 켜진 상태에서 알림 받았을 때 하는 일
-  console.log('&&&앱 켜졌을 때 알림 도착&&&:', notify);
-
-  // TODO: 리덕스 업데이트
-};
 const onNotification = (notify: any) => {};
 const onRegister = (tk: string) => {};
 
@@ -104,6 +98,14 @@ export default function AppInner() {
   const [updateModal, setUpdateModal] = useState(false);
   // const [newChat, setNewChat] = useState(0);
   const newChat = useSelector((state: RootState) => state.user.msgCnt);
+
+  const onOpenNotification = (notify: any) => {
+    //앱 켜진 상태에서 알림 받았을 때 하는 일
+    console.log('&&&앱 켜졌을 때 알림 도착&&&:', notify);
+
+    // TODO: 리덕스 업데이트
+    getUnReadMsgCnt();
+  };
 
   useEffect(() => {
     fcmService.register(onRegister, onNotification, onOpenNotification);
