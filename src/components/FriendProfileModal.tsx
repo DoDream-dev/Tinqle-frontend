@@ -55,9 +55,9 @@ export default function FriendProfileModal(props: ProfileProps) {
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
   useEffect(() => {
-    setTimeout(() => {
-      getProfile();
-    }, 1000);
+    // setTimeout(() => {
+    // }, 1000);
+    getProfile();
   }, [friendshipRelation, name]);
 
   const getProfile = async () => {
@@ -217,11 +217,13 @@ export default function FriendProfileModal(props: ProfileProps) {
       });
       console.log(response.data);
       setShowWhoseModal(0);
-      navigation.navigate('NoteNavigation', {screen: 'MsgList'});
-      navigation.navigate('NoteNavigation', {
-        screen: 'MsgDetail',
-        params: {roomId: response.data.data.roomId},
-      });
+      navigation.navigate('MsgList', {roomId: response.data.data.roomId});
+      navigation.navigate('MsgDetail', {roomId: response.data.data.roomId});
+      // navigation.navigate('NoteNavigation', {screen: 'MsgList'});
+      // navigation.navigate('NoteNavigation', {
+      // screen: 'MsgDetail',
+      // params: {roomId: response.data.data.roomId},
+      // });
     } catch (error) {
       const errorResponse = (error as AxiosError<{message: string}>).response;
       console.log(errorResponse.data);

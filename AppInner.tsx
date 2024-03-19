@@ -53,8 +53,8 @@ export type RootStackParamList = {
   MyProfile: undefined;
   // MyFriendList: undefined;
   SearchFriends: undefined;
-  MsgList: undefined;
-  MsgDetail: undefined;
+  MsgList: {roomId: number};
+  MsgDetail: {roomId: number};
   NoteNavigation: undefined;
   // Setting: undefined;
   Notis: undefined;
@@ -91,12 +91,18 @@ export default function AppInner() {
     (state: RootState) => !!state.user.accessToken,
   );
   const [updateModal, setUpdateModal] = useState(false);
+  // const [newChat, setNewChat] = useState(0);
+  const newChat = useSelector((state: RootState) => state.user.msgCnt);
 
   useEffect(() => {
     SplashScreen.hide();
 
     checkVersion();
   }, []);
+
+  useEffect(() => {
+    getUnReadMsgCnt();
+  }, [isLoggedIn]);
 
   useEffect(() => {
     console.log('refreshToken use!!');
@@ -139,6 +145,24 @@ export default function AppInner() {
     };
     getRefreshTokenAgain();
   }, [dispatch, isLoggedIn]);
+
+  const getUnReadMsgCnt = async () => {
+    try {
+      const response = await axios.get(`${Config.API_URL}/messages/count`);
+      // setNewChat(response.data.data.count);
+      dispatch(
+        userSlice.actions.setMsg({
+          msgCnt: response.data.data.count,
+        }),
+      );
+      console.log(response.data.data);
+    } catch (error) {
+      const errorResponse = (error as AxiosError<{message: string}>).response;
+      if (errorResponse?.data.statusCode == 1070) {
+        console.log('reLogin');
+      }
+    }
+  };
 
   // useEffect(() => {
   //   // const unsubscribe = messaging().onMessage(async remoteMessage => {
@@ -259,16 +283,40 @@ export default function AppInner() {
                   color: string;
                   size: number;
                 }) => (
-                  <SvgXml
-                    color={'#A55FFF'}
-                    width={28}
-                    height={28}
-                    xml={
-                      props.focused
-                        ? svgXml.bottomTab.talkColor
-                        : svgXml.bottomTab.talk
-                    }
-                  />
+                  <View>
+                    {newChat != 0 && (
+                      <View
+                        style={{
+                          position: 'absolute',
+                          right: -(5 + 5 * newChat.toString().length),
+                          top: -10,
+                          paddingVertical: 2,
+                          paddingHorizontal: 6,
+                          borderRadius: 20,
+                          zIndex: 1,
+                          backgroundColor: '#A55FFF',
+                        }}>
+                        <Text
+                          style={{
+                            color: '#F0F0F0',
+                            fontSize: 13,
+                            fontWeight: '500',
+                          }}>
+                          {newChat}
+                        </Text>
+                      </View>
+                    )}
+                    <SvgXml
+                      color={'#A55FFF'}
+                      width={28}
+                      height={28}
+                      xml={
+                        props.focused
+                          ? svgXml.bottomTab.talkColor
+                          : svgXml.bottomTab.talk
+                      }
+                    />
+                  </View>
                 ),
               }}
             />

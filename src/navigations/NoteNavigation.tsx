@@ -8,8 +8,8 @@ import MsgList from "../pages/MsgList";
 import MsgDetail from "../pages/MsgDetail";
 
 export type NoteStackParamList = {
-  MsgList: undefined;
-  MsgDetail: {roomId:number};
+  MsgList: {roomId: number};
+  MsgDetail: {roomId: number};
 };
 
 export type NoteStackNavigationProps = NativeStackNavigationProp<NoteStackParamList>;
@@ -41,8 +41,8 @@ export default function NoteNavigation() {
   //   AppState.addEventListener('change', handleAppStateChange);
   // }, []);
   return (
-    <Stack.Navigator>
-      <Stack.Screen 
+    <Stack.Navigator initialRouteName="MsgList">
+      <Stack.Screen
         name="MsgList"
         component={MsgList}
         options={({navigation}) => ({
@@ -59,7 +59,7 @@ export default function NoteNavigation() {
           headerShadowVisible: false,
         })}
       />
-      <Stack.Screen 
+      <Stack.Screen
         name="MsgDetail"
         component={MsgDetail}
         options={({navigation}) => ({

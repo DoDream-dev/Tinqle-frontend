@@ -142,8 +142,8 @@ export default function SearchFriends() {
       const response = await axios.get(
         `${Config.API_URL}/accounts/search?keyword=${searchCode}`,
       );
-      console.log(response.data.data.equalKeywordAccount);
-      console.log(response.data.data.containKeywordAccounts);
+      // console.log(response.data.data.equalKeywordAccount);
+      // console.log(response.data.data.containKeywordAccounts);
       // let friendData;
       setIsLast(response.data.data.containKeywordAccounts.content.last);
       // console.log(response.data.data);
@@ -378,7 +378,7 @@ export default function SearchFriends() {
 
   const deleteFriends = async () => {
     try {
-      console.log(deleteFriend);
+      // console.log(deleteFriend);
       const response = await axios.delete(
         `${Config.API_URL}/friendships/${deleteFriend}`,
       );
@@ -388,7 +388,7 @@ export default function SearchFriends() {
       // setPopupName(name);
       setDeleteFriend(-1);
       setReset(!reset);
-      console.log(response.data);
+      // console.log(response.data);
     } catch (error) {
       const errorResponse = (error as AxiosError<{message: string}>).response;
       console.log(errorResponse.data);
