@@ -101,9 +101,9 @@ export default function App() {
       } else if (type == 'CREATE_KNOCK_FEED') {
         navigation.navigate('FeedDetail', {feedId: redirectTargetId});
       } else if (type == 'CREATE_MESSAGE') {
-        // console.log('%%%%');
-        navigation.navigate('NoteNavigation').then(() => {
-          navigation.navigate('MsgDetail', {roomId: redirectTargetId});
+        navigation.navigate('NoteNavigation', {
+          screen: 'MsgDetail',
+          params: {roomId: redirectTargetId},
         });
       }
 
@@ -252,7 +252,11 @@ export default function App() {
       PushNotification.configure({
         onNotification: function (notification) {
           if (notification.userInteraction) {
-            navigation.navigate('Notis');
+            if (notification.bigText.includes('메세지를')) {
+              navigation.navigate('NoteNavigation');
+            } else {
+              navigation.navigate('Notis');
+            }
           }
         },
       });

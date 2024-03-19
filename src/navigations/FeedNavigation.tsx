@@ -178,6 +178,11 @@ export default function FeedNavigation() {
       navigation.navigate('FeedDetail', {feedId: redirectTargetId});
     } else if (type == 'CREATE_KNOCK_FEED') {
       navigation.navigate('FeedDetail', {feedId: redirectTargetId});
+    } else if (type == 'CREATE_MESSAGE') {
+      navigation.navigate('NoteNavigation', {
+        screen: 'MsgDetail',
+        params: {roomId: redirectTargetId},
+      });
     }
   };
 
