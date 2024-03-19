@@ -1,5 +1,17 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { View, Text, StyleSheet, FlatList, Pressable, TextInput, Platform, Keyboard, BackHandler, Image } from 'react-native';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  FlatList,
+  Pressable,
+  TextInput,
+  Platform,
+  Keyboard,
+  BackHandler,
+  Image,
+  KeyboardAvoidingView,
+} from 'react-native';
 import axios, {AxiosError} from 'axios';
 import Config from 'react-native-config';
 import userSlice from '../slices/user';
@@ -16,6 +28,7 @@ import * as StompJs from '@stomp/stompjs';
 import TextEncodingPolyfill from 'text-encoding';
 import SockJS from 'sockjs-client';
 import FriendProfileModal from '../components/FriendProfileModal';
+import {Safe, StatusBarHeight} from '../components/Safe';
 
 type itemProps = {
   item: {
@@ -43,7 +56,7 @@ export default function MsgDetail({navigation, route}: MsgDetailScreenProps) {
   const [KBsize, setKBsize] = useState(0);
   const [onFocus, setOnFocus] = useState(false);
   const [uploadBtnLoading, setUploadBtnLoading] = useState(false);
-  
+
   const [myAccountId, setMyAccountId] = useState(0);
   const [yourName, setYourName] = useState('');
   const [yourStatus, setYourStatus] = useState('');
@@ -573,198 +586,205 @@ export default function MsgDetail({navigation, route}: MsgDetailScreenProps) {
     inputRef.current?.blur();
   };
 
-  // const data=[
-  //   {isAuthor:false, content:'넵', createdAt:'2024-02-27T13:10:00.065Z'},
-  //   {isAuthor:false, content:'아연님 디자인 좀 빨리 하시죠.', createdAt:'2024-02-28T13:10:30.065Z'},
-  //   {isAuthor:true, content:'제가 릴스를 보겠다는데 왜 방해합니까?', createdAt:'2024-02-28T13:14:30.065Z'},
-  //   {isAuthor:false, content:'제가 개발을 하겠다는데 왜 방해합니까? 승주님도 전력 질주중입니다', createdAt:'2024-02-28T13:14:30.065Z'},
-  //   {isAuthor:true, content:'미안합니다. 정신 차리겠습니다', createdAt:'2024-02-28T13:15:30.065Z'},
-  //   {isAuthor:false, content:'ㅋㅋㅋㅋㅋㅋㅋㅋㅋ알겠습니다', createdAt:'2024-02-28T13:16:30.065Z'},
-  // ];
+
   return (
-    <View style={styles.entire}>
-      <View style={{width: '100%'}}>
-        <FlatList
-          data={msgData}
-          style={{
-            width: '100%',
-            marginBottom: Math.min(80, Math.max(40, KBsize)) + 15,
-          }}
-          ref={flatListRef}
-          onEndReached={onEndReached}
-          onEndReachedThreshold={0.4}
-          // refreshControl={}
-          inverted={true}
-          keyboardShouldPersistTaps={'handled'}
-          renderItem={({item, index}: itemProps) => {
-            function parseDateFromString(inputDate: string) {
-              const parts = inputDate.split(' ');
-              const dateString = parts[0];
-              const timeString = parts[2];
+    <Pressable style={{flex: 1}}>
+      <KeyboardAvoidingView
+        style={{flex: 1, backgroundColor: '#202020'}}
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        keyboardVerticalOffset={StatusBarHeight + 52}>
+        <View style={styles.entire}>
+          <View style={{width: '100%'}}>
+            <FlatList
+              data={msgData}
+              style={{
+                width: '100%',
+                marginBottom: Math.min(80, Math.max(40, KBsize)) + 15,
+              }}
+              ref={flatListRef}
+              onEndReached={onEndReached}
+              onEndReachedThreshold={0.4}
+              // refreshControl={}
+              inverted={true}
+              keyboardShouldPersistTaps={'handled'}
+              renderItem={({item, index}: itemProps) => {
+                function parseDateFromString(inputDate: string) {
+                  const parts = inputDate.split(' ');
+                  const dateString = parts[0];
+                  const timeString = parts[2];
 
-              const dateParts = dateString.split('.');
-              const year = parseInt(dateParts[0]);
-              const month = parseInt(dateParts[1]) - 1; // 월은 0부터 시작하므로 -1 해줌
-              const day = parseInt(dateParts[2]);
+                  const dateParts = dateString.split('.');
+                  const year = parseInt(dateParts[0]);
+                  const month = parseInt(dateParts[1]) - 1; // 월은 0부터 시작하므로 -1 해줌
+                  const day = parseInt(dateParts[2]);
 
-              // const daysOfWeek = ['일', '월', '화', '수', '목', '금', '토'];
-              // const dayOfWeek = daysOfWeek.indexOf(
-              //   parts[2].replace('(', '').replace(')', ''),
-              // );
+                  // const daysOfWeek = ['일', '월', '화', '수', '목', '금', '토'];
+                  // const dayOfWeek = daysOfWeek.indexOf(
+                  //   parts[2].replace('(', '').replace(')', ''),
+                  // );
 
-              const timeParts = timeString.split(':');
-              const hours = parseInt(timeParts[0]);
-              const minutes = parseInt(timeParts[1]);
+                  const timeParts = timeString.split(':');
+                  const hours = parseInt(timeParts[0]);
+                  const minutes = parseInt(timeParts[1]);
 
-              return new Date(year, month, day, hours, minutes);
-            }
+                  return new Date(year, month, day, hours, minutes);
+                }
 
-            function formatDateWithDay(inputDate: string) {
-              const date = parseDateFromString(inputDate);
-              const year = date.getFullYear();
-              const month = date.getMonth() + 1;
-              const day = date.getDate();
-              const dayOfWeek = ['일', '월', '화', '수', '목', '금', '토'][
-                date.getDay()
-              ];
-              const hours = date.getHours().toString().padStart(2, '0');
-              const minutes = date.getMinutes().toString().padStart(2, '0');
+                function formatDateWithDay(inputDate: string) {
+                  const date = parseDateFromString(inputDate);
+                  const year = date.getFullYear();
+                  const month = date.getMonth() + 1;
+                  const day = date.getDate();
+                  const dayOfWeek = ['일', '월', '화', '수', '목', '금', '토'][
+                    date.getDay()
+                  ];
+                  const hours = date.getHours().toString().padStart(2, '0');
+                  const minutes = date.getMinutes().toString().padStart(2, '0');
 
-              return `${month}월 ${day}일 (${dayOfWeek})`;
-            }
-            return (
-              <View>
-                {index != msgData.length - 1 &&
-                  msgData[index + 1].createdAt.split(' ')[0] !=
-                    item.createdAt.split(' ')[0] && (
-                    <View style={styles.nextDayView}>
-                      <Text style={styles.nextDayTxt}>
-                        {formatDateWithDay(item.createdAt)}
-                      </Text>
+                  return `${month}월 ${day}일 (${dayOfWeek})`;
+                }
+                return (
+                  <View>
+                    {index != msgData.length - 1 &&
+                      msgData[index + 1].createdAt.split(' ')[0] !=
+                        item.createdAt.split(' ')[0] && (
+                        <View style={styles.nextDayView}>
+                          <Text style={styles.nextDayTxt}>
+                            {formatDateWithDay(item.createdAt)}
+                          </Text>
+                        </View>
+                      )}
+                    {index == msgData.length - 1 && (
+                      <View style={styles.nextDayView}>
+                        <Text style={styles.nextDayTxt}>
+                          {formatDateWithDay(item.createdAt)}
+                        </Text>
+                      </View>
+                    )}
+                    <View
+                      style={[
+                        styles.eachMsg,
+                        item.isAuthor
+                          ? {justifyContent: 'flex-end'}
+                          : {justifyContent: 'flex-start'},
+                      ]}>
+                      {item.isAuthor && (
+                        <Text style={styles.createdAt}>
+                          {item.createdAt.split(' ')[2]}
+                        </Text>
+                      )}
+                      <View
+                        style={
+                          item.isAuthor ? styles.msgMine : styles.msgNotMine
+                        }>
+                        <Text style={styles.msgTxt}>{item.content}</Text>
+                      </View>
+                      {!item.isAuthor && (
+                        <Text style={styles.createdAt}>
+                          {item.createdAt.split(' ')[2]}
+                        </Text>
+                      )}
                     </View>
-                  )}
-                {index == msgData.length - 1 && (
-                  <View style={styles.nextDayView}>
-                    <Text style={styles.nextDayTxt}>
-                      {formatDateWithDay(item.createdAt)}
-                    </Text>
                   </View>
-                )}
-                <View
-                  style={[
-                    styles.eachMsg,
-                    item.isAuthor
-                      ? {justifyContent: 'flex-end'}
-                      : {justifyContent: 'flex-start'},
-                  ]}>
-                  {item.isAuthor && (
-                    <Text style={styles.createdAt}>
-                      {item.createdAt.split(' ')[2]}
-                    </Text>
-                  )}
-                  <View
-                    style={item.isAuthor ? styles.msgMine : styles.msgNotMine}>
-                    <Text style={styles.msgTxt}>{item.content}</Text>
-                  </View>
-                  {!item.isAuthor && (
-                    <Text style={styles.createdAt}>
-                      {item.createdAt.split(' ')[2]}
-                    </Text>
-                  )}
-                </View>
-              </View>
-            );
-          }}
-        />
-      </View>
-      <View style={styles.newMsgView}>
-        <View style={styles.newMsgInputContain}>
-          <TextInput
-            editable={friendshipRelation == 'true'}
-            onFocus={() => {
-              setOnFocus(true);
-              // const delayedScroll = () => {
-              //   if (index != 0) {
-              //     flatListRef.current.scrollToIndex({
-              //       index: msgData.length - 1,
-              //       animated: true,
-              //     });
-              //   }
-              // };
+                );
+              }}
+            />
+          </View>
+          <View style={styles.newMsgView}>
+            <View style={styles.newMsgInputContain}>
+              <TextInput
+                editable={friendshipRelation == 'true'}
+                onFocus={() => {
+                  setOnFocus(true);
+                  // const delayedScroll = () => {
+                  //   if (index != 0) {
+                  //     flatListRef.current.scrollToIndex({
+                  //       index: msgData.length - 1,
+                  //       animated: true,
+                  //     });
+                  //   }
+                  // };
 
-              // Wait for 1 second (1000 milliseconds) and then execute the scroll
-              // const timeoutId = setTimeout(delayedScroll, 100);
+                  // Wait for 1 second (1000 milliseconds) and then execute the scroll
+                  // const timeoutId = setTimeout(delayedScroll, 100);
 
-              // Cleanup the timeout to avoid memory leaks
-              // return () => clearTimeout(timeoutId);
-            }}
-            placeholder={
-              friendshipRelation == 'true'
-                ? placeholder
-                : '더 이상 대화를 할 수 없어요.'
-            }
-            placeholderTextColor={'#888888'}
-            style={[
-              styles.newMsgTxtInput,
-              {
-                height:
-                  Platform.OS === 'android'
-                    ? Math.min(80, Math.max(40, KBsize))
-                    : undefined,
-              },
-            ]}
-            onBlur={() => {
-              setOnFocus(false);
-            }}
-            onChangeText={(text: string) => {
-              setMsgContent(text);
-            }}
-            blurOnSubmit={false}
-            maxLength={200}
-            value={msgContent}
-            onSubmitEditing={async () => {
-              setUploadBtnLoading(true);
-              sendNewMsg();
-              // Keyboard.dismiss();
-            }}
-            multiline={true}
-            textAlignVertical="center"
-            autoCapitalize="none"
-            autoComplete="off"
-            autoCorrect={false}
-            onContentSizeChange={e => {
-              setKBsize(e.nativeEvent.contentSize.height);
-            }}
-            ref={inputRef}
-            // numberOfLines={4}
+                  // Cleanup the timeout to avoid memory leaks
+                  // return () => clearTimeout(timeoutId);
+                }}
+                placeholder={
+                  friendshipRelation == 'true'
+                    ? placeholder
+                    : '더 이상 대화를 할 수 없어요.'
+                }
+                placeholderTextColor={'#888888'}
+                style={[
+                  styles.newMsgTxtInput,
+                  {
+                    height:
+                      Platform.OS === 'android'
+                        ? Math.min(80, Math.max(40, KBsize))
+                        : undefined,
+                  },
+                ]}
+                onBlur={() => {
+                  setOnFocus(false);
+                }}
+                onChangeText={(text: string) => {
+                  setMsgContent(text);
+                }}
+                blurOnSubmit={false}
+                maxLength={200}
+                value={msgContent}
+                onSubmitEditing={async () => {
+                  setUploadBtnLoading(true);
+                  sendNewMsg();
+                  // Keyboard.dismiss();
+                }}
+                multiline={true}
+                textAlignVertical="center"
+                autoCapitalize="none"
+                autoComplete="off"
+                autoCorrect={false}
+                onContentSizeChange={e => {
+                  setKBsize(e.nativeEvent.contentSize.height);
+                }}
+                ref={inputRef}
+                // numberOfLines={4}
+              />
+            </View>
+            <Pressable
+              style={
+                msgContent.trim() == '' || uploadBtnLoading
+                  ? styles.sendNewMsg
+                  : styles.sendNewMsgActivated
+              }
+              disabled={uploadBtnLoading}
+              onPress={async () => {
+                if (msgContent.trim() != '') {
+                  setUploadBtnLoading(true);
+                  sendNewMsg();
+                } else {
+                  Keyboard.dismiss();
+                }
+              }}>
+              {onFocus && msgContent.trim() == '' ? (
+                <Feather
+                  name="chevron-down"
+                  size={24}
+                  style={{color: 'white'}}
+                />
+              ) : (
+                <Feather name="check" size={24} style={{color: 'white'}} />
+              )}
+            </Pressable>
+          </View>
+          <FriendProfileModal
+            showWhoseModal={showWhoseModal}
+            setShowWhoseModal={setShowWhoseModal}
           />
         </View>
-        <Pressable
-          style={
-            msgContent.trim() == '' || uploadBtnLoading
-              ? styles.sendNewMsg
-              : styles.sendNewMsgActivated
-          }
-          disabled={uploadBtnLoading}
-          onPress={async () => {
-            if (msgContent.trim() != '') {
-              setUploadBtnLoading(true);
-              sendNewMsg();
-            }
-            // Keyboard.dismiss();
-          }}>
-          {onFocus && msgContent.trim() == '' ? (
-            <Feather name="chevron-down" size={24} style={{color: 'white'}} />
-          ) : (
-            <Feather name="check" size={24} style={{color: 'white'}} />
-          )}
-        </Pressable>
-      </View>
-      <FriendProfileModal
-        showWhoseModal={showWhoseModal}
-        setShowWhoseModal={setShowWhoseModal}
-      />
-    </View>
+      </KeyboardAvoidingView>
+    </Pressable>
   );
 }
 
