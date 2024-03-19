@@ -229,8 +229,6 @@ export default function App() {
     //앱 켜진 상태에서 알림 받았을 때 하는 일
     console.log('앱 켜졌을 때 알림 도착:', notify);
 
-    // TODO: 리덕스 업데이트
-
     if (Platform.OS === 'ios') {
       // in app push in ios
       showNotiInApp(notify);
@@ -285,14 +283,6 @@ export default function App() {
   };
 
   useEffect(() => {
-    // const {link = null} = notification?.data || {}; // <---- 1
-    // PushNotification.popInitialNotification(notification => {
-    //   if (notification) {
-    //     const {link = null} = notification?.data || {};
-    //     Linking.openURL(link); // <---- 2
-    //   }
-    // });
-
     fcmService.registerAppWithFCM(); //ios일때 자동으로 가져오도록 하는 코드
     //앱 켜졌을 때 작동부                 여기
     fcmService.register(onRegister, onNotification, onOpenNotification);
