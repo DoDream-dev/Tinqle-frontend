@@ -42,7 +42,9 @@ const useAxiosInterceptor = () => {
               }),
             );
           }
-          const resp = await axios.post(`${Config.API_URL}/auth/reissue`, {refreshToken:refreshToken},);
+          const resp = await axios.post(`${Config.API_URL}/auth/reissue`, {
+            refreshToken: refreshToken,
+          });
           await dispatch(
             userSlice.actions.setToken({
               accessToken: resp.data.data.accessToken,
