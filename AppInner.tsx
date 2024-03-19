@@ -46,6 +46,8 @@ import {Pressable} from 'react-native';
 import Modal from 'react-native-modal';
 import VersionCheck from 'react-native-version-check';
 import {check} from 'react-native-permissions';
+import {fcmService} from './src/push_fcm';
+import {localNotificationService} from './src/push_noti';
 
 export type RootStackParamList = {
   FeedList: undefined;
@@ -84,6 +86,15 @@ const screenoptions = () => {
 const Stack = createNativeStackNavigator<RootStackParamList>();
 const Tab = createBottomTabNavigator();
 
+const onOpenNotification = (notify: any) => {
+  //앱 켜진 상태에서 알림 받았을 때 하는 일
+  console.log('&&&앱 켜졌을 때 알림 도착&&&:', notify);
+
+  // TODO: 리덕스 업데이트
+};
+const onNotification = (notify: any) => {};
+const onRegister = (tk: string) => {};
+
 export default function AppInner() {
   useAxiosInterceptor();
   const dispatch = useAppDispatch();
@@ -93,6 +104,11 @@ export default function AppInner() {
   const [updateModal, setUpdateModal] = useState(false);
   // const [newChat, setNewChat] = useState(0);
   const newChat = useSelector((state: RootState) => state.user.msgCnt);
+
+  useEffect(() => {
+    fcmService.register(onRegister, onNotification, onOpenNotification);
+    localNotificationService.configure(onOpenNotification);
+  }, []);
 
   useEffect(() => {
     SplashScreen.hide();
@@ -163,22 +179,6 @@ export default function AppInner() {
       }
     }
   };
-
-  // useEffect(() => {
-  //   // const unsubscribe = messaging().onMessage(async remoteMessage => {
-  //   //   Alert.alert('alarm', JSON.stringify(remoteMessage));
-  //   //   console.log('new messag arrived:', remoteMessage)
-  //   //   dispatch(
-  //   //     userSlice.actions.setNotis({
-  //   //       notis:true,
-  //   //     }),
-  //   //   );
-  //   // });
-  //   // messaging().onNotificationOpenedApp(remoteMessage => {
-  //   //   console.log('Noti caused app to open from gb state: ', remoteMessage.notification,);
-  //   // // });
-  //   // return unsubscribe;
-  // }, []);
 
   const checkVersion = async () => {
     const currentVersion = await VersionCheck.getCurrentVersion();
