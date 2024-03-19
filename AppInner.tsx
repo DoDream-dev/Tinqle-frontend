@@ -101,7 +101,7 @@ export default function AppInner() {
   }, []);
 
   useEffect(() => {
-    getUnReadMsgCnt();
+    if (isLoggedIn) getUnReadMsgCnt();
   }, [isLoggedIn]);
 
   useEffect(() => {
