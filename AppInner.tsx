@@ -54,7 +54,7 @@ export type RootStackParamList = {
   // MyFriendList: undefined;
   SearchFriends: undefined;
   MsgList: {roomId: number};
-  MsgDetail: undefined;
+  MsgDetail: {roomId: number};
   NoteNavigation: undefined;
   // Setting: undefined;
   Notis: undefined;

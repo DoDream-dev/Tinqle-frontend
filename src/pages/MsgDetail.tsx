@@ -493,6 +493,8 @@ export default function MsgDetail({navigation, route}: MsgDetailScreenProps) {
       // client.
 
       client.current.activate();
+
+      return unsubscribeBACKPREESS.remove();
     }, [navigation]),
   );
 
