@@ -69,10 +69,27 @@ export default function MsgList({navigation, route}: MsgListScreenProps) {
   useEffect(() => {
     const focus = navigation.addListener('focus', () => {
       getNoteContent();
+      getUnReadMsgCnt();
       console.log('focused');
     });
   }, []);
 
+  const getUnReadMsgCnt = async () => {
+    try {
+      const response = await axios.get(`${Config.API_URL}/messages/count`);
+      dispatch(
+        userSlice.actions.setMsg({
+          msgCnt: response.data.data.count,
+        }),
+      );
+      console.log(response.data.data);
+    } catch (error) {
+      const errorResponse = (error as AxiosError<{message: string}>).response;
+      if (errorResponse?.data.statusCode == 1070) {
+        console.log('reLogin');
+      }
+    }
+  };
   // const getData = async () => {
   //   if (!isLast) {
   //     setLoading(true);

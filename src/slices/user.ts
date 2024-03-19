@@ -1,10 +1,11 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-  accessToken:'',
-  id:'',
-  deleted:false,
-  notis:false,
+  accessToken: '',
+  id: '',
+  deleted: false,
+  notis: false,
+  msgCnt: 0,
 };
 
 const userSlice = createSlice({
@@ -23,6 +24,9 @@ const userSlice = createSlice({
     },
     setNotis(state, action) {
       state.notis = action.payload.notis;
+    },
+    setMsg(state, action) {
+      state.msgCnt = action.payload.msgCnt;
     },
   },
   extraReducers: builder => {},

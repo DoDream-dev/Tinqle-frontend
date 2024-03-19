@@ -84,6 +84,24 @@ export default function MsgDetail({navigation, route}: MsgDetailScreenProps) {
       }
     }
   };
+
+  const getUnReadMsgCnt = async () => {
+    try {
+      const response = await axios.get(`${Config.API_URL}/messages/count`);
+      dispatch(
+        userSlice.actions.setMsg({
+          msgCnt: response.data.data.count,
+        }),
+      );
+      console.log(response.data.data);
+    } catch (error) {
+      const errorResponse = (error as AxiosError<{message: string}>).response;
+      if (errorResponse?.data.statusCode == 1070) {
+        console.log('reLogin');
+      }
+    }
+  };
+
   useFocusEffect(
     useCallback(() => {
       getInfo();
@@ -429,6 +447,7 @@ export default function MsgDetail({navigation, route}: MsgDetailScreenProps) {
         if (client.current) {
           client.current.forceDisconnect();
           client.current?.deactivate();
+          getUnReadMsgCnt();
         }
       });
 
@@ -441,6 +460,8 @@ export default function MsgDetail({navigation, route}: MsgDetailScreenProps) {
           client.current?.forceDisconnect();
           // sub.current?.unsubscribe();
           client.current?.deactivate();
+          getUnReadMsgCnt();
+
           return true;
         },
       );
@@ -455,13 +476,14 @@ export default function MsgDetail({navigation, route}: MsgDetailScreenProps) {
         debug: function (str: string) {
           console.log(str);
         },
-        reconnectDelay: 5000,
+        reconnectDelay: 1000,
         heartbeatIncoming: 1000,
         heartbeatOutgoing: 1000,
         forceBinaryWSFrames: true,
         appendMissingNULLonIncoming: true,
         onConnect: () => {
           console.log('subscribe');
+
           client.current?.subscribe(
             // `ws/rooms/${route.params.roomId}/message`,
             `/queue/chat/rooms/${route.params.roomId}`,
@@ -470,6 +492,7 @@ export default function MsgDetail({navigation, route}: MsgDetailScreenProps) {
               Authorization: `Bearer ${accessToken}`,
             },
           );
+          getUnReadMsgCnt();
         },
       });
       // setClientData(client);
@@ -572,7 +595,7 @@ export default function MsgDetail({navigation, route}: MsgDetailScreenProps) {
           onEndReachedThreshold={0.4}
           // refreshControl={}
           inverted={true}
-          keyboardShouldPersistTaps={'always'}
+          keyboardShouldPersistTaps={'handled'}
           renderItem={({item, index}: itemProps) => {
             function parseDateFromString(inputDate: string) {
               const parts = inputDate.split(' ');
@@ -702,7 +725,7 @@ export default function MsgDetail({navigation, route}: MsgDetailScreenProps) {
             onSubmitEditing={async () => {
               setUploadBtnLoading(true);
               sendNewMsg();
-              Keyboard.dismiss();
+              // Keyboard.dismiss();
             }}
             multiline={true}
             textAlignVertical="center"
@@ -728,7 +751,7 @@ export default function MsgDetail({navigation, route}: MsgDetailScreenProps) {
               setUploadBtnLoading(true);
               sendNewMsg();
             }
-            Keyboard.dismiss();
+            // Keyboard.dismiss();
           }}>
           {onFocus && msgContent.trim() == '' ? (
             <Feather name="chevron-down" size={24} style={{color: 'white'}} />

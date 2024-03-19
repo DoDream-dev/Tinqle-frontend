@@ -91,14 +91,18 @@ export default function AppInner() {
     (state: RootState) => !!state.user.accessToken,
   );
   const [updateModal, setUpdateModal] = useState(false);
-  const [newChat, setNewChat] = useState(0);
+  // const [newChat, setNewChat] = useState(0);
+  const newChat = useSelector((state: RootState) => state.user.msgCnt);
 
   useEffect(() => {
     SplashScreen.hide();
 
     checkVersion();
-    getUnReadMsgCnt();
   }, []);
+
+  useEffect(() => {
+    getUnReadMsgCnt();
+  }, [isLoggedIn]);
 
   useEffect(() => {
     console.log('refreshToken use!!');
@@ -145,7 +149,12 @@ export default function AppInner() {
   const getUnReadMsgCnt = async () => {
     try {
       const response = await axios.get(`${Config.API_URL}/messages/count`);
-      setNewChat(response.data.data.count);
+      // setNewChat(response.data.data.count);
+      dispatch(
+        userSlice.actions.setMsg({
+          msgCnt: response.data.data.count,
+        }),
+      );
       console.log(response.data.data);
     } catch (error) {
       const errorResponse = (error as AxiosError<{message: string}>).response;
