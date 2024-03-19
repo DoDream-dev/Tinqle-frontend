@@ -41,38 +41,6 @@ export default function App() {
   const [notiData, setNotiData] = useState({});
   const [network, setNetwork] = useState(true);
 
-  const noticeNavigation_inapp_and = async (
-    type: String,
-    redirectTargetId: String,
-    notificationId: String,
-  ) => {
-    // console.log('type : ', type);
-    // console.log('redirectTargetId : ', redirectTargetId);
-
-    if (type.includes('FEED')) {
-      navigation.navigate('FeedDetail', {feedId: redirectTargetId});
-    } else if (type == 'APPROVE_FRIENDSHIP_REQUEST') {
-      navigation.navigate('Notis');
-    } else if (type == 'CREATE_FRIENDSHIP_REQUEST') {
-      navigation.navigate('Notis');
-    } else if (type == 'SEND_KNOCK') {
-      navigation.navigate('FeedList', {isKnock: true});
-    } else if (type == 'REACT_EMOTICON_ON_COMMENT') {
-      navigation.navigate('FeedDetail', {feedId: redirectTargetId});
-    } else if (type == 'CREATE_KNOCK_FEED') {
-      navigation.navigate('FeedDetail', {feedId: redirectTargetId});
-    }
-
-    try {
-      await axios.put(
-        `${Config.API_URL}/notifications/${notificationId}/click`,
-      );
-    } catch (error) {
-      const errorResponse = (error as AxiosError<{message: string}>).response;
-      console.log(errorResponse.data);
-    }
-  };
-
   //notification
   const NotificationComponent: React.FC<NotificationProps> = ({
     title,
@@ -117,7 +85,6 @@ export default function App() {
       const redirectTargetId = notiData.redirectTargetId;
       const notificationId = notiData.notificationId;
 
-      // console.log('### : ', notiData.notificationId);
       // console.log('type : ', type);
       // console.log('redirectTargetId : ', redirectTargetId);
 
@@ -133,6 +100,11 @@ export default function App() {
         navigation.navigate('FeedDetail', {feedId: redirectTargetId});
       } else if (type == 'CREATE_KNOCK_FEED') {
         navigation.navigate('FeedDetail', {feedId: redirectTargetId});
+      } else if (type == 'CREATE_MESSAGE') {
+        // console.log('%%%%');
+        navigation.navigate('NoteNavigation').then(() => {
+          navigation.navigate('MsgDetail', {roomId: redirectTargetId});
+        });
       }
 
       try {
